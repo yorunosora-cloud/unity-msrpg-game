@@ -14,6 +14,8 @@ public class PlayerStats
     public int Hp { get; private set; }
     public int Mp { get; private set; }
 
+    public bool IsDead => Hp <= 0;
+
     public event Action<string> OnChanged;
 
     public PlayerStats()
@@ -24,6 +26,8 @@ public class PlayerStats
 
     public void GainExp(int amount)
     {
+        if (amount <= 0) return;
+        int prevLevel = Level;
         Exp += amount;
         while (Exp >= NextExp)
         {
@@ -34,7 +38,8 @@ public class PlayerStats
             Mp      = MaxMp;
             OnChanged?.Invoke("levelup");
         }
-        OnChanged?.Invoke("exp");
+        if (Level == prevLevel)
+            OnChanged?.Invoke("exp");
     }
 
     public void Damage(int amount)

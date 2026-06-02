@@ -99,4 +99,48 @@ public class PlayerStatsTests
         Assert.IsFalse(ok);
         Assert.AreEqual(stats.MaxMp, stats.Mp);
     }
+
+    [Test]
+    public void GainExp_ZeroAmount_DoesNothing()
+    {
+        var stats = new PlayerStats();
+        stats.GainExp(0);
+        Assert.AreEqual(1, stats.Level);
+        Assert.AreEqual(0, stats.Exp);
+    }
+
+    [Test]
+    public void GainExp_NegativeAmount_DoesNothing()
+    {
+        var stats = new PlayerStats();
+        stats.GainExp(-50);
+        Assert.AreEqual(1, stats.Level);
+        Assert.AreEqual(0, stats.Exp);
+    }
+
+    [Test]
+    public void IsDead_FalseWhenAlive()
+    {
+        var stats = new PlayerStats();
+        Assert.IsFalse(stats.IsDead);
+    }
+
+    [Test]
+    public void IsDead_TrueWhenHpIsZero()
+    {
+        var stats = new PlayerStats();
+        stats.Damage(99999);
+        Assert.IsTrue(stats.IsDead);
+    }
+
+    [Test]
+    public void GainExp_OnLevelUp_FiresLevelupNotExp()
+    {
+        var stats = new PlayerStats();
+        var events = new System.Collections.Generic.List<string>();
+        stats.OnChanged += e => events.Add(e);
+        stats.GainExp(100);
+        Assert.Contains("levelup", events);
+        Assert.IsFalse(events.Contains("exp"));
+    }
 }
