@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(CharacterController))]
 public class PlayerController : MonoBehaviour
@@ -32,9 +33,15 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        float h   = Input.GetAxis("Horizontal");
-        float v   = Input.GetAxis("Vertical");
-        bool  run = Input.GetKey(KeyCode.LeftShift);
+        var kb = Keyboard.current;
+        if (kb == null) return;
+
+        float h = (kb.dKey.isPressed || kb.rightArrowKey.isPressed ? 1f : 0f)
+                - (kb.aKey.isPressed || kb.leftArrowKey.isPressed  ? 1f : 0f);
+        float v = (kb.wKey.isPressed || kb.upArrowKey.isPressed    ? 1f : 0f)
+                - (kb.sKey.isPressed || kb.downArrowKey.isPressed  ? 1f : 0f);
+        bool  run  = kb.leftShiftKey.isPressed;
+        bool  jump = kb.spaceKey.wasPressedThisFrame;
 
         // 카메라 기준 수평 방향 (Y 성분 제거)
         Vector3 camFwd   = Vector3.Scale(_camTransform.forward, new Vector3(1, 0, 1)).normalized;
@@ -57,13 +64,12 @@ public class PlayerController : MonoBehaviour
         if (_cc.isGrounded)
         {
             _velocityY = -1f;
-            if (Input.GetKeyDown(KeyCode.Space))
-                _velocityY = jumpSpeed;
+            if (jump) _velocityY = jumpSpeed;
         }
         else
         {
             _velocityY += gravity * Time.deltaTime;
-            _velocityY = Mathf.Max(_velocityY, -50f);
+            _velocityY  = Mathf.Max(_velocityY, -50f);
         }
 
         Vector3 velocity = moveDir * speed;
