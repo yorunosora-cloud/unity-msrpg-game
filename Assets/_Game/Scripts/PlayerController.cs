@@ -21,7 +21,13 @@ public class PlayerController : MonoBehaviour
     {
         _cc           = GetComponent<CharacterController>();
         _animator     = GetComponentInChildren<Animator>();
-        _camTransform = Camera.main.transform;
+        if (Camera.main != null)
+            _camTransform = Camera.main.transform;
+        else
+        {
+            _camTransform = transform;
+            Debug.LogWarning("[PlayerController] Camera.main not found. Falling back to self transform.");
+        }
     }
 
     void Update()
@@ -57,6 +63,7 @@ public class PlayerController : MonoBehaviour
         else
         {
             _velocityY += gravity * Time.deltaTime;
+            _velocityY = Mathf.Max(_velocityY, -50f);
         }
 
         Vector3 velocity = moveDir * speed;
