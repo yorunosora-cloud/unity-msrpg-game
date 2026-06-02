@@ -76,8 +76,8 @@ public class PlayerController : MonoBehaviour
         velocity.y = _velocityY;
         _cc.Move(velocity * Time.deltaTime);
 
-        // Animator 파라미터 업데이트
-        if (_animator != null)
+        // Animator 파라미터 업데이트 (컨트롤러 없으면 스킵)
+        if (_animator != null && _animator.runtimeAnimatorController != null)
         {
             _animator.SetFloat(SpeedHash,   isMoving ? speed : 0f);
             _animator.SetBool(GroundedHash, _cc.isGrounded);
