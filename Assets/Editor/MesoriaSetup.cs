@@ -16,7 +16,7 @@ public static class MesoriaSetup
         var light = sunGO.AddComponent<Light>();
         light.type = LightType.Directional;
         light.intensity = 1f;
-        sunGO.transform.rotation = Quaternion.Euler(50f, -30f, 0f);
+        sunGO.transform.rotation = Quaternion.Euler(-50f, 30f, 0f);
 
         // 3. 지면 (Plane × 20 스케일 = 200×200 유닛)
         var ground = GameObject.CreatePrimitive(PrimitiveType.Plane);
