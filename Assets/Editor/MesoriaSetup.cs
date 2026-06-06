@@ -53,7 +53,8 @@ public static class MesoriaSetup
         cc.height = 2f;
         player.AddComponent<PlayerController>();
         player.AddComponent<BoxCharacterBuilder>();
-        player.AddComponent<PlayerCombat>();  // Q키 전투
+        player.AddComponent<PlayerCombat>();   // Q키 전투
+        player.AddComponent<PlayerDeath>();    // 사망/부활 — 씬 완성 후 와이어링
 
         // 7. 카메라
         var camGO = new GameObject("Main Camera");
@@ -138,15 +139,23 @@ public static class MesoriaSetup
         chudSO.FindProperty("mpText").objectReferenceValue = combatHudGO.mpText;
         chudSO.ApplyModifiedProperties();
 
-        // 11. 적 스폰 (과목별 5기, 반경 6~10 범위)
+        // 11. 사망 오버레이 + PlayerDeath 와이어링
+        var (deathPanel, countdown) = CreateDeathOverlay(canvasGO.transform, korFont);
+        var pd   = player.GetComponent<PlayerDeath>();
+        var pdSO = new SerializedObject(pd);
+        pdSO.FindProperty("deathOverlay").objectReferenceValue  = deathPanel;
+        pdSO.FindProperty("countdownText").objectReferenceValue = countdown;
+        pdSO.ApplyModifiedProperties();
+
+        // 12. 적 스폰 (과목별 5기, 반경 6~10 범위)
         SpawnEnemies(player.transform);
 
-        // 12. 씬 저장
+        // 13. 씬 저장
         System.IO.Directory.CreateDirectory(Application.dataPath + "/_Game/Scenes");
         EditorSceneManager.SaveScene(scene, "Assets/_Game/Scenes/Mesoria.unity");
         AssetDatabase.Refresh();
 
-        Debug.Log("[MSRPG] ✅ Mesoria 씬 생성 완료! Q키로 공격, ESC/C/I 패널 토글.");
+        Debug.Log("[MSRPG] ✅ Mesoria 씬 생성 완료! Q키 공격, HP 0 → 사망 오버레이 → 3초 후 부활.");
     }
 
     // ── 헬퍼 ─────────────────────────────────────────────────────────────────
@@ -322,6 +331,56 @@ public static class MesoriaSetup
         t.alignment = TextAlignmentOptions.MidlineLeft;
         if (font != null) t.font = font;
         return t;
+    }
+
+    // ── 사망 오버레이 ──────────────────────────────────────────────────────
+
+    static (GameObject panel, TMP_Text countdown) CreateDeathOverlay(Transform canvasParent, TMP_FontAsset font)
+    {
+        // 전체화면 반투명 검정 패널 (Canvas 마지막 자식 → 최상단 렌더링)
+        var panelGO = new GameObject("DeathOverlay");
+        panelGO.transform.SetParent(canvasParent, false);
+        var rt = panelGO.AddComponent<RectTransform>();
+        rt.anchorMin = Vector2.zero;
+        rt.anchorMax = Vector2.one;
+        rt.offsetMin = Vector2.zero;
+        rt.offsetMax = Vector2.zero;
+        panelGO.AddComponent<Image>().color = new Color(0f, 0f, 0f, 0.88f);
+
+        // "사망" 큰 빨간 텍스트
+        CreateOverlayLabel(panelGO.transform, "DeathTitle", "사망",
+            120, new Vector2(0f, 100f), new Color(0.9f, 0.1f, 0.1f), font);
+
+        // 카운트다운 숫자 (PlayerDeath가 매 프레임 갱신)
+        var cdLabel = CreateOverlayLabel(panelGO.transform, "Countdown", "3",
+            96, new Vector2(0f, -20f), Color.white, font);
+
+        // 안내 문구
+        CreateOverlayLabel(panelGO.transform, "HintText", "잠시 후 부활합니다...",
+            28, new Vector2(0f, -130f), new Color(1f, 1f, 1f, 0.65f), font);
+
+        panelGO.SetActive(false);
+        return (panelGO, cdLabel.GetComponent<TMP_Text>());
+    }
+
+    static GameObject CreateOverlayLabel(Transform parent, string name, string text,
+        int fontSize, Vector2 pos, Color color, TMP_FontAsset font)
+    {
+        var go = new GameObject(name);
+        go.transform.SetParent(parent, false);
+        var rt = go.AddComponent<RectTransform>();
+        rt.anchorMin        = new Vector2(0.5f, 0.5f);
+        rt.anchorMax        = new Vector2(0.5f, 0.5f);
+        rt.sizeDelta        = new Vector2(700f, 160f);
+        rt.anchoredPosition = pos;
+        var t = go.AddComponent<TextMeshProUGUI>();
+        t.text      = text;
+        t.fontSize  = fontSize;
+        t.color     = color;
+        t.alignment = TextAlignmentOptions.Center;
+        t.fontStyle = FontStyles.Bold;
+        if (font != null) t.font = font;
+        return go;
     }
 
     // ── 적 스폰 ────────────────────────────────────────────────────────────

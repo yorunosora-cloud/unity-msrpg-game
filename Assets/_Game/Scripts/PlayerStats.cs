@@ -88,4 +88,12 @@ public class PlayerStats
         OnChanged?.Invoke("mp");
         return true;
     }
+
+    /// <summary>부활 시 HP·MP를 레벨 기준 최대치로 완전 회복합니다.</summary>
+    public void RestoreAll()
+    {
+        Hp = MaxHp;
+        Mp = MaxMp;
+        OnChanged?.Invoke("restore");
+    }
 }

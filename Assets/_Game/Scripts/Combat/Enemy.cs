@@ -52,14 +52,23 @@ public class Enemy : MonoBehaviour
 
     void Awake()
     {
-        _unit = new EnemyUnit(maxHp, def, weakness, expReward);
+        // _unit은 Start에서 생성 — SetWeakness()가 Awake 직후 호출될 수 있어 weakness 설정이 먼저 돼야 함
         BuildVisual();
     }
+
+    void Start()
+    {
+        _unit = new EnemyUnit(maxHp, def, weakness, expReward);
+        _hpBar?.SetFraction(1f);
+        EnemySpawner.TryRegister(transform.position, weakness);
+    }
+
+    /// <summary>EnemySpawner.RespawnAll()이 런타임 스폰 시 Start 전에 호출해 weakness를 주입한다.</summary>
+    public void SetWeakness(Continent w) => weakness = w;
 
     void OnEnable()
     {
         All.Add(this);
-        // 플레이어 트랜스폼 캐시
         var playerGO = GameObject.FindWithTag("Player");
         if (playerGO != null) _player = playerGO.transform;
     }
@@ -71,7 +80,7 @@ public class Enemy : MonoBehaviour
 
     void Update()
     {
-        if (_unit.IsDead) return;
+        if (_unit == null || _unit.IsDead) return;
         if (_player == null) return;
 
         float dist = Vector3.Distance(transform.position, _player.position);
@@ -118,7 +127,7 @@ public class Enemy : MonoBehaviour
     /// <summary>PlayerCombat이 호출. 약점 여부를 계산해 데미지 적용.</summary>
     public void ReceiveHit(Continent attackerElement, int atk)
     {
-        if (_unit.IsDead) return;
+        if (_unit == null || _unit.IsDead) return;
 
         bool isWeak = attackerElement == _unit.Weakness;
         int  dmg    = CombatMath.ComputeDamage(atk, _unit.Def, isWeak);
