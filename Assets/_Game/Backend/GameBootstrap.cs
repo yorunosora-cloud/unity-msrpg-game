@@ -11,12 +11,16 @@ public class GameBootstrap : MonoBehaviour
     /// <summary>현재 플레이 세션의 PlayerStats 인스턴스.</summary>
     public static PlayerStats PlayerStats { get; private set; }
 
+    void Awake()
+    {
+        // Awake는 모든 Start보다 먼저 실행 → CombatHud.Start()가 구독하기 전에 반드시 설정됨
+        PlayerStats = new PlayerStats();
+        PlayerRuntime.Stats = PlayerStats;
+        MetaState.Init();
+    }
+
     void Start()
     {
-        PlayerStats = new PlayerStats();
-        PlayerRuntime.Stats = PlayerStats; // MSRPG 어셈블리에서 전투 스크립트가 참조
-        MetaState.Init();
-
         if (PlayFabManager.Instance == null)
         {
             Debug.LogWarning("[GameBootstrap] PlayFabManager가 없습니다. 로컬 기본값을 사용합니다.");

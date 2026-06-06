@@ -23,6 +23,7 @@ public class DamageNumber : MonoBehaviour
         go.transform.localScale = Vector3.one * (isCrit ? 0.018f : 0.013f);
 
         var tmp = go.AddComponent<TextMeshPro>();
+        tmp.font      = TMP_Settings.defaultFontAsset; // 프로젝트 기본 폰트 할당
         tmp.text      = isCrit ? $"★{amount}" : amount.ToString();
         tmp.fontSize  = isCrit ? 36 : 28;
         tmp.alignment = TextAlignmentOptions.Center;
