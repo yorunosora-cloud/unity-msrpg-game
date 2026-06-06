@@ -4,8 +4,8 @@ using TMPro;
 
 /// <summary>
 /// 화면 좌하단 플레이어 HP·MP 바 HUD.
-/// GameBootstrap.PlayerStats.OnChanged를 구독해 자동 갱신.
-/// MetaUISetup 에디터 메뉴가 자동으로 배치합니다.
+/// fillAmount 대신 RectTransform.anchorMax.x를 직접 조정해 크기를 제어한다.
+/// 오른쪽에서 왼쪽 방향으로 줄어든다 (anchorMin.x = 0 고정, anchorMax.x = fraction).
 /// </summary>
 public class CombatHud : MonoBehaviour
 {
@@ -20,7 +20,6 @@ public class CombatHud : MonoBehaviour
 
     void Update()
     {
-        // GameBootstrap.Awake가 CombatHud.Start보다 늦을 경우 매 프레임 재시도
         if (_stats == null) TryConnect();
     }
 
@@ -30,20 +29,12 @@ public class CombatHud : MonoBehaviour
         if (s == null || s == _stats) return;
         _stats = s;
 
-        // fillAmount가 작동하려면 반드시 Filled 타입이어야 함
-        // 씬 직렬화 불일치를 방어해 런타임에서 강제 설정
-        SetFilled(hpFill);
-        SetFilled(mpFill);
+        // Simple 타입으로 설정 — 크기는 RectTransform 앵커로 제어
+        InitBar(hpFill);
+        InitBar(mpFill);
 
         _stats.OnChanged += Refresh;
         Refresh("init");
-    }
-
-    static void SetFilled(Image img)
-    {
-        if (img == null) return;
-        img.type       = Image.Type.Filled;
-        img.fillMethod = Image.FillMethod.Horizontal;
     }
 
     void OnDestroy()
@@ -52,19 +43,40 @@ public class CombatHud : MonoBehaviour
             _stats.OnChanged -= Refresh;
     }
 
+    static void InitBar(Image img)
+    {
+        if (img == null) return;
+        img.type = Image.Type.Simple;
+        img.preserveAspect = false;
+        var rt = img.rectTransform;
+        rt.anchorMin = Vector2.zero;        // 왼쪽 하단 기준
+        rt.anchorMax = Vector2.one;         // 초기 100%
+        rt.offsetMin = Vector2.zero;        // 배경에 딱 맞춤
+        rt.offsetMax = Vector2.zero;
+    }
+
     void Refresh(string _)
     {
         if (_stats == null) return;
-        float hpFrac = (float)_stats.Hp / _stats.MaxHp;
-        float mpFrac = (float)_stats.Mp / _stats.MaxMp;
+        float hpFrac = Mathf.Clamp01((float)_stats.Hp / _stats.MaxHp);
+        float mpFrac = Mathf.Clamp01((float)_stats.Mp / _stats.MaxMp);
 
-        if (hpFill) hpFill.fillAmount = hpFrac;
-        if (mpFill) mpFill.fillAmount = mpFrac;
-
-        // 색상: 잔량에 따라 초록→빨강 (HP), 파랑 고정 (MP)
-        if (hpFill) hpFill.color = Color.Lerp(Color.red, new Color(0.15f, 0.85f, 0.3f), hpFrac);
+        SetBarFraction(hpFill, hpFrac, Color.Lerp(Color.red, new Color(0.15f, 0.85f, 0.3f), hpFrac));
+        SetBarFraction(mpFill, mpFrac, new Color(0.2f, 0.5f, 1f));
 
         if (hpText) hpText.text = $"HP {_stats.Hp}/{_stats.MaxHp}";
         if (mpText) mpText.text = $"MP {_stats.Mp}/{_stats.MaxMp}";
+    }
+
+    // anchorMax.x를 fraction으로 설정 → 오른쪽에서 왼쪽으로 줄어듦
+    static void SetBarFraction(Image img, float fraction, Color color)
+    {
+        if (img == null) return;
+        img.color = color;
+        var rt = img.rectTransform;
+        rt.anchorMin = new Vector2(0f,        rt.anchorMin.y);
+        rt.anchorMax = new Vector2(fraction,  rt.anchorMax.y);
+        rt.offsetMin = Vector2.zero;
+        rt.offsetMax = Vector2.zero;
     }
 }
