@@ -1,7 +1,7 @@
 {
     "name": "MSRPG",
     "rootNamespace": "",
-    "references": ["Unity.InputSystem"],
+    "references": ["Unity.InputSystem", "Unity.ugui", "Unity.TextMeshPro"],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

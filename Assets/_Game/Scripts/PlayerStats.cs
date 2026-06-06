@@ -2,6 +2,33 @@ using System;
 
 public class PlayerStats
 {
+    // ──────────────────────────────────────────────────────────────────────────
+    // 서버 저장/복원
+    // ──────────────────────────────────────────────────────────────────────────
+
+    /// <summary>현재 스탯을 직렬화 가능한 DTO로 내보냅니다.</summary>
+    public StatsData Export() => new StatsData
+    {
+        level   = Level,
+        exp     = Exp,
+        nextExp = NextExp,
+        hp      = Hp,
+        mp      = Mp,
+    };
+
+    /// <summary>서버에서 불러온 DTO로 스탯을 복원합니다. null이면 초기값 유지.</summary>
+    public void LoadState(StatsData data)
+    {
+        if (data == null) return;
+        Level   = Math.Max(1, data.level);
+        Exp     = Math.Max(0, data.exp);
+        NextExp = Math.Max(100, data.nextExp);
+        Hp      = Math.Clamp(data.hp, 0, MaxHp);
+        Mp      = Math.Clamp(data.mp, 0, MaxMp);
+        OnChanged?.Invoke("load");
+    }
+
+
     public int Level   { get; private set; } = 1;
     public int Exp     { get; private set; } = 0;
     public int NextExp { get; private set; } = 100;
