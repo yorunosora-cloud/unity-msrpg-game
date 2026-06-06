@@ -16,16 +16,21 @@ public class CombatHud : MonoBehaviour
 
     PlayerStats _stats;
 
-    void Start()
+    void Start() => TryConnect();
+
+    void Update()
     {
-        _stats = GameBootstrap.PlayerStats;
-        if (_stats == null)
-        {
-            Debug.LogWarning("[CombatHud] PlayerStats가 없습니다. GameBootstrap 초기화를 확인하세요.");
-            return;
-        }
-        Refresh("init");
+        // GameBootstrap.Awake가 CombatHud.Start보다 늦을 경우 매 프레임 재시도
+        if (_stats == null) TryConnect();
+    }
+
+    void TryConnect()
+    {
+        var s = GameBootstrap.PlayerStats;
+        if (s == null || s == _stats) return;
+        _stats = s;
         _stats.OnChanged += Refresh;
+        Refresh("init");
     }
 
     void OnDestroy()

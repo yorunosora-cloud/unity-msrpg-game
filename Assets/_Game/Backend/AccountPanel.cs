@@ -25,18 +25,48 @@ public class AccountPanel : MonoBehaviour
 
     // ─────────────────────────────────────────────────────────────────────────
 
+    PlayerStats _stats;
+
     void Start()
     {
         panel.SetActive(false);
         openButton.onClick.AddListener(Open);
         closeButton.onClick.AddListener(ClosePanel);
         logoutButton.onClick.AddListener(OnLogout);
+        TrySubscribe();
     }
 
     void Update()
     {
         if (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
             Toggle();
+        if (_stats == null) TrySubscribe(); // Awake 순서 방어
+    }
+
+    void OnDestroy()
+    {
+        if (_stats != null) _stats.OnChanged -= OnStatsChanged;
+    }
+
+    void TrySubscribe()
+    {
+        var s = GameBootstrap.PlayerStats;
+        if (s == null || s == _stats) return;
+        _stats = s;
+        _stats.OnChanged += OnStatsChanged;
+    }
+
+    void OnStatsChanged(string reason)
+    {
+        if (panel.activeSelf) RefreshInfo(); // 패널 열려있으면 즉시 갱신
+
+        if (reason == "levelup")
+        {
+            // 레벨업 알림 — 플레이어 위치 위에 스폰
+            var playerGO = GameObject.FindWithTag("Player");
+            if (playerGO != null)
+                DamageNumber.SpawnLevelUp(playerGO.transform.position, _stats.Level);
+        }
     }
 
     // ── 공개 메서드 ───────────────────────────────────────────────────────────
