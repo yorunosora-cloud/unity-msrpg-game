@@ -29,8 +29,21 @@ public class CombatHud : MonoBehaviour
         var s = GameBootstrap.PlayerStats;
         if (s == null || s == _stats) return;
         _stats = s;
+
+        // fillAmount가 작동하려면 반드시 Filled 타입이어야 함
+        // 씬 직렬화 불일치를 방어해 런타임에서 강제 설정
+        SetFilled(hpFill);
+        SetFilled(mpFill);
+
         _stats.OnChanged += Refresh;
         Refresh("init");
+    }
+
+    static void SetFilled(Image img)
+    {
+        if (img == null) return;
+        img.type       = Image.Type.Filled;
+        img.fillMethod = Image.FillMethod.Horizontal;
     }
 
     void OnDestroy()
