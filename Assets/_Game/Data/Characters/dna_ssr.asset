@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 52b643bc733c46748835910b7c25db77, type: 3}
+  m_Name: dna_ssr
+  m_EditorClassIdentifier: MSRPG::CharacterDef
+  id: dna_ssr
+  nameKo: DNA
+  nameEn: DNA
+  continent: 2
+  country: genetics
+  rarity: 3
+  role: 3
+  baseStats:
+    hp: 1200
+    atk: 110
+    def: 90
+    spd: 95
+    mp: 140
+  portraitColor: {r: 1, g: 0.85, b: 0.1, a: 1}

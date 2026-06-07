@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using UnityEngine;
 
 public class PlayerStatsTests
 {
@@ -142,5 +143,84 @@ public class PlayerStatsTests
         stats.GainExp(100);
         Assert.Contains("levelup", events);
         Assert.IsFalse(events.Contains("exp"));
+    }
+
+    // ── Export / LoadState (서버 저장·복원) ─────────────────────────────────
+
+    [Test]
+    public void Export_ReturnsCurrentValues()
+    {
+        var stats = new PlayerStats();
+        stats.GainExp(50);
+        stats.Damage(20);
+
+        StatsData d = stats.Export();
+
+        Assert.AreEqual(stats.Level,   d.level);
+        Assert.AreEqual(stats.Exp,     d.exp);
+        Assert.AreEqual(stats.NextExp, d.nextExp);
+        Assert.AreEqual(stats.Hp,      d.hp);
+        Assert.AreEqual(stats.Mp,      d.mp);
+    }
+
+    [Test]
+    public void LoadState_RestoresAllFields()
+    {
+        var origin = new PlayerStats();
+        origin.GainExp(100);   // Lv2
+        origin.Damage(30);     // HP 손상
+
+        StatsData saved = origin.Export();
+
+        var restored = new PlayerStats();
+        restored.LoadState(saved);
+
+        Assert.AreEqual(origin.Level,   restored.Level);
+        Assert.AreEqual(origin.Exp,     restored.Exp);
+        Assert.AreEqual(origin.NextExp, restored.NextExp);
+        Assert.AreEqual(origin.Hp,      restored.Hp);
+        Assert.AreEqual(origin.Mp,      restored.Mp);
+    }
+
+    [Test]
+    public void LoadState_RoundTripViaJson()
+    {
+        var origin = new PlayerStats();
+        origin.GainExp(245);   // Lv3
+        origin.Damage(10);
+
+        string json = JsonUtility.ToJson(origin.Export());
+        StatsData loaded = JsonUtility.FromJson<StatsData>(json);
+
+        var restored = new PlayerStats();
+        restored.LoadState(loaded);
+
+        Assert.AreEqual(origin.Level,   restored.Level);
+        Assert.AreEqual(origin.Exp,     restored.Exp);
+        Assert.AreEqual(origin.Hp,      restored.Hp);
+    }
+
+    [Test]
+    public void LoadState_Null_KeepsDefaults()
+    {
+        var stats = new PlayerStats();
+        stats.LoadState(null);
+
+        Assert.AreEqual(1,          stats.Level);
+        Assert.AreEqual(stats.MaxHp, stats.Hp);
+    }
+
+    [Test]
+    public void LoadState_FiresLoadEvent()
+    {
+        var origin  = new PlayerStats();
+        StatsData d = origin.Export();
+
+        var restored = new PlayerStats();
+        string fired  = null;
+        restored.OnChanged += e => fired = e;
+        restored.LoadState(d);
+
+        Assert.AreEqual("load", fired);
     }
 }

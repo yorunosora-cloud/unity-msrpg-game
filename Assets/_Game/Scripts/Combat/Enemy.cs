@@ -114,9 +114,9 @@ public class Enemy : MonoBehaviour
                 if (_attackTimer >= attackInterval)
                 {
                     _attackTimer = 0f;
-                    var stats = PlayerRuntime.Stats;
-                    if (stats != null && !stats.IsDead)
-                        stats.Damage(contactDamage);
+                    var active = PlayerRuntime.Active;
+                    if (active != null && !active.IsDowned)
+                        active.Damage(contactDamage);
                 }
             }
         }
@@ -154,9 +154,10 @@ public class Enemy : MonoBehaviour
 
     void Die()
     {
-        var stats = PlayerRuntime.Stats;
-        if (stats != null)
-            stats.GainExp(_unit.ExpReward);
+        // 처치 EXP는 활성 캐릭터가 획득 (기절 직후 교체됐을 수 있어 null 가드)
+        var active = PlayerRuntime.Active;
+        if (active != null)
+            active.GainExp(_unit.ExpReward);
 
         // HP바 숨김
         _hpBar?.gameObject.SetActive(false);

@@ -4,12 +4,10 @@ using UnityEngine.InputSystem;
 /// <summary>
 /// 플레이어 전투 컴포넌트. Player GameObject에 부착.
 /// Q키 → 전방 부채꼴 내 모든 Enemy에 ReceiveHit() 호출.
+/// 속성과 공격력은 PlayerRuntime.Active(현재 활성 캐릭터)에서 가져온다.
 /// </summary>
 public class PlayerCombat : MonoBehaviour
 {
-    [Header("속성")]
-    [SerializeField] Continent playerElement = Continent.Physics; // 인스펙터에서 고정
-
     [Header("공격 범위")]
     [SerializeField] float attackRange     = 2.2f; // 최대 사거리
     [SerializeField] float attackHalfAngle = 60f;  // 전방 기준 ±각도 (총 부채꼴 각 = 2×)
@@ -42,12 +40,13 @@ public class PlayerCombat : MonoBehaviour
     {
         _cooldownTimer = attackCooldown;
 
-        var stats = PlayerRuntime.Stats;
-        if (stats == null) return;
+        var active = PlayerRuntime.Active;
+        if (active == null || active.IsDowned) return; // 기절 중엔 공격 불가
 
-        int atk = stats.Atk;
-        Vector3 origin  = transform.position;
-        Vector3 forward = transform.forward;
+        int       atk     = active.Atk;
+        Continent element = active.Element;
+        Vector3   origin  = transform.position;
+        Vector3   forward = transform.forward;
 
         // 부채꼴 내 Enemy 전체 공격
         foreach (var enemy in Enemy.All.ToArray()) // ToArray: 도중에 제거될 수 있어 복사본 순회
@@ -63,7 +62,7 @@ public class PlayerCombat : MonoBehaviour
             float angle = Vector3.Angle(forward, toEnemy);
             if (angle > attackHalfAngle) continue;
 
-            enemy.ReceiveHit(playerElement, atk);
+            enemy.ReceiveHit(element, atk);
         }
 
         // 공격 모션 트리거

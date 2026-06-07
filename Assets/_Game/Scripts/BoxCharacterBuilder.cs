@@ -58,6 +58,9 @@ public class BoxCharacterBuilder : MonoBehaviour
     CharacterController _cc;
     Transform           _characterRoot;
 
+    // 틴트 대상 렌더러 (머리/손목 피부색 제외). Build()에서 캐시.
+    Renderer[] _bodyRenderers;
+
     Transform _hipPivotL,      _hipPivotR;
     Transform _kneePivotL,     _kneePivotR;
     Transform _shoulderPivotL, _shoulderPivotR;
@@ -124,6 +127,35 @@ public class BoxCharacterBuilder : MonoBehaviour
 
         BuildArm(root, -shoulderX, shoulderY, isLeft: true);
         BuildArm(root,  shoulderX, shoulderY, isLeft: false);
+
+        // 틴트 대상 렌더러 캐시 (머리·손목 피부색 제외)
+        CacheBodyRenderers(root);
+    }
+
+    void CacheBodyRenderers(Transform root)
+    {
+        // 피부색(HeadColor)을 쓰는 파트 이름 목록
+        var skinNames = new System.Collections.Generic.HashSet<string>
+            { "Head", "LowerArm_L", "LowerArm_R" };
+
+        var list = new System.Collections.Generic.List<Renderer>();
+        foreach (var r in root.GetComponentsInChildren<Renderer>())
+        {
+            if (!skinNames.Contains(r.gameObject.name))
+                list.Add(r);
+        }
+        _bodyRenderers = list.ToArray();
+    }
+
+    /// <summary>
+    /// 파티 교체 시 호출 — 몸통·팔(상박)·다리 렌더러를 틴트 색으로 일괄 변경.
+    /// 머리(피부색)와 손목(LowerArm, 피부색)은 변경하지 않는다.
+    /// </summary>
+    public void SetBodyTint(Color color)
+    {
+        if (_bodyRenderers == null) return;
+        foreach (var r in _bodyRenderers)
+            if (r != null) r.material.color = color;
     }
 
     void BuildLeg(Transform root, float x, float hipY, bool isLeft)

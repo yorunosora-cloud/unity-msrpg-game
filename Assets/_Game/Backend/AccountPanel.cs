@@ -7,6 +7,7 @@ using UnityEngine.InputSystem;
 
 /// <summary>
 /// 인게임 계정 정보 패널. ESC 키 또는 우상단 계정 버튼으로 열고 닫습니다.
+/// 활성 캐릭터(PlayerRuntime.Active)의 이름·레벨을 표시하고, 레벨업 시 알림.
 /// MesoriaSetup 에디터 메뉴가 자동으로 씬에 추가합니다.
 /// </summary>
 public class AccountPanel : MonoBehaviour
@@ -25,7 +26,8 @@ public class AccountPanel : MonoBehaviour
 
     // ─────────────────────────────────────────────────────────────────────────
 
-    PlayerStats _stats;
+    CombatCharacter _active;
+    Party           _party;
 
     void Start()
     {
@@ -40,36 +42,74 @@ public class AccountPanel : MonoBehaviour
     {
         if (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
             Toggle();
-        if (_stats == null) TrySubscribe(); // Awake 순서 방어
+        TrySubscribe(); // 파티 빌드 전일 수 있어 매 프레임 재시도
     }
 
     void OnDestroy()
     {
-        if (_stats != null) _stats.OnChanged -= OnStatsChanged;
+        UnsubscribeActive();
+        UnsubscribeParty();
     }
+
+    // ── 구독 ──────────────────────────────────────────────────────────────
 
     void TrySubscribe()
     {
-        var s = GameBootstrap.PlayerStats;
-        if (s == null || s == _stats) return;
-        _stats = s;
-        _stats.OnChanged += OnStatsChanged;
-    }
-
-    void OnStatsChanged(string reason)
-    {
-        if (panel.activeSelf) RefreshInfo(); // 패널 열려있으면 즉시 갱신
-
-        if (reason == "levelup")
+        var newParty = PlayerRuntime.Party;
+        if (newParty != null && newParty != _party)
         {
-            // 레벨업 알림 — 플레이어 위치 위에 스폰
-            var playerGO = GameObject.FindWithTag("Player");
-            if (playerGO != null)
-                DamageNumber.SpawnLevelUp(playerGO.transform.position, _stats.Level);
+            UnsubscribeParty();
+            _party = newParty;
+            _party.OnActiveChanged += OnActiveCharacterChanged;
+        }
+
+        var newActive = PlayerRuntime.Active;
+        if (newActive != null && newActive != _active)
+        {
+            UnsubscribeActive();
+            _active = newActive;
+            _active.OnChanged += OnActiveChanged;
         }
     }
 
-    // ── 공개 메서드 ───────────────────────────────────────────────────────────
+    void UnsubscribeActive()
+    {
+        if (_active != null)
+        {
+            _active.OnChanged -= OnActiveChanged;
+            _active = null;
+        }
+    }
+
+    void UnsubscribeParty()
+    {
+        if (_party != null)
+        {
+            _party.OnActiveChanged -= OnActiveCharacterChanged;
+            _party = null;
+        }
+    }
+
+    void OnActiveCharacterChanged()
+    {
+        UnsubscribeActive();
+        TrySubscribe();
+        if (panel.activeSelf) RefreshInfo();
+    }
+
+    void OnActiveChanged(string reason)
+    {
+        if (panel.activeSelf) RefreshInfo();
+
+        if (reason == "levelup")
+        {
+            var playerGO = GameObject.FindWithTag("Player");
+            if (playerGO != null && _active != null)
+                DamageNumber.SpawnLevelUp(playerGO.transform.position, _active.Level);
+        }
+    }
+
+    // ── 공개 메서드 ───────────────────────────────────────────────────────
 
     public void Open()
     {
@@ -91,15 +131,17 @@ public class AccountPanel : MonoBehaviour
         UIManager.Close();
     }
 
-    // ── 내부 ─────────────────────────────────────────────────────────────────
+    // ── 내부 ─────────────────────────────────────────────────────────────
 
     void RefreshInfo()
     {
         string username = PlayFabManager.Instance != null ? PlayFabManager.Instance.Username : "—";
         usernameText.text = $"아이디: {username}";
 
-        var stats = GameBootstrap.PlayerStats;
-        levelText.text = stats != null ? $"레벨: {stats.Level}   EXP: {stats.Exp} / {stats.NextExp}" : "레벨: —";
+        if (_active != null)
+            levelText.text = $"{_active.DisplayName}  Lv.{_active.Level}   EXP: {_active.Exp} / {_active.NextExp}";
+        else
+            levelText.text = "레벨: —";
     }
 
     void OnLogout()

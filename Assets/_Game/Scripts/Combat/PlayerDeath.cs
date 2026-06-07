@@ -3,52 +3,89 @@ using UnityEngine;
 using TMPro;
 
 /// <summary>
-/// 플레이어 사망/부활 흐름 관리. Player GameObject에 부착.
-/// PlayerStats.IsDead 감지 → 이동·전투 비활성 → 사망 오버레이 + 카운트다운 → 부활.
+/// 파티 전원 기절(AllDowned) 감지 → 사망 오버레이 + 카운트다운 → 전원 회복·부활.
+/// 단일 캐릭터 기절은 PartyController가 자동 교체로 처리한다.
+/// Player GameObject에 부착.
 /// </summary>
 public class PlayerDeath : MonoBehaviour
 {
     [SerializeField] GameObject deathOverlay;
     [SerializeField] TMP_Text   countdownText;
 
-    [SerializeField] float  respawnDelay = 3f;
-    [SerializeField] Vector3 spawnPoint  = Vector3.zero;
+    [SerializeField] float   respawnDelay = 3f;
+    [SerializeField] Vector3 spawnPoint   = Vector3.zero;
 
     PlayerController _controller;
     PlayerCombat     _combat;
-    PlayerStats      _stats;
+    PartyController  _partyController;
     bool             _isDying;
+
+    // 마지막으로 구독한 파티 인스턴스 (재구성 시 재구독)
+    Party _subscribedParty;
 
     void Start()
     {
-        _controller = GetComponent<PlayerController>();
-        _combat     = GetComponent<PlayerCombat>();
-        TrySubscribe();
+        _controller      = GetComponent<PlayerController>();
+        _combat          = GetComponent<PlayerCombat>();
+        _partyController = GetComponent<PartyController>();
+        TrySubscribeParty();
     }
 
     void Update()
     {
-        if (_stats == null) TrySubscribe();
+        // 파티가 아직 빌드 중일 수 있어 매 프레임 재시도
+        TrySubscribeParty();
     }
 
     void OnDestroy()
     {
-        if (_stats != null) _stats.OnChanged -= OnStatsChanged;
+        if (_subscribedParty != null)
+        {
+            _subscribedParty.OnPartyChanged -= OnPartyStateChanged;
+            foreach (var m in _subscribedParty.Members)
+                m.OnChanged -= OnMemberChangedHandler;
+        }
     }
 
-    void TrySubscribe()
+    // ── 구독 ──────────────────────────────────────────────────────────────
+
+    void TrySubscribeParty()
     {
-        var s = PlayerRuntime.Stats;
-        if (s == null || s == _stats) return;
-        _stats = s;
-        _stats.OnChanged += OnStatsChanged;
+        var party = PlayerRuntime.Party;
+        if (party == null || party == _subscribedParty) return;
+
+        // 이전 구독 해제
+        if (_subscribedParty != null)
+            _subscribedParty.OnPartyChanged -= OnPartyStateChanged;
+
+        _subscribedParty = party;
+        _subscribedParty.OnPartyChanged += OnPartyStateChanged;
+        SubscribeMembers(party);
     }
 
-    void OnStatsChanged(string _)
+    void SubscribeMembers(Party party)
     {
-        if (!_isDying && _stats != null && _stats.IsDead)
+        foreach (var m in party.Members)
+            m.OnChanged += OnMemberChangedHandler;
+    }
+
+    void OnPartyStateChanged()
+    {
+        // 파티 재구성 후 → 새 파티로 재구독
+        TrySubscribeParty();
+    }
+
+    void OnMemberChangedHandler(string _) => CheckAllDowned();
+
+    void CheckAllDowned()
+    {
+        if (_isDying) return;
+        var party = PlayerRuntime.Party;
+        if (party != null && party.AllDowned)
             StartCoroutine(DeathRoutine());
     }
+
+    // ── 사망/부활 흐름 ────────────────────────────────────────────────────
 
     IEnumerator DeathRoutine()
     {
@@ -71,9 +108,15 @@ public class PlayerDeath : MonoBehaviour
 
     void Respawn()
     {
-        _stats.RestoreAll();
+        // 파티 전원 HP/MP 풀 회복 + 활성 0번 복귀
+        var party = PlayerRuntime.Party;
+        if (party != null)
+        {
+            party.RestoreAll();
+            PlayerRuntime.Active = party.Active;
+        }
 
-        // CharacterController 비활성 후 텔레포트 (활성 상태에서 position 변경 시 충돌 오작동)
+        // CharacterController 비활성 후 텔레포트
         var cc = GetComponent<CharacterController>();
         if (cc != null)
         {
