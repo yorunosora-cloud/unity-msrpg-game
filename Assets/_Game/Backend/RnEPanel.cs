@@ -283,9 +283,9 @@ public class RnEPanel : MonoBehaviour
         }
         else
         {
-            // 비활성 캐릭터: 임시 래퍼로 owned.level/exp 변경
-            var cc = new CombatCharacter(_selectedDef, _selectedOc);
-            cc.GainExp(amount);
+            // CombatCharacter는 _owned 참조를 공유하므로 GainExp가 owned.level/exp를 직접 수정한다.
+            // HP/MP 풀회복(레벨업 부산물)은 비활성 캐릭터에겐 무관하므로 허용.
+            new CombatCharacter(_selectedDef, _selectedOc).GainExp(amount);
         }
 
         MetaSaveService.Save();
@@ -490,9 +490,7 @@ public class RnEPanel : MonoBehaviour
         _                       => "?",
     };
 
-    /// <summary>CombatCharacter와 동일한 NextExp 공식.</summary>
-    static int ComputeNextExp(int level)
-        => (int)System.Math.Floor(100.0 * System.Math.Pow(1.45, level - 1));
+    static int ComputeNextExp(int level) => StatGrowth.NextExp(level);
 
     static GameObject CreateListButton(RectTransform parent, string label)
     {

@@ -26,4 +26,8 @@ public static class StatGrowth
 
     /// <summary>등급별 최대 레벨 상한.</summary>
     public static int LevelCap(Rarity rarity) => rarity.LevelCap();
+
+    /// <summary>주어진 레벨에서 다음 레벨까지 필요한 EXP. CombatCharacter, RnEPanel 공용.</summary>
+    public static int NextExp(int level)
+        => (int)System.Math.Floor(100.0 * System.Math.Pow(1.45, level - 1));
 }

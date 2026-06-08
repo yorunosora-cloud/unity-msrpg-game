@@ -258,7 +258,5 @@ public class CombatCharacter
 
     // ── 내부 유틸 ─────────────────────────────────────────────────────────
 
-    /// <summary>주어진 레벨에서 다음 레벨까지 필요한 EXP 임계값. PlayerStats와 동일 공식.</summary>
-    static int ComputeNextExp(int level)
-        => (int)Math.Floor(100.0 * Math.Pow(1.45, level - 1));
+    static int ComputeNextExp(int level) => StatGrowth.NextExp(level);
 }
