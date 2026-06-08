@@ -70,9 +70,15 @@ public class BoxCharacterBuilder : MonoBehaviour
     float _airBlend;
     float _crouchBlend;
 
-    // 공격 모션 (타이머 기반 sin 아크: 0→1→0)
+    // 평타 모션 (타이머 기반 sin 아크: 0→1→0)
     float _attackTimer;
     const float AttackDuration = 0.35f;
+
+    // 스킬 모션 (effectKind별 상이)
+    enum SkillMotion { None, Strike, Aoe, HealBuff, Mark }
+    SkillMotion _skillMotion;
+    float       _skillTimer;
+    float       _skillDuration;
 
     float _speed;
     bool  _isGrounded   = true;
@@ -80,10 +86,33 @@ public class BoxCharacterBuilder : MonoBehaviour
     bool  _anticipating;
     float _takeoffSpeed;
 
-    /// <summary>PlayerCombat이 공격 입력 시 호출 — 팔 휘두르기 모션 트리거.</summary>
+    /// <summary>PlayerCombat Q키 평타 — 오른팔 앞으로 휘두르기.</summary>
     public void PlayAttack()
     {
         _attackTimer = AttackDuration;
+    }
+
+    /// <summary>스킬 effectKind에 대응하는 전용 모션 트리거.</summary>
+    public void PlaySkill(SkillEffectKind kind)
+    {
+        _skillMotion = kind switch
+        {
+            SkillEffectKind.Strike   => SkillMotion.Strike,
+            SkillEffectKind.Aoe      => SkillMotion.Aoe,
+            SkillEffectKind.HealBuff => SkillMotion.HealBuff,
+            SkillEffectKind.Mark     => SkillMotion.Mark,
+            _                        => SkillMotion.Strike,
+        };
+        _skillDuration = kind switch
+        {
+            SkillEffectKind.Strike   => 0.35f,
+            SkillEffectKind.Aoe      => 0.50f,
+            SkillEffectKind.HealBuff => 0.55f,
+            SkillEffectKind.Mark     => 0.42f,
+            _                        => 0.40f,
+        };
+        _skillTimer  = _skillDuration;
+        _attackTimer = 0f; // 평타 모션 중단
     }
 
     // PlayerController가 매 Update 후 호출
@@ -297,22 +326,76 @@ public class BoxCharacterBuilder : MonoBehaviour
         float crouchY = crouchDrop * _crouchBlend;
         _characterRoot.localPosition = new Vector3(0, runBobY - crouchY, 0);
 
-        // ── 공격 모션 (우측 팔: sin 아크 0→1→0) ─────────────────
+        // ── 평타 모션 (우측 팔: sin 아크 0→1→0) ─────────────────
         if (_attackTimer > 0f)
         {
             float elapsed = AttackDuration - _attackTimer;
-            float t  = elapsed / AttackDuration;               // 0→1
-            float ab = Mathf.Sin(t * Mathf.PI);                // 0→1→0 (정점에서 팔 최대 전방)
+            float t  = elapsed / AttackDuration;
+            float ab = Mathf.Sin(t * Mathf.PI);
             _attackTimer = Mathf.Max(0f, _attackTimer - Time.deltaTime);
 
-            // 오른 어깨: 앞으로 내밀기 (최대 −70°)
             _shoulderPivotR.localRotation = Quaternion.Slerp(
                 _shoulderPivotR.localRotation,
                 Quaternion.Euler(-70f, 0f, 0f), ab);
-            // 오른 팔꿈치: 약간 펴기
             _elbowPivotR.localRotation = Quaternion.Slerp(
                 _elbowPivotR.localRotation,
                 Quaternion.Euler(15f, 0f, 0f), ab);
+        }
+
+        // ── 스킬 모션 (effectKind별 상이, 평타보다 우선) ─────────────────
+        if (_skillTimer > 0f && _skillDuration > 0f)
+        {
+            float elapsed = _skillDuration - _skillTimer;
+            float t  = elapsed / _skillDuration;               // 0→1
+            float ab = Mathf.Sin(t * Mathf.PI);                // 0→1→0
+            _skillTimer = Mathf.Max(0f, _skillTimer - Time.deltaTime);
+
+            switch (_skillMotion)
+            {
+                // 강타: 오른팔 강하게 앞으로, 왼팔 뒤로
+                case SkillMotion.Strike:
+                    _shoulderPivotR.localRotation = Quaternion.Slerp(_shoulderPivotR.localRotation,
+                        Quaternion.Euler(-88f, 0f, -6f), ab);
+                    _elbowPivotR.localRotation = Quaternion.Slerp(_elbowPivotR.localRotation,
+                        Quaternion.Euler(5f, 0f, 0f), ab);
+                    _shoulderPivotL.localRotation = Quaternion.Slerp(_shoulderPivotL.localRotation,
+                        Quaternion.Euler(30f, 0f, 0f), ab);
+                    break;
+
+                // 광역: 양팔 바깥으로 펼쳐 앞으로 쓸어내기
+                case SkillMotion.Aoe:
+                    _shoulderPivotL.localRotation = Quaternion.Slerp(_shoulderPivotL.localRotation,
+                        Quaternion.Euler(-52f, 0f, -42f), ab);
+                    _shoulderPivotR.localRotation = Quaternion.Slerp(_shoulderPivotR.localRotation,
+                        Quaternion.Euler(-52f, 0f, 42f), ab);
+                    _elbowPivotL.localRotation = Quaternion.Slerp(_elbowPivotL.localRotation,
+                        Quaternion.Euler(0f, 0f, 0f), ab);
+                    _elbowPivotR.localRotation = Quaternion.Slerp(_elbowPivotR.localRotation,
+                        Quaternion.Euler(0f, 0f, 0f), ab);
+                    break;
+
+                // 회복·버프: 양팔 머리 위로 V자 들어올리기
+                case SkillMotion.HealBuff:
+                    _shoulderPivotL.localRotation = Quaternion.Slerp(_shoulderPivotL.localRotation,
+                        Quaternion.Euler(-152f, 0f, -22f), ab);
+                    _shoulderPivotR.localRotation = Quaternion.Slerp(_shoulderPivotR.localRotation,
+                        Quaternion.Euler(-152f, 0f, 22f), ab);
+                    _elbowPivotL.localRotation = Quaternion.Slerp(_elbowPivotL.localRotation,
+                        Quaternion.Euler(-28f, 0f, 0f), ab);
+                    _elbowPivotR.localRotation = Quaternion.Slerp(_elbowPivotR.localRotation,
+                        Quaternion.Euler(-28f, 0f, 0f), ab);
+                    break;
+
+                // 표식: 오른팔 뻗어 가리키기, 왼팔 뒤로
+                case SkillMotion.Mark:
+                    _shoulderPivotR.localRotation = Quaternion.Slerp(_shoulderPivotR.localRotation,
+                        Quaternion.Euler(-58f, 0f, -12f), ab);
+                    _elbowPivotR.localRotation = Quaternion.Slerp(_elbowPivotR.localRotation,
+                        Quaternion.Euler(0f, 0f, 0f), ab);
+                    _shoulderPivotL.localRotation = Quaternion.Slerp(_shoulderPivotL.localRotation,
+                        Quaternion.Euler(28f, 0f, 0f), ab);
+                    break;
+            }
         }
     }
 }

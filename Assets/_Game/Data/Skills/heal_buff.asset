@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 539fd4fbbaba74c44988317c884b5b12, type: 3}
+  m_Name: heal_buff
+  m_EditorClassIdentifier: MSRPG::SkillDef
+  id: heal_buff
+  nameKo: "\uD68C\uBCF5\xB7\uAC15\uD654"
+  mpCost: 35
+  cooldown: 8
+  effectKind: 2
+  range: 0
+  halfAngle: 0
+  damageMultiplier: 0
+  healPercent: 0.2
+  buffAtkMultiplier: 1.3
+  buffDuration: 6

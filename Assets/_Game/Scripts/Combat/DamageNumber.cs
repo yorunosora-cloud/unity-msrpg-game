@@ -66,6 +66,19 @@ public class DamageNumber : MonoBehaviour
         go.transform.position = worldPos + Random.insideUnitSphere * 0.3f;
     }
 
+    /// <summary>회복량을 초록색 텍스트로 스폰합니다.</summary>
+    public static void SpawnHeal(Vector3 worldPos, int amount)
+    {
+        var go = BuildTextObject(
+            "HealNum",
+            $"+{amount}",
+            30,
+            new Color(0.2f, 1f, 0.3f),   // 초록
+            FontStyles.Bold,
+            0.016f);
+        go.transform.position = worldPos + Random.insideUnitSphere * 0.2f;
+    }
+
     /// <summary>레벨업 알림을 플레이어 위치 위에 스폰합니다.</summary>
     public static void SpawnLevelUp(Vector3 playerPos, int newLevel)
     {

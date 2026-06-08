@@ -26,3 +26,10 @@ MonoBehaviour:
     spd: 95
     mp: 100
   portraitColor: {r: 0.3, g: 0.5, b: 1, a: 1}
+  skills:
+  - {fileID: 11400000, guid: 944aad8d4ace9f344b1708908cfde208, type: 2}
+  - {fileID: 11400000, guid: 9786888b843839a498da0bf7592b40c4, type: 2}
+  - {fileID: 11400000, guid: a0c0daf5095ac194a9f4cd6e1ee598af, type: 2}
+  - {fileID: 11400000, guid: f4a1b17333a8ecd44a46f3035afe7013, type: 2}
+  - {fileID: 11400000, guid: cd7fb2426e5bcc74ba3a5b40cf507745, type: 2}
+  - {fileID: 11400000, guid: 1be506095858deb4b93f9045f48e2c51, type: 2}

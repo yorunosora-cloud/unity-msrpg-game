@@ -53,7 +53,8 @@ public static class MesoriaSetup
         cc.height = 2f;
         player.AddComponent<PlayerController>();
         player.AddComponent<BoxCharacterBuilder>();
-        player.AddComponent<PlayerCombat>();      // Q키 전투
+        player.AddComponent<PlayerCombat>();      // Q키 평타
+        player.AddComponent<PlayerSkills>();      // E/R/T/F/V/G 스킬 입력 + MP 자연회복
         player.AddComponent<PartyController>();   // 캐릭터 교체 (1/2/3키)
         player.AddComponent<PlayerDeath>();       // 사망/부활 — 씬 완성 후 와이어링
 
@@ -154,12 +155,15 @@ public static class MesoriaSetup
         // 13. 파티 HUD (우하단, 3칸)
         CreatePartyHud(canvasGO.transform, korFont);
 
-        // 14. 씬 저장
+        // 14. 스킬 바 HUD (하단 중앙, 최대 6칸)
+        CreateSkillBarHud(canvasGO.transform, canvasGO, korFont);
+
+        // 15. 씬 저장
         System.IO.Directory.CreateDirectory(Application.dataPath + "/_Game/Scenes");
         EditorSceneManager.SaveScene(scene, "Assets/_Game/Scenes/Mesoria.unity");
         AssetDatabase.Refresh();
 
-        Debug.Log("[MSRPG] ✅ Mesoria 씬 생성 완료! Q=공격, 1/2/3=파티 교체, HP 0→기절→자동교체, 전멸→부활.");
+        Debug.Log("[MSRPG] ✅ Mesoria 씬 생성 완료! Q=평타, E/R/T/F/V/G=스킬, 1/2/3=파티 교체, HP 0→기절→자동교체, 전멸→부활.");
     }
 
     // ── 헬퍼 ─────────────────────────────────────────────────────────────────
@@ -589,6 +593,116 @@ public static class MesoriaSetup
         if (font != null) t.font = font;
 
         return (fillImg, t);
+    }
+
+    // ── 스킬 바 HUD ───────────────────────────────────────────────────────
+
+    static void CreateSkillBarHud(Transform canvasParent, GameObject canvasGO, TMP_FontAsset font)
+    {
+        const int   MaxSlots = 6;
+        const float SlotW    = 95f;
+        const float SlotH    = 115f;
+        const float SlotGap  = 6f;
+        const float TotalW   = SlotW * MaxSlots + SlotGap * (MaxSlots - 1);
+
+        // 루트 패널 (하단 중앙)
+        var rootGO = new GameObject("SkillBarRoot");
+        rootGO.transform.SetParent(canvasParent, false);
+        var rootRt = rootGO.AddComponent<RectTransform>();
+        rootRt.anchorMin        = new Vector2(0.5f, 0f);
+        rootRt.anchorMax        = new Vector2(0.5f, 0f);
+        rootRt.pivot            = new Vector2(0.5f, 0f);
+        rootRt.sizeDelta        = new Vector2(TotalW, SlotH);
+        rootRt.anchoredPosition = new Vector2(0f, 16f);
+
+        var slotRoots     = new GameObject[MaxSlots];
+        var keyLabels     = new TMP_Text[MaxSlots];
+        var nameTexts     = new TMP_Text[MaxSlots];
+        var cdOverlays    = new Image[MaxSlots];
+        var slotBgs       = new Image[MaxSlots];
+
+        string[] keys = { "E", "R", "T", "F", "V", "G" };
+
+        for (int i = 0; i < MaxSlots; i++)
+        {
+            float xOff = (SlotW + SlotGap) * i;
+
+            // ── 슬롯 루트 ──
+            var slotGO = new GameObject($"SkillSlot_{keys[i]}");
+            slotGO.transform.SetParent(rootGO.transform, false);
+            var slotRt = slotGO.AddComponent<RectTransform>();
+            slotRt.anchorMin        = Vector2.zero;
+            slotRt.anchorMax        = Vector2.zero;
+            slotRt.pivot            = Vector2.zero;
+            slotRt.sizeDelta        = new Vector2(SlotW, SlotH);
+            slotRt.anchoredPosition = new Vector2(xOff, 0f);
+            slotRoots[i] = slotGO;
+
+            // ── 배경 ──
+            var bg = slotGO.AddComponent<Image>();
+            bg.color    = new Color(0.1f, 0.1f, 0.15f, 0.85f);
+            slotBgs[i] = bg;
+
+            // ── 키 라벨 (좌상단) ──
+            var keyGO = new GameObject("KeyLabel");
+            keyGO.transform.SetParent(slotGO.transform, false);
+            var keyRt = keyGO.AddComponent<RectTransform>();
+            keyRt.anchorMin        = new Vector2(0f, 1f);
+            keyRt.anchorMax        = new Vector2(0f, 1f);
+            keyRt.pivot            = new Vector2(0f, 1f);
+            keyRt.sizeDelta        = new Vector2(30f, 24f);
+            keyRt.anchoredPosition = new Vector2(6f, -6f);
+            var keyT = keyGO.AddComponent<TextMeshProUGUI>();
+            keyT.text      = keys[i];
+            keyT.fontSize  = 16;
+            keyT.color     = new Color(1f, 0.9f, 0.3f); // 금색
+            keyT.fontStyle = FontStyles.Bold;
+            keyT.alignment = TextAlignmentOptions.TopLeft;
+            if (font != null) keyT.font = font;
+            keyLabels[i] = keyT;
+
+            // ── 스킬 이름 (중앙) ──
+            var nameGO = new GameObject("NameText");
+            nameGO.transform.SetParent(slotGO.transform, false);
+            var nameRt = nameGO.AddComponent<RectTransform>();
+            nameRt.anchorMin = new Vector2(0f, 0.35f);
+            nameRt.anchorMax = new Vector2(1f, 0.75f);
+            nameRt.offsetMin = new Vector2(4f, 0f);
+            nameRt.offsetMax = new Vector2(-4f, 0f);
+            var nameT = nameGO.AddComponent<TextMeshProUGUI>();
+            nameT.text      = "—";
+            nameT.fontSize  = 13;
+            nameT.color     = Color.white;
+            nameT.alignment = TextAlignmentOptions.Center;
+            if (font != null) nameT.font = font;
+            nameTexts[i] = nameT;
+
+            // ── 쿨다운 오버레이 (어두운 Fill — Vertical, Bottom→Top) ──
+            var cdGO = new GameObject("CooldownOverlay");
+            cdGO.transform.SetParent(slotGO.transform, false);
+            var cdRt = cdGO.AddComponent<RectTransform>();
+            cdRt.anchorMin = Vector2.zero;
+            cdRt.anchorMax = Vector2.one;
+            cdRt.offsetMin = Vector2.zero;
+            cdRt.offsetMax = Vector2.zero;
+            var cdImg = cdGO.AddComponent<Image>();
+            cdImg.color      = new Color(0f, 0f, 0f, 0.65f);
+            cdImg.type       = Image.Type.Filled;
+            cdImg.fillMethod = Image.FillMethod.Vertical;
+            cdImg.fillOrigin = (int)Image.OriginVertical.Bottom;
+            cdImg.fillAmount = 0f; // 초기엔 쿨다운 없음
+            cdOverlays[i] = cdImg;
+        }
+
+        // SkillBarHud 컴포넌트 + 직렬화
+        var hud   = canvasGO.AddComponent<SkillBarHud>();
+        var hudSO = new SerializedObject(hud);
+        SetObjArray(hudSO, "_slotRoots",      slotRoots);
+        SetObjArray(hudSO, "_slotKeyLabels",  keyLabels);
+        SetObjArray(hudSO, "_slotNameTexts",  nameTexts);
+        SetObjArray(hudSO, "_slotCdOverlays", cdOverlays);
+        SetObjArray(hudSO, "_slotBgs",        slotBgs);
+        hudSO.ApplyModifiedProperties();
     }
 
     // ── 적 스폰 ────────────────────────────────────────────────────────────

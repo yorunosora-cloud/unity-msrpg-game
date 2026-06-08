@@ -40,6 +40,9 @@ public class Roster
         return null;
     }
 
+    /// <summary>UI 갱신이 필요할 때 외부에서 OnChanged 를 강제 발화한다.</summary>
+    public void NotifyChanged() => OnChanged?.Invoke();
+
     // ── 직렬화 ────────────────────────────────────────────────────────────
 
     public RosterData Export() => new RosterData { owned = _owned.ToArray() };

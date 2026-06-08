@@ -36,6 +36,13 @@ public class Enemy : MonoBehaviour
     Color            _baseColor;
     float            _flashTimer;
 
+    // ── 표식 상태 ───────────────────────────────────────────────────────────
+    Continent? _mark;
+    GameObject _markIndicator;
+
+    /// <summary>현재 부여된 속성 표식. null이면 없음.</summary>
+    public Continent? Mark => _mark;
+
     // 과목별 색상 (Continent 순서 일치)
     static readonly Color[] ContinentColors =
     {
@@ -120,6 +127,36 @@ public class Enemy : MonoBehaviour
                 }
             }
         }
+    }
+
+    // ── 표식 ─────────────────────────────────────────────────────────────────
+
+    /// <summary>SkillExecutor가 Mark 스킬 발동 시 호출. 해당 속성 표식을 부여하고 시각 표시.</summary>
+    public void SetMark(Continent element)
+    {
+        _mark = element;
+
+        // 기존 표식 인디케이터 제거 후 재생성
+        if (_markIndicator != null)
+            Destroy(_markIndicator);
+
+        _markIndicator = CreateMarkIndicator(element);
+    }
+
+    GameObject CreateMarkIndicator(Continent element)
+    {
+        // 머리 위 작은 큐브로 표식 표시 (HP바보다 살짝 위)
+        var go = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        go.name = "MarkIndicator";
+        Destroy(go.GetComponent<Collider>());
+        go.transform.SetParent(transform, false);
+        go.transform.localPosition = new Vector3(0f, 2.8f, 0f);
+        go.transform.localScale    = new Vector3(0.25f, 0.25f, 0.25f);
+
+        var rend = go.GetComponent<Renderer>();
+        rend.material       = new Material(Shader.Find("Universal Render Pipeline/Lit"));
+        rend.material.color = ContinentColors[(int)element % ContinentColors.Length];
+        return go;
     }
 
     // ── 피격 ─────────────────────────────────────────────────────────────────

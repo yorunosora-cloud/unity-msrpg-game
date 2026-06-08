@@ -16,6 +16,11 @@ public class CombatCharacter
     int _mp;
     int _nextExp; // 현재 레벨에서 다음 레벨까지 필요한 EXP 임계값
 
+    // ── 스킬 쿨다운 · 버프 상태 ────────────────────────────────────────────
+    float[] _cooldowns;      // 스킬 인덱스별 남은 쿨타임 (초). 길이 = skills.Length
+    float   _atkBuffMult  = 1f;  // 공격력 버프 배율 (1f = 변화 없음)
+    float   _atkBuffTimer = 0f;  // 버프 남은 시간 (0 이하면 비활성)
+
     public CombatCharacter(CharacterDef def, OwnedCharacter owned)
     {
         _def     = def;
@@ -26,6 +31,9 @@ public class CombatCharacter
         var s = StatGrowth.ComputeStats(_def, _owned.level);
         _hp = s.hp;
         _mp = s.mp;
+
+        // 스킬 쿨다운 배열 초기화 (skills가 null이면 빈 배열)
+        _cooldowns = new float[_def.skills?.Length ?? 0];
     }
 
     // ── 식별 정보 ──────────────────────────────────────────────────────────
@@ -36,11 +44,57 @@ public class CombatCharacter
     public int       Level       => _owned.level;
     public string    Id          => _def.id;
 
+    // ── 스킬 조회 ─────────────────────────────────────────────────────────
+
+    /// <summary>보유 스킬 수 (인덱스 = 키 슬롯 E=0, R=1 … G=5).</summary>
+    public int SkillCount => _def.skills?.Length ?? 0;
+
+    /// <summary>인덱스 i의 SkillDef. 범위 밖이거나 null이면 null 반환.</summary>
+    public SkillDef SkillAt(int i)
+        => (_def.skills != null && i >= 0 && i < _def.skills.Length) ? _def.skills[i] : null;
+
+    /// <summary>인덱스 i의 남은 쿨타임 (초). 0이면 준비 완료.</summary>
+    public float CooldownRemaining(int i)
+        => (i >= 0 && i < _cooldowns.Length) ? Math.Max(0f, _cooldowns[i]) : 0f;
+
+    /// <summary>
+    /// 인덱스 i의 스킬이 해금되어 있는지 확인.
+    /// unlockedSkillIds 가 비어 있으면 index 0 을 기본 해금으로 간주한다 (기존 데이터 호환).
+    /// </summary>
+    public bool IsUnlocked(int i)
+    {
+        var skill = SkillAt(i);
+        if (skill == null) return false;
+        if (_owned.unlockedSkillIds == null || _owned.unlockedSkillIds.Count == 0)
+            return i == 0;
+        return _owned.unlockedSkillIds.Contains(skill.id);
+    }
+
+    /// <summary>인덱스 i의 스킬을 해금한다. 이미 해금되어 있으면 무시.</summary>
+    public void Unlock(int i)
+    {
+        var skill = SkillAt(i);
+        if (skill == null) return;
+        Unlock(skill.id);
+    }
+
+    /// <summary>skillId 로 스킬을 해금한다. 이미 해금되어 있으면 무시.</summary>
+    public void Unlock(string skillId)
+    {
+        if (string.IsNullOrEmpty(skillId)) return;
+        if (_owned.unlockedSkillIds == null)
+            _owned.unlockedSkillIds = new System.Collections.Generic.List<string>();
+        if (!_owned.unlockedSkillIds.Contains(skillId))
+            _owned.unlockedSkillIds.Add(skillId);
+        OnChanged?.Invoke("unlock");
+    }
+
     // ── 스탯 (현재 레벨 기준, 레벨업 시 재계산) ───────────────────────────
 
     public int MaxHp => StatGrowth.ComputeStats(_def, _owned.level).hp;
     public int MaxMp => StatGrowth.ComputeStats(_def, _owned.level).mp;
-    public int Atk   => StatGrowth.ComputeStats(_def, _owned.level).atk;
+    /// <summary>현재 레벨 공격력 × 버프 배율 (버프 없으면 1.0).</summary>
+    public int Atk   => (int)(StatGrowth.ComputeStats(_def, _owned.level).atk * _atkBuffMult);
     public int Def   => StatGrowth.ComputeStats(_def, _owned.level).def;
 
     // ── HP/MP 상태 ─────────────────────────────────────────────────────────
@@ -58,6 +112,79 @@ public class CombatCharacter
 
     /// <summary>HP/MP/레벨 등 상태 변화 시 발생. reason = "hp"|"mp"|"exp"|"levelup"|"restore".</summary>
     public event Action<string> OnChanged;
+
+    // ── 스킬 · 쿨다운 · 버프 조작 ────────────────────────────────────────
+
+    /// <summary>매 프레임 쿨타임 감소. PlayerSkills.Update()에서 호출.</summary>
+    public void TickCooldowns(float dt)
+    {
+        for (int i = 0; i < _cooldowns.Length; i++)
+        {
+            if (_cooldowns[i] > 0f)
+                _cooldowns[i] = Math.Max(0f, _cooldowns[i] - dt);
+        }
+    }
+
+    /// <summary>매 프레임 버프 타이머 감소. 만료 시 배율 초기화 + OnChanged("buff").</summary>
+    public void TickBuffs(float dt)
+    {
+        if (_atkBuffTimer <= 0f) return;
+        _atkBuffTimer -= dt;
+        if (_atkBuffTimer <= 0f)
+        {
+            _atkBuffTimer = 0f;
+            _atkBuffMult  = 1f;
+            OnChanged?.Invoke("buff");
+        }
+    }
+
+    /// <summary>인덱스 i의 스킬이 쿨타임 만료 상태인지.</summary>
+    public bool IsReady(int i)
+        => i >= 0 && i < _cooldowns.Length && _cooldowns[i] <= 0f;
+
+    /// <summary>인덱스 i의 쿨타임을 seconds로 설정.</summary>
+    public void StartCooldown(int i, float seconds)
+    {
+        if (i >= 0 && i < _cooldowns.Length)
+            _cooldowns[i] = seconds;
+        OnChanged?.Invoke("cooldown");
+    }
+
+    /// <summary>MP 회복 (MaxMp 초과 시 클램프). 평타/자연회복 틱에서 호출.</summary>
+    public void RecoverMp(int amount)
+    {
+        if (amount <= 0) return;
+        _mp = Math.Min(MaxMp, _mp + amount);
+        OnChanged?.Invoke("mp");
+    }
+
+    /// <summary>공격력 버프 적용 (중복 시 더 긴 쪽으로 갱신).</summary>
+    public void ApplyAtkBuff(float multiplier, float duration)
+    {
+        _atkBuffMult  = multiplier;
+        _atkBuffTimer = Math.Max(_atkBuffTimer, duration);
+        OnChanged?.Invoke("buff");
+    }
+
+    /// <summary>인덱스 i 스킬을 발동할 수 있는지 확인.</summary>
+    public bool CanCast(int i)
+    {
+        var skill = SkillAt(i);
+        return skill != null && !IsDowned && IsUnlocked(i) && Mp >= skill.mpCost && IsReady(i);
+    }
+
+    /// <summary>
+    /// 인덱스 i 스킬을 발동한다. 성공 시 SkillDef 반환, 실패(MP부족/쿨다운/기절) 시 null.
+    /// 효과 적용은 호출자(PlayerSkills)가 SkillExecutor로 수행한다.
+    /// </summary>
+    public SkillDef CastSkill(int i)
+    {
+        if (!CanCast(i)) return null;
+        var skill = SkillAt(i);
+        UseMp(skill.mpCost);
+        StartCooldown(i, skill.cooldown);
+        return skill;
+    }
 
     // ── 전투 조작 ─────────────────────────────────────────────────────────
 
@@ -81,12 +208,18 @@ public class CombatCharacter
         return true;
     }
 
-    /// <summary>HP/MP를 현재 레벨 기준 최대치로 완전 회복.</summary>
+    /// <summary>HP/MP를 현재 레벨 기준 최대치로 완전 회복. 버프·쿨다운도 초기화.</summary>
     public void RestoreFull()
     {
         var s = StatGrowth.ComputeStats(_def, _owned.level);
         _hp = s.hp;
         _mp = s.mp;
+
+        // 쿨다운·버프 초기화
+        for (int i = 0; i < _cooldowns.Length; i++) _cooldowns[i] = 0f;
+        _atkBuffMult  = 1f;
+        _atkBuffTimer = 0f;
+
         OnChanged?.Invoke("restore");
     }
 

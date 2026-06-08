@@ -160,11 +160,235 @@ public static class MetaUISetup
         UnityEventTools.AddVoidPersistentListener(loadBtn.GetComponent<Button>().onClick,         adminCmp.OnForceLoad);
         UnityEventTools.AddVoidPersistentListener(closeBtnA.GetComponent<Button>().onClick,       adminCmp.OnCloseClicked);
 
+        // ── SkillResearchPanel (K키, 스킬 연구 전용) ────────────────────
+        var skillPanel = CreateCentrePanel(canvasGO.transform, "SkillResearchPanel", new Vector2(1000f, 950f));
+        skillPanel.SetActive(false);
+
+        // 제목
+        CreateLabel(skillPanel.transform, "Title", "스킬 연구  [K]", 40, new Vector2(0f, 420f), font);
+
+        // ── 좌측 캐릭터 목록 (스크롤 뷰) ──────────────────────────────
+        var charScrollGO = new GameObject("CharScrollView");
+        charScrollGO.transform.SetParent(skillPanel.transform, false);
+        var charScrollRt = charScrollGO.AddComponent<RectTransform>();
+        charScrollRt.anchorMin = new Vector2(0f, 0f);
+        charScrollRt.anchorMax = new Vector2(0f, 1f);
+        charScrollRt.offsetMin = new Vector2(20f,  50f);
+        charScrollRt.offsetMax = new Vector2(320f, -60f);
+        charScrollGO.AddComponent<Image>().color = new Color(0.05f, 0.05f, 0.08f, 0.8f);
+        var charSv = charScrollGO.AddComponent<ScrollRect>();
+        charSv.horizontal = false;
+
+        var charViewport = new GameObject("Viewport");
+        charViewport.transform.SetParent(charScrollGO.transform, false);
+        var charVpRt = charViewport.AddComponent<RectTransform>();
+        charVpRt.anchorMin = Vector2.zero; charVpRt.anchorMax = Vector2.one;
+        charVpRt.offsetMin = Vector2.zero; charVpRt.offsetMax = Vector2.zero;
+        charViewport.AddComponent<RectMask2D>();
+
+        var charContent = new GameObject("Content");
+        charContent.transform.SetParent(charViewport.transform, false);
+        var charContentRt = charContent.AddComponent<RectTransform>();
+        charContentRt.anchorMin = new Vector2(0f, 1f);
+        charContentRt.anchorMax = new Vector2(1f, 1f);
+        charContentRt.pivot     = new Vector2(0.5f, 1f);
+        charContentRt.sizeDelta = new Vector2(0f, 0f);
+        var charLayout = charContent.AddComponent<VerticalLayoutGroup>();
+        charLayout.childForceExpandWidth  = true;
+        charLayout.childForceExpandHeight = false;
+        charLayout.spacing = 4f;
+        charLayout.padding = new RectOffset(4, 4, 4, 4);
+        charContent.AddComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+        charSv.viewport = charVpRt;
+        charSv.content  = charContentRt;
+
+        // ── 중앙 스킬 목록 ─────────────────────────────────────────────
+        var skillScrollGO = new GameObject("SkillScrollView");
+        skillScrollGO.transform.SetParent(skillPanel.transform, false);
+        var skillScrollRt = skillScrollGO.AddComponent<RectTransform>();
+        skillScrollRt.anchorMin = new Vector2(0f, 0f);
+        skillScrollRt.anchorMax = new Vector2(0f, 1f);
+        skillScrollRt.offsetMin = new Vector2(330f,  50f);
+        skillScrollRt.offsetMax = new Vector2(640f, -60f);
+        skillScrollGO.AddComponent<Image>().color = new Color(0.05f, 0.05f, 0.08f, 0.8f);
+        var skillSv = skillScrollGO.AddComponent<ScrollRect>();
+        skillSv.horizontal = false;
+
+        var skillViewport = new GameObject("Viewport");
+        skillViewport.transform.SetParent(skillScrollGO.transform, false);
+        var skillVpRt = skillViewport.AddComponent<RectTransform>();
+        skillVpRt.anchorMin = Vector2.zero; skillVpRt.anchorMax = Vector2.one;
+        skillVpRt.offsetMin = Vector2.zero; skillVpRt.offsetMax = Vector2.zero;
+        skillViewport.AddComponent<RectMask2D>();
+
+        var skillContent = new GameObject("Content");
+        skillContent.transform.SetParent(skillViewport.transform, false);
+        var skillContentRt = skillContent.AddComponent<RectTransform>();
+        skillContentRt.anchorMin = new Vector2(0f, 1f);
+        skillContentRt.anchorMax = new Vector2(1f, 1f);
+        skillContentRt.pivot     = new Vector2(0.5f, 1f);
+        skillContentRt.sizeDelta = new Vector2(0f, 0f);
+        var skillLayout = skillContent.AddComponent<VerticalLayoutGroup>();
+        skillLayout.childForceExpandWidth  = true;
+        skillLayout.childForceExpandHeight = false;
+        skillLayout.spacing = 4f;
+        skillLayout.padding = new RectOffset(4, 4, 4, 4);
+        skillContent.AddComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+        skillSv.viewport = skillVpRt;
+        skillSv.content  = skillContentRt;
+
+        // ── 우측 문제 영역 ─────────────────────────────────────────────
+        var problemArea = new GameObject("ProblemArea");
+        problemArea.transform.SetParent(skillPanel.transform, false);
+        var paRt = problemArea.AddComponent<RectTransform>();
+        paRt.anchorMin = new Vector2(0f, 0f);
+        paRt.anchorMax = new Vector2(0f, 1f);
+        paRt.offsetMin = new Vector2(650f,  50f);
+        paRt.offsetMax = new Vector2(980f, -60f);
+        problemArea.AddComponent<Image>().color = new Color(0.05f, 0.05f, 0.08f, 0.8f);
+
+        // 문제 텍스트
+        var promptGO = new GameObject("PromptText");
+        promptGO.transform.SetParent(problemArea.transform, false);
+        var promptRt = promptGO.AddComponent<RectTransform>();
+        promptRt.anchorMin        = new Vector2(0f, 0.65f);
+        promptRt.anchorMax        = new Vector2(1f, 1f);
+        promptRt.offsetMin        = new Vector2(12f, 0f);
+        promptRt.offsetMax        = new Vector2(-12f, -8f);
+        var promptText = promptGO.AddComponent<TextMeshProUGUI>();
+        promptText.text      = "스킬을 선택하면 문제가 나타납니다.";
+        promptText.fontSize  = 22;
+        promptText.color     = Color.white;
+        promptText.alignment = TextAlignmentOptions.TopLeft;
+        if (font != null) promptText.font = font;
+
+        // 객관식 영역
+        var mcArea = new GameObject("MultipleChoiceArea");
+        mcArea.transform.SetParent(problemArea.transform, false);
+        var mcRt = mcArea.AddComponent<RectTransform>();
+        mcRt.anchorMin = new Vector2(0f, 0.10f);
+        mcRt.anchorMax = new Vector2(1f, 0.65f);
+        mcRt.offsetMin = new Vector2(8f, 0f);
+        mcRt.offsetMax = new Vector2(-8f, 0f);
+
+        var choiceButtons = new Button[4];
+        var choiceLabels  = new TMP_Text[4];
+        for (int i = 0; i < 4; i++)
+        {
+            float yAnchorMin = 1f - (i + 1) * 0.25f;
+            float yAnchorMax = 1f - i * 0.25f;
+            var cbGO = new GameObject($"Choice{i}");
+            cbGO.transform.SetParent(mcArea.transform, false);
+            var cbRt = cbGO.AddComponent<RectTransform>();
+            cbRt.anchorMin = new Vector2(0f, yAnchorMin);
+            cbRt.anchorMax = new Vector2(1f, yAnchorMax);
+            cbRt.offsetMin = new Vector2(0f, 2f);
+            cbRt.offsetMax = new Vector2(0f, -2f);
+            cbGO.AddComponent<Image>().color = new Color(0.2f, 0.35f, 0.6f, 0.9f);
+            choiceButtons[i] = cbGO.AddComponent<Button>();
+
+            var cbTextGO = new GameObject("Label");
+            cbTextGO.transform.SetParent(cbGO.transform, false);
+            var cbTextRt = cbTextGO.AddComponent<RectTransform>();
+            cbTextRt.anchorMin = Vector2.zero; cbTextRt.anchorMax = Vector2.one;
+            cbTextRt.offsetMin = new Vector2(10f, 0f); cbTextRt.offsetMax = new Vector2(-6f, 0f);
+            var cbText = cbTextGO.AddComponent<TextMeshProUGUI>();
+            cbText.text      = $"보기 {i + 1}";
+            cbText.fontSize  = 20;
+            cbText.color     = Color.white;
+            cbText.alignment = TextAlignmentOptions.MidlineLeft;
+            if (font != null) cbText.font = font;
+            choiceLabels[i] = cbText;
+        }
+
+        // 주관식 영역
+        var fiArea = new GameObject("FreeInputArea");
+        fiArea.transform.SetParent(problemArea.transform, false);
+        var fiRt = fiArea.AddComponent<RectTransform>();
+        fiRt.anchorMin = new Vector2(0f, 0.10f);
+        fiRt.anchorMax = new Vector2(1f, 0.55f);
+        fiRt.offsetMin = new Vector2(8f, 0f);
+        fiRt.offsetMax = new Vector2(-8f, 0f);
+
+        var answerInputGO = CreateInput(fiArea.transform, "AnswerInput", "답 입력...", new Vector2(0f, 60f), font);
+        ((RectTransform)answerInputGO.transform).anchorMin = new Vector2(0f, 0.55f);
+        ((RectTransform)answerInputGO.transform).anchorMax = new Vector2(1f, 0.85f);
+        ((RectTransform)answerInputGO.transform).offsetMin = Vector2.zero;
+        ((RectTransform)answerInputGO.transform).offsetMax = Vector2.zero;
+
+        var submitBtnGO = CreateButton(fiArea.transform, "SubmitBtn", "제출", new Vector2(0f, 0f), font, 26);
+        ((RectTransform)submitBtnGO.transform).anchorMin = new Vector2(0f, 0.10f);
+        ((RectTransform)submitBtnGO.transform).anchorMax = new Vector2(1f, 0.45f);
+        ((RectTransform)submitBtnGO.transform).offsetMin = Vector2.zero;
+        ((RectTransform)submitBtnGO.transform).offsetMax = Vector2.zero;
+
+        fiArea.SetActive(false);
+
+        // 피드백 텍스트
+        var fbGO = new GameObject("FeedbackText");
+        fbGO.transform.SetParent(problemArea.transform, false);
+        var fbRt = fbGO.AddComponent<RectTransform>();
+        fbRt.anchorMin = new Vector2(0f, 0.02f);
+        fbRt.anchorMax = new Vector2(1f, 0.12f);
+        fbRt.offsetMin = new Vector2(8f, 0f); fbRt.offsetMax = new Vector2(-8f, 0f);
+        var fbText = fbGO.AddComponent<TextMeshProUGUI>();
+        fbText.fontSize  = 20; fbText.color = Color.white; fbText.alignment = TextAlignmentOptions.Center;
+        if (font != null) fbText.font = font;
+        fbGO.SetActive(false);
+
+        // 정답 해설 텍스트
+        var exGO = new GameObject("ExplanationText");
+        exGO.transform.SetParent(problemArea.transform, false);
+        var exRt = exGO.AddComponent<RectTransform>();
+        exRt.anchorMin = new Vector2(0f, 0.55f);
+        exRt.anchorMax = new Vector2(1f, 0.65f);
+        exRt.offsetMin = new Vector2(8f, 0f); exRt.offsetMax = new Vector2(-8f, 0f);
+        var exText = exGO.AddComponent<TextMeshProUGUI>();
+        exText.fontSize  = 19; exText.color = new Color(0.8f, 1f, 0.8f); exText.alignment = TextAlignmentOptions.TopLeft;
+        if (font != null) exText.font = font;
+        exGO.SetActive(false);
+
+        problemArea.SetActive(false);
+
+        // 닫기 버튼
+        var closeBtnK = CreateButton(skillPanel.transform, "CloseBtn", "닫기  [K]",
+                                     new Vector2(0f, -440f), font, 28, 0.4f);
+        skillPanel.SetActive(false);
+
+        // SkillResearchPanel 컴포넌트 연결
+        var srp   = skillPanel.AddComponent<SkillResearchPanel>();
+        var srpSo = new SerializedObject(srp);
+        srpSo.FindProperty("charListContent").objectReferenceValue     = charContentRt;
+        srpSo.FindProperty("skillListContent").objectReferenceValue    = skillContentRt;
+        srpSo.FindProperty("problemArea").objectReferenceValue         = problemArea;
+        srpSo.FindProperty("promptText").objectReferenceValue          = promptText;
+        srpSo.FindProperty("multipleChoiceArea").objectReferenceValue  = mcArea;
+        srpSo.FindProperty("freeInputArea").objectReferenceValue       = fiArea;
+        srpSo.FindProperty("answerInput").objectReferenceValue         = answerInputGO.GetComponent<TMP_InputField>();
+        srpSo.FindProperty("submitButton").objectReferenceValue        = submitBtnGO.GetComponent<Button>();
+        srpSo.FindProperty("feedbackText").objectReferenceValue        = fbText;
+        srpSo.FindProperty("explanationText").objectReferenceValue     = exText;
+        srpSo.FindProperty("closeButton").objectReferenceValue         = closeBtnK.GetComponent<Button>();
+
+        // choiceButtons / choiceLabels 배열 주입
+        var cbArr = srpSo.FindProperty("choiceButtons");
+        cbArr.arraySize = 4;
+        for (int i = 0; i < 4; i++)
+            cbArr.GetArrayElementAtIndex(i).objectReferenceValue = choiceButtons[i];
+        var clArr = srpSo.FindProperty("choiceLabels");
+        clArr.arraySize = 4;
+        for (int i = 0; i < 4; i++)
+            clArr.GetArrayElementAtIndex(i).objectReferenceValue = choiceLabels[i];
+        srpSo.ApplyModifiedProperties();
+
+        UnityEventTools.AddVoidPersistentListener(closeBtnK.GetComponent<Button>().onClick, srp.OnCloseClicked);
+
         // ── MetaPanelController 참조 연결 ───────────────────────────────
         var ctrlSo = new SerializedObject(controller);
-        ctrlSo.FindProperty("collectionPanel").objectReferenceValue = collPanel;
-        ctrlSo.FindProperty("inventoryPanel").objectReferenceValue  = invPanel;
-        ctrlSo.FindProperty("adminPanel").objectReferenceValue      = adminPanel;
+        ctrlSo.FindProperty("collectionPanel").objectReferenceValue      = collPanel;
+        ctrlSo.FindProperty("inventoryPanel").objectReferenceValue       = invPanel;
+        ctrlSo.FindProperty("skillResearchPanel").objectReferenceValue   = skillPanel;
+        ctrlSo.FindProperty("adminPanel").objectReferenceValue           = adminPanel;
         ctrlSo.ApplyModifiedProperties();
 
         // ── 씬 저장 ─────────────────────────────────────────────────────

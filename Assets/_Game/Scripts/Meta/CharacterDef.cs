@@ -24,7 +24,9 @@ public class CharacterDef : ScriptableObject
     [Header("비주얼 (플레이스홀더)")]
     public Color portraitColor = Color.white;
 
-    // TODO: skills[]  — 스킬 시스템 (설계 §5) 구현 시 추가
+    [Header("액티브 스킬 (설계 §5) — 인덱스 순서대로 E/R/T/F/V/G 키에 매핑")]
+    public SkillDef[] skills;  // 보유 수만큼 키 활성. 장착/해제 없이 전부 상시 발동 가능.
+
     // TODO: synergy   — 시너지 시스템 (설계 §6) 구현 시 추가
     // TODO: acquisition — 조건 해금 (설계 §7-2) 구현 시 추가
 }

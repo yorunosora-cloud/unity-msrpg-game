@@ -15,6 +15,10 @@ public class PlayerCombat : MonoBehaviour
     [Header("쿨다운")]
     [SerializeField] float attackCooldown = 0.5f;
 
+    [Header("평타 MP 회복")]
+    [Tooltip("평타 1회당 회복되는 MP 고정값")]
+    [SerializeField] int mpRecoverPerHit = 8;
+
     BoxCharacterBuilder _builder;
     float               _cooldownTimer;
 
@@ -67,6 +71,9 @@ public class PlayerCombat : MonoBehaviour
 
         // 공격 모션 트리거
         _builder?.PlayAttack();
+
+        // 평타 MP 회복 (swing 자체로 회복 — 공격 성공 여부 무관)
+        active.RecoverMp(mpRecoverPerHit);
     }
 
 #if UNITY_EDITOR

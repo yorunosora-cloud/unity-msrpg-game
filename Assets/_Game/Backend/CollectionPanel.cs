@@ -44,11 +44,23 @@ public class CollectionPanel : MonoBehaviour
             string name = def != null ? def.nameKo : oc.id;
             string rar  = def != null ? $"[{def.rarity}]" : "[?]";
             string dup  = oc.dupes > 0 ? $"  +{oc.dupes}중복" : "";
-            sb.AppendLine($"{rar} {name}  Lv.{oc.level}{dup}");
+            string skill = SkillProgress(oc, def);
+            sb.AppendLine($"{rar} {name}  Lv.{oc.level}{dup}{skill}");
         }
 
         listText.text = sb.ToString().TrimEnd();
     }
 
     public void OnCloseClicked() => gameObject.SetActive(false);
+
+    static string SkillProgress(OwnedCharacter oc, CharacterDef def)
+    {
+        if (def == null || def.skills == null || def.skills.Length == 0) return "";
+        int total    = def.skills.Length;
+        int unlocked = (oc.unlockedSkillIds == null || oc.unlockedSkillIds.Count == 0)
+            ? 1  // 기본 스킬 폴백
+            : oc.unlockedSkillIds.Count;
+        unlocked = System.Math.Min(unlocked, total);
+        return $"  스킬 {unlocked}/{total}";
+    }
 }
