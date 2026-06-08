@@ -9,7 +9,10 @@ public class ProblemDef : ScriptableObject
 {
     [Header("연결")]
     public string id;
-    public string skillId; // 이 문제를 풀면 해금되는 SkillDef.id
+    public string skillId; // 스킬 해금용. 레벨업 문제는 비워둠
+
+    [Header("레벨업 난이도 (skillId가 비어 있을 때 유효)")]
+    public ProblemDifficulty difficulty;
 
     [Header("문제")]
     public ProblemType type;

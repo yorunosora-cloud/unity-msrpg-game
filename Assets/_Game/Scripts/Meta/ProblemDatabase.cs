@@ -19,6 +19,22 @@ public class ProblemDatabase : ScriptableObject
         return null;
     }
 
+    /// <summary>
+    /// 레벨업용 문제 중 지정 난이도를 랜덤 반환.
+    /// skillId가 비어 있어야 레벨업 문제로 간주한다. 없으면 null.
+    /// </summary>
+    public ProblemDef RandomByDifficulty(ProblemDifficulty difficulty)
+    {
+        var candidates = new System.Collections.Generic.List<ProblemDef>();
+        foreach (var p in problems)
+        {
+            if (p != null && string.IsNullOrEmpty(p.skillId) && p.difficulty == difficulty)
+                candidates.Add(p);
+        }
+        if (candidates.Count == 0) return null;
+        return candidates[UnityEngine.Random.Range(0, candidates.Count)];
+    }
+
     /// <summary>에디터 전용 — CharacterSeedSetup 에서 호출.</summary>
     public void SetProblems(ProblemDef[] defs) => problems = defs;
 }
