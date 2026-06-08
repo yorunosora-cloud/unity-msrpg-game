@@ -694,6 +694,9 @@ public static class MesoriaSetup
             cdOverlays[i] = cdImg;
         }
 
+        // 스킬 비활성화 중 — skillsEnabled 플래그가 false인 동안 UI도 숨김 (파일·컴포넌트는 보존)
+        rootGO.SetActive(false);
+
         // SkillBarHud 컴포넌트 + 직렬화
         var hud   = canvasGO.AddComponent<SkillBarHud>();
         var hudSO = new SerializedObject(hud);

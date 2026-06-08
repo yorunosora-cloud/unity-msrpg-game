@@ -4,11 +4,15 @@ using UnityEngine.InputSystem;
 /// <summary>
 /// 플레이어 스킬 입력 컴포넌트. Player GameObject에 부착.
 /// E/R/T/F/V/G 키 → skills[0..5] 발동, MP 자연 회복 틱, 쿨다운·버프 갱신.
-/// 장착/해제 없이 캐릭터가 보유한 스킬 수만큼 키가 활성화된다.
+/// skillsEnabled = false 면 스킬 키 입력만 차단 (MP 회복·쿨다운 틱은 유지).
 /// </summary>
 [RequireComponent(typeof(BoxCharacterBuilder))]
 public class PlayerSkills : MonoBehaviour
 {
+    [Header("스킬 활성화")]
+    [Tooltip("false 면 E/R/T/F/V/G 스킬 키를 차단. 파일·컴포넌트는 보존 — true로 되돌리면 복구.")]
+    [SerializeField] bool skillsEnabled = false;
+
     [Header("MP 자연 회복")]
     [Tooltip("MaxMp 대비 초당 자연 회복 비율 (기본 3%)")]
     [SerializeField] float mpRegenPercent = 0.03f;
@@ -43,6 +47,8 @@ public class PlayerSkills : MonoBehaviour
             active.RecoverMp(regenAmt);
             _regenAccum -= 0.5f;
         }
+
+        if (!skillsEnabled) return;
 
         // 스킬 키 입력
         var kb = Keyboard.current;
