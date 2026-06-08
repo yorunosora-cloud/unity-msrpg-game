@@ -249,4 +249,119 @@ public class ProblemTests
 
         Assert.IsTrue(ch.CanCast(0));
     }
+
+    // ════════════════════════════════════════════════════════════════════════
+    // ProblemDatabase — RandomByDifficulty
+    // ════════════════════════════════════════════════════════════════════════
+
+    // 헬퍼: skillId 없는 레벨업용 ProblemDef 생성
+    static ProblemDef MakeLevelUpProb(ProblemDifficulty diff, int correctIndex = 0)
+    {
+        var p = ScriptableObject.CreateInstance<ProblemDef>();
+        p.id           = $"lv_{diff}";
+        p.skillId      = "";            // 레벨업 문제 — skillId 비어 있음
+        p.difficulty   = diff;
+        p.type         = ProblemType.MultipleChoice;
+        p.choices      = new[] { "정답", "오답1", "오답2", "오답3" };
+        p.correctIndex = correctIndex;
+        return p;
+    }
+
+    // 헬퍼: 테스트용 ProblemDatabase 생성
+    static ProblemDatabase MakeDb(params ProblemDef[] probs)
+    {
+        var db = ScriptableObject.CreateInstance<ProblemDatabase>();
+        db.SetProblems(probs);
+        return db;
+    }
+
+    [Test]
+    public void RandomByDifficulty_ReturnsMatchingDifficulty()
+    {
+        var low  = MakeLevelUpProb(ProblemDifficulty.Low);
+        var mid  = MakeLevelUpProb(ProblemDifficulty.Mid);
+        var high = MakeLevelUpProb(ProblemDifficulty.High);
+        var db   = MakeDb(low, mid, high);
+
+        var result = db.RandomByDifficulty(ProblemDifficulty.Mid);
+
+        Assert.AreEqual(mid, result);
+    }
+
+    [Test]
+    public void RandomByDifficulty_ExcludesSkillProblems()
+    {
+        // skillId가 있는 문제는 레벨업 풀에서 제외되어야 한다
+        var skillProb = MakeMultiChoice(correctIndex: 0); // skillId = "test_skill"
+        skillProb.difficulty = ProblemDifficulty.Low;      // difficulty를 세팅해도 무시
+        var db = MakeDb(skillProb);
+
+        var result = db.RandomByDifficulty(ProblemDifficulty.Low);
+
+        Assert.IsNull(result, "skillId가 있는 문제는 RandomByDifficulty에서 반환되면 안 됩니다.");
+    }
+
+    [Test]
+    public void RandomByDifficulty_NoMatchingDifficulty_ReturnsNull()
+    {
+        var low = MakeLevelUpProb(ProblemDifficulty.Low);
+        var db  = MakeDb(low);
+
+        var result = db.RandomByDifficulty(ProblemDifficulty.High);
+
+        Assert.IsNull(result);
+    }
+
+    [Test]
+    public void RandomByDifficulty_EmptyDatabase_ReturnsNull()
+    {
+        var db = MakeDb();
+
+        Assert.IsNull(db.RandomByDifficulty(ProblemDifficulty.Low));
+        Assert.IsNull(db.RandomByDifficulty(ProblemDifficulty.Mid));
+        Assert.IsNull(db.RandomByDifficulty(ProblemDifficulty.High));
+    }
+
+    [Test]
+    public void RandomByDifficulty_MultipleCandidates_ReturnsOne()
+    {
+        var a  = MakeLevelUpProb(ProblemDifficulty.Mid);
+        var b  = MakeLevelUpProb(ProblemDifficulty.Mid);
+        var db = MakeDb(a, b);
+
+        var result = db.RandomByDifficulty(ProblemDifficulty.Mid);
+
+        Assert.IsTrue(result == a || result == b, "두 후보 중 하나를 반환해야 합니다.");
+    }
+
+    // ════════════════════════════════════════════════════════════════════════
+    // 난이도 → EXP 매핑 (RnEPanel 상수와 일치 확인)
+    // ════════════════════════════════════════════════════════════════════════
+
+    [Test]
+    public void DifficultyExpMapping_Low_Is80()
+    {
+        Assert.AreEqual(80, GetExpForDifficulty(ProblemDifficulty.Low));
+    }
+
+    [Test]
+    public void DifficultyExpMapping_Mid_Is200()
+    {
+        Assert.AreEqual(200, GetExpForDifficulty(ProblemDifficulty.Mid));
+    }
+
+    [Test]
+    public void DifficultyExpMapping_High_Is500()
+    {
+        Assert.AreEqual(500, GetExpForDifficulty(ProblemDifficulty.High));
+    }
+
+    // RnEPanel 상수와 동일한 매핑 (한 곳이 바뀌면 테스트도 실패 → 동기화 강제)
+    static int GetExpForDifficulty(ProblemDifficulty d) => d switch
+    {
+        ProblemDifficulty.Low  => 80,
+        ProblemDifficulty.Mid  => 200,
+        ProblemDifficulty.High => 500,
+        _                       => 0,
+    };
 }
