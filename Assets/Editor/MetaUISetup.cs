@@ -160,12 +160,12 @@ public static class MetaUISetup
         UnityEventTools.AddVoidPersistentListener(loadBtn.GetComponent<Button>().onClick,         adminCmp.OnForceLoad);
         UnityEventTools.AddVoidPersistentListener(closeBtnA.GetComponent<Button>().onClick,       adminCmp.OnCloseClicked);
 
-        // ── SkillResearchPanel (K키, 스킬 연구 전용) ────────────────────
-        var skillPanel = CreateCentrePanel(canvasGO.transform, "SkillResearchPanel", new Vector2(1000f, 950f));
+        // ── RnEPanel (K키, R&E 연구 전용) ────────────────────────────────
+        var skillPanel = CreateCentrePanel(canvasGO.transform, "RnEPanel", new Vector2(1000f, 950f));
         skillPanel.SetActive(false);
 
         // 제목
-        CreateLabel(skillPanel.transform, "Title", "스킬 연구  [K]", 40, new Vector2(0f, 420f), font);
+        CreateLabel(skillPanel.transform, "Title", "R&E  [K]", 40, new Vector2(0f, 420f), font);
 
         // ── 좌측 캐릭터 목록 (스크롤 뷰) ──────────────────────────────
         var charScrollGO = new GameObject("CharScrollView");
@@ -202,15 +202,102 @@ public static class MetaUISetup
         charSv.viewport = charVpRt;
         charSv.content  = charContentRt;
 
-        // ── 중앙 스킬 목록 ─────────────────────────────────────────────
+        // ── 탭 버튼 2개 (레벨업 / 스킬연구) ────────────────────────────
+        // 패널 anchorMin=anchorMax=(0.5,1) 기준, 패널 1000×950
+        var levelUpTabGO = new GameObject("LevelUpTabBtn");
+        levelUpTabGO.transform.SetParent(skillPanel.transform, false);
+        var levelUpTabRt = levelUpTabGO.AddComponent<RectTransform>();
+        levelUpTabRt.anchorMin        = new Vector2(0.5f, 1f);
+        levelUpTabRt.anchorMax        = new Vector2(0.5f, 1f);
+        levelUpTabRt.pivot            = new Vector2(0.5f, 0.5f);
+        levelUpTabRt.sizeDelta        = new Vector2(300f, 55f);
+        levelUpTabRt.anchoredPosition = new Vector2(-165f, -445f);
+        var levelUpTabBg = levelUpTabGO.AddComponent<Image>();
+        levelUpTabBg.color = new Color(0.25f, 0.5f, 1f, 1f);
+        var levelUpTabBtn = levelUpTabGO.AddComponent<Button>();
+        var levelUpTabTextGO = new GameObject("Text");
+        levelUpTabTextGO.transform.SetParent(levelUpTabGO.transform, false);
+        var levelUpTabTxt = levelUpTabTextGO.AddComponent<RectTransform>();
+        levelUpTabTxt.anchorMin = Vector2.zero; levelUpTabTxt.anchorMax = Vector2.one; levelUpTabTxt.sizeDelta = Vector2.zero;
+        var levelUpTabLabel = levelUpTabTextGO.AddComponent<TextMeshProUGUI>();
+        levelUpTabLabel.text = "[레벨업]"; levelUpTabLabel.fontSize = 24; levelUpTabLabel.color = Color.white;
+        levelUpTabLabel.alignment = TextAlignmentOptions.Center;
+        if (font != null) levelUpTabLabel.font = font;
+
+        var skillTabGO = new GameObject("SkillTabBtn");
+        skillTabGO.transform.SetParent(skillPanel.transform, false);
+        var skillTabRt = skillTabGO.AddComponent<RectTransform>();
+        skillTabRt.anchorMin        = new Vector2(0.5f, 1f);
+        skillTabRt.anchorMax        = new Vector2(0.5f, 1f);
+        skillTabRt.pivot            = new Vector2(0.5f, 0.5f);
+        skillTabRt.sizeDelta        = new Vector2(300f, 55f);
+        skillTabRt.anchoredPosition = new Vector2(165f, -445f);
+        var skillTabBg = skillTabGO.AddComponent<Image>();
+        skillTabBg.color = new Color(0.15f, 0.15f, 0.2f, 1f);
+        var skillTabBtn = skillTabGO.AddComponent<Button>();
+        var skillTabTextGO = new GameObject("Text");
+        skillTabTextGO.transform.SetParent(skillTabGO.transform, false);
+        var skillTabTxt = skillTabTextGO.AddComponent<RectTransform>();
+        skillTabTxt.anchorMin = Vector2.zero; skillTabTxt.anchorMax = Vector2.one; skillTabTxt.sizeDelta = Vector2.zero;
+        var skillTabLabel = skillTabTextGO.AddComponent<TextMeshProUGUI>();
+        skillTabLabel.text = "[스킬 연구]"; skillTabLabel.fontSize = 24; skillTabLabel.color = Color.white;
+        skillTabLabel.alignment = TextAlignmentOptions.Center;
+        if (font != null) skillTabLabel.font = font;
+
+        // ── 레벨업 탭 영역 (levelUpArea, 기본 active) ─────────────────
+        var levelUpArea = new GameObject("LevelUpArea");
+        levelUpArea.transform.SetParent(skillPanel.transform, false);
+        var luaRt = levelUpArea.AddComponent<RectTransform>();
+        luaRt.anchorMin = new Vector2(0f, 0f);
+        luaRt.anchorMax = new Vector2(0f, 1f);
+        luaRt.offsetMin = new Vector2(330f,  50f);
+        luaRt.offsetMax = new Vector2(660f, -70f);
+        levelUpArea.AddComponent<Image>().color = new Color(0.05f, 0.05f, 0.08f, 0.8f);
+
+        // levelInfoText
+        var levelInfoGO = new GameObject("LevelInfoText");
+        levelInfoGO.transform.SetParent(levelUpArea.transform, false);
+        var levelInfoRt = levelInfoGO.AddComponent<RectTransform>();
+        levelInfoRt.anchorMin        = new Vector2(0.5f, 0.5f);
+        levelInfoRt.anchorMax        = new Vector2(0.5f, 0.5f);
+        levelInfoRt.sizeDelta        = new Vector2(300f, 50f);
+        levelInfoRt.anchoredPosition = new Vector2(0f, 370f);
+        var levelInfoText = levelInfoGO.AddComponent<TextMeshProUGUI>();
+        levelInfoText.text      = "캐릭터를 선택하세요.";
+        levelInfoText.fontSize  = 22;
+        levelInfoText.color     = Color.white;
+        levelInfoText.alignment = TextAlignmentOptions.Center;
+        if (font != null) levelInfoText.font = font;
+
+        // 난이도 버튼 3개
+        var diffLowBtnGO = CreateButton(levelUpArea.transform, "DiffLowBtn", "하  (무료)",
+                                        new Vector2(0f, 290f), font, 24);
+        ((RectTransform)diffLowBtnGO.transform).sizeDelta = new Vector2(280f, 60f);
+        var diffMidBtnGO = CreateButton(levelUpArea.transform, "DiffMidBtn", "중  (무료)",
+                                        new Vector2(0f, 210f), font, 24);
+        ((RectTransform)diffMidBtnGO.transform).sizeDelta = new Vector2(280f, 60f);
+        var diffHighBtnGO = CreateButton(levelUpArea.transform, "DiffHighBtn", "상  (무료)",
+                                         new Vector2(0f, 130f), font, 24);
+        ((RectTransform)diffHighBtnGO.transform).sizeDelta = new Vector2(280f, 60f);
+
+        // ── 스킬 연구 탭 영역 (skillArea, 기본 inactive) ──────────────
+        var skillArea = new GameObject("SkillArea");
+        skillArea.transform.SetParent(skillPanel.transform, false);
+        var saRt = skillArea.AddComponent<RectTransform>();
+        saRt.anchorMin = new Vector2(0f, 0f);
+        saRt.anchorMax = new Vector2(0f, 1f);
+        saRt.offsetMin = new Vector2(330f,  50f);
+        saRt.offsetMax = new Vector2(660f, -70f);
+        skillArea.AddComponent<Image>().color = new Color(0.05f, 0.05f, 0.08f, 0.8f);
+
         var skillScrollGO = new GameObject("SkillScrollView");
-        skillScrollGO.transform.SetParent(skillPanel.transform, false);
+        skillScrollGO.transform.SetParent(skillArea.transform, false);
         var skillScrollRt = skillScrollGO.AddComponent<RectTransform>();
-        skillScrollRt.anchorMin = new Vector2(0f, 0f);
-        skillScrollRt.anchorMax = new Vector2(0f, 1f);
-        skillScrollRt.offsetMin = new Vector2(330f,  50f);
-        skillScrollRt.offsetMax = new Vector2(640f, -60f);
-        skillScrollGO.AddComponent<Image>().color = new Color(0.05f, 0.05f, 0.08f, 0.8f);
+        skillScrollRt.anchorMin = Vector2.zero;
+        skillScrollRt.anchorMax = Vector2.one;
+        skillScrollRt.offsetMin = Vector2.zero;
+        skillScrollRt.offsetMax = Vector2.zero;
+        skillScrollGO.AddComponent<Image>().color = new Color(0.05f, 0.05f, 0.08f, 0f);
         var skillSv = skillScrollGO.AddComponent<ScrollRect>();
         skillSv.horizontal = false;
 
@@ -237,14 +324,16 @@ public static class MetaUISetup
         skillSv.viewport = skillVpRt;
         skillSv.content  = skillContentRt;
 
-        // ── 우측 문제 영역 ─────────────────────────────────────────────
+        skillArea.SetActive(false);
+
+        // ── 문제 영역 ─────────────────────────────────────────────────
         var problemArea = new GameObject("ProblemArea");
         problemArea.transform.SetParent(skillPanel.transform, false);
         var paRt = problemArea.AddComponent<RectTransform>();
         paRt.anchorMin = new Vector2(0f, 0f);
         paRt.anchorMax = new Vector2(0f, 1f);
-        paRt.offsetMin = new Vector2(650f,  50f);
-        paRt.offsetMax = new Vector2(980f, -60f);
+        paRt.offsetMin = new Vector2(670f,  50f);
+        paRt.offsetMax = new Vector2(990f, -60f);
         problemArea.AddComponent<Image>().color = new Color(0.05f, 0.05f, 0.08f, 0.8f);
 
         // 문제 텍스트
@@ -355,10 +444,20 @@ public static class MetaUISetup
                                      new Vector2(0f, -440f), font, 28, 0.4f);
         skillPanel.SetActive(false);
 
-        // SkillResearchPanel 컴포넌트 연결
-        var srp   = skillPanel.AddComponent<SkillResearchPanel>();
+        // RnEPanel 컴포넌트 연결
+        var srp   = skillPanel.AddComponent<RnEPanel>();
         var srpSo = new SerializedObject(srp);
         srpSo.FindProperty("charListContent").objectReferenceValue     = charContentRt;
+        srpSo.FindProperty("levelUpTabBtn").objectReferenceValue       = levelUpTabBtn;
+        srpSo.FindProperty("skillTabBtn").objectReferenceValue         = skillTabBtn;
+        srpSo.FindProperty("levelUpTabBg").objectReferenceValue        = levelUpTabBg;
+        srpSo.FindProperty("skillTabBg").objectReferenceValue          = skillTabBg;
+        srpSo.FindProperty("levelUpArea").objectReferenceValue         = levelUpArea;
+        srpSo.FindProperty("levelInfoText").objectReferenceValue       = levelInfoText;
+        srpSo.FindProperty("diffLowBtn").objectReferenceValue          = diffLowBtnGO.GetComponent<Button>();
+        srpSo.FindProperty("diffMidBtn").objectReferenceValue          = diffMidBtnGO.GetComponent<Button>();
+        srpSo.FindProperty("diffHighBtn").objectReferenceValue         = diffHighBtnGO.GetComponent<Button>();
+        srpSo.FindProperty("skillArea").objectReferenceValue           = skillArea;
         srpSo.FindProperty("skillListContent").objectReferenceValue    = skillContentRt;
         srpSo.FindProperty("problemArea").objectReferenceValue         = problemArea;
         srpSo.FindProperty("promptText").objectReferenceValue          = promptText;
@@ -387,7 +486,7 @@ public static class MetaUISetup
         var ctrlSo = new SerializedObject(controller);
         ctrlSo.FindProperty("collectionPanel").objectReferenceValue      = collPanel;
         ctrlSo.FindProperty("inventoryPanel").objectReferenceValue       = invPanel;
-        ctrlSo.FindProperty("skillResearchPanel").objectReferenceValue   = skillPanel;
+        ctrlSo.FindProperty("rnePanel").objectReferenceValue              = skillPanel;
         ctrlSo.FindProperty("adminPanel").objectReferenceValue           = adminPanel;
         ctrlSo.ApplyModifiedProperties();
 
