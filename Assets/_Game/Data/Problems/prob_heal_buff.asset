@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: MSRPG::ProblemDef
   id: prob_heal_buff
   skillId: heal_buff
+  difficulty: 0
   type: 1
   prompt: "\uC138\uD3EC \uB0B4\uC5D0\uC11C ATP\uB97C \uD569\uC131\uD574 \uC5D0\uB108\uC9C0\uB97C
     \uACF5\uAE09\uD558\uB294 \uC18C\uAE30\uAD00\uC758 \uC774\uB984\uC744 \uC4F0\uC2DC\uC624."

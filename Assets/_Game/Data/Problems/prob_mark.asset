@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: MSRPG::ProblemDef
   id: prob_mark
   skillId: mark
+  difficulty: 0
   type: 1
   prompt: "SI \uB2E8\uC704\uACC4\uC5D0\uC11C \uC18D\uB3C4\uC758 \uB2E8\uC704\uB97C
     \uC4F0\uC2DC\uC624. (\uC608: m/s \uD615\uC2DD)"

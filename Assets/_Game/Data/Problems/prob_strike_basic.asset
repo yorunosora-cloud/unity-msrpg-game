@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: MSRPG::ProblemDef
   id: prob_strike_basic
   skillId: strike_basic
+  difficulty: 0
   type: 0
   prompt: "\uB274\uD134\uC758 \uC6B4\uB3D9 \uC81C2\uBC95\uCE59\uC5D0 \uD574\uB2F9\uD558\uB294
     \uACF5\uC2DD\uC740 \uBB34\uC5C7\uC778\uAC00\uC694?"

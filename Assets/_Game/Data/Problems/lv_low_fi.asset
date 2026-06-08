@@ -10,18 +10,20 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f259cec397518044d8f1d091e10c7dbd, type: 3}
-  m_Name: prob_aoe_blast
+  m_Name: lv_low_fi
   m_EditorClassIdentifier: MSRPG::ProblemDef
-  id: prob_aoe_blast
-  skillId: aoe_blast
+  id: lv_low_fi
+  skillId: 
   difficulty: 0
-  type: 0
-  prompt: "\uB2E4\uC74C \uC911 \uAE08(Gold)\uC758 \uC6D0\uC18C \uAE30\uD638\uB294?"
+  type: 1
+  prompt: "[\uD558 \uB09C\uC774\uB3C4 / \uC8FC\uAD00\uC2DD] \uB2F5\uC744 \uC785\uB825\uD558\uC138\uC694."
   choices:
-  - Au
-  - Ag
-  - Fe
-  - Cu
+  - 
+  - 
+  - 
+  - 
   correctIndex: 0
-  acceptedAnswers: []
-  explanation: "\uAE08\uC758 \uC6D0\uC18C \uAE30\uD638\uB294 Au(Aurum)\uC785\uB2C8\uB2E4."
+  acceptedAnswers:
+  - "\uC815\uB2F5"
+  - answer
+  explanation: "[\uD558 \uB09C\uC774\uB3C4] \uD574\uC124 \uD14D\uC2A4\uD2B8 \uC790\uB9AC\uC785\uB2C8\uB2E4."
