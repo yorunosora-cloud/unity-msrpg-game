@@ -11,9 +11,10 @@ public class ProblemDatabase : ScriptableObject
 
     public ProblemDef[] All => problems;
 
-    /// <summary>skillId 로 문제 검색. 없으면 null.</summary>
+    /// <summary>skillId 로 스킬 해금 문제 검색. 빈 문자열이나 null이면 null 반환.</summary>
     public ProblemDef BySkillId(string skillId)
     {
+        if (string.IsNullOrEmpty(skillId)) return null;
         foreach (var p in problems)
             if (p != null && p.skillId == skillId) return p;
         return null;

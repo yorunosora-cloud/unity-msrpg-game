@@ -98,7 +98,7 @@ public class RnEPanel : MonoBehaviour
         if (MetaState.IsInitialized)
             MetaState.Roster.OnChanged += OnRosterChanged;
 
-        if (closeButton   != null) closeButton.onClick.AddListener(OnCloseClicked);
+        // closeButton은 MetaUISetup이 AddVoidPersistentListener로 등록하므로 런타임 중복 등록 생략
         if (levelUpTabBtn != null) levelUpTabBtn.onClick.AddListener(() => ShowTab(true));
         if (skillTabBtn   != null) skillTabBtn.onClick.AddListener(() => ShowTab(false));
         if (diffLowBtn    != null) diffLowBtn.onClick.AddListener(() => SelectDifficulty(ProblemDifficulty.Low));
@@ -111,7 +111,6 @@ public class RnEPanel : MonoBehaviour
         if (MetaState.IsInitialized)
             MetaState.Roster.OnChanged -= OnRosterChanged;
 
-        if (closeButton   != null) closeButton.onClick.RemoveListener(OnCloseClicked);
         if (levelUpTabBtn != null) levelUpTabBtn.onClick.RemoveAllListeners();
         if (skillTabBtn   != null) skillTabBtn.onClick.RemoveAllListeners();
         if (diffLowBtn    != null) diffLowBtn.onClick.RemoveAllListeners();
