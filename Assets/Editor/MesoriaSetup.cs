@@ -13,6 +13,7 @@ public static class MesoriaSetup
     public static void Run()
     {
         var korFont = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(FONT_SDF_PATH);
+        EnsureTmpDefaultFont(korFont);
 
         // 1. 새 빈 씬
         var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
@@ -167,6 +168,24 @@ public static class MesoriaSetup
     }
 
     // ── 헬퍼 ─────────────────────────────────────────────────────────────────
+
+    /// <summary>
+    /// TMP 기본 폰트가 미설정일 때 malgun을 지정해
+    /// AddComponent&lt;TextMeshProUGUI&gt;() 시 "LiberationSans not found" 경고를 방지한다.
+    /// </summary>
+    static void EnsureTmpDefaultFont(TMP_FontAsset font)
+    {
+        if (font == null) return;
+        var settings = Resources.Load<TMPro.TMP_Settings>("TMP Settings");
+        if (settings == null) return;
+        var so = new SerializedObject(settings);
+        var prop = so.FindProperty("m_defaultFontAsset");
+        if (prop != null && prop.objectReferenceValue == null)
+        {
+            prop.objectReferenceValue = font;
+            so.ApplyModifiedPropertiesWithoutUndo();
+        }
+    }
 
     static void CreateWall(string name, Vector3 pos, Vector3 scale)
     {

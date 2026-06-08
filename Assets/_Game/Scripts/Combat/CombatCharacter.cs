@@ -256,6 +256,27 @@ public class CombatCharacter
         OnChanged?.Invoke(leveledUp ? "levelup" : "exp");
     }
 
+    /// <summary>
+    /// 자원 소모 레벨업용 — EXP 없이 레벨 1 증가. 상한 도달 시 false 반환.
+    /// K 패널에서 StudyMaterial 소모 후 호출된다.
+    /// </summary>
+    public bool DirectLevelUp()
+    {
+        int cap = StatGrowth.LevelCap(_def.rarity);
+        if (_owned.level >= cap) return false;
+
+        _owned.level++;
+        _owned.exp  = 0;
+        _nextExp    = ComputeNextExp(_owned.level);
+
+        var s = StatGrowth.ComputeStats(_def, _owned.level);
+        _hp = s.hp;
+        _mp = s.mp;
+
+        OnChanged?.Invoke("levelup");
+        return true;
+    }
+
     // ── 내부 유틸 ─────────────────────────────────────────────────────────
 
     static int ComputeNextExp(int level) => StatGrowth.NextExp(level);

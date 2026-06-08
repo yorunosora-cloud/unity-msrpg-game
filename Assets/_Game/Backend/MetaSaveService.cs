@@ -16,6 +16,7 @@ public static class MetaSaveService
     const string KEY_ROSTER   = "roster";
     const string KEY_GACHA    = "gacha";
     const string KEY_CRYSTALS = "crystals";
+    const string KEY_STUDY    = "studyMats";
     const string KEY_ADMIN    = "isAdmin";
 
     // ── 저장 ──────────────────────────────────────────────────────────────
@@ -23,13 +24,15 @@ public static class MetaSaveService
     public static void Save(Action onDone = null, Action<string> onError = null)
     {
         if (!MetaState.IsInitialized) { onDone?.Invoke(); return; }
+        if (!PlayFabClientAPI.IsClientLoggedIn()) { onDone?.Invoke(); return; }
 
         var data = new Dictionary<string, string>
         {
-            { KEY_WALLET,   JsonUtility.ToJson(MetaState.Wallet.Export())     },
-            { KEY_ROSTER,   JsonUtility.ToJson(MetaState.Roster.Export())     },
-            { KEY_GACHA,    JsonUtility.ToJson(MetaState.GachaState.Export()) },
-            { KEY_CRYSTALS, JsonUtility.ToJson(MetaState.Crystals.Export())   },
+            { KEY_WALLET,   JsonUtility.ToJson(MetaState.Wallet.Export())          },
+            { KEY_ROSTER,   JsonUtility.ToJson(MetaState.Roster.Export())          },
+            { KEY_GACHA,    JsonUtility.ToJson(MetaState.GachaState.Export())      },
+            { KEY_CRYSTALS, JsonUtility.ToJson(MetaState.Crystals.Export())        },
+            { KEY_STUDY,    JsonUtility.ToJson(MetaState.StudyMaterials.Export())  },
         };
 
         PlayFabClientAPI.UpdateUserData(
@@ -54,7 +57,7 @@ public static class MetaSaveService
         PlayFabClientAPI.GetUserData(
             new GetUserDataRequest
             {
-                Keys = new List<string> { KEY_WALLET, KEY_ROSTER, KEY_GACHA, KEY_CRYSTALS }
+                Keys = new List<string> { KEY_WALLET, KEY_ROSTER, KEY_GACHA, KEY_CRYSTALS, KEY_STUDY }
             },
             result =>
             {
@@ -76,6 +79,10 @@ public static class MetaSaveService
                     if (d.TryGetValue(KEY_CRYSTALS, out var c))
                         MetaState.Crystals.LoadState(
                             JsonUtility.FromJson<CrystalWalletData>(c.Value));
+
+                    if (d.TryGetValue(KEY_STUDY, out var sm))
+                        MetaState.StudyMaterials.LoadState(
+                            JsonUtility.FromJson<StudyMaterialData>(sm.Value));
                 }
 
                 Debug.Log("[MetaSave] 메타 복원 완료");

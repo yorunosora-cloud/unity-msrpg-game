@@ -89,6 +89,7 @@ public class Enemy : MonoBehaviour
     {
         if (_unit == null || _unit.IsDead) return;
         if (_player == null) return;
+        if (UIManager.IsAnyPanelOpen) return;
 
         float dist = Vector3.Distance(transform.position, _player.position);
 
@@ -191,14 +192,11 @@ public class Enemy : MonoBehaviour
 
     void Die()
     {
-        // 처치 EXP는 활성 캐릭터가 획득 (기절 직후 교체됐을 수 있어 null 가드)
-        var active = PlayerRuntime.Active;
-        if (active != null)
-            active.GainExp(_unit.ExpReward);
+        // 처치 시 해당 과목 연구 자원 지급 (캐릭터 EXP 직접 지급 X — K 패널에서 자원 소모로 레벨업)
+        if (MetaState.IsInitialized)
+            MetaState.StudyMaterials.Add(_unit.Weakness, System.Math.Max(1, _unit.ExpReward / 10));
 
-        // HP바 숨김
         _hpBar?.gameObject.SetActive(false);
-
         Destroy(gameObject);
     }
 

@@ -1,4 +1,6 @@
+using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 
 /// <summary>
@@ -22,10 +24,17 @@ public class MetaPanelController : MonoBehaviour
         var kb = Keyboard.current;
         if (kb == null) return;
 
-        if (kb.cKey.wasPressedThisFrame)  Toggle(collectionPanel);
-        if (kb.iKey.wasPressedThisFrame)  Toggle(inventoryPanel);
-        if (kb.kKey.wasPressedThisFrame)  Toggle(rnePanel);
-        if (kb.f1Key.wasPressedThisFrame && AdminPanel.ShouldAllow()) Toggle(adminPanel);
+        bool inputFocused = IsAnyInputFieldFocused();
+        if (kb.cKey.wasPressedThisFrame && !inputFocused)  Toggle(collectionPanel);
+        if (kb.iKey.wasPressedThisFrame && !inputFocused)  Toggle(inventoryPanel);
+        if (kb.kKey.wasPressedThisFrame && !inputFocused)  Toggle(rnePanel);
+        if (kb.f1Key.wasPressedThisFrame && !inputFocused && AdminPanel.ShouldAllow()) Toggle(adminPanel);
+    }
+
+    static bool IsAnyInputFieldFocused()
+    {
+        var go = EventSystem.current?.currentSelectedGameObject;
+        return go != null && go.GetComponentInParent<TMP_InputField>() != null;
     }
 
     void Toggle(GameObject panel)

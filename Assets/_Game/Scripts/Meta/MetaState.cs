@@ -4,10 +4,11 @@
 /// </summary>
 public static class MetaState
 {
-    public static Wallet        Wallet     { get; private set; }
-    public static Roster        Roster     { get; private set; }
-    public static GachaState    GachaState { get; private set; }
-    public static CrystalWallet Crystals   { get; private set; }
+    public static Wallet               Wallet         { get; private set; }
+    public static Roster               Roster         { get; private set; }
+    public static GachaState           GachaState     { get; private set; }
+    public static CrystalWallet        Crystals       { get; private set; }
+    public static StudyMaterialWallet  StudyMaterials { get; private set; }
 
     /// <summary>
     /// PlayFab ReadOnlyData "isAdmin" 값.
@@ -21,10 +22,11 @@ public static class MetaState
     /// <summary>모든 메타 상태를 기본값으로 초기화합니다.</summary>
     public static void Init()
     {
-        Wallet     = new Wallet();
-        Roster     = new Roster();
-        GachaState = new GachaState();
-        Crystals   = new CrystalWallet();
-        IsAdmin    = false;
+        Wallet         = new Wallet();
+        Roster         = new Roster();
+        GachaState     = new GachaState();
+        Crystals       = new CrystalWallet();
+        StudyMaterials = new StudyMaterialWallet();
+        IsAdmin        = false;
     }
 }
