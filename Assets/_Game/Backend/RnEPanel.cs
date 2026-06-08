@@ -5,16 +5,19 @@ using TMPro;
 
 /// <summary>
 /// K키 전용 R&amp;E (Research &amp; Education) 패널.
-/// 상단 탭:
+/// UX 흐름: 캐릭터 선택(그리드 3칸/행) → 탭 선택([레벨업]/[스킬 연구]) → 콘텐츠
 ///   [레벨업] — 난이도(하/중/상) 선택 → 문제 풀이 → EXP 지급 (하 80 / 중 200 / 상 500)
-///   [스킬 연구] — 기존 스킬 해금 흐름 (잠긴 스킬 클릭 → 문제 풀이 → 정답 시 해금)
+///   [스킬 연구] — 잠긴 스킬 클릭 → 문제 풀이 → 정답 시 해금
 /// </summary>
 public class RnEPanel : MonoBehaviour
 {
     // ── 참조 (MetaUISetup 이 주입) ──────────────────────────────────────────
 
-    [Header("캐릭터 목록 영역")]
-    [SerializeField] RectTransform charListContent;
+    [Header("캐릭터 그리드 (GridLayoutGroup Content)")]
+    [SerializeField] RectTransform charGridContent;
+
+    [Header("우측 탭+콘텐츠 영역 (캐릭터 선택 전 숨김)")]
+    [SerializeField] GameObject tabArea;
 
     [Header("탭 버튼")]
     [SerializeField] Button  levelUpTabBtn;
@@ -24,7 +27,7 @@ public class RnEPanel : MonoBehaviour
 
     [Header("레벨업 탭 영역")]
     [SerializeField] GameObject  levelUpArea;
-    [SerializeField] TMP_Text    levelInfoText;   // "Lv.N  EXP NNN / NNN  (상한 Lv.NN)"
+    [SerializeField] TMP_Text    levelInfoText;
     [SerializeField] Button      diffLowBtn;
     [SerializeField] Button      diffMidBtn;
     [SerializeField] Button      diffHighBtn;
@@ -75,7 +78,7 @@ public class RnEPanel : MonoBehaviour
 
     bool _isLevelUpTab = true;
 
-    readonly List<GameObject> _charBtns  = new List<GameObject>();
+    readonly List<GameObject> _charCards = new List<GameObject>();
     readonly List<GameObject> _skillBtns = new List<GameObject>();
 
     // ── 생명주기 ─────────────────────────────────────────────────────────────
@@ -91,14 +94,15 @@ public class RnEPanel : MonoBehaviour
         _levelUpProblem     = null;
         _skillProblem       = null;
 
+        // 탭+콘텐츠 영역 숨김 — 캐릭터 선택 후 표시
+        if (tabArea != null) tabArea.SetActive(false);
         HideProblem();
-        BuildCharList();
-        ShowTab(levelUpTab: true);
+
+        BuildCharGrid();
 
         if (MetaState.IsInitialized)
             MetaState.Roster.OnChanged += OnRosterChanged;
 
-        // closeButton은 MetaUISetup이 AddVoidPersistentListener로 등록하므로 런타임 중복 등록 생략
         if (levelUpTabBtn != null) levelUpTabBtn.onClick.AddListener(() => ShowTab(true));
         if (skillTabBtn   != null) skillTabBtn.onClick.AddListener(() => ShowTab(false));
         if (diffLowBtn    != null) diffLowBtn.onClick.AddListener(() => SelectDifficulty(ProblemDifficulty.Low));
@@ -120,6 +124,47 @@ public class RnEPanel : MonoBehaviour
         UIManager.Close();
     }
 
+    // ── 캐릭터 그리드 ────────────────────────────────────────────────────────
+
+    void BuildCharGrid()
+    {
+        foreach (var go in _charCards) if (go) Destroy(go);
+        _charCards.Clear();
+
+        if (!MetaState.IsInitialized || charGridContent == null) return;
+
+        foreach (var oc in MetaState.Roster.Owned)
+        {
+            var def    = _charDb?.ById(oc.id);
+            string name = def != null ? def.nameKo : oc.id;
+            Color  portrait = def != null ? def.portraitColor : new Color(0.5f, 0.5f, 0.5f);
+
+            var card = CreateCharCard(charGridContent, name, portrait);
+            _charCards.Add(card);
+
+            var capturedOc  = oc;
+            var capturedDef = def;
+            card.GetComponent<Button>().onClick.AddListener(() => SelectCharacter(capturedOc, capturedDef));
+        }
+
+        LayoutRebuilder.ForceRebuildLayoutImmediate(charGridContent);
+    }
+
+    void OnRosterChanged() => BuildCharGrid();
+
+    void SelectCharacter(OwnedCharacter oc, CharacterDef def)
+    {
+        _selectedOc         = oc;
+        _selectedDef        = def;
+        _selectedSkillIndex = -1;
+        _levelUpProblem     = null;
+        _skillProblem       = null;
+
+        // 탭+콘텐츠 영역 표시 후 레벨업 탭으로 기본 진입
+        if (tabArea != null) tabArea.SetActive(true);
+        ShowTab(levelUpTab: true);
+    }
+
     // ── 탭 전환 ──────────────────────────────────────────────────────────────
 
     void ShowTab(bool levelUpTab)
@@ -135,47 +180,6 @@ public class RnEPanel : MonoBehaviour
         if (skillTabBg   != null) skillTabBg.color   = levelUpTab ? TAB_INACTIVE : TAB_ACTIVE;
 
         if (levelUpTab)
-            RefreshLevelUpInfo();
-        else
-            BuildSkillList();
-    }
-
-    // ── 캐릭터 목록 ──────────────────────────────────────────────────────────
-
-    void BuildCharList()
-    {
-        foreach (var go in _charBtns) if (go) Destroy(go);
-        _charBtns.Clear();
-
-        if (!MetaState.IsInitialized || charListContent == null) return;
-
-        foreach (var oc in MetaState.Roster.Owned)
-        {
-            var def    = _charDb?.ById(oc.id);
-            string lbl = def != null ? $"[{def.rarity}] {def.nameKo}" : oc.id;
-            var btn    = CreateListButton(charListContent, lbl);
-            _charBtns.Add(btn);
-
-            var capturedOc  = oc;
-            var capturedDef = def;
-            btn.GetComponent<Button>().onClick.AddListener(() => SelectCharacter(capturedOc, capturedDef));
-        }
-
-        LayoutRebuilder.ForceRebuildLayoutImmediate(charListContent);
-    }
-
-    void OnRosterChanged() => BuildCharList();
-
-    void SelectCharacter(OwnedCharacter oc, CharacterDef def)
-    {
-        _selectedOc         = oc;
-        _selectedDef        = def;
-        _selectedSkillIndex = -1;
-        _levelUpProblem     = null;
-        _skillProblem       = null;
-        HideProblem();
-
-        if (_isLevelUpTab)
             RefreshLevelUpInfo();
         else
             BuildSkillList();
@@ -204,7 +208,7 @@ public class RnEPanel : MonoBehaviour
         }
         else
         {
-            int nextExp        = ComputeNextExp(_selectedOc.level);
+            int nextExp        = StatGrowth.NextExp(_selectedOc.level);
             levelInfoText.text = $"Lv.{_selectedOc.level}  EXP {_selectedOc.exp} / {nextExp}  (상한 Lv.{cap})";
             SetDiffButtons(true);
         }
@@ -243,15 +247,14 @@ public class RnEPanel : MonoBehaviour
     void SubmitLevelUpFreeInput()
     {
         if (_levelUpProblem == null) return;
-        string answer = answerInput != null ? answerInput.text : "";
-        HandleLevelUpResult(ProblemChecker.Check(_levelUpProblem, answer, -1));
+        HandleLevelUpResult(ProblemChecker.Check(_levelUpProblem, answerInput != null ? answerInput.text : "", -1));
     }
 
     void HandleLevelUpResult(bool correct)
     {
         if (correct)
         {
-            int expAmount = _pendingDifficulty switch
+            int exp = _pendingDifficulty switch
             {
                 ProblemDifficulty.Low  => EXP_LOW,
                 ProblemDifficulty.Mid  => EXP_MID,
@@ -259,8 +262,8 @@ public class RnEPanel : MonoBehaviour
                 _                      => EXP_LOW,
             };
 
-            GiveExp(expAmount);
-            ShowFeedback($"정답! +{expAmount} EXP", true);
+            GiveExp(exp);
+            ShowFeedback($"정답! +{exp} EXP", true);
             ShowExplanation(_levelUpProblem?.explanation);
             HideProblemInput();
             RefreshLevelUpInfo();
@@ -283,7 +286,6 @@ public class RnEPanel : MonoBehaviour
         else
         {
             // CombatCharacter는 _owned 참조를 공유하므로 GainExp가 owned.level/exp를 직접 수정한다.
-            // HP/MP 풀회복(레벨업 부산물)은 비활성 캐릭터에겐 무관하므로 허용.
             new CombatCharacter(_selectedDef, _selectedOc).GainExp(amount);
         }
 
@@ -322,8 +324,8 @@ public class RnEPanel : MonoBehaviour
             var b = btn.GetComponent<Button>();
             if (!isUnlocked)
             {
-                int capturedIndex = i;
-                b.onClick.AddListener(() => SelectSkill(capturedIndex));
+                int idx = i;
+                b.onClick.AddListener(() => SelectSkill(idx));
             }
             else
             {
@@ -362,8 +364,7 @@ public class RnEPanel : MonoBehaviour
     void SubmitSkillFreeInput()
     {
         if (_skillProblem == null) return;
-        string answer = answerInput != null ? answerInput.text : "";
-        HandleSkillResult(ProblemChecker.Check(_skillProblem, answer, -1));
+        HandleSkillResult(ProblemChecker.Check(_skillProblem, answerInput != null ? answerInput.text : "", -1));
     }
 
     void HandleSkillResult(bool correct)
@@ -445,10 +446,9 @@ public class RnEPanel : MonoBehaviour
                     choiceLabels[i].text = prob.choices[i];
 
                 int ci = i;
-                if (isLevelUp)
-                    choiceButtons[i].onClick.AddListener(() => SubmitLevelUpMultipleChoice(ci));
-                else
-                    choiceButtons[i].onClick.AddListener(() => SubmitSkillMultipleChoice(ci));
+                choiceButtons[i].onClick.AddListener(isLevelUp
+                    ? (UnityEngine.Events.UnityAction)(() => SubmitLevelUpMultipleChoice(ci))
+                    : () => SubmitSkillMultipleChoice(ci));
             }
         }
         else
@@ -457,7 +457,9 @@ public class RnEPanel : MonoBehaviour
             if (submitButton != null)
             {
                 submitButton.onClick.RemoveAllListeners();
-                submitButton.onClick.AddListener(isLevelUp ? (UnityEngine.Events.UnityAction)SubmitLevelUpFreeInput : SubmitSkillFreeInput);
+                submitButton.onClick.AddListener(isLevelUp
+                    ? (UnityEngine.Events.UnityAction)SubmitLevelUpFreeInput
+                    : SubmitSkillFreeInput);
             }
         }
     }
@@ -489,16 +491,53 @@ public class RnEPanel : MonoBehaviour
         _                       => "?",
     };
 
-    static int ComputeNextExp(int level) => StatGrowth.NextExp(level);
+    /// <summary>그리드용 캐릭터 카드 생성 — 이름(위) + 초상화 색상 박스(아래).</summary>
+    static GameObject CreateCharCard(RectTransform parent, string charName, Color portraitColor)
+    {
+        var card = new GameObject("Card_" + charName);
+        card.transform.SetParent(parent, false);
+        // 크기는 GridLayoutGroup이 결정
+        card.AddComponent<RectTransform>();
+        var bg = card.AddComponent<Image>();
+        bg.color = new Color(0.18f, 0.22f, 0.30f, 0.95f);
+        card.AddComponent<Button>();
 
+        // 이름 텍스트 (상단 25%)
+        var nameGO = new GameObject("Name");
+        nameGO.transform.SetParent(card.transform, false);
+        var nameRt = nameGO.AddComponent<RectTransform>();
+        nameRt.anchorMin = new Vector2(0f, 0.75f);
+        nameRt.anchorMax = new Vector2(1f, 1f);
+        nameRt.offsetMin = new Vector2(4f, 0f);
+        nameRt.offsetMax = new Vector2(-4f, -3f);
+        var nameTxt = nameGO.AddComponent<TextMeshProUGUI>();
+        nameTxt.text      = charName;
+        nameTxt.fontSize  = 18;
+        nameTxt.color     = Color.white;
+        nameTxt.alignment = TextAlignmentOptions.Center;
+
+        // 초상화 색상 박스 (하단 70%)
+        var portGO = new GameObject("Portrait");
+        portGO.transform.SetParent(card.transform, false);
+        var portRt = portGO.AddComponent<RectTransform>();
+        portRt.anchorMin = new Vector2(0.08f, 0.06f);
+        portRt.anchorMax = new Vector2(0.92f, 0.73f);
+        portRt.offsetMin = Vector2.zero;
+        portRt.offsetMax = Vector2.zero;
+        var portImg = portGO.AddComponent<Image>();
+        portImg.color = portraitColor;
+
+        return card;
+    }
+
+    /// <summary>스킬 목록 버튼 생성 (VerticalLayoutGroup Content용).</summary>
     static GameObject CreateListButton(RectTransform parent, string label)
     {
         var go = new GameObject("Btn_" + label);
         go.transform.SetParent(parent, false);
         var rt = go.AddComponent<RectTransform>();
         rt.sizeDelta = new Vector2(0f, 60f);
-        var img = go.AddComponent<Image>();
-        img.color = new Color(0.18f, 0.22f, 0.30f, 0.9f);
+        go.AddComponent<Image>().color = new Color(0.18f, 0.22f, 0.30f, 0.9f);
         go.AddComponent<Button>();
 
         var textGO = new GameObject("Label");
