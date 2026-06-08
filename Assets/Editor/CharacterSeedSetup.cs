@@ -83,8 +83,9 @@ public static class CharacterSeedSetup
 
     struct ProblemSeed
     {
-        public string      id, skillId, prompt, explanation;
-        public ProblemType type;
+        public string            id, skillId, prompt, explanation;
+        public ProblemType       type;
+        public ProblemDifficulty difficulty; // 레벨업용 문제에만 유효 (skillId가 비어 있을 때)
         // 객관식
         public string[] choices;
         public int      correctIndex;
@@ -139,6 +140,60 @@ public static class CharacterSeedSetup
             prompt="SI 단위계에서 속도의 단위를 쓰시오. (예: m/s 형식)",
             acceptedAnswers=new[]{"m/s","m s-1","ms-1"},
             explanation="속도의 SI 단위는 m/s (미터 퍼 세컨드)입니다."
+        },
+
+        // ── 레벨업 전용 문제 (skillId 비움 — 난이도로 분류) ─────────────────
+
+        // 하 — 객관식 (더미 양식)
+        new ProblemSeed {
+            id="lv_low_mc", skillId="", type=ProblemType.MultipleChoice,
+            difficulty=ProblemDifficulty.Low,
+            prompt="[하 난이도 / 객관식] 보기 중 올바른 것은?",
+            choices=new[]{"보기 1 (정답)","보기 2","보기 3","보기 4"},
+            correctIndex=0,
+            explanation="[하 난이도] 해설 텍스트 자리입니다."
+        },
+        // 하 — 주관식 (더미 양식)
+        new ProblemSeed {
+            id="lv_low_fi", skillId="", type=ProblemType.FreeInput,
+            difficulty=ProblemDifficulty.Low,
+            prompt="[하 난이도 / 주관식] 답을 입력하세요.",
+            acceptedAnswers=new[]{"정답","answer"},
+            explanation="[하 난이도] 해설 텍스트 자리입니다."
+        },
+        // 중 — 객관식 (더미 양식)
+        new ProblemSeed {
+            id="lv_mid_mc", skillId="", type=ProblemType.MultipleChoice,
+            difficulty=ProblemDifficulty.Mid,
+            prompt="[중 난이도 / 객관식] 보기 중 올바른 것은?",
+            choices=new[]{"보기 1 (정답)","보기 2","보기 3","보기 4"},
+            correctIndex=0,
+            explanation="[중 난이도] 해설 텍스트 자리입니다."
+        },
+        // 중 — 주관식 (더미 양식)
+        new ProblemSeed {
+            id="lv_mid_fi", skillId="", type=ProblemType.FreeInput,
+            difficulty=ProblemDifficulty.Mid,
+            prompt="[중 난이도 / 주관식] 답을 입력하세요.",
+            acceptedAnswers=new[]{"정답","answer"},
+            explanation="[중 난이도] 해설 텍스트 자리입니다."
+        },
+        // 상 — 객관식 (더미 양식)
+        new ProblemSeed {
+            id="lv_high_mc", skillId="", type=ProblemType.MultipleChoice,
+            difficulty=ProblemDifficulty.High,
+            prompt="[상 난이도 / 객관식] 보기 중 올바른 것은?",
+            choices=new[]{"보기 1 (정답)","보기 2","보기 3","보기 4"},
+            correctIndex=0,
+            explanation="[상 난이도] 해설 텍스트 자리입니다."
+        },
+        // 상 — 주관식 (더미 양식)
+        new ProblemSeed {
+            id="lv_high_fi", skillId="", type=ProblemType.FreeInput,
+            difficulty=ProblemDifficulty.High,
+            prompt="[상 난이도 / 주관식] 답을 입력하세요.",
+            acceptedAnswers=new[]{"정답","answer"},
+            explanation="[상 난이도] 해설 텍스트 자리입니다."
         },
     };
 
@@ -295,9 +350,10 @@ public static class CharacterSeedSetup
             }
 
             var so = new SerializedObject(def);
-            so.FindProperty("id").stringValue          = ps.id;
-            so.FindProperty("skillId").stringValue     = ps.skillId;
-            so.FindProperty("prompt").stringValue      = ps.prompt;
+            so.FindProperty("id").stringValue               = ps.id;
+            so.FindProperty("skillId").stringValue          = ps.skillId;
+            so.FindProperty("difficulty").enumValueIndex    = (int)ps.difficulty;
+            so.FindProperty("prompt").stringValue           = ps.prompt;
             so.FindProperty("explanation").stringValue = ps.explanation ?? "";
             so.FindProperty("type").enumValueIndex     = (int)ps.type;
 
