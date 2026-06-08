@@ -5,7 +5,7 @@ using UnityEngine.InputSystem;
 /// 메타 레이어 패널 토글 컨트롤러.
 ///   C   — 도감 (CharacterCollection)
 ///   I   — 인벤토리 (결정)
-///   K   — 스킬 연구 (스킬 해금·문제 풀이)
+///   K   — R&amp;E (Research &amp; Education — 캐릭터 육성·스킬 해금)
 ///   F1  — 관리자 패널 (권한 있을 때만)
 /// 하나의 패널이 열려 있으면 다른 패널은 열 수 없습니다 (UIManager).
 /// </summary>
@@ -14,7 +14,7 @@ public class MetaPanelController : MonoBehaviour
     [Header("패널 (기본 비활성)")]
     [SerializeField] GameObject collectionPanel;
     [SerializeField] GameObject inventoryPanel;
-    [SerializeField] GameObject skillResearchPanel;
+    [SerializeField] GameObject rnePanel;
     [SerializeField] GameObject adminPanel;
 
     void Update()
@@ -24,7 +24,7 @@ public class MetaPanelController : MonoBehaviour
 
         if (kb.cKey.wasPressedThisFrame)  Toggle(collectionPanel);
         if (kb.iKey.wasPressedThisFrame)  Toggle(inventoryPanel);
-        if (kb.kKey.wasPressedThisFrame)  Toggle(skillResearchPanel);
+        if (kb.kKey.wasPressedThisFrame)  Toggle(rnePanel);
         if (kb.f1Key.wasPressedThisFrame && AdminPanel.ShouldAllow()) Toggle(adminPanel);
     }
 
