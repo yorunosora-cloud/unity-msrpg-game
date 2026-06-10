@@ -5,47 +5,19 @@ using TMPro;
 
 /// <summary>
 /// MSRPG 에디터 위젯 팩토리.
-/// UITheme 토큰 + 둥근 9-slice 스프라이트를 사용해 모든 패널·버튼·레이블을 생성.
-/// MesoriaSetup / MetaUISetup 에서 개별 헬퍼 대신 이 클래스를 공용으로 사용.
+/// 스프라이트 없이 단색 Image 사용. 패널에는 ContinentPanel을 자동 부착해 대륙 테마 적용.
 /// </summary>
 public static class UIKit
 {
-    // 스프라이트 경로
-    const string SP_PANEL  = "Assets/_Game/Art/UI/round_panel.png";
-    const string SP_BUTTON = "Assets/_Game/Art/UI/round_button.png";
-    const string SP_CARD   = "Assets/_Game/Art/UI/round_card.png";
     const string FONT_PATH = "Assets/_Game/Art/Fonts/malgun SDF.asset";
-
-    // ── 폰트 캐시 ────────────────────────────────────────────────────────
 
     static TMP_FontAsset _font;
     public static TMP_FontAsset Font =>
         _font != null ? _font : (_font = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(FONT_PATH));
 
-    // ── 스프라이트 캐시 ───────────────────────────────────────────────────
-
-    static Sprite _spPanel, _spButton, _spCard;
-
-    static Sprite SpPanel  => _spPanel  != null ? _spPanel  : (_spPanel  = Load(SP_PANEL));
-    static Sprite SpButton => _spButton != null ? _spButton : (_spButton = Load(SP_BUTTON));
-    static Sprite SpCard   => _spCard   != null ? _spCard   : (_spCard   = Load(SP_CARD));
-
-    static Sprite Load(string path)
-    {
-        var sp = AssetDatabase.LoadAssetAtPath<Sprite>(path);
-        if (sp == null)
-        {
-            UISpriteGen.Run();
-            sp = AssetDatabase.LoadAssetAtPath<Sprite>(path);
-        }
-        return sp;
-    }
-
     // ══ 패널 ════════════════════════════════════════════════════════════
 
-    /// <summary>
-    /// 화면 중앙 둥근 패널. 배경 PanelBgDarkA + Border 테두리 1겹.
-    /// </summary>
+    /// <summary>중앙 앵커 패널. ContinentPanel이 런타임에 대륙 배경색 적용.</summary>
     public static GameObject Panel(Transform parent, string name, Vector2 size, Vector2 pos = default)
     {
         var go = new GameObject(name);
@@ -55,31 +27,13 @@ public static class UIKit
         rt.sizeDelta        = size;
         rt.anchoredPosition = pos;
 
-        // 테두리 이미지 (바깥 레이어)
-        var borderImg = go.AddComponent<Image>();
-        borderImg.sprite = SpPanel;
-        borderImg.type   = Image.Type.Sliced;
-        borderImg.color  = UITheme.Border;
-
-        // 내부 배경 (inset 2px)
-        var inner = new GameObject("_BG");
-        inner.transform.SetParent(go.transform, false);
-        var innerRt = inner.AddComponent<RectTransform>();
-        innerRt.anchorMin = Vector2.zero;
-        innerRt.anchorMax = Vector2.one;
-        innerRt.offsetMin = new Vector2(2f, 2f);
-        innerRt.offsetMax = new Vector2(-2f, -2f);
-        var innerImg = inner.AddComponent<Image>();
-        innerImg.sprite = SpPanel;
-        innerImg.type   = Image.Type.Sliced;
-        innerImg.color  = UITheme.PanelBgDarkA;
+        go.AddComponent<Image>().color = UITheme.PanelBgDarkA;
+        go.AddComponent<ContinentPanel>();
 
         return go;
     }
 
-    /// <summary>
-    /// 앵커 스트레치 방식 패널 (anchorMin/Max 지정). 배경 + 테두리 포함.
-    /// </summary>
+    /// <summary>앵커 스트레치 패널. bgColor 미지정 시 ContinentPanel이 대륙 배경색 적용.</summary>
     public static GameObject PanelStretched(Transform parent, string name,
         Vector2 anchorMin, Vector2 anchorMax,
         Vector2 offsetMin = default, Vector2 offsetMax = default,
@@ -94,22 +48,8 @@ public static class UIKit
         rt.offsetMax = offsetMax;
         rt.sizeDelta = Vector2.zero;
 
-        var borderImg = go.AddComponent<Image>();
-        borderImg.sprite = SpPanel;
-        borderImg.type   = Image.Type.Sliced;
-        borderImg.color  = UITheme.Border;
-
-        var inner = new GameObject("_BG");
-        inner.transform.SetParent(go.transform, false);
-        var innerRt = inner.AddComponent<RectTransform>();
-        innerRt.anchorMin = Vector2.zero;
-        innerRt.anchorMax = Vector2.one;
-        innerRt.offsetMin = new Vector2(2f, 2f);
-        innerRt.offsetMax = new Vector2(-2f, -2f);
-        var innerImg = inner.AddComponent<Image>();
-        innerImg.sprite = SpPanel;
-        innerImg.type   = Image.Type.Sliced;
-        innerImg.color  = bgColor ?? UITheme.PanelBgDarkA;
+        go.AddComponent<Image>().color = bgColor ?? UITheme.PanelBgDarkA;
+        if (bgColor == null) go.AddComponent<ContinentPanel>();
 
         return go;
     }
@@ -126,7 +66,6 @@ public static class UIKit
         _               => UITheme.BtnPrimary,
     };
 
-    /// <summary>둥근 버튼. size 지정 없으면 기본(580×70).</summary>
     public static GameObject Button(Transform parent, string name, string label,
         BtnKind kind = BtnKind.Primary,
         Vector2 pos = default, Vector2 size = default,
@@ -142,17 +81,13 @@ public static class UIKit
         rt.sizeDelta        = size;
         rt.anchoredPosition = pos;
 
-        var img = go.AddComponent<Image>();
-        img.sprite = SpButton;
-        img.type   = Image.Type.Sliced;
-        img.color  = BtnColor(kind);
+        go.AddComponent<Image>().color = BtnColor(kind);
         go.AddComponent<Button>();
 
         AddLabel(go.transform, label, fontSize, UITheme.TextPrimary);
         return go;
     }
 
-    /// <summary>앵커 기반 버튼.</summary>
     public static GameObject ButtonAnchored(Transform parent, string name, string label,
         Vector2 anchorMin, Vector2 anchorMax,
         Vector2 offsetMin = default, Vector2 offsetMax = default,
@@ -169,10 +104,7 @@ public static class UIKit
         rt.offsetMax = offsetMax;
         rt.sizeDelta = Vector2.zero;
 
-        var img = go.AddComponent<Image>();
-        img.sprite = SpButton;
-        img.type   = Image.Type.Sliced;
-        img.color  = BtnColor(kind);
+        go.AddComponent<Image>().color = BtnColor(kind);
         go.AddComponent<Button>();
 
         AddLabel(go.transform, label, fontSize, UITheme.TextPrimary);
@@ -194,7 +126,6 @@ public static class UIKit
         _                 => (UITheme.FontBody,     false, UITheme.TextPrimary),
     };
 
-    /// <summary>중앙 앵커 레이블 (sizeDelta 기반).</summary>
     public static GameObject Label(Transform parent, string name, string text,
         TextLevel level = TextLevel.Body,
         Vector2 pos = default, Vector2 size = default,
@@ -221,7 +152,6 @@ public static class UIKit
         return go;
     }
 
-    /// <summary>앵커 스트레치 레이블.</summary>
     public static GameObject LabelAnchored(Transform parent, string name, string text,
         Vector2 anchorMin, Vector2 anchorMax,
         Vector2 offsetMin = default, Vector2 offsetMax = default,
@@ -252,7 +182,6 @@ public static class UIKit
 
     // ══ 구분선 ══════════════════════════════════════════════════════════
 
-    /// <summary>수평 구분선 (1px, Border 색).</summary>
     public static void Divider(Transform parent, Vector2 pos, float width = 520f)
     {
         var go = new GameObject("Divider");
@@ -268,7 +197,6 @@ public static class UIKit
 
     // ══ 인풋 필드 ════════════════════════════════════════════════════════
 
-    /// <summary>TMP 인풋 필드 (중앙 앵커).</summary>
     public static GameObject Input(Transform parent, string name, string placeholder,
         Vector2 pos = default, Vector2 size = default)
     {
@@ -280,10 +208,7 @@ public static class UIKit
         rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
         rt.sizeDelta        = size;
         rt.anchoredPosition = pos;
-        var bg = go.AddComponent<Image>();
-        bg.sprite = SpButton;
-        bg.type   = Image.Type.Sliced;
-        bg.color  = UITheme.PanelBgMid;
+        go.AddComponent<Image>().color = UITheme.PanelBgMid;
         var field = go.AddComponent<TMP_InputField>();
 
         var areaGO = new GameObject("Text Area");
@@ -298,8 +223,9 @@ public static class UIKit
         var phRT = phGO.AddComponent<RectTransform>();
         phRT.anchorMin = Vector2.zero; phRT.anchorMax = Vector2.one; phRT.sizeDelta = Vector2.zero;
         var phText = phGO.AddComponent<TextMeshProUGUI>();
-        phText.text = placeholder; phText.fontSize = UITheme.FontBody + 2;
-        phText.color = new Color(UITheme.TextDisabled.r, UITheme.TextDisabled.g, UITheme.TextDisabled.b, 0.8f);
+        phText.text      = placeholder;
+        phText.fontSize  = UITheme.FontBody + 2;
+        phText.color     = new Color(UITheme.TextDisabled.r, UITheme.TextDisabled.g, UITheme.TextDisabled.b, 0.8f);
         phText.fontStyle = FontStyles.Italic;
         phText.alignment = TextAlignmentOptions.MidlineLeft;
         if (Font != null) phText.font = Font;
@@ -309,8 +235,8 @@ public static class UIKit
         var txtRT = txtGO.AddComponent<RectTransform>();
         txtRT.anchorMin = Vector2.zero; txtRT.anchorMax = Vector2.one; txtRT.sizeDelta = Vector2.zero;
         var tmpText = txtGO.AddComponent<TextMeshProUGUI>();
-        tmpText.fontSize = UITheme.FontBody + 2;
-        tmpText.color    = UITheme.TextPrimary;
+        tmpText.fontSize  = UITheme.FontBody + 2;
+        tmpText.color     = UITheme.TextPrimary;
         tmpText.alignment = TextAlignmentOptions.MidlineLeft;
         if (Font != null) tmpText.font = Font;
 
@@ -322,14 +248,10 @@ public static class UIKit
 
     // ══ 캐릭터 카드 (§E-2) ══════════════════════════════════════════════
 
-    /// <summary>
-    /// 2:3 세로형 캐릭터 카드 컨테이너.
-    /// 대륙색 외곽 프레임 + 내부 배경. 실제 일러스트·텍스트는 호출자가 자식으로 추가.
-    /// </summary>
     public static GameObject Card(Transform parent, string name,
         Color continentColor, Vector2 size = default, Vector2 pos = default)
     {
-        if (size == default) size = new Vector2(200f, 300f); // 2:3
+        if (size == default) size = new Vector2(200f, 300f);
 
         var go = new GameObject(name);
         go.transform.SetParent(parent, false);
@@ -338,13 +260,8 @@ public static class UIKit
         rt.sizeDelta        = size;
         rt.anchoredPosition = pos;
 
-        // 대륙색 외곽 프레임
-        var borderImg = go.AddComponent<Image>();
-        borderImg.sprite = SpCard;
-        borderImg.type   = Image.Type.Sliced;
-        borderImg.color  = continentColor;
+        go.AddComponent<Image>().color = continentColor;
 
-        // 어두운 내부 배경 (5px inset)
         var inner = new GameObject("_CardBG");
         inner.transform.SetParent(go.transform, false);
         var innerRt = inner.AddComponent<RectTransform>();
@@ -352,17 +269,13 @@ public static class UIKit
         innerRt.anchorMax = Vector2.one;
         innerRt.offsetMin = new Vector2(5f, 5f);
         innerRt.offsetMax = new Vector2(-5f, -5f);
-        var innerImg = inner.AddComponent<Image>();
-        innerImg.sprite = SpCard;
-        innerImg.type   = Image.Type.Sliced;
-        innerImg.color  = UITheme.PanelBgDarkA;
+        inner.AddComponent<Image>().color = UITheme.PanelBgDarkA;
 
         return go;
     }
 
     // ══ 내부 헬퍼 ═══════════════════════════════════════════════════════
 
-    /// <summary>전체 영역을 채우는 텍스트 레이블을 자식으로 추가.</summary>
     static void AddLabel(Transform parent, string text, int fontSize, Color color,
         TextAlignmentOptions align = TextAlignmentOptions.Center)
     {
