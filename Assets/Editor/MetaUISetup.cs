@@ -394,7 +394,8 @@ public static class MetaUISetup
             cRt.anchorMin = new Vector2(0f,1f); cRt.anchorMax = new Vector2(1f,1f);
             cRt.pivot = new Vector2(0.5f,1f); cRt.sizeDelta = Vector2.zero;
             var vl = cGO.AddComponent<VerticalLayoutGroup>();
-            vl.childForceExpandWidth = true; vl.childForceExpandHeight = false;
+            vl.childControlWidth     = true;  vl.childControlHeight     = false;
+            vl.childForceExpandWidth = true;  vl.childForceExpandHeight = false;
             vl.spacing = 4f; vl.padding = new RectOffset(4,4,4,4);
             cGO.AddComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
             sv.viewport = vpRt; sv.content = cRt;
@@ -590,14 +591,14 @@ public static class MetaUISetup
             r.anchorMin = new Vector2(0f,0.22f); r.anchorMax = new Vector2(1f,0.62f);
             r.offsetMin = new Vector2(12f,0f); r.offsetMax = new Vector2(-12f,0f);
             answerInputGO = UIKit.Input(fiArea.transform, "AnswerInput", "답 입력...");
-            { var r = (RectTransform)answerInputGO.transform;
-              r.anchorMin = new Vector2(0f,0.52f); r.anchorMax = new Vector2(1f,0.90f);
-              r.offsetMin = Vector2.zero; r.offsetMax = Vector2.zero; }
+            var rAns = (RectTransform)answerInputGO.transform;
+            rAns.anchorMin = new Vector2(0f,0.52f); rAns.anchorMax = new Vector2(1f,0.90f);
+            rAns.offsetMin = Vector2.zero; rAns.offsetMax = Vector2.zero;
             submitBtnGO = UIKit.Button(fiArea.transform, "SubmitBtn", "제출",
                 UIKit.BtnKind.Success, fontSize: UITheme.FontH2);
-            { var r = (RectTransform)submitBtnGO.transform;
-              r.anchorMin = new Vector2(0f,0.04f); r.anchorMax = new Vector2(1f,0.46f);
-              r.offsetMin = Vector2.zero; r.offsetMax = Vector2.zero; }
+            var rSub = (RectTransform)submitBtnGO.transform;
+            rSub.anchorMin = new Vector2(0f,0.04f); rSub.anchorMax = new Vector2(1f,0.46f);
+            rSub.offsetMin = Vector2.zero; rSub.offsetMax = Vector2.zero;
         }
         fiArea.SetActive(false);
 

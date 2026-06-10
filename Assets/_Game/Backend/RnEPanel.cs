@@ -413,6 +413,11 @@ public class RnEPanel : MonoBehaviour
         var font     = GetFont();
         var unlocked = _selectedOc?.unlockedSkillIds;
 
+        int nullSkills = 0;
+        for (int i = 0; i < _selectedDef.skills.Length; i++)
+            if (_selectedDef.skills[i] == null) nullSkills++;
+        UnityEngine.Debug.Log($"[RnE] BuildSkillList: total={_selectedDef.skills.Length}  null={nullSkills}  def={_selectedDef.id}");
+
         for (int i = 0; i < _selectedDef.skills.Length; i++)
         {
             var skill = _selectedDef.skills[i];
@@ -841,6 +846,9 @@ public class RnEPanel : MonoBehaviour
         go.transform.SetParent(parent, false);
         var rt = go.AddComponent<RectTransform>();
         rt.sizeDelta = new Vector2(0f, 52f);
+        var le = go.AddComponent<LayoutElement>();
+        le.minHeight = 40f;
+        le.preferredHeight = 52f;
         go.AddComponent<Image>().color = new Color(0.18f, 0.22f, 0.30f, 0.9f);
         go.AddComponent<Button>();
 
