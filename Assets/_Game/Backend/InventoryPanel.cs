@@ -1,10 +1,11 @@
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 
-/// <summary>결정(進化 재화) 인벤토리 패널. I 키로 열고 닫습니다.</summary>
+/// <summary>결정 인벤토리 패널. 대륙별 컬러 행 목록.</summary>
 public class InventoryPanel : MonoBehaviour
 {
-    [SerializeField] TMP_Text listText;
+    [SerializeField] RectTransform contentRoot;
 
     void OnEnable()
     {
@@ -22,22 +23,130 @@ public class InventoryPanel : MonoBehaviour
 
     void Refresh()
     {
-        if (listText == null || !MetaState.IsInitialized) return;
+        if (contentRoot == null || !MetaState.IsInitialized) return;
 
-        var sb    = new System.Text.StringBuilder();
-        var kinds = (CrystalKind[])System.Enum.GetValues(typeof(CrystalKind));
+        while (contentRoot.childCount > 0)
+            Object.DestroyImmediate(contentRoot.GetChild(0).gameObject);
 
-        bool hasAny = false;
+        var kinds  = (CrystalKind[])System.Enum.GetValues(typeof(CrystalKind));
+        const float ROW_H = 62f;
+        const float GAP   = 3f;
+        const float PAD   = 4f;
+        float y    = -PAD;
+        bool  any  = false;
+
         foreach (var kind in kinds)
         {
             int amt = MetaState.Crystals.Get(kind);
             if (amt <= 0) continue;
-            sb.AppendLine($"{CrystalCatalog.ContinentLabel(kind)}  {CrystalCatalog.DisplayName(kind)}  x{amt}");
-            hasAny = true;
+            BuildCrystalRow(contentRoot, kind, amt, y);
+            y -= ROW_H + GAP;
+            any = true;
         }
 
-        listText.text = hasAny ? sb.ToString().TrimEnd() : "보유 결정이 없습니다.";
+        if (!any)
+        {
+            BuildEmpty(contentRoot, "보유 결정이 없습니다.");
+            contentRoot.sizeDelta = new Vector2(0, 80f);
+        }
+        else
+        {
+            contentRoot.sizeDelta = new Vector2(0, Mathf.Abs(y) + PAD);
+        }
     }
 
     public void OnCloseClicked() => gameObject.SetActive(false);
+
+    // ── 행 생성 ──────────────────────────────────────────────────────────
+
+    static void BuildEmpty(RectTransform parent, string msg)
+    {
+        var go = new GameObject("Empty");
+        go.transform.SetParent(parent, false);
+        SetRowRect(go, 0f, 80f);
+        var t = go.AddComponent<TextMeshProUGUI>();
+        t.text      = msg;
+        t.fontSize  = UITheme.FontBody;
+        t.color     = UITheme.TextSecondary;
+        t.alignment = TextAlignmentOptions.Center;
+    }
+
+    static void BuildCrystalRow(RectTransform parent, CrystalKind kind, int amount, float yPos)
+    {
+        const float ROW_H  = 62f;
+        var contCol = ContinentColors.Of(KindToContinent(kind));
+
+        var row = new GameObject("Row_" + kind);
+        row.transform.SetParent(parent, false);
+        SetRowRect(row, yPos, ROW_H);
+
+        var bg = row.AddComponent<Image>();
+        bg.color = new Color(contCol.r * 0.11f, contCol.g * 0.11f, contCol.b * 0.11f, 1f);
+
+        AddStrip(row.transform, contCol);
+
+        // 이름 (좌)
+        var nameGO = new GameObject("Name");
+        nameGO.transform.SetParent(row.transform, false);
+        var nRt = nameGO.AddComponent<RectTransform>();
+        nRt.anchorMin = new Vector2(0f, 0f); nRt.anchorMax = new Vector2(0.72f, 1f);
+        nRt.offsetMin = new Vector2(16f, 0f); nRt.offsetMax = Vector2.zero;
+        var nTxt = nameGO.AddComponent<TextMeshProUGUI>();
+        string labelHex = ColorUtility.ToHtmlStringRGB(contCol);
+        nTxt.text      = $"<size=11><color=#{labelHex}>{CrystalCatalog.ContinentLabel(kind)}</color></size>  {CrystalCatalog.DisplayName(kind)}";
+        nTxt.fontSize  = UITheme.FontBody;
+        nTxt.color     = UITheme.TextPrimary;
+        nTxt.alignment = TextAlignmentOptions.MidlineLeft;
+
+        // 수량 (우)
+        var amtGO = new GameObject("Amount");
+        amtGO.transform.SetParent(row.transform, false);
+        var aRt = amtGO.AddComponent<RectTransform>();
+        aRt.anchorMin = new Vector2(0.72f, 0f); aRt.anchorMax = Vector2.one;
+        aRt.offsetMin = Vector2.zero;            aRt.offsetMax = new Vector2(-12f, 0f);
+        var aTxt = amtGO.AddComponent<TextMeshProUGUI>();
+        aTxt.text      = $"×{amount:N0}";
+        aTxt.fontSize  = UITheme.FontStat;
+        aTxt.color     = contCol;
+        aTxt.fontStyle = FontStyles.Bold;
+        aTxt.alignment = TextAlignmentOptions.MidlineRight;
+    }
+
+    // ── 공용 헬퍼 ────────────────────────────────────────────────────────
+
+    static void SetRowRect(GameObject go, float yPos, float height)
+    {
+        var rt = go.GetComponent<RectTransform>() ?? go.AddComponent<RectTransform>();
+        rt.anchorMin        = new Vector2(0f, 1f);
+        rt.anchorMax        = new Vector2(1f, 1f);
+        rt.pivot            = new Vector2(0.5f, 1f);
+        rt.anchoredPosition = new Vector2(0f, yPos);
+        rt.sizeDelta        = new Vector2(0f, height);
+    }
+
+    static void AddStrip(Transform parent, Color color)
+    {
+        var go = new GameObject("Strip");
+        go.transform.SetParent(parent, false);
+        var rt = go.AddComponent<RectTransform>();
+        rt.anchorMin = Vector2.zero;
+        rt.anchorMax = new Vector2(0f, 1f);
+        rt.offsetMin = Vector2.zero;
+        rt.offsetMax = new Vector2(6f, 0f);
+        go.AddComponent<Image>().color = color;
+    }
+
+    static Continent KindToContinent(CrystalKind kind) => kind switch
+    {
+        CrystalKind.PrimeForce      => Continent.Physics,
+        CrystalKind.ElementaCrystal => Continent.Chemistry,
+        CrystalKind.LifeCode        => Continent.Biology,
+        CrystalKind.MemoryOfStar    => Continent.EarthSci,
+        CrystalKind.BoneOfTheEarth  => Continent.EarthSci,
+        CrystalKind.OceanPrime      => Continent.EarthSci,
+        CrystalKind.TornadoCore     => Continent.EarthSci,
+        CrystalKind.Axioma          => Continent.Math,
+        CrystalKind.PrimeData       => Continent.Info,
+        _                           => Continent.Mesoria,
+    };
 }

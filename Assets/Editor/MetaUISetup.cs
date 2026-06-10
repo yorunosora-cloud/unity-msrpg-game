@@ -82,28 +82,30 @@ public static class MetaUISetup
         // ── CollectionPanel (도감, C키, 중앙 숨김) ──────────────────────
         var collPanel = UIKit.Panel(canvasGO.transform, "CollectionPanel", new Vector2(700f, 950f));
         collPanel.SetActive(false);
-        UIKit.Label(collPanel.transform, "Title", "도감  [C]", UIKit.TextLevel.H1, new Vector2(0f, 390f));
-        var collListText = UIKit.Label(collPanel.transform, "ListText", "", UIKit.TextLevel.Body, new Vector2(0f, 0f));
-        var closeBtnC    = UIKit.Button(collPanel.transform, "CloseBtn", "닫기  [C]",
-            UIKit.BtnKind.Neutral, new Vector2(0f, -400f), new Vector2(300f, 70f));
+        UIKit.Label(collPanel.transform, "Title", "도감  [C]", UIKit.TextLevel.H1, new Vector2(0f, 415f));
+        UIKit.Divider(collPanel.transform, new Vector2(0f, 378f), 660f);
+        var collScroll  = UIKit.ScrollList(collPanel.transform, "CharList", Vector2.zero, new Vector2(676f, 730f));
+        var closeBtnC   = UIKit.Button(collPanel.transform, "CloseBtn", "닫기  [C]",
+            UIKit.BtnKind.Neutral, new Vector2(0f, -420f), new Vector2(300f, 65f));
 
         var collCmp = collPanel.AddComponent<CollectionPanel>();
         var cSo = new SerializedObject(collCmp);
-        cSo.FindProperty("listText").objectReferenceValue = collListText.GetComponent<TMP_Text>();
+        cSo.FindProperty("contentRoot").objectReferenceValue = collScroll.content;
         cSo.ApplyModifiedProperties();
         UnityEventTools.AddVoidPersistentListener(closeBtnC.GetComponent<Button>().onClick, collCmp.OnCloseClicked);
 
         // ── InventoryPanel (인벤토리, I키, 중앙 숨김) ───────────────────
         var invPanel = UIKit.Panel(canvasGO.transform, "InventoryPanel", new Vector2(700f, 950f));
         invPanel.SetActive(false);
-        UIKit.Label(invPanel.transform, "Title", "인벤토리  [I]", UIKit.TextLevel.H1, new Vector2(0f, 390f));
-        var invListText = UIKit.Label(invPanel.transform, "ListText", "", UIKit.TextLevel.Body, new Vector2(0f, 0f));
+        UIKit.Label(invPanel.transform, "Title", "인벤토리  [I]", UIKit.TextLevel.H1, new Vector2(0f, 415f));
+        UIKit.Divider(invPanel.transform, new Vector2(0f, 378f), 660f);
+        var invScroll   = UIKit.ScrollList(invPanel.transform, "CrystalList", Vector2.zero, new Vector2(676f, 730f));
         var closeBtnI   = UIKit.Button(invPanel.transform, "CloseBtn", "닫기  [I]",
-            UIKit.BtnKind.Neutral, new Vector2(0f, -400f), new Vector2(300f, 70f));
+            UIKit.BtnKind.Neutral, new Vector2(0f, -420f), new Vector2(300f, 65f));
 
         var invCmp = invPanel.AddComponent<InventoryPanel>();
         var iSo = new SerializedObject(invCmp);
-        iSo.FindProperty("listText").objectReferenceValue = invListText.GetComponent<TMP_Text>();
+        iSo.FindProperty("contentRoot").objectReferenceValue = invScroll.content;
         iSo.ApplyModifiedProperties();
         UnityEventTools.AddVoidPersistentListener(closeBtnI.GetComponent<Button>().onClick, invCmp.OnCloseClicked);
 
@@ -428,13 +430,13 @@ public static class MetaUISetup
             if (font != null) skillInfoNameTxt.font = font;
         }
 
-        // 스탯·설명 텍스트 (중간 50%)
+        // 스탯·설명 텍스트 (중간 45%) — 하단 숙련도 텍스트를 위해 0.35로 조정
         var skillInfoStatsGO = new GameObject("SkillInfoStats");
         skillInfoStatsGO.transform.SetParent(skillInfoPanelGO.transform, false);
         TMP_Text skillInfoStatsTxt;
         {
             var r = skillInfoStatsGO.AddComponent<RectTransform>();
-            r.anchorMin = new Vector2(0f, 0.30f); r.anchorMax = new Vector2(1f, 0.80f);
+            r.anchorMin = new Vector2(0f, 0.35f); r.anchorMax = new Vector2(1f, 0.80f);
             r.offsetMin = new Vector2(14f, 4f); r.offsetMax = new Vector2(-14f, 0f);
             skillInfoStatsTxt = skillInfoStatsGO.AddComponent<TextMeshProUGUI>();
             skillInfoStatsTxt.fontSize = 17;
@@ -442,6 +444,21 @@ public static class MetaUISetup
             skillInfoStatsTxt.alignment = TextAlignmentOptions.TopLeft;
             skillInfoStatsTxt.textWrappingMode = TextWrappingModes.Normal;
             if (font != null) skillInfoStatsTxt.font = font;
+        }
+
+        // 숙련도 텍스트 (0.28 ~ 0.35) — 스킬 레벨업용
+        var skillInfoProfGO = new GameObject("SkillInfoProf");
+        skillInfoProfGO.transform.SetParent(skillInfoPanelGO.transform, false);
+        TMP_Text skillInfoProfTxt;
+        {
+            var r = skillInfoProfGO.AddComponent<RectTransform>();
+            r.anchorMin = new Vector2(0f, 0.28f); r.anchorMax = new Vector2(1f, 0.35f);
+            r.offsetMin = new Vector2(14f, 0f); r.offsetMax = new Vector2(-14f, 0f);
+            skillInfoProfTxt = skillInfoProfGO.AddComponent<TextMeshProUGUI>();
+            skillInfoProfTxt.fontSize = 16;
+            skillInfoProfTxt.color = new Color(1f, 0.85f, 0.35f);   // 황금색 — 숙련도 강조
+            skillInfoProfTxt.alignment = TextAlignmentOptions.MidlineLeft;
+            if (font != null) skillInfoProfTxt.font = font;
         }
 
         // [연구 시작] 버튼 (하단 좌측 58%)
@@ -476,6 +493,24 @@ public static class MetaUISetup
             tr.anchorMin = Vector2.zero; tr.anchorMax = Vector2.one; tr.sizeDelta = Vector2.zero;
             var lt = tg.AddComponent<TextMeshProUGUI>();
             lt.text = "목록으로"; lt.fontSize = 20; lt.color = Color.white;
+            lt.alignment = TextAlignmentOptions.Center;
+            if (font != null) lt.font = font;
+        }
+
+        // [스킬 레벨업] 버튼 (하단 좌측 58%, [연구시작]과 동일 위치 — 해금 스킬에서만 표시)
+        var skillLevelUpBtnGO = new GameObject("SkillLevelUpBtn");
+        skillLevelUpBtnGO.transform.SetParent(skillInfoPanelGO.transform, false);
+        {
+            var r = skillLevelUpBtnGO.AddComponent<RectTransform>();
+            r.anchorMin = new Vector2(0f, 0.02f); r.anchorMax = new Vector2(0.58f, 0.28f);
+            r.offsetMin = new Vector2(8f, 2f); r.offsetMax = new Vector2(-4f, -2f);
+            skillLevelUpBtnGO.AddComponent<Image>().color = new Color(0.15f, 0.55f, 0.85f, 0.95f);  // 파란색
+            skillLevelUpBtnGO.AddComponent<Button>();
+            var tg = new GameObject("Label"); tg.transform.SetParent(skillLevelUpBtnGO.transform, false);
+            var tr = tg.AddComponent<RectTransform>();
+            tr.anchorMin = Vector2.zero; tr.anchorMax = Vector2.one; tr.sizeDelta = Vector2.zero;
+            var lt = tg.AddComponent<TextMeshProUGUI>();
+            lt.text = "레벨업"; lt.fontSize = 20; lt.color = Color.white;
             lt.alignment = TextAlignmentOptions.Center;
             if (font != null) lt.font = font;
         }
@@ -691,8 +726,10 @@ public static class MetaUISetup
         srpSo.FindProperty("skillInfoPanel").objectReferenceValue           = skillInfoPanelGO;
         srpSo.FindProperty("skillInfoNameText").objectReferenceValue        = skillInfoNameTxt;
         srpSo.FindProperty("skillInfoStatsText").objectReferenceValue       = skillInfoStatsTxt;
+        srpSo.FindProperty("skillInfoProfText").objectReferenceValue        = skillInfoProfTxt;
         srpSo.FindProperty("skillResearchStartButton").objectReferenceValue = skillResearchStartBtnGO.GetComponent<Button>();
         srpSo.FindProperty("skillInfoBackButton").objectReferenceValue      = skillInfoBackBtnGO.GetComponent<Button>();
+        srpSo.FindProperty("skillLevelUpButton").objectReferenceValue       = skillLevelUpBtnGO.GetComponent<Button>();
 
         // 문제 오버레이
         srpSo.FindProperty("problemOverlay").objectReferenceValue     = problemOverlayGO;

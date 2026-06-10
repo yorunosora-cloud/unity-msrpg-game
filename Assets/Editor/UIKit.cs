@@ -180,6 +180,57 @@ public static class UIKit
         return go;
     }
 
+    // ══ 스크롤 리스트 ═══════════════════════════════════════════════════
+
+    /// <summary>
+    /// 세로 스크롤 가능한 리스트 컨테이너.
+    /// 반환값 content에 행(Row) GameObject를 자식으로 추가하면 자동 스크롤.
+    /// 행 배치는 호출자가 직접 RectTransform으로 제어 (anchorMin=(0,1), anchorMax=(1,1)).
+    /// </summary>
+    public static (GameObject root, RectTransform content) ScrollList(
+        Transform parent, string name, Vector2 pos, Vector2 size)
+    {
+        var go = new GameObject(name);
+        go.transform.SetParent(parent, false);
+        var rt = go.AddComponent<RectTransform>();
+        rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
+        rt.sizeDelta        = size;
+        rt.anchoredPosition = pos;
+
+        // 스크롤 이벤트 캡처용 투명 Image
+        var bg = go.AddComponent<Image>();
+        bg.color = Color.clear;
+
+        var sr = go.AddComponent<ScrollRect>();
+        sr.horizontal        = false;
+        sr.vertical          = true;
+        sr.scrollSensitivity = 40f;
+        sr.movementType      = ScrollRect.MovementType.Clamped;
+
+        // Viewport (RectMask2D로 클리핑)
+        var vpGO = new GameObject("Viewport");
+        vpGO.transform.SetParent(go.transform, false);
+        var vpRt = vpGO.AddComponent<RectTransform>();
+        vpRt.anchorMin = Vector2.zero;
+        vpRt.anchorMax = Vector2.one;
+        vpRt.sizeDelta = Vector2.zero;
+        vpGO.AddComponent<RectMask2D>();
+        sr.viewport = vpRt;
+
+        // Content (위쪽 앵커, 아래로 확장)
+        var contentGO = new GameObject("Content");
+        contentGO.transform.SetParent(vpGO.transform, false);
+        var contentRt = contentGO.AddComponent<RectTransform>();
+        contentRt.anchorMin        = new Vector2(0, 1);
+        contentRt.anchorMax        = new Vector2(1, 1);
+        contentRt.pivot            = new Vector2(0.5f, 1f);
+        contentRt.anchoredPosition = Vector2.zero;
+        contentRt.sizeDelta        = Vector2.zero;
+
+        sr.content = contentRt;
+        return (go, contentRt);
+    }
+
     // ══ 구분선 ══════════════════════════════════════════════════════════
 
     public static void Divider(Transform parent, Vector2 pos, float width = 520f)
