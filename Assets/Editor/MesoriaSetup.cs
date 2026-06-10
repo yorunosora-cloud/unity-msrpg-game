@@ -4,6 +4,8 @@ using UnityEditor.SceneManagement;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using TMPro;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 
 public static class MesoriaSetup
 {
@@ -159,6 +161,39 @@ public static class MesoriaSetup
         // 14. 스킬 바 HUD (하단 중앙, 최대 6칸)
         CreateSkillBarHud(canvasGO.transform, canvasGO, korFont);
 
+        // 14-a. 포스트프로세싱 Global Volume
+        var ppProfile = ScriptableObject.CreateInstance<VolumeProfile>();
+        System.IO.Directory.CreateDirectory(Application.dataPath + "/_Game/Data");
+        const string ppAssetPath = "Assets/_Game/Data/PostProcessProfile.asset";
+        if (AssetDatabase.LoadAssetAtPath<VolumeProfile>(ppAssetPath) != null)
+            AssetDatabase.DeleteAsset(ppAssetPath);
+        AssetDatabase.CreateAsset(ppProfile, ppAssetPath);
+
+        var bloom      = ppProfile.Add<Bloom>();
+        bloom.active   = true;
+        bloom.intensity.Override(0.4f);
+        bloom.threshold.Override(0.9f);
+        bloom.scatter.Override(0.7f);
+
+        var colorAdj    = ppProfile.Add<ColorAdjustments>();
+        colorAdj.active = true;
+        colorAdj.contrast.Override(10f);
+        colorAdj.colorFilter.Override(new Color(0.96f, 0.97f, 1.0f));
+
+        var vignette    = ppProfile.Add<Vignette>();
+        vignette.active = true;
+        vignette.intensity.Override(0.25f);
+        vignette.smoothness.Override(0.40f);
+
+        EditorUtility.SetDirty(ppProfile);
+        AssetDatabase.SaveAssets();
+
+        var ppGO          = new GameObject("Post Process Volume");
+        var vol           = ppGO.AddComponent<Volume>();
+        vol.isGlobal      = true;
+        vol.priority      = 1;
+        vol.sharedProfile = ppProfile;
+
         // 15. 씬 저장
         System.IO.Directory.CreateDirectory(Application.dataPath + "/_Game/Scenes");
         EditorSceneManager.SaveScene(scene, "Assets/_Game/Scenes/Mesoria.unity");
@@ -312,6 +347,17 @@ public static class MesoriaSetup
 
     static Image CreateBar(Transform parent, string name, Vector2 pos, Color color)
     {
+        // 흰색 테두리 (BG보다 먼저 생성 → BG 뒤에 렌더링)
+        var borderGO = new GameObject(name + "Border");
+        borderGO.transform.SetParent(parent, false);
+        var borderRt = borderGO.AddComponent<RectTransform>();
+        borderRt.anchorMin        = new Vector2(0f, 0f);
+        borderRt.anchorMax        = new Vector2(0f, 0f);
+        borderRt.pivot            = new Vector2(0f, 0.5f);
+        borderRt.sizeDelta        = new Vector2(310f, 24f);
+        borderRt.anchoredPosition = new Vector2(pos.x - 1f, pos.y);
+        borderGO.AddComponent<Image>().color = new Color(1f, 1f, 1f, 0.65f);
+
         // 배경
         var bgGO = new GameObject(name + "BG");
         bgGO.transform.SetParent(parent, false);
@@ -572,12 +618,23 @@ public static class MesoriaSetup
         Color fillColor, Vector2 anchorMin, Vector2 anchorMax,
         TMP_FontAsset font, float padX)
     {
+        // 흰색 테두리 (BG보다 먼저 생성 → BG 뒤에 렌더링)
+        float bgMaxY = anchorMin.y + (anchorMax.y - anchorMin.y) * 0.55f;
+        var borderGO = new GameObject(name + "Border");
+        borderGO.transform.SetParent(parent, false);
+        var borderRt = borderGO.AddComponent<RectTransform>();
+        borderRt.anchorMin = anchorMin;
+        borderRt.anchorMax = new Vector2(anchorMax.x, bgMaxY);
+        borderRt.offsetMin = new Vector2(padX - 1f, -1f);
+        borderRt.offsetMax = new Vector2(-padX + 1f, 1f);
+        borderGO.AddComponent<Image>().color = new Color(1f, 1f, 1f, 0.65f);
+
         // 바 배경
         var bgGO = new GameObject(name + "BG");
         bgGO.transform.SetParent(parent, false);
         var bgRt = bgGO.AddComponent<RectTransform>();
         bgRt.anchorMin = anchorMin;
-        bgRt.anchorMax = new Vector2(anchorMax.x, anchorMin.y + (anchorMax.y - anchorMin.y) * 0.55f);
+        bgRt.anchorMax = new Vector2(anchorMax.x, bgMaxY);
         bgRt.offsetMin = new Vector2(padX, 0f);
         bgRt.offsetMax = new Vector2(-padX, 0f);
         bgGO.AddComponent<Image>().color = new Color(0.08f, 0.08f, 0.08f, 0.85f);

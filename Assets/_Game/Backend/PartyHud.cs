@@ -115,10 +115,33 @@ public class PartyHud : MonoBehaviour
     {
         for (int i = 0; i < SlotCount; i++)
         {
-            InitFill(_slotHpFills != null && i < _slotHpFills.Length ? _slotHpFills[i] : null);
-            InitFill(_slotMpFills != null && i < _slotMpFills.Length ? _slotMpFills[i] : null);
+            var hp = _slotHpFills != null && i < _slotHpFills.Length ? _slotHpFills[i] : null;
+            var mp = _slotMpFills != null && i < _slotMpFills.Length ? _slotMpFills[i] : null;
+            InitFill(hp);
+            InitFill(mp);
+            SetBarBg(hp, new Color(0.22f, 0.04f, 0.04f, 1f));
+            SetBarBg(mp, new Color(0.04f, 0.06f, 0.25f, 1f));
+            AddBorderToBar(hp);
+            AddBorderToBar(mp);
         }
         _barsInitialized = true;
+    }
+
+    static void SetBarBg(Image fill, Color bg)
+    {
+        if (fill == null) return;
+        var bgImg = fill.transform.parent?.GetComponent<Image>();
+        if (bgImg != null) bgImg.color = bg;
+    }
+
+    static void AddBorderToBar(Image fill)
+    {
+        if (fill == null) return;
+        var bg = fill.transform.parent?.GetComponent<Image>();
+        if (bg == null) return;
+        var outline = bg.GetComponent<Outline>() ?? bg.gameObject.AddComponent<Outline>();
+        outline.effectColor    = new Color(0f, 0f, 0f, 0.9f);
+        outline.effectDistance = new Vector2(2.5f, 2.5f);
     }
 
     static void InitFill(Image img)
@@ -156,11 +179,9 @@ public class PartyHud : MonoBehaviour
                 : _targMpFracs[i];
 
             Color hpColor = isDowned
-                ? new Color(0.40f, 0.40f, 0.40f)
+                ? new Color(0.35f, 0.35f, 0.35f)
                 : Color.Lerp(Color.red, new Color(0.15f, 0.85f, 0.3f), _dispHpFracs[i]);
-            Color mpColor = isDowned
-                ? new Color(0.30f, 0.30f, 0.40f)
-                : new Color(0.20f, 0.50f, 1.00f);
+            Color mpColor = isDowned ? new Color(0.20f, 0.25f, 0.45f) : new Color(0.3f, 0.6f, 1.0f);
 
             SetBarFraction(_slotHpFills[i], _dispHpFracs[i], hpColor);
             SetBarFraction(_slotMpFills[i], _dispMpFracs[i], mpColor);
@@ -201,20 +222,34 @@ public class PartyHud : MonoBehaviour
         bool isActive = (_party.ActiveIndex == i);
         bool isDowned = member.IsDowned;
 
-        // 배경색 (상태 기반)
+        // 배경색: 활성 슬롯은 대륙 색을 약하게 틴트 → 배경만으로도 어떤 슬롯인지 구별
         if (_slotBgs[i])
         {
-            _slotBgs[i].color = isDowned ? SlotDownedColor
-                              : isActive ? SlotActiveColor
-                              :            SlotNormalColor;
+            Color bgColor;
+            if (isDowned)
+                bgColor = SlotDownedColor;
+            else if (isActive)
+            {
+                var cc = ContinentColors.Of(member.Element);
+                bgColor = new Color(0.12f + cc.r * 0.18f, 0.14f + cc.g * 0.14f, 0.25f + cc.b * 0.15f, 0.95f);
+            }
+            else
+                bgColor = SlotNormalColor;
+            _slotBgs[i].color = bgColor;
             _slotBgs[i].gameObject.SetActive(true);
         }
 
-        // 금색 활성 테두리
+        // 활성 테두리: 대륙 색을 HSV 최대 밝기(V=1)로 부스트 → 어두운 배경에서 선명하게 구별
         if (_slotBorders[i])
         {
             _slotBorders[i].enabled = isActive;
-            _slotBorders[i].color   = ActiveBorderColor;
+            if (isActive)
+            {
+                Color.RGBToHSV(ContinentColors.Of(member.Element), out float h, out float s, out float v);
+                _slotBorders[i].color = Color.HSVToRGB(h, Mathf.Max(s, 0.85f), 1f);
+            }
+            else
+                _slotBorders[i].color = ActiveBorderColor;
         }
 
         // 기절 오버레이

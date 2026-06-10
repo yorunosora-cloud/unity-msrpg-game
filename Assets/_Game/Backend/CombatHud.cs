@@ -61,6 +61,10 @@ public class CombatHud : MonoBehaviour
 
             InitBar(hpFill);
             InitBar(mpFill);
+            SetBarBg(hpFill, new Color(0.22f, 0.04f, 0.04f, 1f));
+            SetBarBg(mpFill, new Color(0.04f, 0.06f, 0.25f, 1f));
+            AddBorderToBar(hpFill);
+            AddBorderToBar(mpFill);
 
             // 연결 시 실제 값으로 초기화 (애니메이션 없이)
             _dispHpFrac = _targHpFrac = _active.MaxHp > 0 ? (float)_active.Hp / _active.MaxHp : 1f;
@@ -104,10 +108,27 @@ public class CombatHud : MonoBehaviour
 
         SetBarFraction(hpFill, _dispHpFrac,
             Color.Lerp(Color.red, new Color(0.15f, 0.85f, 0.3f), _dispHpFrac));
-        SetBarFraction(mpFill, _dispMpFrac, new Color(0.2f, 0.5f, 1f));
+        SetBarFraction(mpFill, _dispMpFrac, new Color(0.3f, 0.6f, 1.0f));
     }
 
     // ── 갱신 (이벤트 수신 시 목표값만 업데이트) ───────────────────────────
+
+    static void SetBarBg(Image fill, Color bg)
+    {
+        if (fill == null) return;
+        var bgImg = fill.transform.parent?.GetComponent<Image>();
+        if (bgImg != null) bgImg.color = bg;
+    }
+
+    static void AddBorderToBar(Image fill)
+    {
+        if (fill == null) return;
+        var bg = fill.transform.parent?.GetComponent<Image>();
+        if (bg == null) return;
+        var outline = bg.GetComponent<Outline>() ?? bg.gameObject.AddComponent<Outline>();
+        outline.effectColor    = new Color(0f, 0f, 0f, 0.9f);
+        outline.effectDistance = new Vector2(2.5f, 2.5f);
+    }
 
     static void InitBar(Image img)
     {
