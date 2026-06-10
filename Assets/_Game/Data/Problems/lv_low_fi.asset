@@ -16,7 +16,7 @@ MonoBehaviour:
   skillId: 
   difficulty: 0
   type: 1
-  prompt: "[\uD558 \uB09C\uC774\uB3C4 / \uC8FC\uAD00\uC2DD] \uB2F5\uC744 \uC785\uB825\uD558\uC138\uC694."
+  prompt: "[\uD558 / \uC8FC\uAD00\uC2DD] \uB2F5\uC744 \uC785\uB825\uD558\uC138\uC694."
   choices:
   - 
   - 
@@ -26,4 +26,4 @@ MonoBehaviour:
   acceptedAnswers:
   - "\uC815\uB2F5"
   - answer
-  explanation: "[\uD558 \uB09C\uC774\uB3C4] \uD574\uC124 \uD14D\uC2A4\uD2B8 \uC790\uB9AC\uC785\uB2C8\uB2E4."
+  explanation: "[\uD558 \uB09C\uC774\uB3C4] \uD574\uC124."

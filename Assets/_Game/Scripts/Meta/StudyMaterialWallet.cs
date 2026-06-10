@@ -31,8 +31,15 @@ public class StudyMaterialWallet
         return true;
     }
 
-    /// <summary>currentLevel → currentLevel+1 레벨업 비용.</summary>
+    /// <summary>currentLevel → currentLevel+1 레벨업 기본 비용 (하 난이도 기준).</summary>
     public static int LevelUpCost(int currentLevel) => currentLevel * 5;
+
+    /// <summary>
+    /// 난이도별 레벨업 자원 비용.
+    /// 기본 비용(level×5)에 ProblemDifficultyInfo.CostMultiplier(d)를 곱한다.
+    /// </summary>
+    public static int LevelUpCost(int currentLevel, ProblemDifficulty d)
+        => LevelUpCost(currentLevel) * ProblemDifficultyInfo.CostMultiplier(d);
 
     public StudyMaterialData Export() =>
         new StudyMaterialData { amounts = (int[])_amounts.Clone() };

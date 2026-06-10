@@ -18,6 +18,7 @@ public class AdminPanel : MonoBehaviour
     [Header("캐릭터 지급 (ID 직접 입력)")]
     [SerializeField] TMP_InputField characterIdInput;
     [SerializeField] Button          giveCharacterButton;
+    [SerializeField] Button          giveAllCharactersButton;
 
     [Header("가챠 디버그")]
     [SerializeField] Button debugRollOneButton;
@@ -100,6 +101,21 @@ public class AdminPanel : MonoBehaviour
 
         bool isNew = MetaState.Roster.Add(id);
         ShowStatus(isNew ? $"{def.nameKo} 지급!" : $"{def.nameKo} 중복 (+dupes)", Color.cyan);
+    }
+
+    public void OnGiveAllCharacters()
+    {
+        if (!MetaState.IsInitialized) return;
+        var db = Resources.Load<CharacterDatabase>("CharacterDatabase");
+        if (db == null) { ShowStatus("CharacterDatabase 없음", Color.red); return; }
+
+        int count = 0;
+        foreach (var def in db.All)
+        {
+            if (def == null) continue;
+            if (MetaState.Roster.Add(def.id)) count++;
+        }
+        ShowStatus(count > 0 ? $"전체 {count}명 지급 완료" : "이미 모두 보유 중", Color.cyan);
     }
 
     // ── 가챠 디버그 (논문 자동 보충) ────────────────────────────────────

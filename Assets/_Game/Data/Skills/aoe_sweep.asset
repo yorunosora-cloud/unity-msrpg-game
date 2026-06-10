@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: MSRPG::SkillDef
   id: aoe_sweep
   nameKo: "\uBC94\uC704 \uD729\uC4F8\uAE30"
+  descKo: 
   mpCost: 30
   cooldown: 2.5
   effectKind: 1

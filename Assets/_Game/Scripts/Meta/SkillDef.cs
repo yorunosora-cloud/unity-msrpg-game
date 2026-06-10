@@ -11,6 +11,8 @@ public class SkillDef : ScriptableObject
     [Header("기본 정보")]
     public string         id;
     public string         nameKo;
+    [TextArea(2, 5)]
+    public string         descKo;   // 한국어 설명 (스킬 정보 패널에 표시)
 
     [Header("발동 조건")]
     public int   mpCost;     // 소비 MP

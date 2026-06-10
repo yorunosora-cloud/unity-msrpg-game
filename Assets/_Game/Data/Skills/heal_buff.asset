@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: MSRPG::SkillDef
   id: heal_buff
   nameKo: "\uD68C\uBCF5\xB7\uAC15\uD654"
+  descKo: 
   mpCost: 35
   cooldown: 8
   effectKind: 2

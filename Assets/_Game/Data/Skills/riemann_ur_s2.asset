@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 539fd4fbbaba74c44988317c884b5b12, type: 3}
+  m_Name: riemann_ur_s2
+  m_EditorClassIdentifier: MSRPG::SkillDef
+  id: riemann_ur_s2
+  nameKo: "\uB9AC\uB9CC \uC2A4\uD0AC 3"
+  descKo: "\uC801\uC5D0\uAC8C \uC18D\uC131 \uD45C\uC2DD\uC744 \uBD80\uC5EC\uD569\uB2C8\uB2E4."
+  mpCost: 25
+  cooldown: 4
+  effectKind: 3
+  range: 4.5
+  halfAngle: 90
+  damageMultiplier: 0
+  healPercent: 0
+  buffAtkMultiplier: 0
+  buffDuration: 0

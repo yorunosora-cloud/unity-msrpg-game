@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 539fd4fbbaba74c44988317c884b5b12, type: 3}
+  m_Name: ion_r_s0
+  m_EditorClassIdentifier: MSRPG::SkillDef
+  id: ion_r_s0
+  nameKo: "\uC774\uC628 \uC2A4\uD0AC 1"
+  descKo: "\uB300\uC0C1\uC744 \uAC15\uD0C0\uD558\uC5EC \uD53C\uD574\uB97C \uC785\uD799\uB2C8\uB2E4."
+  mpCost: 20
+  cooldown: 1
+  effectKind: 0
+  range: 2.5
+  halfAngle: 60
+  damageMultiplier: 1.5
+  healPercent: 0
+  buffAtkMultiplier: 0
+  buffDuration: 0

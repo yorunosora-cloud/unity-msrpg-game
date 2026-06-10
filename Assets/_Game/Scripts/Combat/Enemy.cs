@@ -43,18 +43,6 @@ public class Enemy : MonoBehaviour
     /// <summary>현재 부여된 속성 표식. null이면 없음.</summary>
     public Continent? Mark => _mark;
 
-    // 과목별 색상 (Continent 순서 일치)
-    static readonly Color[] ContinentColors =
-    {
-        new Color(0.30f, 0.60f, 1.00f),  // Physics   — 파랑
-        new Color(0.80f, 0.30f, 0.80f),  // Chemistry — 보라
-        new Color(0.20f, 0.80f, 0.30f),  // Biology   — 초록
-        new Color(0.90f, 0.70f, 0.20f),  // EarthSci  — 황토
-        new Color(0.95f, 0.40f, 0.10f),  // Math      — 주황
-        new Color(0.20f, 0.80f, 0.80f),  // Info      — 청록
-        new Color(0.60f, 0.60f, 0.60f),  // Mesoria   — 회색
-    };
-
     // ── 라이프사이클 ────────────────────────────────────────────────────────
 
     void Awake()
@@ -156,7 +144,7 @@ public class Enemy : MonoBehaviour
 
         var rend = go.GetComponent<Renderer>();
         rend.material       = new Material(Shader.Find("Universal Render Pipeline/Lit"));
-        rend.material.color = ContinentColors[(int)element % ContinentColors.Length];
+        rend.material.color = ContinentColors.Of(element);
         return go;
     }
 
@@ -202,7 +190,7 @@ public class Enemy : MonoBehaviour
 
     void BuildVisual()
     {
-        Color col = ContinentColors[(int)weakness % ContinentColors.Length];
+        Color col = ContinentColors.Of(weakness);
         _baseColor = col;
 
         // 캡슐 몸통

@@ -16,8 +16,7 @@ MonoBehaviour:
   skillId: 
   difficulty: 0
   type: 0
-  prompt: "[\uD558 \uB09C\uC774\uB3C4 / \uAC1D\uAD00\uC2DD] \uBCF4\uAE30 \uC911 \uC62C\uBC14\uB978
-    \uAC83\uC740?"
+  prompt: "[\uD558 / \uAC1D\uAD00\uC2DD] \uBCF4\uAE30 \uC911 \uC62C\uBC14\uB978 \uAC83\uC740?"
   choices:
   - "\uBCF4\uAE30 1 (\uC815\uB2F5)"
   - "\uBCF4\uAE30 2"
@@ -25,4 +24,4 @@ MonoBehaviour:
   - "\uBCF4\uAE30 4"
   correctIndex: 0
   acceptedAnswers: []
-  explanation: "[\uD558 \uB09C\uC774\uB3C4] \uD574\uC124 \uD14D\uC2A4\uD2B8 \uC790\uB9AC\uC785\uB2C8\uB2E4."
+  explanation: "[\uD558 \uB09C\uC774\uB3C4] \uD574\uC124."

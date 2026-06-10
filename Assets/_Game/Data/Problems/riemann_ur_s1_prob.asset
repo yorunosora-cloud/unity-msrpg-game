@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f259cec397518044d8f1d091e10c7dbd, type: 3}
+  m_Name: riemann_ur_s1_prob
+  m_EditorClassIdentifier: MSRPG::ProblemDef
+  id: riemann_ur_s1_prob
+  skillId: riemann_ur_s1
+  difficulty: 0
+  type: 0
+  prompt: "\uB274\uD134\uC758 \uC6B4\uB3D9 \uC81C2\uBC95\uCE59\uC5D0 \uD574\uB2F9\uD558\uB294
+    \uACF5\uC2DD\uC740?"
+  choices:
+  - F = ma
+  - "E = mc\xB2"
+  - PV = nRT
+  - v = d/t
+  correctIndex: 0
+  acceptedAnswers: []
+  explanation: "F = ma : \uD798\uC740 \uC9C8\uB7C9\uACFC \uAC00\uC18D\uB3C4\uC758
+    \uACF1\uC785\uB2C8\uB2E4."

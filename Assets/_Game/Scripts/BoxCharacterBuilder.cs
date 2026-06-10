@@ -228,7 +228,10 @@ public class BoxCharacterBuilder : MonoBehaviour
         Destroy(go.GetComponent<BoxCollider>());
         go.transform.SetParent(parent, false);
         go.transform.localScale = size;
-        go.GetComponent<MeshRenderer>().material.color = color;
+        var shader = Shader.Find("MSRPG/ToonLit");
+        var mat    = new Material(shader != null ? shader : Shader.Find("Universal Render Pipeline/Lit"));
+        mat.color  = color;
+        go.GetComponent<MeshRenderer>().material = mat;
         return go.transform;
     }
 

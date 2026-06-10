@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: MSRPG::SkillDef
   id: aoe_blast
   nameKo: "\uD3ED\uBC1C"
+  descKo: 
   mpCost: 55
   cooldown: 6
   effectKind: 1

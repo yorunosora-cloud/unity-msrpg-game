@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f259cec397518044d8f1d091e10c7dbd, type: 3}
+  m_Name: mass_sr_s1_prob
+  m_EditorClassIdentifier: MSRPG::ProblemDef
+  id: mass_sr_s1_prob
+  skillId: mass_sr_s1
+  difficulty: 0
+  type: 1
+  prompt: "\uC138\uD3EC \uB0B4\uC5D0\uC11C ATP\uB97C \uD569\uC131\uD574 \uC5D0\uB108\uC9C0\uB97C
+    \uACF5\uAE09\uD558\uB294 \uC18C\uAE30\uAD00\uC758 \uC774\uB984\uC744 \uC4F0\uC2DC\uC624."
+  choices:
+  - 
+  - 
+  - 
+  - 
+  correctIndex: 0
+  acceptedAnswers:
+  - "\uBBF8\uD1A0\uCF58\uB4DC\uB9AC\uC544"
+  - mitochondria
+  explanation: "\uBBF8\uD1A0\uCF58\uB4DC\uB9AC\uC544\uB294 \uC138\uD3EC\uD638\uD761\uC744
+    \uD1B5\uD574 ATP\uB97C \uC0DD\uC0B0\uD569\uB2C8\uB2E4."

@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: MSRPG::SkillDef
   id: strike_basic
   nameKo: "\uAE30\uBCF8 \uAC15\uD0C0"
+  descKo: 
   mpCost: 20
   cooldown: 1
   effectKind: 0
