@@ -87,37 +87,43 @@ public static class MesoriaSetup
         scaler.matchWidthOrHeight  = 0.5f;
         canvasGO.AddComponent<GraphicRaycaster>();
 
-        // 9-a. 우상단 열기 버튼
-        var openBtn = CreateButton(canvasGO.transform, "OpenAccountButton", "계정", korFont,
-            anchor: new Vector2(1f, 1f), pivot: new Vector2(1f, 1f),
-            pos: new Vector2(-20f, -20f), size: new Vector2(140f, 60f));
+        // 9-a. 우상단 열기 버튼 (우상단 앵커)
+        var openBtn = UIKit.Button(canvasGO.transform, "OpenAccountButton", "계정",
+            UIKit.BtnKind.Neutral, size: new Vector2(140f, 60f), fontSize: UITheme.FontH2);
+        { var r = openBtn.GetComponent<RectTransform>();
+          r.anchorMin = r.anchorMax = new Vector2(1f, 1f);
+          r.pivot = new Vector2(1f, 1f);
+          r.anchoredPosition = new Vector2(-20f, -20f); }
 
         // 9-b. 계정 패널 (기본 비활성)
-        var panelGO = CreatePanel(canvasGO.transform, "AccountPanel",
-            size: new Vector2(600f, 500f), pos: Vector2.zero,
-            bgColor: new Color(0.1f, 0.1f, 0.15f, 0.97f));
+        var panelGO = UIKit.Panel(canvasGO.transform, "AccountPanel", new Vector2(600f, 500f));
 
         // 제목
-        CreateLabel(panelGO.transform, "Title", "계정 정보", 40, new Vector2(0, 180), korFont);
+        UIKit.Label(panelGO.transform, "Title", "계정 정보",
+            UIKit.TextLevel.H1, new Vector2(0, 180));
 
         // 구분선
-        CreateHRule(panelGO.transform, new Vector2(0, 135));
+        UIKit.Divider(panelGO.transform, new Vector2(0, 135), 520f);
 
         // 정보 텍스트
-        var userText  = CreateLabel(panelGO.transform, "UsernameText", "아이디: —",    30, new Vector2(0, 70),  korFont);
-        var levelText = CreateLabel(panelGO.transform, "LevelText",    "레벨: —",      30, new Vector2(0, 10),  korFont);
+        var userText  = UIKit.Label(panelGO.transform, "UsernameText", "아이디: —",
+            UIKit.TextLevel.H2, new Vector2(0, 70),
+            align: TextAlignmentOptions.MidlineLeft);
+        var levelText = UIKit.Label(panelGO.transform, "LevelText",    "레벨: —",
+            UIKit.TextLevel.H2, new Vector2(0, 10),
+            align: TextAlignmentOptions.MidlineLeft);
 
-        // 로그아웃 버튼 (빨강)
-        var logoutBtn = CreateButton(panelGO.transform, "LogoutButton", "로그아웃", korFont,
-            anchor: new Vector2(0.5f, 0.5f), pivot: new Vector2(0.5f, 0.5f),
-            pos: new Vector2(0, -100), size: new Vector2(380f, 70f),
-            color: new Color(0.8f, 0.2f, 0.2f));
+        // 로그아웃 버튼 (위험색)
+        var logoutBtn = UIKit.Button(panelGO.transform, "LogoutButton", "로그아웃",
+            UIKit.BtnKind.Danger, new Vector2(0, -100), new Vector2(380f, 70f));
 
-        // 닫기 버튼 (X, 우상단)
-        var closeBtn = CreateButton(panelGO.transform, "CloseButton", "X", korFont,
-            anchor: new Vector2(1f, 1f), pivot: new Vector2(1f, 1f),
-            pos: new Vector2(-10f, -10f), size: new Vector2(60f, 60f),
-            color: new Color(0.3f, 0.3f, 0.35f));
+        // 닫기 버튼 (X, 우상단 앵커)
+        var closeBtn = UIKit.Button(panelGO.transform, "CloseButton", "✕",
+            UIKit.BtnKind.Neutral, size: new Vector2(60f, 60f), fontSize: 24);
+        { var r = closeBtn.GetComponent<RectTransform>();
+          r.anchorMin = r.anchorMax = new Vector2(1f, 1f);
+          r.pivot = new Vector2(1f, 1f);
+          r.anchoredPosition = new Vector2(-10f, -10f); }
 
         panelGO.SetActive(false);
 
@@ -231,85 +237,6 @@ public static class MesoriaSetup
         Object.DestroyImmediate(wall.GetComponent<MeshRenderer>());
     }
 
-    static GameObject CreatePanel(Transform parent, string name,
-        Vector2 size, Vector2 pos, Color bgColor)
-    {
-        var go = new GameObject(name);
-        go.transform.SetParent(parent, false);
-        var rt = go.AddComponent<RectTransform>();
-        rt.anchorMin        = new Vector2(0.5f, 0.5f);
-        rt.anchorMax        = new Vector2(0.5f, 0.5f);
-        rt.sizeDelta        = size;
-        rt.anchoredPosition = pos;
-        var img = go.AddComponent<Image>();
-        img.color = bgColor;
-        return go;
-    }
-
-    static GameObject CreateLabel(Transform parent, string name, string text,
-        int fontSize, Vector2 pos, TMP_FontAsset font)
-    {
-        var go = new GameObject(name);
-        go.transform.SetParent(parent, false);
-        var rt = go.AddComponent<RectTransform>();
-        rt.anchorMin        = new Vector2(0.5f, 0.5f);
-        rt.anchorMax        = new Vector2(0.5f, 0.5f);
-        rt.sizeDelta        = new Vector2(540f, 60f);
-        rt.anchoredPosition = pos;
-        var t = go.AddComponent<TextMeshProUGUI>();
-        t.text      = text;
-        t.fontSize  = fontSize;
-        t.color     = Color.white;
-        t.alignment = TextAlignmentOptions.MidlineLeft;
-        if (font != null) t.font = font;
-        return go;
-    }
-
-    static void CreateHRule(Transform parent, Vector2 pos)
-    {
-        var go = new GameObject("Divider");
-        go.transform.SetParent(parent, false);
-        var rt = go.AddComponent<RectTransform>();
-        rt.anchorMin        = new Vector2(0.5f, 0.5f);
-        rt.anchorMax        = new Vector2(0.5f, 0.5f);
-        rt.sizeDelta        = new Vector2(520f, 2f);
-        rt.anchoredPosition = pos;
-        go.AddComponent<Image>().color = new Color(1f, 1f, 1f, 0.15f);
-    }
-
-    static GameObject CreateButton(Transform parent, string name, string label,
-        TMP_FontAsset font, Vector2 anchor, Vector2 pivot,
-        Vector2 pos, Vector2 size,
-        Color? color = null)
-    {
-        var go = new GameObject(name);
-        go.transform.SetParent(parent, false);
-        var rt = go.AddComponent<RectTransform>();
-        rt.anchorMin        = anchor;
-        rt.anchorMax        = anchor;
-        rt.pivot            = pivot;
-        rt.sizeDelta        = size;
-        rt.anchoredPosition = pos;
-        var img = go.AddComponent<Image>();
-        img.color = color ?? new Color(0.25f, 0.5f, 1f);
-        go.AddComponent<Button>();
-
-        var labelGO = new GameObject("Text");
-        labelGO.transform.SetParent(go.transform, false);
-        var lrt = labelGO.AddComponent<RectTransform>();
-        lrt.anchorMin = Vector2.zero;
-        lrt.anchorMax = Vector2.one;
-        lrt.sizeDelta = Vector2.zero;
-        var t = labelGO.AddComponent<TextMeshProUGUI>();
-        t.text      = label;
-        t.fontSize  = 28;
-        t.color     = Color.white;
-        t.alignment = TextAlignmentOptions.Center;
-        if (font != null) t.font = font;
-
-        return go;
-    }
-
     // ── 전투 HUD 헬퍼 ──────────────────────────────────────────────────────
 
     struct CombatHudRefs
@@ -330,7 +257,8 @@ public static class MesoriaSetup
         rt.sizeDelta        = new Vector2(340f, 110f);
         rt.anchoredPosition = new Vector2(20f, 20f);
         var bg = panelGO.AddComponent<Image>();
-        bg.color = new Color(0f, 0f, 0f, 0.55f);
+        bg.color = new Color(UITheme.PanelBgDark.r, UITheme.PanelBgDark.g,
+                             UITheme.PanelBgDark.b, 0.88f);
 
         Image    hpFill = CreateBar(panelGO.transform, "HP", new Vector2(16f, 70f),
                               new Color(0.15f, 0.85f, 0.3f));
@@ -368,7 +296,8 @@ public static class MesoriaSetup
         bgRt.sizeDelta        = new Vector2(308f, 22f);
         bgRt.anchoredPosition = pos;
         var bgImg = bgGO.AddComponent<Image>();
-        bgImg.color = new Color(0.15f, 0.15f, 0.15f, 0.9f);
+        bgImg.color = new Color(UITheme.PanelBgDark.r, UITheme.PanelBgDark.g,
+                                UITheme.PanelBgDark.b, 0.9f);
 
         // 채움
         var fillGO = new GameObject(name + "Fill");
@@ -504,7 +433,8 @@ public static class MesoriaSetup
             slotRt.sizeDelta        = new Vector2(SlotW, SlotH);
             slotRt.anchoredPosition = new Vector2(xOff, 0f);
             var bgImg = slotGO.AddComponent<Image>();
-            bgImg.color = new Color(0.3f, 0.6f, 1f, 0.9f);
+            bgImg.color = new Color(UITheme.PanelBgMid.r, UITheme.PanelBgMid.g,
+                                    UITheme.PanelBgMid.b, 0.93f);
             bgs[i] = bgImg;
 
             // ── 활성 금색 테두리 ──
@@ -716,7 +646,8 @@ public static class MesoriaSetup
 
             // ── 배경 ──
             var bg = slotGO.AddComponent<Image>();
-            bg.color    = new Color(0.1f, 0.1f, 0.15f, 0.85f);
+            bg.color    = new Color(UITheme.PanelBgDark.r, UITheme.PanelBgDark.g,
+                                    UITheme.PanelBgDark.b, 0.88f);
             slotBgs[i] = bg;
 
             // ── 키 라벨 (좌상단) ──

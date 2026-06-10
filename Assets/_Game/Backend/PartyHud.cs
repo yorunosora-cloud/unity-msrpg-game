@@ -22,10 +22,13 @@ public class PartyHud : MonoBehaviour
     [SerializeField] Image[]    _slotMpFills;
     [SerializeField] TMP_Text[] _slotMpTexts;
 
-    // ── 슬롯 색상 (상태 기반) ────────────────────────────────────────────
-    static readonly Color SlotNormalColor = new Color(0.20f, 0.23f, 0.30f, 0.93f);
-    static readonly Color SlotActiveColor = new Color(0.24f, 0.28f, 0.40f, 0.95f);
-    static readonly Color SlotDownedColor = new Color(0.25f, 0.07f, 0.07f, 0.93f);
+    // ── 슬롯 색상 (상태 기반, UITheme §B-3) ─────────────────────────────
+    static readonly Color SlotNormalColor = new Color(
+        UITheme.PanelBgMid.r, UITheme.PanelBgMid.g, UITheme.PanelBgMid.b, 0.93f);
+    static readonly Color SlotActiveColor = new Color(
+        UITheme.PanelBgMid.r + 0.04f, UITheme.PanelBgMid.g + 0.04f,
+        UITheme.PanelBgMid.b + 0.10f, 0.95f);
+    static readonly Color SlotDownedColor = new Color(0.25f, 0.07f, 0.07f, 0.93f); // 기절=빨강 유지
 
     static readonly Color ActiveBorderColor = new Color(1.00f, 0.85f, 0.10f);
     static readonly Color DownedTextColor   = new Color(1.00f, 0.30f, 0.30f);

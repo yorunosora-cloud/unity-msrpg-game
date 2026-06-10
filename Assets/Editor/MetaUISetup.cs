@@ -59,13 +59,18 @@ public static class MetaUISetup
         hudRt.sizeDelta       = new Vector2(0f, 70f);
         hudRt.anchoredPosition = Vector2.zero;
         var hudBg  = hudGO.AddComponent<Image>();
-        hudBg.color = new Color(0f, 0f, 0f, 0.6f);
+        hudBg.color = new Color(UITheme.PanelBgDark.r, UITheme.PanelBgDark.g,
+                                UITheme.PanelBgDark.b, 0.88f);
         var hud    = hudGO.AddComponent<CurrencyHud>();
 
-        var goldText     = CreateLabel(hudGO.transform, "GoldText",     "골드 5,000", 26, new Vector2(-380f, 0f), font);
-        var paperText    = CreateLabel(hudGO.transform, "PaperText",    "논문 30",    26, new Vector2(-120f, 0f), font);
-        var focusText    = CreateLabel(hudGO.transform, "FocusText",    "집중 120",   26, new Vector2( 120f, 0f), font);
-        var fragmentText = CreateLabel(hudGO.transform, "FragmentText", "조각 10",    26, new Vector2( 380f, 0f), font);
+        var goldText     = UIKit.Label(hudGO.transform, "GoldText",     "골드 5,000",
+            UIKit.TextLevel.Body, new Vector2(-380f, 0f));
+        var paperText    = UIKit.Label(hudGO.transform, "PaperText",    "논문 30",
+            UIKit.TextLevel.Body, new Vector2(-120f, 0f));
+        var focusText    = UIKit.Label(hudGO.transform, "FocusText",    "집중 120",
+            UIKit.TextLevel.Body, new Vector2( 120f, 0f));
+        var fragmentText = UIKit.Label(hudGO.transform, "FragmentText", "조각 10",
+            UIKit.TextLevel.Body, new Vector2( 380f, 0f));
 
         var hudSo = new SerializedObject(hud);
         hudSo.FindProperty("goldText").objectReferenceValue     = goldText.GetComponent<TMP_Text>();
@@ -75,11 +80,12 @@ public static class MetaUISetup
         hudSo.ApplyModifiedProperties();
 
         // ── CollectionPanel (도감, C키, 중앙 숨김) ──────────────────────
-        var collPanel = CreateCentrePanel(canvasGO.transform, "CollectionPanel", new Vector2(700f, 950f));
+        var collPanel = UIKit.Panel(canvasGO.transform, "CollectionPanel", new Vector2(700f, 950f));
         collPanel.SetActive(false);
-        CreateLabel(collPanel.transform, "Title",   "도감  [C]",   44, new Vector2(0f, 390f), font);
-        var collListText = CreateLabel(collPanel.transform, "ListText", "", 26, new Vector2(0f, 0f), font);
-        var closeBtnC    = CreateButton(collPanel.transform, "CloseBtn", "닫기  [C]", new Vector2(0f, -400f), font, 28, 0.4f);
+        UIKit.Label(collPanel.transform, "Title", "도감  [C]", UIKit.TextLevel.H1, new Vector2(0f, 390f));
+        var collListText = UIKit.Label(collPanel.transform, "ListText", "", UIKit.TextLevel.Body, new Vector2(0f, 0f));
+        var closeBtnC    = UIKit.Button(collPanel.transform, "CloseBtn", "닫기  [C]",
+            UIKit.BtnKind.Neutral, new Vector2(0f, -400f), new Vector2(300f, 70f));
 
         var collCmp = collPanel.AddComponent<CollectionPanel>();
         var cSo = new SerializedObject(collCmp);
@@ -88,11 +94,12 @@ public static class MetaUISetup
         UnityEventTools.AddVoidPersistentListener(closeBtnC.GetComponent<Button>().onClick, collCmp.OnCloseClicked);
 
         // ── InventoryPanel (인벤토리, I키, 중앙 숨김) ───────────────────
-        var invPanel = CreateCentrePanel(canvasGO.transform, "InventoryPanel", new Vector2(700f, 950f));
+        var invPanel = UIKit.Panel(canvasGO.transform, "InventoryPanel", new Vector2(700f, 950f));
         invPanel.SetActive(false);
-        CreateLabel(invPanel.transform, "Title",   "인벤토리  [I]", 44, new Vector2(0f, 390f), font);
-        var invListText = CreateLabel(invPanel.transform, "ListText", "", 26, new Vector2(0f, 0f), font);
-        var closeBtnI   = CreateButton(invPanel.transform, "CloseBtn", "닫기  [I]", new Vector2(0f, -400f), font, 28, 0.4f);
+        UIKit.Label(invPanel.transform, "Title", "인벤토리  [I]", UIKit.TextLevel.H1, new Vector2(0f, 390f));
+        var invListText = UIKit.Label(invPanel.transform, "ListText", "", UIKit.TextLevel.Body, new Vector2(0f, 0f));
+        var closeBtnI   = UIKit.Button(invPanel.transform, "CloseBtn", "닫기  [I]",
+            UIKit.BtnKind.Neutral, new Vector2(0f, -400f), new Vector2(300f, 70f));
 
         var invCmp = invPanel.AddComponent<InventoryPanel>();
         var iSo = new SerializedObject(invCmp);
@@ -101,36 +108,30 @@ public static class MetaUISetup
         UnityEventTools.AddVoidPersistentListener(closeBtnI.GetComponent<Button>().onClick, invCmp.OnCloseClicked);
 
         // ── AdminPanel (F1키, 중앙 숨김) ─────────────────────────────────
-        var adminPanel = CreateCentrePanel(canvasGO.transform, "AdminPanel", new Vector2(700f, 1000f));
+        var adminPanel = UIKit.Panel(canvasGO.transform, "AdminPanel", new Vector2(700f, 1000f));
         adminPanel.SetActive(false);
-        CreateLabel(adminPanel.transform, "Title", "관리자 패널  [F1]", 40, new Vector2(0f, 450f), font);
+        UIKit.Label(adminPanel.transform, "Title", "관리자 패널  [F1]", UIKit.TextLevel.H1, new Vector2(0f, 450f));
 
-        var addGoldBtn      = CreateButton(adminPanel.transform, "AddGoldBtn",      "+골드 1,000",    new Vector2(0f,  340f), font, 26);
-        var addPaperBtn     = CreateButton(adminPanel.transform, "AddPaperBtn",     "+논문 100",      new Vector2(0f,  260f), font, 26);
-        var addFocusBtn     = CreateButton(adminPanel.transform, "AddFocusBtn",     "+집중력 100",    new Vector2(0f,  180f), font, 26);
-        var addFragmentBtn  = CreateButton(adminPanel.transform, "AddFragmentBtn",  "+조각 50",       new Vector2(0f,  100f), font, 26);
-        var giveCrystalsBtn = CreateButton(adminPanel.transform, "GiveCrystalsBtn", "+결정(전종 10)", new Vector2(0f,   20f), font, 26);
+        var addGoldBtn      = UIKit.Button(adminPanel.transform, "AddGoldBtn",      "+골드 1,000",    UIKit.BtnKind.Success, new Vector2(0f,  340f), new Vector2(580f, 65f), UITheme.FontBody+2);
+        var addPaperBtn     = UIKit.Button(adminPanel.transform, "AddPaperBtn",     "+논문 100",      UIKit.BtnKind.Success, new Vector2(0f,  260f), new Vector2(580f, 65f), UITheme.FontBody+2);
+        var addFocusBtn     = UIKit.Button(adminPanel.transform, "AddFocusBtn",     "+집중력 100",    UIKit.BtnKind.Success, new Vector2(0f,  180f), new Vector2(580f, 65f), UITheme.FontBody+2);
+        var addFragmentBtn  = UIKit.Button(adminPanel.transform, "AddFragmentBtn",  "+조각 50",       UIKit.BtnKind.Success, new Vector2(0f,  100f), new Vector2(580f, 65f), UITheme.FontBody+2);
+        var giveCrystalsBtn = UIKit.Button(adminPanel.transform, "GiveCrystalsBtn", "+결정(전종 10)", UIKit.BtnKind.Success, new Vector2(0f,   20f), new Vector2(580f, 65f), UITheme.FontBody+2);
 
-        var charInput = CreateInput(adminPanel.transform, "CharacterIdInput", "캐릭터 ID 입력", new Vector2(-60f, -60f), font);
-        var giveBtn   = CreateButton(adminPanel.transform, "GiveCharacterBtn", "지급", new Vector2(260f, -60f), font, 26);
-        ((RectTransform)giveBtn.transform).sizeDelta = new Vector2(150f, 65f);
+        var charInput = UIKit.Input(adminPanel.transform, "CharacterIdInput", "캐릭터 ID 입력", new Vector2(-60f, -60f), new Vector2(400f, 65f));
+        var giveBtn   = UIKit.Button(adminPanel.transform, "GiveCharacterBtn", "지급", UIKit.BtnKind.Primary, new Vector2(260f, -60f), new Vector2(150f, 65f));
 
-        var giveAllCharsBtn = CreateButton(adminPanel.transform, "GiveAllCharsBtn", "전체 캐릭터 지급", new Vector2(0f, -120f), font, 26);
+        var giveAllCharsBtn = UIKit.Button(adminPanel.transform, "GiveAllCharsBtn", "전체 캐릭터 지급", UIKit.BtnKind.Primary, new Vector2(0f, -120f), new Vector2(580f, 65f));
 
-        var roll1Btn  = CreateButton(adminPanel.transform, "Roll1Btn",  "가챠 1회 (무료)", new Vector2(-160f, -210f), font, 26);
-        var roll10Btn = CreateButton(adminPanel.transform, "Roll10Btn", "10연 (무료)",      new Vector2( 160f, -210f), font, 26);
-        ((RectTransform)roll1Btn.transform).sizeDelta  = new Vector2(310f, 65f);
-        ((RectTransform)roll10Btn.transform).sizeDelta = new Vector2(310f, 65f);
+        var roll1Btn  = UIKit.Button(adminPanel.transform, "Roll1Btn",  "가챠 1회 (무료)", UIKit.BtnKind.Neutral, new Vector2(-160f, -210f), new Vector2(310f, 65f));
+        var roll10Btn = UIKit.Button(adminPanel.transform, "Roll10Btn", "10연 (무료)",      UIKit.BtnKind.Neutral, new Vector2( 160f, -210f), new Vector2(310f, 65f));
 
-        var resetBtn = CreateButton(adminPanel.transform, "ResetBtn", "계정 초기화", new Vector2(-200f, -300f), font, 24, 0.5f);
-        var saveBtn  = CreateButton(adminPanel.transform, "SaveBtn",  "강제 저장",   new Vector2(   0f, -300f), font, 24);
-        var loadBtn  = CreateButton(adminPanel.transform, "LoadBtn",  "불러오기",    new Vector2( 200f, -300f), font, 24);
-        ((RectTransform)resetBtn.transform).sizeDelta = new Vector2(250f, 60f);
-        ((RectTransform)saveBtn.transform).sizeDelta  = new Vector2(220f, 60f);
-        ((RectTransform)loadBtn.transform).sizeDelta  = new Vector2(200f, 60f);
+        var resetBtn = UIKit.Button(adminPanel.transform, "ResetBtn", "계정 초기화", UIKit.BtnKind.Danger,   new Vector2(-200f, -300f), new Vector2(250f, 60f));
+        var saveBtn  = UIKit.Button(adminPanel.transform, "SaveBtn",  "강제 저장",   UIKit.BtnKind.Primary,  new Vector2(   0f, -300f), new Vector2(220f, 60f));
+        var loadBtn  = UIKit.Button(adminPanel.transform, "LoadBtn",  "불러오기",    UIKit.BtnKind.Neutral,  new Vector2( 200f, -300f), new Vector2(200f, 60f));
 
-        var statusAdmin = CreateLabel(adminPanel.transform, "Status", "", 24, new Vector2(0f, -400f), font);
-        var closeBtnA   = CreateButton(adminPanel.transform, "CloseBtn", "닫기  [F1]", new Vector2(0f, -490f), font, 28, 0.4f);
+        var statusAdmin = UIKit.Label(adminPanel.transform, "Status", "", UIKit.TextLevel.Body, new Vector2(0f, -400f));
+        var closeBtnA   = UIKit.Button(adminPanel.transform, "CloseBtn", "닫기  [F1]", UIKit.BtnKind.Neutral, new Vector2(0f, -490f), new Vector2(300f, 70f));
 
         var adminCmp = adminPanel.AddComponent<AdminPanel>();
         var aSo = new SerializedObject(adminCmp);
@@ -169,7 +170,7 @@ public static class MetaUISetup
         // 허브 구조: 3열 그리드 → 카드 클릭 → 개인 창
         //   [레벨업] → 난이도 선택 → 자원 소모 → 문제(최대 3시도) → EXP
         //   [스킬 연구] → 전체폭 스킬 목록 → 잠금 클릭 → 문제 → 해금
-        var skillPanel = CreateCentrePanel(canvasGO.transform, "RnEPanel", new Vector2(1000f, 950f));
+        var skillPanel = UIKit.Panel(canvasGO.transform, "RnEPanel", new Vector2(1000f, 950f));
         skillPanel.SetActive(false);
 
         // 제목 (상단 좌측)
@@ -192,7 +193,7 @@ public static class MetaUISetup
             r.anchorMin = new Vector2(1f,1f); r.anchorMax = new Vector2(1f,1f);
             r.pivot = new Vector2(1f,1f);
             r.offsetMin = new Vector2(-145f,-66f); r.offsetMax = new Vector2(-8f,-4f);
-            closeBtnKGO.AddComponent<Image>().color = new Color(0.22f,0.22f,0.32f,0.95f);
+            closeBtnKGO.AddComponent<Image>().color = UITheme.BtnNeutral;
             closeBtnKGO.AddComponent<Button>();
             var tg = new GameObject("Text"); tg.transform.SetParent(closeBtnKGO.transform, false);
             var tr = tg.AddComponent<RectTransform>();
@@ -211,7 +212,8 @@ public static class MetaUISetup
         charSvRt.anchorMax = new Vector2(1f, 1f);
         charSvRt.offsetMin = new Vector2(10f,  65f);
         charSvRt.offsetMax = new Vector2(-10f, -70f);
-        charSvGO.AddComponent<Image>().color = new Color(0.04f, 0.04f, 0.07f, 0.85f);
+        charSvGO.AddComponent<Image>().color = new Color(UITheme.PanelBgDark.r, UITheme.PanelBgDark.g,
+                                                          UITheme.PanelBgDark.b, 0.85f);
         var charSv = charSvGO.AddComponent<ScrollRect>();
         charSv.horizontal = false;
 
@@ -247,7 +249,7 @@ public static class MetaUISetup
             var r = detailPanelGO.AddComponent<RectTransform>();
             r.anchorMin = new Vector2(0f, 0f); r.anchorMax = new Vector2(1f, 1f);
             r.offsetMin = new Vector2(410f, 65f); r.offsetMax = new Vector2(-10f, -70f);
-            detailPanelGO.AddComponent<Image>().color = new Color(0.06f, 0.06f, 0.10f, 0.97f);
+            detailPanelGO.AddComponent<Image>().color = UITheme.PanelBgDarkA;
         }
         detailPanelGO.SetActive(false);
 
@@ -291,7 +293,8 @@ public static class MetaUISetup
             var r = difficultyPanelGO.AddComponent<RectTransform>();
             r.anchorMin = new Vector2(0f, 0.12f); r.anchorMax = new Vector2(1f, 0.60f);
             r.offsetMin = new Vector2(8f, 4f); r.offsetMax = new Vector2(-8f, -4f);
-            difficultyPanelGO.AddComponent<Image>().color = new Color(0.04f,0.04f,0.07f,0.7f);
+            difficultyPanelGO.AddComponent<Image>().color = new Color(UITheme.PanelBgDark.r,
+                UITheme.PanelBgDark.g, UITheme.PanelBgDark.b, 0.75f);
         }
         difficultyPanelGO.SetActive(false);
 
@@ -348,7 +351,8 @@ public static class MetaUISetup
             var r = skillListPanelGO.AddComponent<RectTransform>();
             r.anchorMin = new Vector2(0f, 0.12f); r.anchorMax = new Vector2(1f, 0.60f);
             r.offsetMin = new Vector2(8f, 4f); r.offsetMax = new Vector2(-8f, -4f);
-            skillListPanelGO.AddComponent<Image>().color = new Color(0.04f,0.04f,0.07f,0.8f);
+            skillListPanelGO.AddComponent<Image>().color = new Color(UITheme.PanelBgDark.r,
+                UITheme.PanelBgDark.g, UITheme.PanelBgDark.b, 0.80f);
         }
         skillListPanelGO.SetActive(false);
 
@@ -404,7 +408,7 @@ public static class MetaUISetup
             var r = skillInfoPanelGO.AddComponent<RectTransform>();
             r.anchorMin = new Vector2(0f, 0.12f); r.anchorMax = new Vector2(1f, 0.60f);
             r.offsetMin = new Vector2(8f, 4f); r.offsetMax = new Vector2(-8f, -4f);
-            skillInfoPanelGO.AddComponent<Image>().color = new Color(0.05f, 0.07f, 0.13f, 0.98f);
+            skillInfoPanelGO.AddComponent<Image>().color = UITheme.PanelBgDarkA;
         }
         skillInfoPanelGO.SetActive(false);
 
@@ -446,7 +450,7 @@ public static class MetaUISetup
             var r = skillResearchStartBtnGO.AddComponent<RectTransform>();
             r.anchorMin = new Vector2(0f, 0.02f); r.anchorMax = new Vector2(0.58f, 0.28f);
             r.offsetMin = new Vector2(8f, 2f); r.offsetMax = new Vector2(-4f, -2f);
-            skillResearchStartBtnGO.AddComponent<Image>().color = new Color(0.2f, 0.55f, 0.25f, 1f);
+            skillResearchStartBtnGO.AddComponent<Image>().color = UITheme.BtnSuccess;
             skillResearchStartBtnGO.AddComponent<Button>();
             var tg = new GameObject("Label"); tg.transform.SetParent(skillResearchStartBtnGO.transform, false);
             var tr = tg.AddComponent<RectTransform>();
@@ -464,7 +468,7 @@ public static class MetaUISetup
             var r = skillInfoBackBtnGO.AddComponent<RectTransform>();
             r.anchorMin = new Vector2(0.62f, 0.02f); r.anchorMax = new Vector2(1f, 0.28f);
             r.offsetMin = new Vector2(4f, 2f); r.offsetMax = new Vector2(-8f, -2f);
-            skillInfoBackBtnGO.AddComponent<Image>().color = new Color(0.30f, 0.30f, 0.40f, 1f);
+            skillInfoBackBtnGO.AddComponent<Image>().color = UITheme.BtnNeutral;
             skillInfoBackBtnGO.AddComponent<Button>();
             var tg = new GameObject("Label"); tg.transform.SetParent(skillInfoBackBtnGO.transform, false);
             var tr = tg.AddComponent<RectTransform>();
@@ -482,7 +486,7 @@ public static class MetaUISetup
             var r = lvUpModeBtnGO.AddComponent<RectTransform>();
             r.anchorMin = new Vector2(0f, 0.01f); r.anchorMax = new Vector2(0.48f, 0.11f);
             r.offsetMin = new Vector2(8f, 0f); r.offsetMax = new Vector2(-4f, 0f);
-            lvUpModeBtnGO.AddComponent<Image>().color = new Color(0.2f,0.6f,0.25f,1f);
+            lvUpModeBtnGO.AddComponent<Image>().color = UITheme.BtnSuccess;
             lvUpModeBtnGO.AddComponent<Button>();
             var tg = new GameObject("Label"); tg.transform.SetParent(lvUpModeBtnGO.transform, false);
             var tr = tg.AddComponent<RectTransform>();
@@ -499,7 +503,7 @@ public static class MetaUISetup
             var r = skillModeBtnGO.AddComponent<RectTransform>();
             r.anchorMin = new Vector2(0.52f, 0.01f); r.anchorMax = new Vector2(1f, 0.11f);
             r.offsetMin = new Vector2(4f, 0f); r.offsetMax = new Vector2(-8f, 0f);
-            skillModeBtnGO.AddComponent<Image>().color = new Color(0.2f,0.35f,0.65f,1f);
+            skillModeBtnGO.AddComponent<Image>().color = UITheme.BtnPrimary;
             skillModeBtnGO.AddComponent<Button>();
             var tg = new GameObject("Label"); tg.transform.SetParent(skillModeBtnGO.transform, false);
             var tr = tg.AddComponent<RectTransform>();
@@ -517,7 +521,8 @@ public static class MetaUISetup
             var r = problemOverlayGO.AddComponent<RectTransform>();
             r.anchorMin = new Vector2(0f,0f); r.anchorMax = new Vector2(1f,1f);
             r.offsetMin = new Vector2(10f,65f); r.offsetMax = new Vector2(-10f,-70f);
-            problemOverlayGO.AddComponent<Image>().color = new Color(0.03f,0.03f,0.06f,0.97f);
+            problemOverlayGO.AddComponent<Image>().color = new Color(UITheme.PanelBgDark.r,
+                UITheme.PanelBgDark.g, UITheme.PanelBgDark.b, 0.97f);
         }
         problemOverlayGO.SetActive(false);
 
@@ -562,7 +567,8 @@ public static class MetaUISetup
                 var cbr = cb.AddComponent<RectTransform>();
                 cbr.anchorMin = new Vector2(0f,yMin); cbr.anchorMax = new Vector2(1f,yMax);
                 cbr.offsetMin = new Vector2(0f,2f); cbr.offsetMax = new Vector2(0f,-2f);
-                cb.AddComponent<Image>().color = new Color(0.2f,0.35f,0.6f,0.9f);
+                cb.AddComponent<Image>().color = new Color(UITheme.BtnPrimary.r, UITheme.BtnPrimary.g,
+                    UITheme.BtnPrimary.b, 0.9f);
                 choiceButtons[i] = cb.AddComponent<Button>();
                 var lGO = new GameObject("Label"); lGO.transform.SetParent(cb.transform, false);
                 var lr = lGO.AddComponent<RectTransform>();
@@ -583,16 +589,15 @@ public static class MetaUISetup
             var r = fiArea.AddComponent<RectTransform>();
             r.anchorMin = new Vector2(0f,0.22f); r.anchorMax = new Vector2(1f,0.62f);
             r.offsetMin = new Vector2(12f,0f); r.offsetMax = new Vector2(-12f,0f);
-            answerInputGO = CreateInput(fiArea.transform, "AnswerInput", "답 입력...", Vector2.zero, font);
-            ((RectTransform)answerInputGO.transform).anchorMin = new Vector2(0f,0.52f);
-            ((RectTransform)answerInputGO.transform).anchorMax = new Vector2(1f,0.90f);
-            ((RectTransform)answerInputGO.transform).offsetMin = Vector2.zero;
-            ((RectTransform)answerInputGO.transform).offsetMax = Vector2.zero;
-            submitBtnGO = CreateButton(fiArea.transform, "SubmitBtn", "제출", Vector2.zero, font, 26);
-            ((RectTransform)submitBtnGO.transform).anchorMin = new Vector2(0f,0.04f);
-            ((RectTransform)submitBtnGO.transform).anchorMax = new Vector2(1f,0.46f);
-            ((RectTransform)submitBtnGO.transform).offsetMin = Vector2.zero;
-            ((RectTransform)submitBtnGO.transform).offsetMax = Vector2.zero;
+            answerInputGO = UIKit.Input(fiArea.transform, "AnswerInput", "답 입력...");
+            { var r = (RectTransform)answerInputGO.transform;
+              r.anchorMin = new Vector2(0f,0.52f); r.anchorMax = new Vector2(1f,0.90f);
+              r.offsetMin = Vector2.zero; r.offsetMax = Vector2.zero; }
+            submitBtnGO = UIKit.Button(fiArea.transform, "SubmitBtn", "제출",
+                UIKit.BtnKind.Success, fontSize: UITheme.FontH2);
+            { var r = (RectTransform)submitBtnGO.transform;
+              r.anchorMin = new Vector2(0f,0.04f); r.anchorMax = new Vector2(1f,0.46f);
+              r.offsetMin = Vector2.zero; r.offsetMax = Vector2.zero; }
         }
         fiArea.SetActive(false);
 
@@ -631,7 +636,7 @@ public static class MetaUISetup
             r.anchorMin = new Vector2(1f,1f); r.anchorMax = new Vector2(1f,1f);
             r.pivot = new Vector2(1f,1f);
             r.offsetMin = new Vector2(-130f,-52f); r.offsetMax = new Vector2(-6f,-6f);
-            closeProbBtnGO.AddComponent<Image>().color = new Color(0.5f,0.15f,0.15f,0.95f);
+            closeProbBtnGO.AddComponent<Image>().color = UITheme.BtnDanger;
             closeProbBtnGO.AddComponent<Button>();
             var tg = new GameObject("Label"); tg.transform.SetParent(closeProbBtnGO.transform, false);
             var tr = tg.AddComponent<RectTransform>();
@@ -745,118 +750,4 @@ public static class MetaUISetup
         }
     }
 
-    static GameObject CreateStrip(Transform parent, string name, Vector2 pos, Vector2 size)
-    {
-        var go = new GameObject(name);
-        go.transform.SetParent(parent, false);
-        var rt = go.AddComponent<RectTransform>();
-        rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
-        rt.sizeDelta        = size;
-        rt.anchoredPosition = pos;
-        return go;
-    }
-
-    static GameObject CreateCentrePanel(Transform parent, string name, Vector2 size)
-    {
-        var go = new GameObject(name);
-        go.transform.SetParent(parent, false);
-        var rt = go.AddComponent<RectTransform>();
-        rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
-        rt.sizeDelta        = size;
-        rt.anchoredPosition = Vector2.zero;
-        var img = go.AddComponent<Image>();
-        img.color = new Color(0.07f, 0.07f, 0.12f, 0.97f);
-        return go;
-    }
-
-    static GameObject CreateLabel(Transform parent, string name, string text,
-                                   int fontSize, Vector2 pos, TMP_FontAsset font)
-    {
-        var go = new GameObject(name);
-        go.transform.SetParent(parent, false);
-        var rt = go.AddComponent<RectTransform>();
-        rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
-        rt.sizeDelta        = new Vector2(650f, 60f);
-        rt.anchoredPosition = pos;
-        var t = go.AddComponent<TextMeshProUGUI>();
-        t.text      = text;
-        t.fontSize  = fontSize;
-        t.color     = Color.white;
-        t.alignment = TextAlignmentOptions.Center;
-        if (font != null) t.font = font;
-        return go;
-    }
-
-    static GameObject CreateButton(Transform parent, string name, string label,
-                                    Vector2 pos, TMP_FontAsset font,
-                                    int fontSize = 32, float bgAlpha = 1f)
-    {
-        var go = new GameObject(name);
-        go.transform.SetParent(parent, false);
-        var rt = go.AddComponent<RectTransform>();
-        rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
-        rt.sizeDelta        = new Vector2(580f, 70f);
-        rt.anchoredPosition = pos;
-        var img = go.AddComponent<Image>();
-        img.color = new Color(0.25f, 0.5f, 1f, bgAlpha);
-        go.AddComponent<Button>();
-
-        var textGO = new GameObject("Text");
-        textGO.transform.SetParent(go.transform, false);
-        var trt = textGO.AddComponent<RectTransform>();
-        trt.anchorMin = Vector2.zero; trt.anchorMax = Vector2.one; trt.sizeDelta = Vector2.zero;
-        var t = textGO.AddComponent<TextMeshProUGUI>();
-        t.text      = label;
-        t.fontSize  = fontSize;
-        t.color     = bgAlpha > 0.3f ? Color.white : new Color(0.6f, 0.8f, 1f);
-        t.alignment = TextAlignmentOptions.Center;
-        if (font != null) t.font = font;
-
-        return go;
-    }
-
-    static GameObject CreateInput(Transform parent, string name, string placeholder,
-                                   Vector2 pos, TMP_FontAsset font)
-    {
-        var go = new GameObject(name);
-        go.transform.SetParent(parent, false);
-        var rt = go.AddComponent<RectTransform>();
-        rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
-        rt.sizeDelta        = new Vector2(400f, 65f);
-        rt.anchoredPosition = pos;
-        var bg = go.AddComponent<Image>();
-        bg.color = new Color(0.2f, 0.2f, 0.25f);
-        var field = go.AddComponent<TMP_InputField>();
-
-        var areaGO = new GameObject("Text Area");
-        areaGO.transform.SetParent(go.transform, false);
-        var areaRT = areaGO.AddComponent<RectTransform>();
-        areaRT.anchorMin = Vector2.zero; areaRT.anchorMax = Vector2.one;
-        areaRT.offsetMin = new Vector2(10f, 4f); areaRT.offsetMax = new Vector2(-10f, -4f);
-        areaGO.AddComponent<RectMask2D>();
-
-        var phGO = new GameObject("Placeholder");
-        phGO.transform.SetParent(areaGO.transform, false);
-        var phRT = phGO.AddComponent<RectTransform>();
-        phRT.anchorMin = Vector2.zero; phRT.anchorMax = Vector2.one; phRT.sizeDelta = Vector2.zero;
-        var phText = phGO.AddComponent<TextMeshProUGUI>();
-        phText.text = placeholder; phText.fontSize = 24;
-        phText.color = new Color(1,1,1,0.4f); phText.fontStyle = FontStyles.Italic;
-        phText.alignment = TextAlignmentOptions.MidlineLeft;
-        if (font != null) phText.font = font;
-
-        var txtGO = new GameObject("Text");
-        txtGO.transform.SetParent(areaGO.transform, false);
-        var txtRT = txtGO.AddComponent<RectTransform>();
-        txtRT.anchorMin = Vector2.zero; txtRT.anchorMax = Vector2.one; txtRT.sizeDelta = Vector2.zero;
-        var tmpText = txtGO.AddComponent<TextMeshProUGUI>();
-        tmpText.fontSize = 24; tmpText.color = Color.white;
-        tmpText.alignment = TextAlignmentOptions.MidlineLeft;
-        if (font != null) tmpText.font = font;
-
-        field.textViewport  = areaRT;
-        field.textComponent = tmpText;
-        field.placeholder   = phText;
-        return go;
-    }
 }
