@@ -34,7 +34,10 @@ public static class UIKit
     {
         var sp = AssetDatabase.LoadAssetAtPath<Sprite>(path);
         if (sp == null)
-            Debug.LogWarning($"[UIKit] 스프라이트 없음: {path}. MSRPG > Generate UI Sprites 먼저 실행.");
+        {
+            UISpriteGen.Run();
+            sp = AssetDatabase.LoadAssetAtPath<Sprite>(path);
+        }
         return sp;
     }
 
