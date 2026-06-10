@@ -244,7 +244,13 @@ public class RnEPanel : MonoBehaviour
 
     void OnSkillModeClicked()
     {
-        if (_selectedDef == null || _selectedOc == null) return;
+        if (_selectedDef == null || _selectedOc == null)
+        {
+            UnityEngine.Debug.LogWarning("[RnE] OnSkillModeClicked: selectedDef or selectedOc is null");
+            return;
+        }
+
+        UnityEngine.Debug.Log($"[RnE] OnSkillModeClicked: def={_selectedDef.id}  skills={((_selectedDef.skills == null) ? "NULL" : _selectedDef.skills.Length.ToString())}  skillListPanel={(skillListPanel == null ? "NULL" : "OK")}");
 
         if (difficultyPanel != null) difficultyPanel.SetActive(false);
         if (skillInfoPanel  != null) skillInfoPanel.SetActive(false);
@@ -398,7 +404,11 @@ public class RnEPanel : MonoBehaviour
         foreach (var go in _skillBtns) if (go) Destroy(go);
         _skillBtns.Clear();
 
-        if (_selectedDef == null || _selectedDef.skills == null || skillListContent == null) return;
+        if (_selectedDef == null || _selectedDef.skills == null || skillListContent == null)
+        {
+            UnityEngine.Debug.LogWarning($"[RnE] BuildSkillList 조기 종료: def={_selectedDef?.id ?? "NULL"}  skills={(_selectedDef?.skills == null ? "NULL" : _selectedDef.skills.Length.ToString())}  skillListContent={(skillListContent == null ? "NULL" : "OK")}");
+            return;
+        }
 
         var font     = GetFont();
         var unlocked = _selectedOc?.unlockedSkillIds;

@@ -65,9 +65,7 @@ public class CombatCharacter
     {
         var skill = SkillAt(i);
         if (skill == null) return false;
-        if (_owned.unlockedSkillIds == null || _owned.unlockedSkillIds.Count == 0)
-            return i == 0;
-        return _owned.unlockedSkillIds.Contains(skill.id);
+        return i == 0 || (_owned.unlockedSkillIds != null && _owned.unlockedSkillIds.Contains(skill.id));
     }
 
     /// <summary>인덱스 i의 스킬을 해금한다. 이미 해금되어 있으면 무시.</summary>
