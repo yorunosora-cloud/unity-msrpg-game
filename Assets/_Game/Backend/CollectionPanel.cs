@@ -59,9 +59,9 @@ public class CollectionPanel : MonoBehaviour
 
     static void BuildEmpty(RectTransform parent, string msg)
     {
-        var go = new GameObject("Empty");
+        var go = new GameObject("Empty", typeof(RectTransform));
         go.transform.SetParent(parent, false);
-        SetRowRect(go, 0f, 80f);
+        SetRowRect((RectTransform)go.transform, 0f, 80f);
         var t = go.AddComponent<TextMeshProUGUI>();
         t.text      = msg;
         t.fontSize  = UITheme.FontBody;
@@ -78,21 +78,20 @@ public class CollectionPanel : MonoBehaviour
         var rarCol  = rarity.DisplayColor();
         var contCol = ContinentColors.Of(contId);
 
-        var row = new GameObject("Row_" + oc.id);
+        var row = new GameObject("Row_" + oc.id, typeof(RectTransform));
         row.transform.SetParent(parent, false);
-        SetRowRect(row, yPos, ROW_H);
+        SetRowRect((RectTransform)row.transform, yPos, ROW_H);
 
         // 배경: 레어리티 색의 매우 어두운 틴트
-        var bg = row.AddComponent<Image>();
-        bg.color = new Color(rarCol.r * 0.13f, rarCol.g * 0.13f, rarCol.b * 0.13f, 1f);
+        row.AddComponent<Image>().color = new Color(rarCol.r * 0.13f, rarCol.g * 0.13f, rarCol.b * 0.13f, 1f);
 
         // 좌측 대륙 컬러 스트립
         AddStrip(row.transform, contCol);
 
         // 캐릭터 이름 (좌)
-        var nameGO = new GameObject("Name");
+        var nameGO = new GameObject("Name", typeof(RectTransform));
         nameGO.transform.SetParent(row.transform, false);
-        var nRt = nameGO.AddComponent<RectTransform>();
+        var nRt = (RectTransform)nameGO.transform;
         nRt.anchorMin = new Vector2(0f, 0f); nRt.anchorMax = new Vector2(0.52f, 1f);
         nRt.offsetMin = new Vector2(16f, 0f); nRt.offsetMax = Vector2.zero;
         var nTxt = nameGO.AddComponent<TextMeshProUGUI>();
@@ -103,9 +102,9 @@ public class CollectionPanel : MonoBehaviour
         nTxt.alignment = TextAlignmentOptions.MidlineLeft;
 
         // 등급·레벨·스킬 (우)
-        var infoGO = new GameObject("Info");
+        var infoGO = new GameObject("Info", typeof(RectTransform));
         infoGO.transform.SetParent(row.transform, false);
-        var iRt = infoGO.AddComponent<RectTransform>();
+        var iRt = (RectTransform)infoGO.transform;
         iRt.anchorMin = new Vector2(0.52f, 0f); iRt.anchorMax = Vector2.one;
         iRt.offsetMin = Vector2.zero;            iRt.offsetMax = new Vector2(-10f, 0f);
         var iTxt = infoGO.AddComponent<TextMeshProUGUI>();
@@ -127,9 +126,8 @@ public class CollectionPanel : MonoBehaviour
 
     // ── 공용 헬퍼 ────────────────────────────────────────────────────────
 
-    static void SetRowRect(GameObject go, float yPos, float height)
+    static void SetRowRect(RectTransform rt, float yPos, float height)
     {
-        var rt = go.GetComponent<RectTransform>() ?? go.AddComponent<RectTransform>();
         rt.anchorMin        = new Vector2(0f, 1f);
         rt.anchorMax        = new Vector2(1f, 1f);
         rt.pivot            = new Vector2(0.5f, 1f);
@@ -139,9 +137,9 @@ public class CollectionPanel : MonoBehaviour
 
     static void AddStrip(Transform parent, Color color)
     {
-        var go = new GameObject("Strip");
+        var go = new GameObject("Strip", typeof(RectTransform));
         go.transform.SetParent(parent, false);
-        var rt = go.AddComponent<RectTransform>();
+        var rt = (RectTransform)go.transform;
         rt.anchorMin = Vector2.zero;
         rt.anchorMax = new Vector2(0f, 1f);
         rt.offsetMin = Vector2.zero;
