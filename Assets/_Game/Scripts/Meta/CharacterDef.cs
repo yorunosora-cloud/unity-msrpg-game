@@ -27,6 +27,24 @@ public class CharacterDef : ScriptableObject
     [Header("액티브 스킬 (설계 §5) — 인덱스 순서대로 E/R/T/F/V/G 키에 매핑")]
     public SkillDef[] skills;  // 보유 수만큼 키 활성. 장착/해제 없이 전부 상시 발동 가능.
 
-    // TODO: synergy   — 시너지 시스템 (설계 §6) 구현 시 추가
-    // TODO: acquisition — 조건 해금 (설계 §7-2) 구현 시 추가
+    [Header("도감 번호")]
+    public int dexNumber;            // 정렬·표시용 고유 번호
+
+    [Header("프로필 (설계 §9)")]
+    public string gender;            // "남"/"여"/"중성"
+    [TextArea] public string concept;     // 컨셉 한 줄 (예: "시간 관리국 직원")
+    [TextArea] public string appearance;  // 외형 묘사
+    public string weapon;
+
+    [Header("로어 — 실제 개념을 녹인 세계관 서술")]
+    [TextArea(4, 12)] public string loreKo;
+
+    [Header("시너지 (설계 §6)")]
+    public SynergyKind synergyKind;
+    public string[]    synergyMarkedBy;   // 표식을 소모할 수 있는 캐릭터 id 배열
+    public string      synergyComboName;  // 연계 이름 (예: "F=ma · 힘")
+
+    [Header("획득 (설계 §7)")]
+    public bool   gachaObtainable = true;
+    [TextArea] public string acquireCondition; // 조건 해금 설명 (없으면 빈 문자열)
 }
