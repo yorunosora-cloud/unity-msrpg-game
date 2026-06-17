@@ -2,9 +2,19 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-/// <summary>가챠 뽑기 패널. MetaPanelController가 활성화 여부를 제어합니다.</summary>
+/// <summary>
+/// 도서관 — 지식 탐구 패널 (가챠 정식 UI).
+/// <para>
+/// <see cref="MetaPanelController.OpenLibrary"/>가 SetActive(true) 하면 <see cref="OnEnable"/>이 발동.
+/// 닫기 버튼 → SetActive(false) → <see cref="OnDisable"/> → <see cref="UIManager.Close"/> 호출.
+/// </para>
+/// </summary>
 public class GachaPanel : MonoBehaviour
 {
+    [Header("정보 라벨")]
+    [SerializeField] TMP_Text paperText;      // 논문 잔액 (실시간)
+    [SerializeField] TMP_Text pityText;       // 천장 카운터
+
     [Header("버튼")]
     [SerializeField] Button singleButton;
     [SerializeField] Button tenButton;
@@ -13,7 +23,6 @@ public class GachaPanel : MonoBehaviour
     [Header("비용 표시")]
     [SerializeField] TMP_Text singleCostText;
     [SerializeField] TMP_Text tenCostText;
-    [SerializeField] TMP_Text pityText;
 
     [Header("결과")]
     [SerializeField] GameObject resultArea;
@@ -26,14 +35,25 @@ public class GachaPanel : MonoBehaviour
     {
         var db = Resources.Load<CharacterDatabase>("CharacterDatabase");
         if (db != null && MetaState.IsInitialized)
+        {
             _svc = new GachaService(db, MetaState.Wallet, MetaState.Roster,
                                     MetaState.GachaState, MetaState.Crystals);
+            MetaState.Wallet.OnChanged += RefreshPaper;
+        }
 
         if (singleCostText) singleCostText.text = $"논문 {GachaConfig.CostSingle}";
         if (tenCostText)    tenCostText.text    = $"논문 {GachaConfig.CostTen}";
         if (resultArea)     resultArea.SetActive(false);
+        RefreshPaper();
         RefreshPity();
         ClearStatus();
+    }
+
+    void OnDisable()
+    {
+        if (MetaState.IsInitialized)
+            MetaState.Wallet.OnChanged -= RefreshPaper;
+        UIManager.Close();
     }
 
     // ── 버튼 이벤트 ───────────────────────────────────────────────────────
@@ -65,20 +85,27 @@ public class GachaPanel : MonoBehaviour
         var sb = new System.Text.StringBuilder();
         foreach (var r in results)
         {
-            string name = r.def != null ? r.def.nameKo : "???";
-            string tag  = r.isNew ? "[신규]" : "[중복]";
-            sb.Append($"[{r.rarity}] {name}  {tag}");
+            string name   = r.def != null ? r.def.nameKo : "???";
+            string tag    = r.isNew ? "★ 신규" : "중복";
+            string rLabel = RarityLabel(r.rarity);
+            sb.Append($"[{rLabel}]  {name}  — {tag}");
 
-            // 중복 결정 지급 표기
             if (!r.isNew && r.crystal.HasValue && r.crystalAmount > 0)
-                sb.Append($"  → {CrystalCatalog.DisplayName(r.crystal.Value)} x{r.crystalAmount}");
+                sb.Append($"  → {CrystalCatalog.DisplayName(r.crystal.Value)} ×{r.crystalAmount}");
 
             sb.AppendLine();
         }
         if (resultText) resultText.text = sb.ToString().TrimEnd();
 
+        RefreshPaper();
         RefreshPity();
         ClearStatus();
+    }
+
+    void RefreshPaper()
+    {
+        if (paperText && MetaState.IsInitialized)
+            paperText.text = $"논문: {MetaState.Wallet.Paper}";
     }
 
     void RefreshPity()
@@ -86,6 +113,15 @@ public class GachaPanel : MonoBehaviour
         if (pityText && MetaState.IsInitialized)
             pityText.text = $"천장 {MetaState.GachaState.PityCounter} / {GachaConfig.PityCap}";
     }
+
+    static string RarityLabel(Rarity r) => r switch
+    {
+        Rarity.UR  => "UR ✦",
+        Rarity.SSR => "SSR",
+        Rarity.SR  => "SR",
+        Rarity.R   => "R",
+        _          => "N",
+    };
 
     void ShowStatus(string msg, Color color)
     {

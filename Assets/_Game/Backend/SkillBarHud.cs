@@ -18,7 +18,7 @@ public class SkillBarHud : MonoBehaviour
     [SerializeField] Image[]       _slotBgs;         // MP 부족 시 어둡게
     [SerializeField] GameObject[]  _slotLockOverlays; // 잠긴 스킬 자물쇠 오버레이
 
-    static readonly string[] KeyLabels = { "E", "R", "T", "F", "V", "G" };
+    static readonly string[] KeyLabels = { "U", "I", "O", "H", "J", "K" };
 
     const float DimAlpha   = 0.4f; // MP 부족·쿨다운 시 배경 투명도
     const float NormalAlpha = 0.85f;

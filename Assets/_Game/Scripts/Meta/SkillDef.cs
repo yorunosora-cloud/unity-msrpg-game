@@ -36,4 +36,21 @@ public class SkillDef : ScriptableObject
     public float buffAtkMultiplier = 1.30f;
     [Tooltip("버프 지속 시간 (초)")]
     public float buffDuration      = 5f;
+
+    [Header("마일스톤 (Lv.3 해금)")]
+    [Tooltip("마일스톤이 활성화되는 스킬 레벨 (기본 3)")]
+    public int    milestoneLevel = 3;
+    [TextArea(1, 3)]
+    [Tooltip("마일스톤 효과 설명 (UI 표시용)")]
+    public string milestoneDescKo;
+    [Tooltip("Strike: 추가 타격 대상 수")]
+    public int    milestoneExtraTargets;
+    [Tooltip("Aoe / Mark: 사거리 보너스")]
+    public float  milestoneRangeBonus;
+    [Tooltip("Aoe / Mark: 전방 각도 보너스 (±도)")]
+    public float  milestoneHalfAngleBonus;
+    [Tooltip("HealBuff: 회복% 보너스 (0.05 = +5%)")]
+    public float  milestoneHealPercentBonus;
+    [Tooltip("HealBuff: 버프 지속시간 보너스 (초)")]
+    public float  milestoneBuffDurationBonus;
 }

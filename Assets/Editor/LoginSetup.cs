@@ -7,6 +7,7 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using UnityEditor.Events;
 using TMPro;
+using UnityEngine.InputSystem.UI;
 
 /// <summary>
 /// MSRPG > Setup Login Scene 메뉴 — 한글 폰트 설정 + Login.unity 씬을 자동으로 생성합니다.
@@ -76,7 +77,7 @@ public static class LoginSetup
         // 2. EventSystem
         var eventGO = new GameObject("EventSystem");
         eventGO.AddComponent<EventSystem>();
-        eventGO.AddComponent<StandaloneInputModule>();
+        eventGO.AddComponent<InputSystemUIInputModule>();
 
         // 3. PlayFabManager
         var pfmGO = new GameObject("PlayFabManager");

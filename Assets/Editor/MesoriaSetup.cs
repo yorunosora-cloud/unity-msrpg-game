@@ -6,6 +6,7 @@ using UnityEngine.EventSystems;
 using TMPro;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
+using UnityEngine.InputSystem.UI;
 
 public static class MesoriaSetup
 {
@@ -27,20 +28,7 @@ public static class MesoriaSetup
         light.intensity = 1f;
         sunGO.transform.rotation = Quaternion.Euler(-50f, 30f, 0f);
 
-        // 3. 지면 + 격자
-        var ground = GameObject.CreatePrimitive(PrimitiveType.Plane);
-        ground.name = "Ground";
-        ground.transform.localScale = new Vector3(20f, 1f, 20f);
-        var mat = new Material(Shader.Find("Universal Render Pipeline/Lit"));
-        mat.color = new Color(0.3f, 0.6f, 0.2f);
-        ground.GetComponent<MeshRenderer>().sharedMaterial = mat;
-        ground.AddComponent<GridFloor>();
-
-        // 4. 경계 벽
-        CreateWall("Wall_N", new Vector3(   0f, 1.5f,  100f), new Vector3(200f, 3f,   1f));
-        CreateWall("Wall_S", new Vector3(   0f, 1.5f, -100f), new Vector3(200f, 3f,   1f));
-        CreateWall("Wall_E", new Vector3( 100f, 1.5f,    0f), new Vector3(  1f, 3f, 200f));
-        CreateWall("Wall_W", new Vector3(-100f, 1.5f,    0f), new Vector3(  1f, 3f, 200f));
+        // 3·4. 지면 + 경계 벽 → MesoriaHubBuilder.Build() 에서 일괄 생성
 
         // 5. 게임 부트스트랩
         var bootstrap = new GameObject("GameBootstrap");
@@ -49,7 +37,7 @@ public static class MesoriaSetup
         // 6. 플레이어
         var player = new GameObject("Player");
         player.tag = "Player";
-        player.transform.position = Vector3.zero;
+        player.transform.position = new Vector3(0f, 0f, -45f); // 남쪽 입구 — 허브 스폰 지점
         var cc = player.AddComponent<CharacterController>();
         cc.center = new Vector3(0f, 1f, 0f);
         cc.radius = 0.3f;
@@ -57,9 +45,10 @@ public static class MesoriaSetup
         player.AddComponent<PlayerController>();
         player.AddComponent<BoxCharacterBuilder>();
         player.AddComponent<PlayerCombat>();      // Q키 평타
-        player.AddComponent<PlayerSkills>();      // E/R/T/F/V/G 스킬 입력 + MP 자연회복
+        player.AddComponent<PlayerSkills>();      // U/I/O/H/J/K 스킬 입력 + MP 자연회복
         player.AddComponent<PartyController>();   // 캐릭터 교체 (1/2/3키)
         player.AddComponent<PlayerDeath>();       // 사망/부활 — 씬 완성 후 와이어링
+        player.AddComponent<PlayerInteractor>();  // 월드 상호작용 (E키, 도서관 등)
 
         // 7. 카메라
         var camGO = new GameObject("Main Camera");
@@ -74,7 +63,7 @@ public static class MesoriaSetup
         // 8. EventSystem (Login 씬 언로드 후 필요)
         var eventGO = new GameObject("EventSystem");
         eventGO.AddComponent<EventSystem>();
-        eventGO.AddComponent<StandaloneInputModule>();
+        eventGO.AddComponent<InputSystemUIInputModule>();
 
         // 9. 계정 패널 UI
         var canvasGO = new GameObject("UI Canvas");
@@ -138,6 +127,29 @@ public static class MesoriaSetup
         apSO.FindProperty("logoutButton").objectReferenceValue = logoutBtn.GetComponent<Button>();
         apSO.ApplyModifiedProperties();
 
+        // 9-d. 상호작용 프롬프트 라벨 (하단 중앙, 기본 숨김) + PlayerInteractor 와이어링
+        var promptLabelGO = new GameObject("InteractPromptLabel");
+        promptLabelGO.transform.SetParent(canvasGO.transform, false);
+        var promptRt = promptLabelGO.AddComponent<RectTransform>();
+        promptRt.anchorMin        = new Vector2(0.5f, 0f);
+        promptRt.anchorMax        = new Vector2(0.5f, 0f);
+        promptRt.pivot            = new Vector2(0.5f, 0f);
+        promptRt.sizeDelta        = new Vector2(420f, 55f);
+        promptRt.anchoredPosition = new Vector2(0f, 145f); // 스킬바(슬롯 115h + 16pad) 위
+        var promptTmpTxt = promptLabelGO.AddComponent<TextMeshProUGUI>();
+        promptTmpTxt.text      = "E: 상호작용";
+        promptTmpTxt.fontSize  = 24;
+        promptTmpTxt.color     = Color.white;
+        promptTmpTxt.alignment = TextAlignmentOptions.Center;
+        promptTmpTxt.fontStyle = FontStyles.Bold;
+        if (korFont != null) promptTmpTxt.font = korFont;
+        promptLabelGO.SetActive(false);
+
+        var interactor   = player.GetComponent<PlayerInteractor>();
+        var interactorSO = new SerializedObject(interactor);
+        interactorSO.FindProperty("promptLabel").objectReferenceValue = promptTmpTxt;
+        interactorSO.ApplyModifiedProperties();
+
         // 10. 전투 HUD — 좌하단 플레이어 HP/MP 바
         var combatHudGO = CreateCombatHudPanel(canvasGO.transform, korFont);
         canvasGO.AddComponent<CombatHud>();
@@ -158,8 +170,8 @@ public static class MesoriaSetup
         pdSO.FindProperty("countdownText").objectReferenceValue = countdown;
         pdSO.ApplyModifiedProperties();
 
-        // 12. 적 스폰 (과목별 5기, 반경 6~10 범위)
-        SpawnEnemies(player.transform);
+        // 12. 허브 맵 환경 생성 (지면·바다·부두·포탈·건물·광장·탑·조명·경계 벽 일체)
+        MesoriaHubBuilder.Build();
 
         // 13. 파티 HUD (우하단, 3칸)
         CreatePartyHud(canvasGO.transform, korFont);
@@ -205,7 +217,7 @@ public static class MesoriaSetup
         EditorSceneManager.SaveScene(scene, "Assets/_Game/Scenes/Mesoria.unity");
         AssetDatabase.Refresh();
 
-        Debug.Log("[MSRPG] ✅ Mesoria 씬 생성 완료! Q=평타, E/R/T/F/V/G=스킬, 1/2/3=파티 교체, HP 0→기절→자동교체, 전멸→부활.");
+        Debug.Log("[MSRPG] ✅ Mesoria 씬 생성 완료! Q=평타, U/I/O/H/J/K=스킬, 1/2/3=파티 교체, E=건물 상호작용(연구소·도서관·길드), C=도감, Tab=인벤토리.");
     }
 
     // ── 헬퍼 ─────────────────────────────────────────────────────────────────
@@ -226,15 +238,6 @@ public static class MesoriaSetup
             prop.objectReferenceValue = font;
             so.ApplyModifiedPropertiesWithoutUndo();
         }
-    }
-
-    static void CreateWall(string name, Vector3 pos, Vector3 scale)
-    {
-        var wall = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        wall.name = name;
-        wall.transform.position   = pos;
-        wall.transform.localScale = scale;
-        Object.DestroyImmediate(wall.GetComponent<MeshRenderer>());
     }
 
     // ── 전투 HUD 헬퍼 ──────────────────────────────────────────────────────
@@ -627,7 +630,7 @@ public static class MesoriaSetup
         var cdOverlays    = new Image[MaxSlots];
         var slotBgs       = new Image[MaxSlots];
 
-        string[] keys = { "E", "R", "T", "F", "V", "G" };
+        string[] keys = { "U", "I", "O", "H", "J", "K" };
 
         for (int i = 0; i < MaxSlots; i++)
         {

@@ -3,15 +3,15 @@ using UnityEngine.InputSystem;
 
 /// <summary>
 /// 플레이어 스킬 입력 컴포넌트. Player GameObject에 부착.
-/// E/R/T/F/V/G 키 → skills[0..5] 발동, MP 자연 회복 틱, 쿨다운·버프 갱신.
+/// U/I/O/H/J/K 키 → skills[0..5] 발동, MP 자연 회복 틱, 쿨다운·버프 갱신.
 /// skillsEnabled = false 면 스킬 키 입력만 차단 (MP 회복·쿨다운 틱은 유지).
 /// </summary>
 [RequireComponent(typeof(BoxCharacterBuilder))]
 public class PlayerSkills : MonoBehaviour
 {
     [Header("스킬 활성화")]
-    [Tooltip("false 면 E/R/T/F/V/G 스킬 키를 차단. 파일·컴포넌트는 보존 — true로 되돌리면 복구.")]
-    [SerializeField] bool skillsEnabled = false;
+    [Tooltip("false 면 U/I/O/H/J/K 스킬 키를 차단. 파일·컴포넌트는 보존 — true로 되돌리면 복구.")]
+    [SerializeField] bool skillsEnabled = true;
 
     [Header("MP 자연 회복")]
     [Tooltip("MaxMp 대비 초당 자연 회복 비율 (기본 3%)")]
@@ -48,18 +48,17 @@ public class PlayerSkills : MonoBehaviour
             _regenAccum -= 0.5f;
         }
 
-        if (!skillsEnabled) return;
-
-        // 스킬 키 입력
         var kb = Keyboard.current;
         if (kb == null) return;
 
-        TryCast(kb.eKey.wasPressedThisFrame, 0, active);
-        TryCast(kb.rKey.wasPressedThisFrame, 1, active);
-        TryCast(kb.tKey.wasPressedThisFrame, 2, active);
-        TryCast(kb.fKey.wasPressedThisFrame, 3, active);
-        TryCast(kb.vKey.wasPressedThisFrame, 4, active);
-        TryCast(kb.gKey.wasPressedThisFrame, 5, active);
+        if (!skillsEnabled) return;
+
+        TryCast(kb.uKey.wasPressedThisFrame, 0, active);
+        TryCast(kb.iKey.wasPressedThisFrame, 1, active);
+        TryCast(kb.oKey.wasPressedThisFrame, 2, active);
+        TryCast(kb.hKey.wasPressedThisFrame, 3, active);
+        TryCast(kb.jKey.wasPressedThisFrame, 4, active);
+        TryCast(kb.kKey.wasPressedThisFrame, 5, active);
     }
 
     void TryCast(bool pressed, int skillIndex, CombatCharacter active)
@@ -69,7 +68,7 @@ public class PlayerSkills : MonoBehaviour
         var skill = active.CastSkill(skillIndex);
         if (skill == null) return; // MP 부족, 쿨다운 중, 보유하지 않은 인덱스
 
-        SkillExecutor.Execute(skill, active, transform);
+        SkillExecutor.Execute(skill, skillIndex, active, transform);
         _builder?.PlaySkill(skill.effectKind);       // effectKind별 전용 모션
         SkillRangeVisualizer.Show(skill, transform); // 범위 시각화
     }

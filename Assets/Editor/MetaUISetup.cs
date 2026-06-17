@@ -97,10 +97,10 @@ public static class MetaUISetup
         // ── InventoryPanel (인벤토리, I키, 중앙 숨김) ───────────────────
         var invPanel = UIKit.Panel(canvasGO.transform, "InventoryPanel", new Vector2(700f, 950f));
         invPanel.SetActive(false);
-        UIKit.Label(invPanel.transform, "Title", "인벤토리  [I]", UIKit.TextLevel.H1, new Vector2(0f, 415f));
+        UIKit.Label(invPanel.transform, "Title", "인벤토리  [Tab]", UIKit.TextLevel.H1, new Vector2(0f, 415f));
         UIKit.Divider(invPanel.transform, new Vector2(0f, 378f), 660f);
         var invScroll   = UIKit.ScrollList(invPanel.transform, "CrystalList", Vector2.zero, new Vector2(676f, 730f));
-        var closeBtnI   = UIKit.Button(invPanel.transform, "CloseBtn", "닫기  [I]",
+        var closeBtnI   = UIKit.Button(invPanel.transform, "CloseBtn", "닫기  [Tab]",
             UIKit.BtnKind.Neutral, new Vector2(0f, -420f), new Vector2(300f, 65f));
 
         var invCmp = invPanel.AddComponent<InventoryPanel>();
@@ -182,7 +182,7 @@ public static class MetaUISetup
             r.anchorMin = new Vector2(0f,1f); r.anchorMax = new Vector2(1f,1f);
             r.offsetMin = new Vector2(14f,-68f); r.offsetMax = new Vector2(-155f,0f);
             var t = g.AddComponent<TextMeshProUGUI>();
-            t.text = "R&E  [K]"; t.fontSize = 36; t.color = Color.white;
+            t.text = "R&E"; t.fontSize = 36; t.color = Color.white;
             t.alignment = TextAlignmentOptions.MidlineLeft;
             if (font != null) t.font = font;
         }
@@ -201,7 +201,7 @@ public static class MetaUISetup
             var tr = tg.AddComponent<RectTransform>();
             tr.anchorMin = Vector2.zero; tr.anchorMax = Vector2.one; tr.sizeDelta = Vector2.zero;
             var t = tg.AddComponent<TextMeshProUGUI>();
-            t.text = "닫기  [K]"; t.fontSize = 22; t.color = Color.white;
+            t.text = "닫기"; t.fontSize = 22; t.color = Color.white;
             t.alignment = TextAlignmentOptions.Center;
             if (font != null) t.font = font;
         }
@@ -756,13 +756,88 @@ public static class MetaUISetup
 
         UnityEventTools.AddVoidPersistentListener(closeBtnKGO.GetComponent<Button>().onClick, srp.OnCloseClicked);
 
+        // ── GachaPanel (도서관 — 상호작용으로만 오픈, 키 단축키 없음) ────────
+        var gachaPanel = UIKit.Panel(canvasGO.transform, "GachaPanel", new Vector2(700f, 850f));
+        gachaPanel.SetActive(false);
+
+        // 제목
+        UIKit.Label(gachaPanel.transform, "Title", "도서관 — 지식 탐구",
+            UIKit.TextLevel.H1, new Vector2(0f, 385f));
+        UIKit.Divider(gachaPanel.transform, new Vector2(0f, 348f), 660f);
+
+        // 정보 행 (논문 잔액, 천장)
+        var paperLbl = UIKit.Label(gachaPanel.transform, "PaperText", "논문: —",
+            UIKit.TextLevel.H2, new Vector2(-160f, 295f),
+            align: TextAlignmentOptions.MidlineLeft);
+        var pityLbl  = UIKit.Label(gachaPanel.transform, "PityText", "천장 0 / 50",
+            UIKit.TextLevel.H2, new Vector2(160f, 295f),
+            align: TextAlignmentOptions.MidlineRight);
+
+        // 1회 / 10회 버튼
+        var singleBtn = UIKit.Button(gachaPanel.transform, "SingleBtn", "1회 탐구",
+            UIKit.BtnKind.Primary, new Vector2(-160f, 215f), new Vector2(300f, 70f));
+        var tenBtn    = UIKit.Button(gachaPanel.transform, "TenBtn",    "10회 탐구",
+            UIKit.BtnKind.Primary, new Vector2( 160f, 215f), new Vector2(300f, 70f));
+
+        // 비용 안내 (버튼 아래)
+        var singleCostLbl = UIKit.Label(gachaPanel.transform, "SingleCostText", $"논문 {GachaConfig.CostSingle}",
+            UIKit.TextLevel.Caption, new Vector2(-160f, 145f));
+        var tenCostLbl    = UIKit.Label(gachaPanel.transform, "TenCostText", $"논문 {GachaConfig.CostTen}",
+            UIKit.TextLevel.Caption, new Vector2( 160f, 145f));
+
+        // 결과 영역 (버튼 아래, 클릭 후 표시)
+        var resultArea = new GameObject("ResultArea");
+        resultArea.transform.SetParent(gachaPanel.transform, false);
+        { var rRt = resultArea.AddComponent<RectTransform>();
+          rRt.anchorMin = rRt.anchorMax = new Vector2(0.5f, 0.5f);
+          rRt.pivot     = new Vector2(0.5f, 0.5f);
+          rRt.sizeDelta        = new Vector2(660f, 360f);
+          rRt.anchoredPosition = new Vector2(0f, -55f); } // top≈+125, bottom≈-235
+        resultArea.SetActive(false);
+
+        var resultLbl = UIKit.Label(resultArea.transform, "ResultText", "",
+            UIKit.TextLevel.Body, Vector2.zero, new Vector2(640f, 350f),
+            align: TextAlignmentOptions.TopLeft);
+
+        // 상태 메시지
+        var statusLbl = UIKit.Label(gachaPanel.transform, "StatusText", "",
+            UIKit.TextLevel.Body, new Vector2(0f, -280f));
+
+        // 닫기 버튼
+        var closeGachaBtn = UIKit.Button(gachaPanel.transform, "CloseBtn", "닫기",
+            UIKit.BtnKind.Neutral, new Vector2(0f, -390f), new Vector2(280f, 65f));
+
+        // GachaPanel 컴포넌트 부착 + 직렬화 필드 주입
+        var gachaCmp = gachaPanel.AddComponent<GachaPanel>();
+        var gSo = new SerializedObject(gachaCmp);
+        gSo.FindProperty("paperText").objectReferenceValue      = paperLbl.GetComponent<TMP_Text>();
+        gSo.FindProperty("pityText").objectReferenceValue       = pityLbl.GetComponent<TMP_Text>();
+        gSo.FindProperty("singleButton").objectReferenceValue   = singleBtn.GetComponent<Button>();
+        gSo.FindProperty("tenButton").objectReferenceValue      = tenBtn.GetComponent<Button>();
+        gSo.FindProperty("closeButton").objectReferenceValue    = closeGachaBtn.GetComponent<Button>();
+        gSo.FindProperty("singleCostText").objectReferenceValue = singleCostLbl.GetComponent<TMP_Text>();
+        gSo.FindProperty("tenCostText").objectReferenceValue    = tenCostLbl.GetComponent<TMP_Text>();
+        gSo.FindProperty("resultArea").objectReferenceValue     = resultArea;
+        gSo.FindProperty("resultText").objectReferenceValue     = resultLbl.GetComponent<TMP_Text>();
+        gSo.FindProperty("statusText").objectReferenceValue     = statusLbl.GetComponent<TMP_Text>();
+        gSo.ApplyModifiedProperties();
+
+        UnityEventTools.AddVoidPersistentListener(singleBtn.GetComponent<Button>().onClick,    gachaCmp.OnSingleClicked);
+        UnityEventTools.AddVoidPersistentListener(tenBtn.GetComponent<Button>().onClick,       gachaCmp.OnTenClicked);
+        UnityEventTools.AddVoidPersistentListener(closeGachaBtn.GetComponent<Button>().onClick, gachaCmp.OnCloseClicked);
+
         // MetaPanelController 참조 연결
         var ctrlSo = new SerializedObject(controller);
         ctrlSo.FindProperty("collectionPanel").objectReferenceValue = collPanel;
         ctrlSo.FindProperty("inventoryPanel").objectReferenceValue  = invPanel;
         ctrlSo.FindProperty("rnePanel").objectReferenceValue        = skillPanel;
         ctrlSo.FindProperty("adminPanel").objectReferenceValue      = adminPanel;
+        ctrlSo.FindProperty("gachaPanel").objectReferenceValue      = gachaPanel;
         ctrlSo.ApplyModifiedProperties();
+
+        // 건물 Interactable 와이어링 (MesoriaHubBuilder가 HubLab · HubLibrary 생성)
+        WireBuilding("HubLab",     controller, "OpenLab");
+        WireBuilding("HubLibrary", controller, "OpenLibrary");
 
         // 씬 저장
         EditorSceneManager.SaveScene(
@@ -772,7 +847,43 @@ public static class MetaUISetup
         Debug.Log("[MSRPG] Meta UI 설정 완료! Mesoria 씬에 MetaCanvas가 추가됐습니다.");
     }
 
-    // ── UI 생성 헬퍼 ──────────────────────────────────────────────────────
+    // ── 헬퍼 ──────────────────────────────────────────────────────────────
+
+    /// <summary>
+    /// 씬 내 <paramref name="goName"/> GameObject의 Interactable.onInteract 에
+    /// <paramref name="target"/>.<paramref name="methodName"/> 을 퍼시스턴트 리스너로 등록한다.
+    /// SerializedObject로 직접 기록해 씬 저장 시 누락되지 않도록 한다.
+    /// </summary>
+    static void WireBuilding(string goName, MonoBehaviour target, string methodName)
+    {
+        var go = GameObject.Find(goName);
+        if (go == null)
+        {
+            Debug.LogWarning($"[MetaUISetup] '{goName}' GameObject를 찾을 수 없습니다. MSRPG > Setup Mesoria Scene을 먼저 실행하세요.");
+            return;
+        }
+        var ia = go.GetComponent<Interactable>();
+        if (ia == null)
+        {
+            Debug.LogWarning($"[MetaUISetup] '{goName}'에 Interactable 컴포넌트가 없습니다.");
+            return;
+        }
+        var so    = new SerializedObject(ia);
+        var calls = so.FindProperty("onInteract")
+                      .FindPropertyRelative("m_PersistentCalls")
+                      .FindPropertyRelative("m_Calls");
+        calls.ClearArray();
+        calls.InsertArrayElementAtIndex(0);
+        var call = calls.GetArrayElementAtIndex(0);
+        call.FindPropertyRelative("m_Target").objectReferenceValue = target;
+        call.FindPropertyRelative("m_TargetAssemblyTypeName").stringValue =
+            $"{target.GetType().FullName}, {target.GetType().Assembly.GetName().Name}";
+        call.FindPropertyRelative("m_MethodName").stringValue = methodName;
+        call.FindPropertyRelative("m_Mode").enumValueIndex    = 1; // PersistentListenerMode.Void
+        call.FindPropertyRelative("m_CallState").enumValueIndex = 2; // UnityEventCallState.RuntimeOnly
+        so.ApplyModifiedProperties();
+        Debug.Log($"[MetaUISetup] {goName}.onInteract → {target.GetType().Name}.{methodName} 와이어링 완료");
+    }
 
     static void EnsureTmpDefaultFont(TMP_FontAsset font)
     {

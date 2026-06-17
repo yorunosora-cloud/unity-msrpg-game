@@ -58,8 +58,10 @@ public class RnEPanel : MonoBehaviour
     [SerializeField] GameObject  skillInfoPanel;
     [SerializeField] TMP_Text    skillInfoNameText;
     [SerializeField] TMP_Text    skillInfoStatsText;
+    [SerializeField] TMP_Text    skillInfoProfText;      // "숙련도: 4 / 6"
     [SerializeField] Button      skillResearchStartButton;
     [SerializeField] Button      skillInfoBackButton;
+    [SerializeField] Button      skillLevelUpButton;     // [레벨업] 버튼
 
     // ── 문제 오버레이 ─────────────────────────────────────────────────────
     [Header("문제 오버레이")]
@@ -81,7 +83,7 @@ public class RnEPanel : MonoBehaviour
     [SerializeField] Button closeButton;
 
     // ── 오버레이 모드 ─────────────────────────────────────────────────────
-    enum OverlayMode { SkillUnlock, LevelUp }
+    enum OverlayMode { SkillUnlock, LevelUp, SkillLevelUp }
 
     // ── 상태 ─────────────────────────────────────────────────────────────
     CharacterDatabase _charDb;
@@ -93,6 +95,11 @@ public class RnEPanel : MonoBehaviour
     OverlayMode       _overlayMode;
     int               _attemptsLeft;
     int               _pendingExpReward;
+
+    // 스킬 레벨업 세션
+    ProblemDef[]        _levelUpProblems = new ProblemDef[3]; // [0]=High, [1]=Mid, [2]=Low
+    ProblemDifficulty[] _levelUpDiffs    = { ProblemDifficulty.High, ProblemDifficulty.Mid, ProblemDifficulty.Low };
+    int                 _levelUpSlot     = 0; // 현재 문제 슬롯 (0~2)
 
     readonly List<GameObject> _charCards = new List<GameObject>();
     readonly List<GameObject> _skillBtns = new List<GameObject>();
@@ -138,6 +145,7 @@ public class RnEPanel : MonoBehaviour
         _currentProblem     = null;
         _attemptsLeft       = 0;
         _pendingExpReward   = 0;
+        _levelUpSlot        = 0;
     }
 
     // ── 허브 버튼 등록 ────────────────────────────────────────────────────
@@ -425,9 +433,21 @@ public class RnEPanel : MonoBehaviour
 
             bool isUnlocked = i == 0 || (unlocked != null && unlocked.Contains(skill.id));
 
-            string lbl = isUnlocked
-                ? $"[해금]  {skill.nameKo}"
-                : $"[잠금]  {skill.nameKo}";
+            string lbl;
+            if (!isUnlocked)
+            {
+                lbl = $"[잠금]  {skill.nameKo}";
+            }
+            else
+            {
+                var sp = _selectedOc.GetSkillProgress(skill.id);
+                int lv   = sp.level;
+                int prof = sp.proficiency;
+                int thr  = SkillScaling.Threshold(lv);
+                string profStr = lv >= SkillScaling.MaxLevel ? "MAX" : $"{prof}/{thr}";
+                lbl = $"[Lv.{lv}]  {skill.nameKo}  ·  숙련 {profStr}";
+            }
+
             var btn = CreateListButton(skillListContent, lbl, font);
             _skillBtns.Add(btn);
 
@@ -439,7 +459,8 @@ public class RnEPanel : MonoBehaviour
             }
             else
             {
-                b.interactable = false;
+                int idx = i;
+                b.onClick.AddListener(() => SelectSkillForLevelUp(idx));
             }
         }
 
@@ -456,6 +477,16 @@ public class RnEPanel : MonoBehaviour
         ShowSkillInfoPanel(skill);  // 바로 문제 시작 대신 스킬 정보 패널 먼저 표시
     }
 
+    void SelectSkillForLevelUp(int skillIndex)
+    {
+        if (_selectedDef == null || skillIndex < 0 || skillIndex >= _selectedDef.skills.Length) return;
+        var skill = _selectedDef.skills[skillIndex];
+        if (skill == null) return;
+
+        _selectedSkillIndex = skillIndex;
+        ShowSkillInfoPanel(skill);  // 기존 메서드 재사용
+    }
+
     // ── 스킬 정보 패널 ─────────────────────────────────────────────────────
 
     void RegisterSkillInfoButtons()
@@ -464,20 +495,69 @@ public class RnEPanel : MonoBehaviour
             skillResearchStartButton.onClick.AddListener(OnSkillResearchStartClicked);
         if (skillInfoBackButton != null)
             skillInfoBackButton.onClick.AddListener(OnSkillInfoBackClicked);
+        if (skillLevelUpButton != null)
+            skillLevelUpButton.onClick.AddListener(OnSkillLevelUpClicked);
     }
 
     void UnregisterSkillInfoButtons()
     {
         if (skillResearchStartButton != null) skillResearchStartButton.onClick.RemoveAllListeners();
         if (skillInfoBackButton      != null) skillInfoBackButton.onClick.RemoveAllListeners();
+        if (skillLevelUpButton       != null) skillLevelUpButton.onClick.RemoveAllListeners();
     }
 
     void ShowSkillInfoPanel(SkillDef skill)
     {
         if (skillInfoPanel == null) return;
 
-        if (skillInfoNameText  != null) skillInfoNameText.text  = skill.nameKo;
-        if (skillInfoStatsText != null) skillInfoStatsText.text = BuildSkillStatsText(skill);
+        // 이름
+        if (skillInfoNameText != null) skillInfoNameText.text = skill.nameKo;
+
+        // 해금 여부 판단
+        bool isUnlocked = _selectedSkillIndex == 0 ||
+            (_selectedOc?.unlockedSkillIds != null && _selectedOc.unlockedSkillIds.Contains(skill.id));
+
+        // 스탯 텍스트 — 해금 여부에 따라 다르게 표시
+        if (skillInfoStatsText != null)
+        {
+            if (isUnlocked && _selectedOc != null)
+            {
+                int lv  = _selectedOc.SkillLevel(skill.id);
+                var eff = SkillScaling.Compute(skill, lv);
+                skillInfoStatsText.text = BuildSkillStatsTextFromEff(skill, eff, lv);
+            }
+            else
+            {
+                skillInfoStatsText.text = BuildSkillStatsText(skill);
+            }
+        }
+
+        // 숙련도 표시
+        if (skillInfoProfText != null && isUnlocked && _selectedOc != null)
+        {
+            var sp  = _selectedOc.GetSkillProgress(skill.id);
+            int lv  = sp.level;
+            int thr = SkillScaling.Threshold(lv);
+            skillInfoProfText.text = lv >= SkillScaling.MaxLevel
+                ? "숙련도: MAX (만렙)"
+                : $"숙련도: {sp.proficiency} / {thr}";
+            skillInfoProfText.gameObject.SetActive(true);
+        }
+        else if (skillInfoProfText != null)
+        {
+            skillInfoProfText.gameObject.SetActive(false);
+        }
+
+        // 레벨업 버튼
+        if (skillLevelUpButton != null)
+        {
+            bool canLvUp = isUnlocked && _selectedOc != null &&
+                           _selectedOc.SkillLevel(skill.id) < SkillScaling.MaxLevel &&
+                           _selectedOc.GetSkillProgress(skill.id).proficiency >=
+                               SkillScaling.Threshold(_selectedOc.SkillLevel(skill.id));
+            skillLevelUpButton.gameObject.SetActive(isUnlocked);
+            skillLevelUpButton.interactable = canLvUp;
+        }
 
         // 목록은 뒤로 숨기고 정보 패널 표시
         if (skillListPanel != null) skillListPanel.SetActive(false);
@@ -512,6 +592,42 @@ public class RnEPanel : MonoBehaviour
         return sb.ToString().TrimEnd();
     }
 
+    string BuildSkillStatsTextFromEff(SkillDef skill, EffectiveSkill eff, int lv)
+    {
+        var sb = new System.Text.StringBuilder();
+        if (!string.IsNullOrEmpty(skill.descKo))
+            sb.AppendLine(skill.descKo).AppendLine();
+
+        sb.AppendLine($"[Lv.{lv}] 효과 종류: {EffectKindKo(skill.effectKind)}");
+        sb.AppendLine($"MP 소모: {skill.mpCost}");
+        sb.AppendLine($"쿨타임: {skill.cooldown:F1}초");
+        sb.AppendLine($"사거리: {eff.range:F1}m");
+
+        switch (skill.effectKind)
+        {
+            case SkillEffectKind.Strike:
+            case SkillEffectKind.Aoe:
+                sb.AppendLine($"데미지 배율: ×{eff.damageMultiplier:F2}");
+                if (eff.extraTargets > 0) sb.AppendLine($"추가 타겟: +{eff.extraTargets}");
+                break;
+            case SkillEffectKind.HealBuff:
+                sb.AppendLine($"회복량: HP의 {eff.healPercent * 100f:F0}%");
+                sb.AppendLine($"공격력 버프: ×{eff.buffAtkMultiplier:F2}  ({eff.buffDuration:F1}초)");
+                break;
+            case SkillEffectKind.Mark:
+                sb.AppendLine("적에게 속성 표식 부여");
+                break;
+        }
+
+        // 마일스톤 설명
+        if (lv >= skill.milestoneLevel && skill.milestoneLevel > 0 && !string.IsNullOrEmpty(skill.milestoneDescKo))
+            sb.AppendLine($"\n★ 마일스톤: {skill.milestoneDescKo}");
+        else if (skill.milestoneLevel > 0 && lv < skill.milestoneLevel)
+            sb.AppendLine($"\n(Lv.{skill.milestoneLevel} 마일스톤 미해금)");
+
+        return sb.ToString().TrimEnd();
+    }
+
     static string EffectKindKo(SkillEffectKind k) => k switch
     {
         SkillEffectKind.Strike   => "단일 공격",
@@ -542,6 +658,108 @@ public class RnEPanel : MonoBehaviour
         if (skillInfoPanel != null) skillInfoPanel.SetActive(false);
         if (skillListPanel != null) skillListPanel.SetActive(true);
         _selectedSkillIndex = -1;
+    }
+
+    void OnSkillLevelUpClicked()
+    {
+        if (_selectedSkillIndex < 0 || _selectedDef == null || _selectedOc == null) return;
+        var skill = _selectedDef.skills[_selectedSkillIndex];
+        if (skill == null) return;
+
+        // 레벨업 불가능하면 무시
+        int lv  = _selectedOc.SkillLevel(skill.id);
+        if (lv >= SkillScaling.MaxLevel) return;
+        int thr = SkillScaling.Threshold(lv);
+        if (_selectedOc.GetSkillProgress(skill.id).proficiency < thr) return;
+
+        // 상→중→하 문제 3개 뽑기
+        _levelUpProblems[0] = _problemDb?.RandomByDifficulty(ProblemDifficulty.High);
+        _levelUpProblems[1] = _problemDb?.RandomByDifficulty(ProblemDifficulty.Mid);
+        _levelUpProblems[2] = _problemDb?.RandomByDifficulty(ProblemDifficulty.Low);
+
+        _levelUpSlot = 0;
+        _overlayMode = OverlayMode.SkillLevelUp;
+
+        if (skillInfoPanel != null) skillInfoPanel.SetActive(false);
+
+        ShowNextLevelUpProblem();
+    }
+
+    void ShowNextLevelUpProblem()
+    {
+        // 유효한 슬롯 찾기 (null 슬롯 건너뜀)
+        while (_levelUpSlot < _levelUpProblems.Length && _levelUpProblems[_levelUpSlot] == null)
+            _levelUpSlot++;
+
+        if (_levelUpSlot >= _levelUpProblems.Length)
+        {
+            // 문제가 하나도 없으면 패널티 없이 닫기
+            CloseProblemOverlay();
+            return;
+        }
+
+        _currentProblem = _levelUpProblems[_levelUpSlot];
+        ShowProblemOverlay(_currentProblem);
+
+        // attemptText에 "문제 N/3 · 난이도: {상/중/하}" 표시
+        if (attemptText != null)
+        {
+            string diffLabel = _levelUpDiffs[_levelUpSlot] switch
+            {
+                ProblemDifficulty.High => "상",
+                ProblemDifficulty.Mid  => "중",
+                ProblemDifficulty.Low  => "하",
+                _                      => ""
+            };
+            attemptText.text = $"문제 {_levelUpSlot + 1}/3  ·  난이도: {diffLabel}";
+            attemptText.gameObject.SetActive(true);
+        }
+    }
+
+    void LevelUpCurrentSkill(ProblemDifficulty solvedAt)
+    {
+        if (_selectedOc == null || _selectedDef == null || _selectedSkillIndex < 0) return;
+        var skill = _selectedDef.skills[_selectedSkillIndex];
+        if (skill == null) return;
+
+        bool leveled;
+        var active = PlayerRuntime.Active;
+        if (active != null && active.Id == _selectedDef.id)
+        {
+            leveled = active.LevelUpSkill(_selectedSkillIndex, solvedAt);
+        }
+        else
+        {
+            var cc = new CombatCharacter(_selectedDef, _selectedOc);
+            leveled = cc.LevelUpSkill(_selectedSkillIndex, solvedAt);
+        }
+
+        if (leveled)
+        {
+            MetaSaveService.Save();
+            MetaState.Roster.NotifyChanged();
+        }
+    }
+
+    void PenalizeCurrentSkill()
+    {
+        if (_selectedOc == null || _selectedDef == null || _selectedSkillIndex < 0) return;
+        var skill = _selectedDef.skills[_selectedSkillIndex];
+        if (skill == null) return;
+
+        var active = PlayerRuntime.Active;
+        if (active != null && active.Id == _selectedDef.id)
+        {
+            active.PenalizeProficiency(_selectedSkillIndex);
+        }
+        else
+        {
+            var cc = new CombatCharacter(_selectedDef, _selectedOc);
+            cc.PenalizeProficiency(_selectedSkillIndex);
+        }
+
+        MetaSaveService.Save();
+        MetaState.Roster.NotifyChanged();
     }
 
     // ── 문제 오버레이 ─────────────────────────────────────────────────────
@@ -595,7 +813,7 @@ public class RnEPanel : MonoBehaviour
             attemptText.gameObject.SetActive(false);
     }
 
-    // ── 정답 제출 (스킬 해금 / 레벨업 공용) ───────────────────────────────
+    // ── 정답 제출 (스킬 해금 / 레벨업 / 스킬 레벨업 공용) ───────────────────
 
     void SubmitAnswer(string answer, int selectedIndex)
     {
@@ -609,10 +827,15 @@ public class RnEPanel : MonoBehaviour
                 UnlockCurrentSkill();
                 ShowFeedback("정답! 스킬이 해금되었습니다.", true);
             }
-            else // LevelUp
+            else if (_overlayMode == OverlayMode.LevelUp)
             {
                 GainExpForSelected(_pendingExpReward);
                 ShowFeedback($"정답! EXP +{_pendingExpReward}", true);
+            }
+            else if (_overlayMode == OverlayMode.SkillLevelUp)
+            {
+                LevelUpCurrentSkill(_levelUpDiffs[_levelUpSlot]);
+                ShowFeedback("정답! 스킬 레벨업!", true);
             }
 
             ShowExplanation(_currentProblem.explanation);
@@ -634,7 +857,26 @@ public class RnEPanel : MonoBehaviour
                     return;
                 }
             }
-            ShowFeedback("오답입니다. 다시 도전해보세요!", false);
+            else if (_overlayMode == OverlayMode.SkillLevelUp)
+            {
+                // 오답: 다음 슬롯으로 이동
+                _levelUpSlot++;
+                if (_levelUpSlot >= _levelUpProblems.Length)
+                {
+                    // 3개 모두 오답 → 10% 패널티
+                    PenalizeCurrentSkill();
+                    ShowFeedback("모두 오답 — 숙련도 10% 감소", false);
+                    if (multipleChoiceArea != null) multipleChoiceArea.SetActive(false);
+                    if (freeInputArea      != null) freeInputArea.SetActive(false);
+                    return;
+                }
+                // 다음 문제로 (피드백 없이 바로)
+                ShowNextLevelUpProblem();
+                return;
+            }
+
+            if (_overlayMode != OverlayMode.SkillLevelUp)
+                ShowFeedback("오답입니다. 다시 도전해보세요!", false);
         }
     }
 
@@ -705,8 +947,9 @@ public class RnEPanel : MonoBehaviour
         _selectedSkillIndex = -1;
         _attemptsLeft       = 0;
         _pendingExpReward   = 0;
+        _levelUpSlot        = 0;
 
-        // 레벨업 모드로 돌아왔으면 난이도 패널 재표시
+        // 모드에 따라 이전 패널로 복귀
         if (_overlayMode == OverlayMode.LevelUp && _selectedOc != null)
         {
             if (difficultyPanel != null) difficultyPanel.SetActive(true);
@@ -715,6 +958,11 @@ public class RnEPanel : MonoBehaviour
         else if (_overlayMode == OverlayMode.SkillUnlock && _selectedOc != null)
         {
             if (skillListPanel != null) skillListPanel.SetActive(true);
+        }
+        else if (_overlayMode == OverlayMode.SkillLevelUp && _selectedOc != null)
+        {
+            if (skillListPanel != null) skillListPanel.SetActive(true);
+            BuildSkillList();  // 숙련도 업데이트 반영
         }
     }
 

@@ -59,13 +59,11 @@ public class CombatCharacter
 
     /// <summary>
     /// 인덱스 i의 스킬이 해금되어 있는지 확인.
-    /// unlockedSkillIds 가 비어 있으면 index 0 을 기본 해금으로 간주한다 (기존 데이터 호환).
+    /// 테스트 모드: 스킬이 존재하면 항상 true (unlockedSkillIds 무시).
     /// </summary>
     public bool IsUnlocked(int i)
     {
-        var skill = SkillAt(i);
-        if (skill == null) return false;
-        return i == 0 || (_owned.unlockedSkillIds != null && _owned.unlockedSkillIds.Contains(skill.id));
+        return SkillAt(i) != null; // TODO: 정식 출시 전 unlockedSkillIds 체크 복구
     }
 
     /// <summary>인덱스 i의 스킬을 해금한다. 이미 해금되어 있으면 무시.</summary>
@@ -181,7 +179,98 @@ public class CombatCharacter
         var skill = SkillAt(i);
         UseMp(skill.mpCost);
         StartCooldown(i, skill.cooldown);
+        AddProficiency(i);   // 시전 성공 시 숙련도 +1
         return skill;
+    }
+
+    // ── 스킬 레벨 / 숙련도 ───────────────────────────────────────────────
+
+    /// <summary>인덱스 i 스킬의 현재 레벨 (1~5). 엔트리 없으면 1.</summary>
+    public int SkillLevel(int i)
+    {
+        var skill = SkillAt(i);
+        if (skill == null) return 1;
+        return _owned.GetSkillProgress(skill.id).level;
+    }
+
+    /// <summary>인덱스 i 스킬의 현재 레벨에서 누적된 숙련도.</summary>
+    public int SkillProficiency(int i)
+    {
+        var skill = SkillAt(i);
+        if (skill == null) return 0;
+        return _owned.GetSkillProgress(skill.id).proficiency;
+    }
+
+    /// <summary>인덱스 i 스킬의 현재 레벨→다음 레벨 숙련도 임계값.</summary>
+    public int SkillThreshold(int i)
+    {
+        return SkillScaling.Threshold(SkillLevel(i));
+    }
+
+    /// <summary>인덱스 i 스킬이 레벨업 가능한지. 숙련도 충족 &amp; 만렙 미만.</summary>
+    public bool CanLevelUpSkill(int i)
+    {
+        if (SkillAt(i) == null) return false;
+        int lv = SkillLevel(i);
+        if (lv >= SkillScaling.MaxLevel) return false;
+        return SkillProficiency(i) >= SkillScaling.Threshold(lv);
+    }
+
+    /// <summary>
+    /// 인덱스 i 스킬의 숙련도를 +1 한다.
+    /// 현재 레벨 임계값에서 캡. 만렙(Lv.5)이면 무시.
+    /// 시전 성공 시(CastSkill) 자동 호출된다.
+    /// </summary>
+    public void AddProficiency(int i)
+    {
+        var skill = SkillAt(i);
+        if (skill == null) return;
+        int lv = SkillLevel(i);
+        if (lv >= SkillScaling.MaxLevel) return;
+
+        var prog = _owned.GetSkillProgress(skill.id);
+        int cap  = SkillScaling.Threshold(lv);
+        prog.proficiency = Math.Min(cap, prog.proficiency + 1);
+        OnChanged?.Invoke("prof");
+    }
+
+    /// <summary>
+    /// 인덱스 i 스킬을 레벨업한다.
+    /// 레벨 +1, 숙련도 -= 임계값(carry), 난이도 보너스 가산.
+    /// CanLevelUpSkill(i) == false이면 false 반환.
+    /// </summary>
+    public bool LevelUpSkill(int i, ProblemDifficulty solvedAt)
+    {
+        if (!CanLevelUpSkill(i)) return false;
+
+        var skill = SkillAt(i);
+        var prog  = _owned.GetSkillProgress(skill.id);
+        int threshold = SkillScaling.Threshold(prog.level);
+
+        prog.proficiency -= threshold;   // carry (남은 숙련도 유지)
+        prog.level++;
+
+        // 난이도 보너스: 직전 임계값 기준
+        int bonus = SkillScaling.ProficiencyBonus(solvedAt, threshold);
+        int newThreshold = SkillScaling.Threshold(prog.level);
+        if (bonus > 0 && prog.level < SkillScaling.MaxLevel)
+            prog.proficiency = Math.Min(newThreshold, prog.proficiency + bonus);
+
+        OnChanged?.Invoke("skilllevel");
+        return true;
+    }
+
+    /// <summary>
+    /// 인덱스 i 스킬의 숙련도를 10% 감소한다 (3문제 모두 오답 시 패널티).
+    /// proficiency = floor(proficiency × 0.9).
+    /// </summary>
+    public void PenalizeProficiency(int i)
+    {
+        var skill = SkillAt(i);
+        if (skill == null) return;
+        var prog = _owned.GetSkillProgress(skill.id);
+        prog.proficiency = (int)(prog.proficiency * 0.9f);
+        OnChanged?.Invoke("prof");
     }
 
     // ── 전투 조작 ─────────────────────────────────────────────────────────

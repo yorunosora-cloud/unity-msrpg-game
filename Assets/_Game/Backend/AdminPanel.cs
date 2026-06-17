@@ -54,26 +54,26 @@ public class AdminPanel : MonoBehaviour
 
     public void OnAddGold()
     {
-        MetaState.Wallet.Add(CurrencyKind.Gold,     1000);
-        ShowStatus("+골드 1,000", Color.green);
+        MetaState.Wallet.Add(CurrencyKind.Gold, 1000);
+        SaveWithStatus("+골드 1,000");
     }
 
     public void OnAddPaper()
     {
-        MetaState.Wallet.Add(CurrencyKind.Paper,    100);
-        ShowStatus("+논문 100", Color.green);
+        MetaState.Wallet.Add(CurrencyKind.Paper, 100);
+        SaveWithStatus("+논문 100");
     }
 
     public void OnAddFocus()
     {
-        MetaState.Wallet.Add(CurrencyKind.Focus,    100);
-        ShowStatus("+집중력 100", Color.green);
+        MetaState.Wallet.Add(CurrencyKind.Focus, 100);
+        SaveWithStatus("+집중력 100");
     }
 
     public void OnAddFragment()
     {
         MetaState.Wallet.Add(CurrencyKind.Fragment, 50);
-        ShowStatus("+조각 50", Color.green);
+        SaveWithStatus("+조각 50");
     }
 
     // ── 결정 지급 ─────────────────────────────────────────────────────────
@@ -84,7 +84,7 @@ public class AdminPanel : MonoBehaviour
         if (!MetaState.IsInitialized) return;
         foreach (CrystalKind kind in System.Enum.GetValues(typeof(CrystalKind)))
             MetaState.Crystals.Add(kind, 10);
-        ShowStatus("+결정 전종 각 10", Color.cyan);
+        SaveWithStatus("+결정 전종 각 10");
     }
 
     // ── 캐릭터 지급 ───────────────────────────────────────────────────────
@@ -100,7 +100,7 @@ public class AdminPanel : MonoBehaviour
         if (def == null) { ShowStatus($"'{id}' 없음 — 시드 캐릭터 ID 확인.", Color.red); return; }
 
         bool isNew = MetaState.Roster.Add(id);
-        ShowStatus(isNew ? $"{def.nameKo} 지급!" : $"{def.nameKo} 중복 (+dupes)", Color.cyan);
+        SaveWithStatus(isNew ? $"{def.nameKo} 지급!" : $"{def.nameKo} 중복 (+dupes)");
     }
 
     public void OnGiveAllCharacters()
@@ -115,7 +115,7 @@ public class AdminPanel : MonoBehaviour
             if (def == null) continue;
             if (MetaState.Roster.Add(def.id)) count++;
         }
-        ShowStatus(count > 0 ? $"전체 {count}명 지급 완료" : "이미 모두 보유 중", Color.cyan);
+        SaveWithStatus(count > 0 ? $"전체 {count}명 지급" : "이미 모두 보유 중");
     }
 
     // ── 가챠 디버그 (논문 자동 보충) ────────────────────────────────────
@@ -183,6 +183,14 @@ public class AdminPanel : MonoBehaviour
         if (db == null) return null;
         return new GachaService(db, MetaState.Wallet, MetaState.Roster,
                                 MetaState.GachaState, MetaState.Crystals);
+    }
+
+    void SaveWithStatus(string msg)
+    {
+        ShowStatus($"{msg} 저장 중...", Color.white);
+        MetaSaveService.Save(
+            ()  => ShowStatus($"{msg} (저장 완료)", Color.green),
+            err => ShowStatus($"{msg} (저장 실패: {err})", Color.yellow));
     }
 
     void ShowStatus(string msg, Color color)

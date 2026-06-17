@@ -24,3 +24,10 @@ MonoBehaviour:
   healPercent: 0.15
   buffAtkMultiplier: 1.2
   buffDuration: 4
+  milestoneLevel: 3
+  milestoneDescKo: 
+  milestoneExtraTargets: 0
+  milestoneRangeBonus: 0
+  milestoneHalfAngleBonus: 0
+  milestoneHealPercentBonus: 0
+  milestoneBuffDurationBonus: 0
