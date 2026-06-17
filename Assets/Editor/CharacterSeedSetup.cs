@@ -39,11 +39,22 @@ public static class CharacterSeedSetup
         public string acquireCondition;    // null이면 ""
     }
 
+    // ── dexNumber 체계 ─────────────────────────────────────────────────────────
+    // 물리(Physics)   :   1– 99
+    // 화학(Chemistry) : 101–199
+    // 생명(Biology)   : 201–299
+    // 지구과학(Earth) : 301–399
+    // 수학(Math)      : 401–499
+    // 정보(Info)      : 501–599
+    // 비배정(0)       : 도감 정렬 시 맨 뒤로 처리됨
+    // inertia_r(관성) : 비물리 플레이스홀더. 향후 물리 7종과 별개 엔트리로 유지
+    // ──────────────────────────────────────────────────────────────────────────
     static readonly Seed[] Seeds =
     {
         // ── 비물리 캐릭터 (기본값 그대로) ───────────────────────────────────
         new Seed { id="cell_n",     nameKo="세포",   nameEn="Cell",    rarity=Rarity.N,   role=CharacterRole.Tanker,     continent=Continent.Biology,  country="life-basics",       hp=400,  atk=30,  def=40,  spd=80,  mp=60,  color=new Color(0.239f,0.769f,0.153f) },
         new Seed { id="number_n",   nameKo="자연수", nameEn="Number",  rarity=Rarity.N,   role=CharacterRole.Dealer,     continent=Continent.Math,     country="arithmetic",        hp=350,  atk=45,  def=25,  spd=90,  mp=50,  color=new Color(0.784f,0.824f,0.000f) },
+        // 레거시 플레이스홀더 — 물리 7종(mass_sr)과 별개 엔트리. dexNumber 미배정(0).
         new Seed { id="inertia_r",  nameKo="관성",   nameEn="Inertia", rarity=Rarity.R,   role=CharacterRole.Tanker,     continent=Continent.Physics,  country="newton-empire",     hp=700,  atk=60,  def=90,  spd=80,  mp=80,  color=new Color(0.169f,0.498f,1.000f) },
         new Seed { id="ion_r",      nameKo="이온",   nameEn="Ion",     rarity=Rarity.R,   role=CharacterRole.Dealer,     continent=Continent.Chemistry,country="bonding",           hp=600,  atk=80,  def=50,  spd=95,  mp=100, color=new Color(1.000f,0.090f,0.267f) },
         new Seed { id="dna_ssr",    nameKo="DNA",    nameEn="DNA",     rarity=Rarity.SSR, role=CharacterRole.AllRounder, continent=Continent.Biology,  country="genetics",          hp=1200, atk=110, def=90,  spd=95,  mp=140, color=new Color(0.239f,0.769f,0.153f) },
@@ -82,8 +93,8 @@ public static class CharacterSeedSetup
             appearance="반쯤 걸친 실험복과 오피스룩, 다크서클, 푸석한 장발 흑발, 초점 없는 눈동자. 정장 앞주머니에 컴퍼스가 꽂혀있다.",
             weapon="자 / 컴퍼스",
             loreKo="n차원 공간의 점검·보수를 담당하는 차원 관리자. 길이는 두 점 사이의 거리—m(미터) 단위의 기본 물리량—이며, 그녀는 임의의 두 지점을 잇는 포탈을 설치해 거리를 '수축'시킬 수 있다. 공간을 조작하는 '길이 수축' 능력은 물리학에서 상대론적 고속 이동 시 공간이 줄어드는 현상을 반영한다. 만사가 귀찮다는 표정이지만, 상대의 공격이 닿는 거리를 늘려 무효화하는 '고유 공간' 능력은 파티 최강의 방어력을 자랑한다.",
-            synergyKind=SynergyKind.Mark, synergyMarkedBy=null,
-            synergyComboName="길이 수축 (포탈 이동)",
+            synergyKind=SynergyKind.PartyPassive, synergyMarkedBy=null,
+            synergyComboName="길이 수축 (파티 이동 지원)",
             gachaObtainable=true, acquireCondition=null,
         },
 
