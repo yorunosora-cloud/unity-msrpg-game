@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 /// <summary>
 /// MSRPG > Seed Placeholder Characters 메뉴.
-/// 10종 CharacterDef + 캐릭터별 스킬 3종 + 스킬 해금 문제 + 레벨업 문제를 생성합니다.
+/// 13종 CharacterDef + 캐릭터별 스킬 3종 + 스킬 해금 문제 + 레벨업 문제를 생성합니다.
 /// </summary>
 public static class CharacterSeedSetup
 {
@@ -24,20 +24,158 @@ public static class CharacterSeedSetup
         public Continent continent;
         public int hp, atk, def, spd, mp;
         public Color color;
+
+        // 새로 추가
+        public int dexNumber;
+        public Gender gender;
+        public string concept;
+        public string appearance;
+        public string weapon;
+        public string loreKo;
+        public SynergyKind synergyKind;
+        public string[] synergyMarkedBy;   // null이면 빈 배열
+        public string synergyComboName;
+        public bool gachaObtainable;       // 기본 true
+        public string acquireCondition;    // null이면 ""
     }
 
     static readonly Seed[] Seeds =
     {
+        // ── 비물리 캐릭터 (기본값 그대로) ───────────────────────────────────
         new Seed { id="cell_n",     nameKo="세포",   nameEn="Cell",    rarity=Rarity.N,   role=CharacterRole.Tanker,     continent=Continent.Biology,  country="life-basics",       hp=400,  atk=30,  def=40,  spd=80,  mp=60,  color=new Color(0.239f,0.769f,0.153f) },
         new Seed { id="number_n",   nameKo="자연수", nameEn="Number",  rarity=Rarity.N,   role=CharacterRole.Dealer,     continent=Continent.Math,     country="arithmetic",        hp=350,  atk=45,  def=25,  spd=90,  mp=50,  color=new Color(0.784f,0.824f,0.000f) },
         new Seed { id="inertia_r",  nameKo="관성",   nameEn="Inertia", rarity=Rarity.R,   role=CharacterRole.Tanker,     continent=Continent.Physics,  country="newton-empire",     hp=700,  atk=60,  def=90,  spd=80,  mp=80,  color=new Color(0.169f,0.498f,1.000f) },
         new Seed { id="ion_r",      nameKo="이온",   nameEn="Ion",     rarity=Rarity.R,   role=CharacterRole.Dealer,     continent=Continent.Chemistry,country="bonding",           hp=600,  atk=80,  def=50,  spd=95,  mp=100, color=new Color(1.000f,0.090f,0.267f) },
-        new Seed { id="time_sr",    nameKo="시간",   nameEn="Time",    rarity=Rarity.SR,  role=CharacterRole.Supporter,  continent=Continent.Physics,  country="newton-empire",     hp=900,  atk=70,  def=80,  spd=100, mp=130, color=new Color(0.169f,0.498f,1.000f) },
-        new Seed { id="mass_sr",    nameKo="질량",   nameEn="Mass",    rarity=Rarity.SR,  role=CharacterRole.Tanker,     continent=Continent.Physics,  country="newton-empire",     hp=1100, atk=80,  def=120, spd=80,  mp=110, color=new Color(0.169f,0.498f,1.000f) },
-        new Seed { id="light_ssr",  nameKo="빛",     nameEn="Light",   rarity=Rarity.SSR, role=CharacterRole.Dealer,     continent=Continent.Physics,  country="maxwell-duchy",     hp=1000, atk=130, def=70,  spd=110, mp=120, color=new Color(0.169f,0.498f,1.000f) },
         new Seed { id="dna_ssr",    nameKo="DNA",    nameEn="DNA",     rarity=Rarity.SSR, role=CharacterRole.AllRounder, continent=Continent.Biology,  country="genetics",          hp=1200, atk=110, def=90,  spd=95,  mp=140, color=new Color(0.239f,0.769f,0.153f) },
-        new Seed { id="quark_ur",   nameKo="쿼크",   nameEn="Quark",   rarity=Rarity.UR,  role=CharacterRole.AllRounder, continent=Continent.Physics,  country="quantum-rebellion", hp=1400, atk=160, def=100, spd=120, mp=160, color=new Color(0.169f,0.498f,1.000f) },
         new Seed { id="riemann_ur", nameKo="리만",   nameEn="Riemann", rarity=Rarity.UR,  role=CharacterRole.Dealer,     continent=Continent.Math,     country="analysis",          hp=1200, atk=180, def=80,  spd=130, mp=150, color=new Color(0.784f,0.824f,0.000f) },
+
+        // ── 물리 7종 ─────────────────────────────────────────────────────────
+
+        // dexNumber=1 — 자기장
+        new Seed
+        {
+            id="magfield_r", nameKo="자기장", nameEn="Magnetic Field",
+            rarity=Rarity.R, role=CharacterRole.Supporter,
+            continent=Continent.Physics, country="maxwell-duchy",
+            hp=700, atk=65, def=70, spd=95, mp=120,
+            color=new Color(0.169f, 0.498f, 1.000f),
+            dexNumber=1, gender=Gender.Male,
+            concept="다프트 펑크 스타일 헬멧의 DJ. 자기장으로 금속 물질을 지배한다.",
+            appearance="투명 강화유리+금속 프레임 헬멧, 내부에 자기장 선이 흐름. 슬림한 DJ 재킷 소매와 등판에 자기장 회로 패턴. 가슴 중앙에 원형 자기장 코어. 손가락에 자기 컨트롤 링.",
+            weapon="DJ 도구 (턴테이블·패드)",
+            loreKo="다프트 펑크 스타일의 헬멧을 착용한 DJ. 자기장(B, 테슬라 단위)은 운동하는 전하 주위에 형성되는 힘의 장으로, 금속에 강한 인력·척력을 미친다. 그는 디제잉으로 자기장 공간을 형성해 금속 속성 공격 피해를 대폭 줄이고, '전자기력' 버프로 전기 속성 아군의 능력을 강화한다. 전기장과 자기장이 서로 유도하는 패러데이·맥스웰 방정식은 그의 연주에 담겨 있다.",
+            synergyKind=SynergyKind.PartyPassive, synergyMarkedBy=null,
+            synergyComboName="전자기력 (전기 속성 아군 버프)",
+            gachaObtainable=true, acquireCondition=null,
+        },
+
+        // dexNumber=2 — 길이·공간
+        new Seed
+        {
+            id="length_sr", nameKo="길이·공간", nameEn="Length·Space",
+            rarity=Rarity.SR, role=CharacterRole.Tanker,
+            continent=Continent.Physics, country="newton-empire",
+            hp=1000, atk=70, def=130, spd=85, mp=100,
+            color=new Color(0.169f, 0.498f, 1.000f),
+            dexNumber=2, gender=Gender.Female,
+            concept="n차원 공간 관리자. 3차원 세계의 보수·유지를 위해 파견된 직책.",
+            appearance="반쯤 걸친 실험복과 오피스룩, 다크서클, 푸석한 장발 흑발, 초점 없는 눈동자. 정장 앞주머니에 컴퍼스가 꽂혀있다.",
+            weapon="자 / 컴퍼스",
+            loreKo="n차원 공간의 점검·보수를 담당하는 차원 관리자. 길이는 두 점 사이의 거리—m(미터) 단위의 기본 물리량—이며, 그녀는 임의의 두 지점을 잇는 포탈을 설치해 거리를 '수축'시킬 수 있다. 공간을 조작하는 '길이 수축' 능력은 물리학에서 상대론적 고속 이동 시 공간이 줄어드는 현상을 반영한다. 만사가 귀찮다는 표정이지만, 상대의 공격이 닿는 거리를 늘려 무효화하는 '고유 공간' 능력은 파티 최강의 방어력을 자랑한다.",
+            synergyKind=SynergyKind.Mark, synergyMarkedBy=null,
+            synergyComboName="길이 수축 (포탈 이동)",
+            gachaObtainable=true, acquireCondition=null,
+        },
+
+        // dexNumber=3 — 시간
+        new Seed
+        {
+            id="time_sr", nameKo="시간", nameEn="Time",
+            rarity=Rarity.SR, role=CharacterRole.Supporter,
+            continent=Continent.Physics, country="newton-empire",
+            hp=900, atk=70, def=80, spd=100, mp=130,
+            color=new Color(0.169f, 0.498f, 1.000f),
+            dexNumber=3, gender=Gender.Male,
+            concept="시간 관리국(時間管理局)에서 파견된 현장 직원.",
+            appearance="태엽 시계 색상의 정장과 원통형 모자를 쓴 미소년. 녹색 단발 머리, 한쪽에만 달린 줄 달린 외안경, 회중시계를 항상 지니고 다닌다.",
+            weapon="시계 바늘 (초침·분침·시침)",
+            loreKo="시간 관리국(時間管理局)에서 파견된 현장 직원. '시간'이란 사건이 일어나는 순서를 구분하고 그 간격을 측정하는 물리량—초(s) 단위로 정의된다. 그는 우주 곳곳의 시간 흐름이 고르게 유지되도록 점검하며, 파티에 합류하면 자신의 '고유 시간' 감각으로 아군의 스킬 재사용 대기 시간을 단축시킨다. 이동하는 적에게는 상대론적 '시간 지연'이 적용되어 더 큰 피해를 입힌다고 주장한다.",
+            synergyKind=SynergyKind.PartyPassive, synergyMarkedBy=null,
+            synergyComboName="고유 시간 (아군 쿨타임 감소)",
+            gachaObtainable=true, acquireCondition=null,
+        },
+
+        // dexNumber=4 — 전하량·전기장
+        new Seed
+        {
+            id="charge_r", nameKo="전하량·전기장", nameEn="Charge·E-Field",
+            rarity=Rarity.R, role=CharacterRole.Dealer,
+            continent=Continent.Physics, country="maxwell-duchy",
+            hp=650, atk=90, def=50, spd=100, mp=110,
+            color=new Color(0.169f, 0.498f, 1.000f),
+            dexNumber=4, gender=Gender.Female,
+            concept="전하를 에너지원으로 삼는 일렉트릭 로커.",
+            appearance="하얀 베이스 머리에 한쪽은 붉은색, 다른 쪽은 푸른색 할리퀸 헤어스타일 장발 양갈래. 양 볼에 붉은 + 기호와 푸른 - 기호 타투. 화려한 일렉 기타와 휴대용 스피커를 들고 다닌다.",
+            weapon="일렉 기타 / 스피커",
+            loreKo="전하를 에너지원으로 삼는 일렉트릭 로커. 전하(q, 쿨롱 단위)는 물질이 전기장 안에서 힘을 받는 성질이며, 양(+)/음(-) 부호에 따라 인력과 척력이 생긴다. 그녀는 이동할수록 전하 에너지를 누적하고 기타 연주로 폭발시키며, '교류(AC)'로 도트 데미지 스택을 쌓은 후 '직류(DC)'로 한꺼번에 방전하는 ACDC 기술이 주특기다. 전기장(E)과 전하(q)의 관계 F=qE는 빛 캐릭터와의 연계기 이름이기도 하다.",
+            synergyKind=SynergyKind.Mark, synergyMarkedBy=null,
+            synergyComboName="전기력 (F=qE)",
+            gachaObtainable=true, acquireCondition=null,
+        },
+
+        // dexNumber=5 — 빛
+        new Seed
+        {
+            id="light_ssr", nameKo="빛", nameEn="Light",
+            rarity=Rarity.SSR, role=CharacterRole.Dealer,
+            continent=Continent.Physics, country="maxwell-duchy",
+            hp=1000, atk=130, def=70, spd=110, mp=120,
+            color=new Color(0.169f, 0.498f, 1.000f),
+            dexNumber=5, gender=Gender.Male,
+            concept="빛의 이중성(wave-particle duality)을 몸으로 구현하는 변신형 캐릭터.",
+            appearance="입자성: 노란 금발의 야구 투수, 광자(노란 공)을 들고 있다. 파동성: 금발 치어리더, 치어리딩 도구를 양손에 들고 있다.",
+            weapon="광자 (입자형) / 치어리딩 도구 (파동형)",
+            loreKo="빛의 이중성(wave-particle duality)을 몸으로 구현하는 변신형 캐릭터. 빛은 전자기파(파동)이면서 동시에 광자(입자)로도 행동한다—두 성질은 관측 방법에 따라 드러난다. 입자성 형태에선 광자를 투구처럼 던지는 야구 선수, 파동성 형태에선 치어리더로 변신하며, '간섭'으로 방어와 공격을 동시에 강화하거나 '광전효과'로 전기 피해를 입힌다.",
+            synergyKind=SynergyKind.Mark, synergyMarkedBy=null,
+            synergyComboName="광전효과 · 전기력",
+            gachaObtainable=true, acquireCondition=null,
+        },
+
+        // dexNumber=6 — 쿼크
+        new Seed
+        {
+            id="quark_ur", nameKo="쿼크", nameEn="Quark",
+            rarity=Rarity.UR, role=CharacterRole.AllRounder,
+            continent=Continent.Physics, country="quantum-rebellion",
+            hp=1400, atk=160, def=100, spd=120, mp=160,
+            color=new Color(0.169f, 0.498f, 1.000f),
+            dexNumber=6, gender=Gender.Neutral,
+            concept="업·다운·스트레인지·참·탑·바텀 6종 쿼크를 저글링 볼로 다루는 올라운더 조커.",
+            appearance="트럼프 카드의 조커 복장. 삼원색 그라데이션 중단발, 빛의 삼원색과 흑백이 합쳐진 특수한 이중 동공.",
+            weapon="저글링 볼 (쿼크)",
+            loreKo="업·다운·스트레인지·참·탑·바텀—6종 쿼크를 저글링 볼로 자유자재로 다루는 조커. 쿼크는 강한 핵력으로 '가둠(confinement)'되어 홀로 존재하지 못하고, 반드시 반쿼크나 다른 쿼크와 결합된 상태로 관측된다. 각 쿼크는 분수 전하(+2/3 또는 -1/3)와 색전하(적·녹·청)를 가지며, '불확정성 원리'로 공격을 회피하거나 '바텀 쿼크' 패시브로 한 번의 죽음을 무효화한다.",
+            synergyKind=SynergyKind.Mark, synergyMarkedBy=null,
+            synergyComboName="색 가둠 (쿼크-반쿼크 결합)",
+            gachaObtainable=true, acquireCondition=null,
+        },
+
+        // dexNumber=7 — 질량·관성
+        new Seed
+        {
+            id="mass_sr", nameKo="질량", nameEn="Mass",
+            rarity=Rarity.SR, role=CharacterRole.Tanker,
+            continent=Continent.Physics, country="newton-empire",
+            hp=1100, atk=80, def=120, spd=80, mp=110,
+            color=new Color(0.169f, 0.498f, 1.000f),
+            dexNumber=7, gender=Gender.Male,
+            concept="엄숙한 기사의 외면 아래 다혈질 광인을 숨긴 이중인격 탱커.",
+            appearance="엄숙한 갑옷의 기사. 전투 중 충분한 피해를 받으면 갑옷에 균열이 생기며 다른 인격이 드러난다.",
+            weapon="방패 / 대검",
+            loreKo="엄숙한 기사의 외면 아래 다혈질 광인을 숨긴 이중인격 탱커. 질량(m, 킬로그램)은 물체가 가진 물질의 양이자 관성의 크기를 나타낸다—질량이 클수록 상태 변화에 저항한다. 평소엔 '관성'처럼 쉽게 움직이지 않는 엄숙한 기사지만, 전투 중 충분한 타격을 받으면 '관성이 깨지듯' 다른 인격이 폭발한다. '질량 표식'을 가속도 캐릭터에게 전달해 F=ma 연계를 발동시키는 것이 이 파티의 핵심 전략이다.",
+            synergyKind=SynergyKind.Mark, synergyMarkedBy=null,
+            synergyComboName="F=ma · 힘",
+            gachaObtainable=true, acquireCondition=null,
+        },
     };
 
     // ── 역할별 스킬 템플릿 (슬롯 0 = 기본 해금, 슬롯 1·2 = 잠금) ────────────
@@ -239,6 +377,39 @@ public static class CharacterSeedSetup
         stats.FindPropertyRelative("def").intValue  = s.def;
         stats.FindPropertyRelative("spd").intValue  = s.spd;
         stats.FindPropertyRelative("mp").intValue   = s.mp;
+
+        // 도감 번호
+        so.FindProperty("dexNumber").intValue = s.dexNumber;
+
+        // 프로필
+        so.FindProperty("gender").enumValueIndex  = (int)s.gender;
+        so.FindProperty("concept").stringValue    = s.concept ?? "";
+        so.FindProperty("appearance").stringValue = s.appearance ?? "";
+        so.FindProperty("weapon").stringValue     = s.weapon ?? "";
+
+        // 로어
+        so.FindProperty("loreKo").stringValue = s.loreKo ?? "";
+
+        // 시너지
+        so.FindProperty("synergyKind").enumValueIndex   = (int)s.synergyKind;
+        so.FindProperty("synergyComboName").stringValue = s.synergyComboName ?? "";
+        var markedByProp = so.FindProperty("synergyMarkedBy");
+        var markedByArr  = s.synergyMarkedBy;
+        if (markedByArr == null || markedByArr.Length == 0)
+        {
+            markedByProp.arraySize = 0;
+        }
+        else
+        {
+            markedByProp.arraySize = markedByArr.Length;
+            for (int i = 0; i < markedByArr.Length; i++)
+                markedByProp.GetArrayElementAtIndex(i).stringValue = markedByArr[i];
+        }
+
+        // 획득
+        so.FindProperty("gachaObtainable").boolValue      = s.gachaObtainable;
+        so.FindProperty("acquireCondition").stringValue   = s.acquireCondition ?? "";
+
         so.ApplyModifiedProperties();
         EditorUtility.SetDirty(def);
         return def;
