@@ -31,8 +31,8 @@ public class CharacterDef : ScriptableObject
     public int dexNumber;            // 정렬·표시용 고유 번호
 
     [Header("프로필 (설계 §9)")]
-    public string gender;            // "남"/"여"/"중성"
-    [TextArea] public string concept;     // 컨셉 한 줄 (예: "시간 관리국 직원")
+    public Gender gender;
+    public string concept;                // 컨셉 한 줄 (예: "시간 관리국 직원")
     [TextArea] public string appearance;  // 외형 묘사
     public string weapon;
 
