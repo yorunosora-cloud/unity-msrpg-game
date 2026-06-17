@@ -6,10 +6,11 @@ using UnityEngine.UI;
 using TMPro;
 
 /// <summary>
-/// 도감(Collection) 패널 — 그리드 카드 뷰 + 필터/정렬 바.
+/// 도감(Collection) 패널 — 그리드 카드 뷰 + 필터/정렬 바 + 상세 뷰.
 /// 단일 책임 분리:
-///   · CollectionPanel — 진입점, 뷰 상태 관리, FilterBar 빌드
+///   · CollectionPanel — 진입점, 뷰 상태 관리, FilterBar 빌드, DetailView 토글
 ///   · CodexCardBuilder — 카드 생성 정적 유틸리티 (별도 파일)
+///   · CodexDetailBuilder — 상세 섹션 빌드 정적 유틸리티 (별도 파일)
 /// </summary>
 public class CollectionPanel : MonoBehaviour
 {
@@ -26,7 +27,7 @@ public class CollectionPanel : MonoBehaviour
     // ── 데이터 ────────────────────────────────────────────────────────────
     CharacterDatabase _db;
 
-    // ── 카드 선택 콜백 (Task 4에서 연결) ─────────────────────────────────
+    // ── 카드 선택 콜백 ────────────────────────────────────────────────────
     Action<CharacterDef, OwnedCharacter> _onCardSelected;
 
     // ── 필터 버튼 참조 (활성 상태 토글용) ────────────────────────────────
@@ -34,6 +35,11 @@ public class CollectionPanel : MonoBehaviour
     readonly List<(Button btn, Image bg, TextMeshProUGUI lbl)> _rarityBtns    = new List<(Button, Image, TextMeshProUGUI)>();
     readonly List<(Button btn, Image bg, TextMeshProUGUI lbl)> _sortBtns      = new List<(Button, Image, TextMeshProUGUI)>();
     (Button btn, Image bg, TextMeshProUGUI lbl) _ownedOnlyBtn;
+
+    // ── DetailView ────────────────────────────────────────────────────────
+    GameObject    _detailView;           // 상세 뷰 오버레이 패널 (전체 영역 덮음)
+    RectTransform _detailScrollContent;  // CodexDetailBuilder 가 자식을 추가할 RT
+    GameObject    _gridView;             // 그리드(필터 바 + contentRoot) 래퍼
 
     // ── 정렬 열거 ─────────────────────────────────────────────────────────
     enum SortMode { DexNumber, Rarity, Name }
@@ -45,6 +51,12 @@ public class CollectionPanel : MonoBehaviour
     void OnEnable()
     {
         _db = Resources.Load<CharacterDatabase>("CharacterDatabase");
+
+        EnsureGridView();
+        EnsureDetailView();
+
+        // 카드 선택 시 상세 뷰로 전환
+        _onCardSelected = (def, owned) => ShowDetail(def, owned);
 
         BuildFilterBar();
         Refresh();
@@ -66,8 +78,154 @@ public class CollectionPanel : MonoBehaviour
 
     public void OnCloseClicked() => gameObject.SetActive(false);
 
-    /// <summary>Task 4 DetailView에서 연결할 카드 선택 콜백 설정.</summary>
+    /// <summary>외부에서 카드 선택 콜백을 재지정할 때 사용 (옵션).</summary>
     public void SetOnCardSelected(Action<CharacterDef, OwnedCharacter> cb) => _onCardSelected = cb;
+
+    // ─────────────────────────────────────────────────────────────────────
+    // DetailView 생성 / 토글
+    // ─────────────────────────────────────────────────────────────────────
+
+    /// <summary>
+    /// GridView 래퍼 생성 (최초 1회).
+    /// filterBarRoot / contentRoot 를 함께 감싸는 논리 그룹 역할.
+    /// </summary>
+    void EnsureGridView()
+    {
+        // filterBarRoot / contentRoot 를 개별로 토글하는 방식 — 별도 래퍼 불필요.
+    }
+
+    /// <summary>DetailView 오버레이 생성 (최초 1회만 생성, 이미 있으면 재사용).</summary>
+    void EnsureDetailView()
+    {
+        if (_detailView != null) return;
+
+        // ── DetailView 루트 ───────────────────────────────────────────────
+        var dvGO = new GameObject("DetailView", typeof(RectTransform));
+        dvGO.transform.SetParent(transform, false);
+        var dvRt = (RectTransform)dvGO.transform;
+        dvRt.anchorMin        = Vector2.zero;
+        dvRt.anchorMax        = Vector2.one;
+        dvRt.offsetMin        = Vector2.zero;
+        dvRt.offsetMax        = Vector2.zero;
+
+        // 배경
+        var dvBg = dvGO.AddComponent<Image>();
+        dvBg.color = UITheme.PanelBgDark;
+
+        // ── [← 뒤로] 버튼 ───────────────────────────────────────────────
+        {
+            var btnGO = new GameObject("BackButton", typeof(RectTransform));
+            btnGO.transform.SetParent(dvGO.transform, false);
+            var btnRt = (RectTransform)btnGO.transform;
+            btnRt.anchorMin        = new Vector2(0f, 1f);
+            btnRt.anchorMax        = new Vector2(0f, 1f);
+            btnRt.pivot            = new Vector2(0f, 1f);
+            btnRt.anchoredPosition = new Vector2(8f, -8f);
+            btnRt.sizeDelta        = new Vector2(80f, 28f);
+
+            var btnBg = btnGO.AddComponent<Image>();
+            btnBg.color = UITheme.BtnNeutral;
+
+            var lblGO = new GameObject("Label", typeof(RectTransform));
+            lblGO.transform.SetParent(btnGO.transform, false);
+            var lblRt = (RectTransform)lblGO.transform;
+            lblRt.anchorMin = Vector2.zero;
+            lblRt.anchorMax = Vector2.one;
+            lblRt.offsetMin = new Vector2(4f, 0f);
+            lblRt.offsetMax = new Vector2(-4f, 0f);
+            var lbl = lblGO.AddComponent<TextMeshProUGUI>();
+            lbl.text      = "← 뒤로";
+            lbl.fontSize  = UITheme.FontBody;
+            lbl.color     = UITheme.TextPrimary;
+            lbl.alignment = TextAlignmentOptions.Center;
+
+            var btn = btnGO.AddComponent<Button>();
+            btn.targetGraphic = btnBg;
+            btn.onClick.AddListener(HideDetail);
+        }
+
+        // ── ScrollView ────────────────────────────────────────────────────
+        {
+            const float BACK_BTN_H = 44f; // 뒤로 버튼 + 여백
+
+            var svGO = new GameObject("ScrollView", typeof(RectTransform));
+            svGO.transform.SetParent(dvGO.transform, false);
+            var svRt = (RectTransform)svGO.transform;
+            svRt.anchorMin = Vector2.zero;
+            svRt.anchorMax = Vector2.one;
+            svRt.offsetMin = new Vector2(0f, 0f);
+            svRt.offsetMax = new Vector2(0f, -BACK_BTN_H);
+
+            // Viewport
+            var vpGO = new GameObject("Viewport", typeof(RectTransform));
+            vpGO.transform.SetParent(svGO.transform, false);
+            var vpRt = (RectTransform)vpGO.transform;
+            vpRt.anchorMin = Vector2.zero;
+            vpRt.anchorMax = Vector2.one;
+            vpRt.offsetMin = Vector2.zero;
+            vpRt.offsetMax = Vector2.zero;
+
+            vpGO.AddComponent<Image>().color = Color.clear; // Mask 에 필요한 Image 컴포넌트
+            var mask = vpGO.AddComponent<Mask>();
+            mask.showMaskGraphic = false;
+
+            // ScrollContent
+            var scGO = new GameObject("ScrollContent", typeof(RectTransform));
+            scGO.transform.SetParent(vpGO.transform, false);
+            var scRt = (RectTransform)scGO.transform;
+            scRt.anchorMin        = new Vector2(0f, 1f);
+            scRt.anchorMax        = new Vector2(1f, 1f);
+            scRt.pivot            = new Vector2(0.5f, 1f);
+            scRt.anchoredPosition = Vector2.zero;
+            scRt.sizeDelta        = new Vector2(0f, 0f);
+
+            // ScrollRect
+            var sr = svGO.AddComponent<ScrollRect>();
+            sr.content          = scRt;
+            sr.viewport         = vpRt;
+            sr.horizontal       = false;
+            sr.vertical         = true;
+            sr.scrollSensitivity = 20f;
+            sr.movementType     = ScrollRect.MovementType.Clamped;
+
+            _detailScrollContent = scRt;
+        }
+
+        _detailView = dvGO;
+        _detailView.SetActive(false);
+    }
+
+    /// <summary>카드 클릭 시 호출 — 그리드 숨기고 상세 뷰를 표시한다.</summary>
+    void ShowDetail(CharacterDef def, OwnedCharacter owned)
+    {
+        if (_detailScrollContent == null) return;
+
+        if (filterBarRoot != null) filterBarRoot.gameObject.SetActive(false);
+        if (contentRoot   != null) contentRoot.gameObject.SetActive(false);
+
+        ClearDetailContent();
+
+        _detailView.SetActive(true);
+        CodexDetailBuilder.Build(_detailScrollContent, def, owned);
+    }
+
+    /// <summary>뒤로 버튼 클릭 시 호출 — 상세 뷰 닫고 그리드로 복귀.</summary>
+    void HideDetail()
+    {
+        if (_detailScrollContent == null) return;
+
+        ClearDetailContent();
+        _detailView.SetActive(false);
+
+        if (filterBarRoot != null) filterBarRoot.gameObject.SetActive(true);
+        if (contentRoot   != null) contentRoot.gameObject.SetActive(true);
+    }
+
+    void ClearDetailContent()
+    {
+        for (int i = _detailScrollContent.childCount - 1; i >= 0; i--)
+            UnityEngine.Object.Destroy(_detailScrollContent.GetChild(i).gameObject);
+    }
 
     // ─────────────────────────────────────────────────────────────────────
     // 필터 바 빌드

@@ -41,10 +41,12 @@ public class OwnedCharacter
         return newProgress;
     }
 
-    /// <summary>주어진 skillId의 현재 스킬 레벨을 반환한다. 없으면 1을 반환한다.</summary>
+    /// <summary>주어진 skillId의 현재 스킬 레벨을 반환한다. 없으면 1을 반환한다 (데이터 변형 없음).</summary>
     public int SkillLevel(string skillId)
     {
-        return GetSkillProgress(skillId).level;
+        foreach (var p in skillProgress)
+            if (p.skillId == skillId) return p.level;
+        return 1;
     }
 }
 
