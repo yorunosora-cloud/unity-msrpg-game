@@ -1,18 +1,54 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-/// <summary>보유 캐릭터 컬렉션(도감) 패널. 대륙·레어리티 색상 행 목록.</summary>
+/// <summary>
+/// 도감(Collection) 패널 — 그리드 카드 뷰 + 필터/정렬 바.
+/// 단일 책임 분리:
+///   · CollectionPanel — 진입점, 뷰 상태 관리, FilterBar 빌드
+///   · CodexCardBuilder — 카드 생성 정적 유틸리티 (별도 파일)
+/// </summary>
 public class CollectionPanel : MonoBehaviour
 {
-    [SerializeField] RectTransform contentRoot;
+    // ── Inspector ─────────────────────────────────────────────────────────
+    [SerializeField] RectTransform contentRoot;   // 스크롤 컨텐츠 영역
+    [SerializeField] RectTransform filterBarRoot; // 필터 버튼 행을 붙일 영역 (없으면 코드로 생성)
 
+    // ── 뷰 상태 ───────────────────────────────────────────────────────────
+    Continent?  _filterContinent = null;   // null = 전체
+    Rarity?     _filterRarity    = null;   // null = 전체
+    bool        _ownedOnly       = false;
+    SortMode    _sort            = SortMode.DexNumber;
+
+    // ── 데이터 ────────────────────────────────────────────────────────────
     CharacterDatabase _db;
+
+    // ── 카드 선택 콜백 (Task 4에서 연결) ─────────────────────────────────
+    Action<CharacterDef, OwnedCharacter> _onCardSelected;
+
+    // ── 필터 버튼 참조 (활성 상태 토글용) ────────────────────────────────
+    readonly List<(Button btn, Image bg)> _continentBtns = new List<(Button, Image)>();
+    readonly List<(Button btn, Image bg)> _rarityBtns    = new List<(Button, Image)>();
+    readonly List<(Button btn, Image bg)> _sortBtns      = new List<(Button, Image)>();
+    (Button btn, Image bg) _ownedOnlyBtn;
+
+    // ── 정렬 열거 ─────────────────────────────────────────────────────────
+    enum SortMode { DexNumber, Rarity, Name }
+
+    // ─────────────────────────────────────────────────────────────────────
+    // Unity 생명주기
+    // ─────────────────────────────────────────────────────────────────────
 
     void OnEnable()
     {
         _db = Resources.Load<CharacterDatabase>("CharacterDatabase");
+
+        BuildFilterBar();
         Refresh();
+
         if (MetaState.IsInitialized)
             MetaState.Roster.OnChanged += Refresh;
     }
@@ -24,134 +60,331 @@ public class CollectionPanel : MonoBehaviour
         UIManager.Close();
     }
 
+    // ─────────────────────────────────────────────────────────────────────
+    // 공용 API
+    // ─────────────────────────────────────────────────────────────────────
+
+    public void OnCloseClicked() => gameObject.SetActive(false);
+
+    /// <summary>Task 4 DetailView에서 연결할 카드 선택 콜백 설정.</summary>
+    public void SetOnCardSelected(Action<CharacterDef, OwnedCharacter> cb) => _onCardSelected = cb;
+
+    // ─────────────────────────────────────────────────────────────────────
+    // 필터 바 빌드
+    // ─────────────────────────────────────────────────────────────────────
+
+    void BuildFilterBar()
+    {
+        // filterBarRoot가 Inspector에 연결되지 않은 경우 스킵 (contentRoot 상위에 자동 생성 불가)
+        if (filterBarRoot == null) return;
+
+        // 이미 빌드되어 있으면 재빌드하지 않음
+        if (filterBarRoot.childCount > 0) return;
+
+        _continentBtns.Clear();
+        _rarityBtns.Clear();
+        _sortBtns.Clear();
+
+        const float ROW_H = 28f;
+        const float PAD   = 4f;
+
+        // ── 행 1: 대륙 필터 ─────────────────────────────────────────────
+        var row1 = CreateFilterRow(filterBarRoot, 0f, ROW_H, PAD);
+        AddFilterButton(row1, "[전체]", true,
+            () => { _filterContinent = null; UpdateContinentButtonStates(); Refresh(); },
+            out var r1allBtn);
+        _continentBtns.Add(r1allBtn);
+
+        var continents = new (string label, Continent value)[]
+        {
+            ("[물리]", Continent.Physics),
+            ("[화학]", Continent.Chemistry),
+            ("[생명]", Continent.Biology),
+            ("[지구]", Continent.EarthSci),
+            ("[수학]", Continent.Math),
+            ("[정보]", Continent.Info),
+        };
+        foreach (var (label, value) in continents)
+        {
+            var capturedValue = value;
+            AddFilterButton(row1, label, false,
+                () => { _filterContinent = capturedValue; UpdateContinentButtonStates(); Refresh(); },
+                out var entry);
+            _continentBtns.Add(entry);
+        }
+
+        // ── 행 2: 등급 필터 + 보유 토글 ─────────────────────────────────
+        var row2 = CreateFilterRow(filterBarRoot, -(ROW_H + PAD), ROW_H, PAD);
+        AddFilterButton(row2, "[전체]", true,
+            () => { _filterRarity = null; UpdateRarityButtonStates(); Refresh(); },
+            out var r2allBtn);
+        _rarityBtns.Add(r2allBtn);
+
+        foreach (Rarity rar in Enum.GetValues(typeof(Rarity)))
+        {
+            var capturedRar = rar;
+            AddFilterButton(row2, $"[{rar}]", false,
+                () => { _filterRarity = capturedRar; UpdateRarityButtonStates(); Refresh(); },
+                out var entry);
+            _rarityBtns.Add(entry);
+        }
+
+        AddFilterButton(row2, "[보유만]", false,
+            () => { _ownedOnly = !_ownedOnly; UpdateOwnedOnlyButtonState(); Refresh(); },
+            out _ownedOnlyBtn);
+
+        // ── 행 3: 정렬 ──────────────────────────────────────────────────
+        var row3 = CreateFilterRow(filterBarRoot, -((ROW_H + PAD) * 2f), ROW_H, PAD);
+        var sortItems = new (string label, SortMode mode)[]
+        {
+            ("[도감번호]", SortMode.DexNumber),
+            ("[등급]",    SortMode.Rarity),
+            ("[이름]",    SortMode.Name),
+        };
+        foreach (var (label, mode) in sortItems)
+        {
+            var capturedMode = mode;
+            AddFilterButton(row3, label, mode == SortMode.DexNumber,
+                () => { _sort = capturedMode; UpdateSortButtonStates(); Refresh(); },
+                out var entry);
+            _sortBtns.Add(entry);
+        }
+
+        // 컨테이너 높이
+        filterBarRoot.sizeDelta = new Vector2(0, (ROW_H + PAD) * 3f + PAD);
+    }
+
+    // ─────────────────────────────────────────────────────────────────────
+    // 그리드 갱신
+    // ─────────────────────────────────────────────────────────────────────
+
     void Refresh()
     {
         if (contentRoot == null || !MetaState.IsInitialized) return;
 
+        // 기존 카드 제거
         while (contentRoot.childCount > 0)
-            Object.DestroyImmediate(contentRoot.GetChild(0).gameObject);
+            UnityEngine.Object.DestroyImmediate(contentRoot.GetChild(0).gameObject);
 
-        var owned = MetaState.Roster.Owned;
+        if (_db == null) return;
 
-        if (owned.Count == 0)
+        var roster = MetaState.Roster;
+        var allDefs = _db.All;
+        if (allDefs == null || allDefs.Length == 0)
         {
-            BuildEmpty(contentRoot, "보유 캐릭터가 없습니다.\n가챠를 뽑아 캐릭터를 획득해보세요!");
-            contentRoot.sizeDelta = new Vector2(0, 80f);
+            BuildEmpty("등록된 캐릭터가 없습니다.");
             return;
         }
 
-        const float ROW_H = 68f;
-        const float GAP   = 3f;
-        const float PAD   = 4f;
-        float y = -PAD;
+        // ── 필터 ────────────────────────────────────────────────────────
+        IEnumerable<CharacterDef> defs = allDefs.Where(d => d != null);
 
-        foreach (var oc in owned)
+        if (_filterContinent.HasValue)
+            defs = defs.Where(d => d.continent == _filterContinent.Value);
+
+        if (_filterRarity.HasValue)
+            defs = defs.Where(d => d.rarity == _filterRarity.Value);
+
+        if (_ownedOnly)
+            defs = defs.Where(d => roster.Has(d.id));
+
+        // ── 정렬 ────────────────────────────────────────────────────────
+        defs = _sort switch
         {
-            BuildCharRow(contentRoot, oc, _db?.ById(oc.id), y);
-            y -= ROW_H + GAP;
+            SortMode.DexNumber => defs.OrderBy(d => d.dexNumber == 0 ? int.MaxValue : d.dexNumber),
+            SortMode.Rarity    => defs.OrderByDescending(d => (int)d.rarity)
+                                      .ThenBy(d => d.dexNumber == 0 ? int.MaxValue : d.dexNumber),
+            SortMode.Name      => defs.OrderBy(d => d.nameKo ?? d.id),
+            _                  => defs,
+        };
+
+        var defList = defs.ToList();
+
+        if (defList.Count == 0)
+        {
+            BuildEmpty("조건에 맞는 캐릭터가 없습니다.");
+            return;
         }
-        contentRoot.sizeDelta = new Vector2(0, Mathf.Abs(y) + PAD);
+
+        // ── 그리드 레이아웃 계산 ─────────────────────────────────────────
+        float panelW = contentRoot.rect.width;
+        if (panelW <= 0f) panelW = 400f; // fallback (OnEnable 직후 rect 미확정 대비)
+
+        const float CARD_W   = CodexCardBuilder.CARD_W;
+        const float CARD_H   = CodexCardBuilder.CARD_H;
+        const float GAP      = CodexCardBuilder.CARD_GAP;
+        const float PAD_SIDE = 8f;
+        const float PAD_TOP  = 8f;
+
+        int cols = Mathf.Max(3, Mathf.FloorToInt((panelW - PAD_SIDE * 2f + GAP) / (CARD_W + GAP)));
+        float totalW    = cols * CARD_W + (cols - 1) * GAP;
+        float startX    = (panelW - totalW) * 0.5f;  // 중앙 정렬
+
+        int rows = Mathf.CeilToInt((float)defList.Count / cols);
+        float contentH = PAD_TOP + rows * CARD_H + (rows - 1) * GAP + PAD_TOP;
+        contentRoot.sizeDelta = new Vector2(0, contentH);
+
+        // ── 카드 배치 ────────────────────────────────────────────────────
+        for (int i = 0; i < defList.Count; i++)
+        {
+            var def   = defList[i];
+            var owned = roster.Get(def.id);
+
+            int col = i % cols;
+            int row = i / cols;
+
+            float x = startX + col * (CARD_W + GAP) + CARD_W * 0.5f;
+            float y = -(PAD_TOP + row * (CARD_H + GAP) + CARD_H * 0.5f);
+
+            var cardRt = CodexCardBuilder.BuildCard(contentRoot, def, owned, _onCardSelected);
+            cardRt.anchorMin        = new Vector2(0f, 1f);
+            cardRt.anchorMax        = new Vector2(0f, 1f);
+            cardRt.pivot            = new Vector2(0.5f, 0.5f);
+            cardRt.anchoredPosition = new Vector2(x, y);
+        }
     }
 
-    public void OnCloseClicked() => gameObject.SetActive(false);
+    // ─────────────────────────────────────────────────────────────────────
+    // 버튼 상태 갱신
+    // ─────────────────────────────────────────────────────────────────────
 
-    // ── 행 생성 ──────────────────────────────────────────────────────────
-
-    static void BuildEmpty(RectTransform parent, string msg)
+    void UpdateContinentButtonStates()
     {
-        var go = new GameObject("Empty", typeof(RectTransform));
+        // 인덱스 0 = [전체], 1~6 = Physics~Info
+        var continentValues = new Continent?[]
+        {
+            null,
+            Continent.Physics, Continent.Chemistry, Continent.Biology,
+            Continent.EarthSci, Continent.Math, Continent.Info,
+        };
+        for (int i = 0; i < _continentBtns.Count && i < continentValues.Length; i++)
+            SetButtonActive(_continentBtns[i].bg, _filterContinent == continentValues[i]);
+    }
+
+    void UpdateRarityButtonStates()
+    {
+        // 인덱스 0 = [전체], 1~5 = N/R/SR/SSR/UR
+        Rarity?[] rarityValues = { null, Rarity.N, Rarity.R, Rarity.SR, Rarity.SSR, Rarity.UR };
+        for (int i = 0; i < _rarityBtns.Count - 1 && i < rarityValues.Length; i++) // -1: 보유 버튼 제외
+            SetButtonActive(_rarityBtns[i].bg, _filterRarity == rarityValues[i]);
+        // 보유 버튼은 _ownedOnlyBtn에 별도 관리
+    }
+
+    void UpdateOwnedOnlyButtonState()
+    {
+        SetButtonActive(_ownedOnlyBtn.bg, _ownedOnly);
+    }
+
+    void UpdateSortButtonStates()
+    {
+        SortMode[] sortModes = { SortMode.DexNumber, SortMode.Rarity, SortMode.Name };
+        for (int i = 0; i < _sortBtns.Count && i < sortModes.Length; i++)
+            SetButtonActive(_sortBtns[i].bg, _sort == sortModes[i]);
+    }
+
+    static void SetButtonActive(Image bg, bool active)
+    {
+        if (bg == null) return;
+        bg.color = active
+            ? new Color(UITheme.TextPrimary.r, UITheme.TextPrimary.g, UITheme.TextPrimary.b, 0.25f)
+            : new Color(UITheme.TextSecondary.r, UITheme.TextSecondary.g, UITheme.TextSecondary.b, 0.12f);
+    }
+
+    // ─────────────────────────────────────────────────────────────────────
+    // 필터 바 UI 헬퍼
+    // ─────────────────────────────────────────────────────────────────────
+
+    static RectTransform CreateFilterRow(RectTransform parent, float yPos, float height, float pad)
+    {
+        var go = new GameObject("FilterRow", typeof(RectTransform));
         go.transform.SetParent(parent, false);
-        SetRowRect((RectTransform)go.transform, 0f, 80f);
-        var t = go.AddComponent<TextMeshProUGUI>();
-        t.text      = msg;
-        t.fontSize  = UITheme.FontBody;
-        t.color     = UITheme.TextSecondary;
-        t.alignment = TextAlignmentOptions.Center;
-    }
-
-    static void BuildCharRow(RectTransform parent, OwnedCharacter oc, CharacterDef def, float yPos)
-    {
-        const float ROW_H = 68f;
-
-        var rarity  = def?.rarity    ?? Rarity.N;
-        var contId  = def?.continent ?? Continent.Mesoria;
-        var rarCol  = rarity.DisplayColor();
-        var contCol = ContinentColors.Of(contId);
-
-        var row = new GameObject("Row_" + oc.id, typeof(RectTransform));
-        row.transform.SetParent(parent, false);
-        SetRowRect((RectTransform)row.transform, yPos, ROW_H);
-
-        // 배경: 레어리티 색의 매우 어두운 틴트
-        row.AddComponent<Image>().color = new Color(rarCol.r * 0.13f, rarCol.g * 0.13f, rarCol.b * 0.13f, 1f);
-
-        // 좌측 대륙 컬러 스트립
-        AddStrip(row.transform, contCol);
-
-        // 캐릭터 이름 (좌)
-        var nameGO = new GameObject("Name", typeof(RectTransform));
-        nameGO.transform.SetParent(row.transform, false);
-        var nRt = (RectTransform)nameGO.transform;
-        nRt.anchorMin = new Vector2(0f, 0f); nRt.anchorMax = new Vector2(0.52f, 1f);
-        nRt.offsetMin = new Vector2(16f, 0f); nRt.offsetMax = Vector2.zero;
-        var nTxt = nameGO.AddComponent<TextMeshProUGUI>();
-        nTxt.text      = def?.nameKo ?? oc.id;
-        nTxt.fontSize  = UITheme.FontH2;
-        nTxt.color     = UITheme.TextPrimary;
-        nTxt.fontStyle = FontStyles.Bold;
-        nTxt.alignment = TextAlignmentOptions.MidlineLeft;
-
-        // 등급·레벨·스킬 (우)
-        var infoGO = new GameObject("Info", typeof(RectTransform));
-        infoGO.transform.SetParent(row.transform, false);
-        var iRt = (RectTransform)infoGO.transform;
-        iRt.anchorMin = new Vector2(0.52f, 0f); iRt.anchorMax = Vector2.one;
-        iRt.offsetMin = Vector2.zero;            iRt.offsetMax = new Vector2(-10f, 0f);
-        var iTxt = infoGO.AddComponent<TextMeshProUGUI>();
-
-        int sUnlocked = (oc.unlockedSkillIds == null || oc.unlockedSkillIds.Count == 0)
-            ? 1 : oc.unlockedSkillIds.Count;
-        int sTotal = def?.skills?.Length ?? 1;
-        sUnlocked = System.Math.Min(sUnlocked, sTotal);
-
-        string dup    = oc.dupes > 0 ? $"  <color=#888>+{oc.dupes}</color>" : "";
-        string rarHex = ColorUtility.ToHtmlStringRGB(rarCol);
-        string dots   = SkillDots(sUnlocked, sTotal);
-
-        iTxt.text      = $"<b><color=#{rarHex}>{rarity}</color></b>  Lv.{oc.level}{dup}\n<size=10>{dots}</size>";
-        iTxt.fontSize  = UITheme.FontBody;
-        iTxt.color     = UITheme.TextSecondary;
-        iTxt.alignment = TextAlignmentOptions.MidlineRight;
-    }
-
-    // ── 공용 헬퍼 ────────────────────────────────────────────────────────
-
-    static void SetRowRect(RectTransform rt, float yPos, float height)
-    {
+        var rt = (RectTransform)go.transform;
         rt.anchorMin        = new Vector2(0f, 1f);
         rt.anchorMax        = new Vector2(1f, 1f);
         rt.pivot            = new Vector2(0.5f, 1f);
         rt.anchoredPosition = new Vector2(0f, yPos);
         rt.sizeDelta        = new Vector2(0f, height);
+
+        // 수평 레이아웃
+        var hLayout = go.AddComponent<HorizontalLayoutGroup>();
+        hLayout.spacing            = 4f;
+        hLayout.padding            = new RectOffset((int)pad, (int)pad, 2, 2);
+        hLayout.childAlignment     = TextAnchor.MiddleLeft;
+        hLayout.childForceExpandWidth  = false;
+        hLayout.childForceExpandHeight = true;
+        hLayout.childControlWidth  = false;
+        hLayout.childControlHeight = true;
+
+        return rt;
     }
 
-    static void AddStrip(Transform parent, Color color)
+    static void AddFilterButton(
+        RectTransform row,
+        string label,
+        bool startActive,
+        Action onClick,
+        out (Button btn, Image bg) result)
     {
-        var go = new GameObject("Strip", typeof(RectTransform));
-        go.transform.SetParent(parent, false);
+        var go = new GameObject("Btn_" + label, typeof(RectTransform));
+        go.transform.SetParent(row, false);
         var rt = (RectTransform)go.transform;
-        rt.anchorMin = Vector2.zero;
-        rt.anchorMax = new Vector2(0f, 1f);
-        rt.offsetMin = Vector2.zero;
-        rt.offsetMax = new Vector2(6f, 0f);
-        go.AddComponent<Image>().color = color;
+        rt.sizeDelta = new Vector2(MeasureButtonWidth(label), 24f);
+
+        var bg = go.AddComponent<Image>();
+        bg.color = startActive
+            ? new Color(UITheme.TextPrimary.r, UITheme.TextPrimary.g, UITheme.TextPrimary.b, 0.25f)
+            : new Color(UITheme.TextSecondary.r, UITheme.TextSecondary.g, UITheme.TextSecondary.b, 0.12f);
+
+        var txtGO = new GameObject("Label", typeof(RectTransform));
+        txtGO.transform.SetParent(go.transform, false);
+        var txtRt = (RectTransform)txtGO.transform;
+        txtRt.anchorMin = Vector2.zero;
+        txtRt.anchorMax = Vector2.one;
+        txtRt.offsetMin = new Vector2(4f, 0f);
+        txtRt.offsetMax = new Vector2(-4f, 0f);
+        var txt = txtGO.AddComponent<TextMeshProUGUI>();
+        txt.text      = label;
+        txt.fontSize  = UITheme.FontCaption;
+        txt.color     = startActive ? UITheme.TextPrimary : UITheme.TextSecondary;
+        txt.alignment = TextAlignmentOptions.Center;
+
+        var btn = go.AddComponent<Button>();
+        btn.targetGraphic = bg;
+        btn.onClick.AddListener(() =>
+        {
+            onClick?.Invoke();
+            // 텍스트 색은 UpdateXxxButtonStates()에서 일괄 처리하므로 여기서는 생략
+        });
+
+        result = (btn, bg);
     }
 
-    static string SkillDots(int unlocked, int total)
+    // 라벨 문자 수로 대략적인 버튼 폭 계산
+    static float MeasureButtonWidth(string label)
     {
-        var sb = new System.Text.StringBuilder("스킬 ");
-        for (int i = 0; i < total; i++)
-            sb.Append(i < unlocked ? "●" : "○");
-        return sb.ToString();
+        // 한글 1자 ≈ 11px, 영문 ≈ 7px, 대괄호 포함 최소 40px
+        return Mathf.Max(40f, label.Length * 9f + 8f);
+    }
+
+    // ─────────────────────────────────────────────────────────────────────
+    // 빈 상태 메시지
+    // ─────────────────────────────────────────────────────────────────────
+
+    void BuildEmpty(string msg)
+    {
+        var go = new GameObject("Empty", typeof(RectTransform));
+        go.transform.SetParent(contentRoot, false);
+        var rt = (RectTransform)go.transform;
+        rt.anchorMin        = new Vector2(0f, 1f);
+        rt.anchorMax        = new Vector2(1f, 1f);
+        rt.pivot            = new Vector2(0.5f, 1f);
+        rt.anchoredPosition = new Vector2(0f, 0f);
+        rt.sizeDelta        = new Vector2(0f, 80f);
+        var t = go.AddComponent<TextMeshProUGUI>();
+        t.text      = msg;
+        t.fontSize  = UITheme.FontBody;
+        t.color     = UITheme.TextSecondary;
+        t.alignment = TextAlignmentOptions.Center;
+        contentRoot.sizeDelta = new Vector2(0, 80f);
     }
 }
