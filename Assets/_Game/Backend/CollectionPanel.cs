@@ -30,10 +30,10 @@ public class CollectionPanel : MonoBehaviour
     Action<CharacterDef, OwnedCharacter> _onCardSelected;
 
     // ── 필터 버튼 참조 (활성 상태 토글용) ────────────────────────────────
-    readonly List<(Button btn, Image bg)> _continentBtns = new List<(Button, Image)>();
-    readonly List<(Button btn, Image bg)> _rarityBtns    = new List<(Button, Image)>();
-    readonly List<(Button btn, Image bg)> _sortBtns      = new List<(Button, Image)>();
-    (Button btn, Image bg) _ownedOnlyBtn;
+    readonly List<(Button btn, Image bg, TextMeshProUGUI lbl)> _continentBtns = new List<(Button, Image, TextMeshProUGUI)>();
+    readonly List<(Button btn, Image bg, TextMeshProUGUI lbl)> _rarityBtns    = new List<(Button, Image, TextMeshProUGUI)>();
+    readonly List<(Button btn, Image bg, TextMeshProUGUI lbl)> _sortBtns      = new List<(Button, Image, TextMeshProUGUI)>();
+    (Button btn, Image bg, TextMeshProUGUI lbl) _ownedOnlyBtn;
 
     // ── 정렬 열거 ─────────────────────────────────────────────────────────
     enum SortMode { DexNumber, Rarity, Name }
@@ -164,7 +164,7 @@ public class CollectionPanel : MonoBehaviour
 
         // 기존 카드 제거
         while (contentRoot.childCount > 0)
-            UnityEngine.Object.DestroyImmediate(contentRoot.GetChild(0).gameObject);
+            UnityEngine.Object.Destroy(contentRoot.GetChild(0).gameObject);
 
         if (_db == null) return;
 
@@ -258,7 +258,7 @@ public class CollectionPanel : MonoBehaviour
             Continent.EarthSci, Continent.Math, Continent.Info,
         };
         for (int i = 0; i < _continentBtns.Count && i < continentValues.Length; i++)
-            SetButtonActive(_continentBtns[i].bg, _filterContinent == continentValues[i]);
+            SetButtonActive(_continentBtns[i].bg, _continentBtns[i].lbl, _filterContinent == continentValues[i]);
     }
 
     void UpdateRarityButtonStates()
@@ -266,28 +266,30 @@ public class CollectionPanel : MonoBehaviour
         // 인덱스 0 = [전체], 1~5 = N/R/SR/SSR/UR
         Rarity?[] rarityValues = { null, Rarity.N, Rarity.R, Rarity.SR, Rarity.SSR, Rarity.UR };
         for (int i = 0; i < _rarityBtns.Count - 1 && i < rarityValues.Length; i++) // -1: 보유 버튼 제외
-            SetButtonActive(_rarityBtns[i].bg, _filterRarity == rarityValues[i]);
+            SetButtonActive(_rarityBtns[i].bg, _rarityBtns[i].lbl, _filterRarity == rarityValues[i]);
         // 보유 버튼은 _ownedOnlyBtn에 별도 관리
     }
 
     void UpdateOwnedOnlyButtonState()
     {
-        SetButtonActive(_ownedOnlyBtn.bg, _ownedOnly);
+        SetButtonActive(_ownedOnlyBtn.bg, _ownedOnlyBtn.lbl, _ownedOnly);
     }
 
     void UpdateSortButtonStates()
     {
         SortMode[] sortModes = { SortMode.DexNumber, SortMode.Rarity, SortMode.Name };
         for (int i = 0; i < _sortBtns.Count && i < sortModes.Length; i++)
-            SetButtonActive(_sortBtns[i].bg, _sort == sortModes[i]);
+            SetButtonActive(_sortBtns[i].bg, _sortBtns[i].lbl, _sort == sortModes[i]);
     }
 
-    static void SetButtonActive(Image bg, bool active)
+    static void SetButtonActive(Image bg, TextMeshProUGUI lbl, bool active)
     {
         if (bg == null) return;
         bg.color = active
             ? new Color(UITheme.TextPrimary.r, UITheme.TextPrimary.g, UITheme.TextPrimary.b, 0.25f)
             : new Color(UITheme.TextSecondary.r, UITheme.TextSecondary.g, UITheme.TextSecondary.b, 0.12f);
+        if (lbl != null)
+            lbl.color = active ? UITheme.TextPrimary : UITheme.TextSecondary;
     }
 
     // ─────────────────────────────────────────────────────────────────────
@@ -323,7 +325,7 @@ public class CollectionPanel : MonoBehaviour
         string label,
         bool startActive,
         Action onClick,
-        out (Button btn, Image bg) result)
+        out (Button btn, Image bg, TextMeshProUGUI lbl) result)
     {
         var go = new GameObject("Btn_" + label, typeof(RectTransform));
         go.transform.SetParent(row, false);
@@ -350,13 +352,9 @@ public class CollectionPanel : MonoBehaviour
 
         var btn = go.AddComponent<Button>();
         btn.targetGraphic = bg;
-        btn.onClick.AddListener(() =>
-        {
-            onClick?.Invoke();
-            // 텍스트 색은 UpdateXxxButtonStates()에서 일괄 처리하므로 여기서는 생략
-        });
+        btn.onClick.AddListener(() => onClick?.Invoke());
 
-        result = (btn, bg);
+        result = (btn, bg, txt);
     }
 
     // 라벨 문자 수로 대략적인 버튼 폭 계산
