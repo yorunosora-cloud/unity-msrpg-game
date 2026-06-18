@@ -59,11 +59,17 @@ public class CombatCharacter
 
     /// <summary>
     /// 인덱스 i의 스킬이 해금되어 있는지 확인.
-    /// 테스트 모드: 스킬이 존재하면 항상 true (unlockedSkillIds 무시).
+    /// unlockedSkillIds가 비어 있으면 index 0만 기본 해금으로 간주한다.
     /// </summary>
     public bool IsUnlocked(int i)
     {
-        return SkillAt(i) != null; // TODO: 정식 출시 전 unlockedSkillIds 체크 복구
+        var skill = SkillAt(i);
+        if (skill == null) return false;
+
+        if (_owned.unlockedSkillIds == null || _owned.unlockedSkillIds.Count == 0)
+            return i == 0;
+
+        return _owned.unlockedSkillIds.Contains(skill.id);
     }
 
     /// <summary>인덱스 i의 스킬을 해금한다. 이미 해금되어 있으면 무시.</summary>

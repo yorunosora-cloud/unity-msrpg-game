@@ -145,7 +145,7 @@ public static class CodexDetailBuilder
         }
         else
         {
-            body     = $"[ 국가: {def.country} | 등급: {def.rarity} ]\n\n██████████ ██████ ████████████████████ ███████████████ ██████████████████";
+            body     = $"[ 국가: {def.country} | 등급: {def.rarity} ]\n\n—————————— —————— ———————————————————— ——————————————— ——————————————————";
             textCol  = UITheme.TextDisabled;
             italic   = true;
         }
