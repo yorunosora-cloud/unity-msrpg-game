@@ -10,10 +10,11 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float turnSpeed          = 12f;
     [SerializeField] float groundAccel        = 30f;   // 가속률 (units/s²)
     [SerializeField] float groundDecel        = 45f;   // 감속률
-    [SerializeField] float airSteerDegPerSec  = 90f;   // 공중 조향 속도 (방향만, 크기 고정)
+    [SerializeField] float airSteerDegPerSec  = 35f;   // 공중 조향 속도 (방향만, 크기 고정)
 
     [Header("Jump")]
     [SerializeField] float gravity            = -22f;
+    [SerializeField] float fallMultiplier     = 1.6f;  // 하강 시 중력 배율 → 또렷한 착지
     [SerializeField] float jumpSpeed          = 8f;
     [SerializeField] float anticipationTime   = 0.06f; // 웅크림 대기 시간
 
@@ -69,7 +70,8 @@ public class PlayerController : MonoBehaviour
         // 수직 속도: 공중엔 중력, 지상/예비동작엔 작은 하방 압력
         if (_jumpPhase == JumpPhase.Airborne)
         {
-            _velocityY += gravity * Time.deltaTime;
+            float g = _velocityY < 0f ? gravity * fallMultiplier : gravity;
+            _velocityY += g * Time.deltaTime;
             _velocityY  = Mathf.Max(_velocityY, -50f);
         }
         else
