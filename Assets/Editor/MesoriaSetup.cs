@@ -37,7 +37,7 @@ public static class MesoriaSetup
         // 6. 플레이어
         var player = new GameObject("Player");
         player.tag = "Player";
-        player.transform.position = new Vector3(0f, 0f, -45f); // 남쪽 입구 — 허브 스폰 지점
+        player.transform.position = new Vector3(0f, 0f, -100f); // 남쪽 성문 밖 — 허브 스폰 지점
         var cc = player.AddComponent<CharacterController>();
         cc.center = new Vector3(0f, 1f, 0f);
         cc.radius = 0.3f;
