@@ -141,6 +141,9 @@ public class PlayerController : MonoBehaviour
             landingImpact = Mathf.Clamp01(Mathf.Abs(prevVelY) / 12f);
             _jumpPhase    = JumpPhase.Grounded;
         }
+        // 발판 끝에서 그냥 걸어나간 경우 (점프 없이 공중)
+        if (_jumpPhase == JumpPhase.Grounded && !_cc.isGrounded)
+            _jumpPhase = JumpPhase.Airborne;
         // 예비동작 중 발판 끝에서 떨어진 경우
         if (_jumpPhase == JumpPhase.Anticipating && !_cc.isGrounded)
             _jumpPhase = JumpPhase.Airborne;
