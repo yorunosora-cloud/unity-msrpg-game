@@ -396,7 +396,7 @@ public static class CodexDetailBuilder
         t.color              = color;
         t.fontStyle          = italic ? FontStyles.Italic : FontStyles.Normal;
         t.alignment          = TextAlignmentOptions.Left;
-        t.enableWordWrapping = false;
+        t.textWrappingMode   = TextWrappingModes.NoWrap;
         t.overflowMode       = TextOverflowModes.Ellipsis;
 
         return yPos - LINE_H - 2f;
@@ -426,7 +426,7 @@ public static class CodexDetailBuilder
         t.color              = color;
         t.fontStyle          = italic ? FontStyles.Italic : FontStyles.Normal;
         t.alignment          = TextAlignmentOptions.TopLeft;
-        t.enableWordWrapping = true;
+        t.textWrappingMode   = TextWrappingModes.Normal;
         t.overflowMode       = TextOverflowModes.Overflow;
 
         return yPos - blockH - 4f;

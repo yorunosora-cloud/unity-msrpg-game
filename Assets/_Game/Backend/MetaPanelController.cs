@@ -19,6 +19,7 @@ public class MetaPanelController : MonoBehaviour
     [SerializeField] GameObject rnePanel;
     [SerializeField] GameObject adminPanel;
     [SerializeField] GameObject gachaPanel;   // 도서관 — E키 상호작용으로만 열림
+    [SerializeField] WorldMapPanel worldMapPanel; // M키 — 비활성 패널이라 직접 호출
 
     void Update()
     {
@@ -30,6 +31,8 @@ public class MetaPanelController : MonoBehaviour
         if (kb.tabKey.wasPressedThisFrame  && !inputFocused)  Toggle(inventoryPanel);
         // rnePanel·gachaPanel 은 건물 E키 상호작용 (OpenLab/OpenLibrary) 으로만 열림
         if (kb.f1Key.wasPressedThisFrame   && !inputFocused && AdminPanel.ShouldAllow()) Toggle(adminPanel);
+        if (kb.mKey.wasPressedThisFrame    && !inputFocused && worldMapPanel != null)
+            { if (worldMapPanel.gameObject.activeSelf) worldMapPanel.Close(); else worldMapPanel.Open(); }
     }
 
     static bool IsAnyInputFieldFocused()

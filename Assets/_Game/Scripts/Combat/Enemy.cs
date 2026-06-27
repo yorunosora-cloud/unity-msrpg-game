@@ -5,8 +5,11 @@ using UnityEngine;
 /// 적 MonoBehaviour.
 /// 정적 레지스트리(Enemy.All)를 통해 PlayerCombat이 물리 쿼리 없이 탐색한다.
 /// </summary>
-public class Enemy : MonoBehaviour
+public class Enemy : MonoBehaviour, IDamageable
 {
+    Transform IDamageable.Transform => transform;
+    bool      IDamageable.IsDead    => _unit == null || _unit.IsDead;
+
     // ── 인스펙터 ────────────────────────────────────────────────────────────
     [Header("스탯")]
     [SerializeField] int       maxHp          = 60;

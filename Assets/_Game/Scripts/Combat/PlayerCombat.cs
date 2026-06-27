@@ -1,3 +1,4 @@
+using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -67,6 +68,30 @@ public class PlayerCombat : MonoBehaviour
             if (angle > attackHalfAngle) continue;
 
             enemy.ReceiveHit(element, atk);
+        }
+
+        // Boss 본체 타격
+        var boss = Boss.Active;
+        if (boss != null && !boss.IsDead)
+        {
+            Vector3 toBoss = boss.transform.position - origin;
+            toBoss.y = 0f;
+            float bossDist  = toBoss.magnitude;
+            float bossAngle = Vector3.Angle(forward, toBoss);
+            if (bossDist <= attackRange && bossAngle <= attackHalfAngle)
+                ((IDamageable)boss).ReceiveHit(element, atk);
+        }
+
+        // 노출된 약점 코어 타격
+        foreach (var wp in BossWeakPoint.ExposedInstances.ToArray())
+        {
+            if (wp == null || ((IDamageable)wp).IsDead) continue;
+            Vector3 toWp = wp.transform.position - origin;
+            toWp.y = 0f;
+            float wpDist  = toWp.magnitude;
+            float wpAngle = Vector3.Angle(forward, toWp);
+            if (wpDist <= attackRange && wpAngle <= attackHalfAngle)
+                wp.ReceiveHit(element, atk);
         }
 
         // 공격 모션 트리거

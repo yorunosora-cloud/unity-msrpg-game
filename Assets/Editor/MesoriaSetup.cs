@@ -49,6 +49,9 @@ public static class MesoriaSetup
         player.AddComponent<PartyController>();   // 캐릭터 교체 (1/2/3키)
         player.AddComponent<PlayerDeath>();       // 사망/부활 — 씬 완성 후 와이어링
         player.AddComponent<PlayerInteractor>();  // 월드 상호작용 (E키, 도서관 등)
+        player.AddComponent<FallRecovery>();      // 낙사 방지 — 싱크홀 추락 시 복귀
+        player.AddComponent<SpawnManager>();      // 포탈 도착 스폰 처리
+        player.AddComponent<FogOfWar>();       // 지도 안개 — 플레이어가 탐험한 영역 공개
 
         // 7. 카메라
         var camGO = new GameObject("Main Camera");
@@ -216,6 +219,9 @@ public static class MesoriaSetup
         System.IO.Directory.CreateDirectory(Application.dataPath + "/_Game/Scenes");
         EditorSceneManager.SaveScene(scene, "Assets/_Game/Scenes/Mesoria.unity");
         AssetDatabase.Refresh();
+
+        // 16. Meta UI 자동 추가 (Setup Meta UI 별도 실행 불필요)
+        MetaUISetup.Run();
 
         Debug.Log("[MSRPG] ✅ Mesoria 씬 생성 완료! Q=평타, U/I/O/H/J/K=스킬, 1/2/3=파티 교체, E=건물 상호작용(연구소·도서관·길드), C=도감, Tab=인벤토리.");
     }

@@ -839,6 +839,10 @@ public static class MetaUISetup
         WireBuilding("HubLab",     controller, "OpenLab");
         WireBuilding("HubLibrary", controller, "OpenLibrary");
 
+        // 지도 시스템
+        BuildMinimap(canvasGO);
+        BuildWorldMapPanel(canvasGO);
+
         // 씬 저장
         EditorSceneManager.SaveScene(
             UnityEngine.SceneManagement.SceneManager.GetActiveScene(), SCENE_PATH);
@@ -897,6 +901,191 @@ public static class MetaUISetup
             prop.objectReferenceValue = font;
             so.ApplyModifiedPropertiesWithoutUndo();
         }
+    }
+
+    // ── 지도 시스템 ────────────────────────────────────────────────────────
+
+    static void BuildMinimap(GameObject canvasGO)
+    {
+        // MinimapContainer — 우상단 고정, 180×180 파치먼트 박스
+        var containerGO = new GameObject("MinimapContainer");
+        containerGO.transform.SetParent(canvasGO.transform, false);
+        var containerRt = containerGO.AddComponent<RectTransform>();
+        containerRt.anchorMin        = new Vector2(1f, 1f);
+        containerRt.anchorMax        = new Vector2(1f, 1f);
+        containerRt.pivot            = new Vector2(1f, 1f);
+        containerRt.sizeDelta        = new Vector2(180f, 180f);
+        containerRt.anchoredPosition = new Vector2(-20f, -100f); // CurrencyHud(70px) 아래 여백
+        containerGO.AddComponent<Image>().color = new Color(0.18f, 0.12f, 0.06f, 1f); // 어두운 테두리 색
+
+        // MinimapBg — 배경, 3px 안쪽 인셋 (테두리 효과)
+        var bgGO = new GameObject("MinimapBg");
+        bgGO.transform.SetParent(containerGO.transform, false);
+        var bgRt = bgGO.AddComponent<RectTransform>();
+        bgRt.anchorMin = Vector2.zero; bgRt.anchorMax = Vector2.one;
+        bgRt.offsetMin = new Vector2(3f, 3f); bgRt.offsetMax = new Vector2(-3f, -3f);
+        bgGO.AddComponent<Image>().color = new Color(0.77f, 0.64f, 0.42f, 1f); // 불투명 파치먼트
+
+        // IconParent — 마커 아이콘 부모, 전체 채움
+        var iconParentGO = new GameObject("IconParent");
+        iconParentGO.transform.SetParent(containerGO.transform, false);
+        var iconParentRt = iconParentGO.AddComponent<RectTransform>();
+        iconParentRt.anchorMin = Vector2.zero; iconParentRt.anchorMax = Vector2.one;
+        iconParentRt.sizeDelta = Vector2.zero;
+
+        // PlayerDot — 플레이어 위치 표시, 중앙 고정 8×8
+        var dotGO = new GameObject("PlayerDot");
+        dotGO.transform.SetParent(containerGO.transform, false);
+        var dotRt = dotGO.AddComponent<RectTransform>();
+        dotRt.anchorMin        = new Vector2(0.5f, 0.5f);
+        dotRt.anchorMax        = new Vector2(0.5f, 0.5f);
+        dotRt.sizeDelta        = new Vector2(8f, 8f);
+        dotRt.anchoredPosition = Vector2.zero;
+        dotGO.AddComponent<Image>().color = Color.white;
+
+        // MinimapHud 컴포넌트 부착 및 필드 와이어링
+        var minimapHud = containerGO.AddComponent<MinimapHud>();
+        var hudSo = new SerializedObject(minimapHud);
+        hudSo.FindProperty("iconParent").objectReferenceValue = iconParentGO.GetComponent<RectTransform>();
+        hudSo.FindProperty("playerDot").objectReferenceValue  = dotGO.GetComponent<RectTransform>();
+        hudSo.FindProperty("mapSize").floatValue              = 160f;
+        hudSo.FindProperty("viewRange").floatValue            = 50f;
+        hudSo.ApplyModifiedProperties();
+
+        Debug.Log("[MetaUISetup] MinimapContainer 생성 완료");
+    }
+
+    static void BuildWorldMapPanel(GameObject canvasGO)
+    {
+        var font = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(FONT_SDF_PATH);
+
+        // WorldMapPanel 루트 — 전체 화면 어두운 오버레이
+        var panelGO = new GameObject("WorldMapPanel");
+        panelGO.transform.SetParent(canvasGO.transform, false);
+        var panelRt = panelGO.AddComponent<RectTransform>();
+        panelRt.anchorMin = Vector2.zero; panelRt.anchorMax = Vector2.one;
+        panelRt.offsetMin = Vector2.zero; panelRt.offsetMax = Vector2.zero;
+        panelGO.AddComponent<Image>().color = new Color(0f, 0f, 0f, 0.7f);
+
+        // WorldMapPanel 컴포넌트 먼저 부착 (CloseBtn 와이어링을 위해)
+        var worldMap = panelGO.AddComponent<WorldMapPanel>();
+
+        // MapFrame — 750×750 파치먼트 프레임, 중앙
+        var frameGO = new GameObject("MapFrame");
+        frameGO.transform.SetParent(panelGO.transform, false);
+        var frameRt = frameGO.AddComponent<RectTransform>();
+        frameRt.anchorMin        = new Vector2(0.5f, 0.5f);
+        frameRt.anchorMax        = new Vector2(0.5f, 0.5f);
+        frameRt.sizeDelta        = new Vector2(750f, 750f);
+        frameRt.anchoredPosition = Vector2.zero;
+        frameGO.AddComponent<Image>().color = new Color(0.77f, 0.64f, 0.42f, 1f);
+
+        // MapBg — 위성뷰 지형 텍스처 (FogGrid 뒤에 렌더)
+        var mapBgGO = new GameObject("MapBg");
+        mapBgGO.transform.SetParent(frameGO.transform, false);
+        var mapBgRt = mapBgGO.AddComponent<RectTransform>();
+        mapBgRt.anchorMin = Vector2.zero; mapBgRt.anchorMax = Vector2.one;
+        mapBgRt.offsetMin = Vector2.zero; mapBgRt.offsetMax = Vector2.zero;
+        mapBgGO.AddComponent<RawImage>().color = Color.white;
+
+        // FogGridParent — 안개 셀 부모, 전체 채움
+        var fogParentGO = new GameObject("FogGridParent");
+        fogParentGO.transform.SetParent(frameGO.transform, false);
+        var fogParentRt = fogParentGO.AddComponent<RectTransform>();
+        fogParentRt.anchorMin = Vector2.zero; fogParentRt.anchorMax = Vector2.one;
+        fogParentRt.offsetMin = Vector2.zero; fogParentRt.offsetMax = Vector2.zero;
+
+        // 8×8 안개 셀 생성
+        var fogGrid = new Image[8, 8];
+        float cellSize = 750f / 8f; // 93.75f
+        for (int x = 0; x < 8; x++)
+        {
+            for (int y = 0; y < 8; y++)
+            {
+                var cellGO = new GameObject($"FogCell_{x}_{y}");
+                cellGO.transform.SetParent(fogParentGO.transform, false);
+                var cellRt = cellGO.AddComponent<RectTransform>();
+                cellRt.anchorMin        = Vector2.zero;
+                cellRt.anchorMax        = Vector2.zero;
+                cellRt.sizeDelta        = new Vector2(cellSize, cellSize);
+                // 맵 중앙 = (0,0), FogGridParent의 (0,0)앵커는 로컬 (-375,-375).
+                // 셀 (x,y)의 중심 픽셀 = -375 + (x+0.5)*cellSize → anchoredPosition = (x+0.5)*cellSize
+                cellRt.anchoredPosition = new Vector2((x + 0.5f) * cellSize, (y + 0.5f) * cellSize);
+                var cellImg = cellGO.AddComponent<Image>();
+                cellImg.color = new Color(0f, 0f, 0f, 0.85f);
+                fogGrid[x, y] = cellImg;
+            }
+        }
+
+        // MarkerIconParent — 마커 아이콘 부모, 전체 채움
+        var markerParentGO = new GameObject("MarkerIconParent");
+        markerParentGO.transform.SetParent(frameGO.transform, false);
+        var markerParentRt = markerParentGO.AddComponent<RectTransform>();
+        markerParentRt.anchorMin = Vector2.zero; markerParentRt.anchorMax = Vector2.one;
+        markerParentRt.offsetMin = Vector2.zero; markerParentRt.offsetMax = Vector2.zero;
+
+        // PlayerDotMap — 플레이어 위치 표시, 10×10 빨간 점
+        var playerDotGO = new GameObject("PlayerDotMap");
+        playerDotGO.transform.SetParent(frameGO.transform, false);
+        var playerDotRt = playerDotGO.AddComponent<RectTransform>();
+        playerDotRt.anchorMin        = new Vector2(0.5f, 0.5f);
+        playerDotRt.anchorMax        = new Vector2(0.5f, 0.5f);
+        playerDotRt.sizeDelta        = new Vector2(10f, 10f);
+        playerDotRt.anchoredPosition = Vector2.zero;
+        playerDotGO.AddComponent<Image>().color = Color.red;
+
+        // TitleLabel — 맵 제목, MapFrame 상단 중앙
+        var titleGO = new GameObject("TitleLabel");
+        titleGO.transform.SetParent(frameGO.transform, false);
+        var titleRt = titleGO.AddComponent<RectTransform>();
+        titleRt.anchorMin        = new Vector2(0.5f, 0.5f);
+        titleRt.anchorMax        = new Vector2(0.5f, 0.5f);
+        titleRt.sizeDelta        = new Vector2(700f, 50f);
+        titleRt.anchoredPosition = new Vector2(0f, 370f); // 750/2 - 5 ≈ 370
+        var titleTxt = titleGO.AddComponent<TextMeshProUGUI>();
+        titleTxt.text      = "메조리아 지도";
+        titleTxt.fontSize  = 28;
+        titleTxt.color     = new Color(0.2f, 0.1f, 0.05f, 1f);
+        titleTxt.alignment = TextAlignmentOptions.Center;
+        if (font != null) titleTxt.font = font;
+
+        // CloseBtn — 우상단 닫기 버튼
+        var closeBtnGO = UIKit.Button(panelGO.transform, "CloseBtn", "X",
+            UIKit.BtnKind.Danger, new Vector2(-30f, -30f), new Vector2(60f, 60f));
+        var closeBtnRt = closeBtnGO.GetComponent<RectTransform>();
+        closeBtnRt.anchorMin = new Vector2(1f, 1f);
+        closeBtnRt.anchorMax = new Vector2(1f, 1f);
+        closeBtnRt.pivot     = new Vector2(1f, 1f);
+
+        // WorldMapPanel 필드 와이어링
+        var wmSo = new SerializedObject(worldMap);
+        wmSo.FindProperty("mapFrame").objectReferenceValue   = frameGO.GetComponent<RectTransform>();
+        wmSo.FindProperty("iconParent").objectReferenceValue = markerParentGO.GetComponent<RectTransform>();
+        wmSo.FindProperty("playerDot").objectReferenceValue  = playerDotGO.GetComponent<RectTransform>();
+        wmSo.FindProperty("tooltip").objectReferenceValue    = titleGO.GetComponent<TMP_Text>();
+        wmSo.FindProperty("mapBg").objectReferenceValue      = mapBgGO.GetComponent<RawImage>();
+        wmSo.FindProperty("mapFrameSize").floatValue         = 750f;
+        wmSo.ApplyModifiedProperties();
+
+        // FogGrid 직접 주입 (Image[,]은 직렬화 불가)
+        worldMap.FogGrid = fogGrid;
+
+        // CloseBtn → worldMap.Close 와이어링
+        UnityEventTools.AddVoidPersistentListener(closeBtnGO.GetComponent<Button>().onClick, worldMap.Close);
+
+        // MetaPanelController에 worldMapPanel 참조 와이어링 (M키 감지용)
+        var mpc = canvasGO.GetComponent<MetaPanelController>();
+        if (mpc != null)
+        {
+            var mpcSo = new SerializedObject(mpc);
+            mpcSo.FindProperty("worldMapPanel").objectReferenceValue = worldMap;
+            mpcSo.ApplyModifiedProperties();
+        }
+
+        // 에디터에서도 비활성화 (Start()에서도 하지만 에디터 상태 일치)
+        panelGO.SetActive(false);
+
+        Debug.Log("[MetaUISetup] WorldMapPanel 생성 완료");
     }
 
 }
