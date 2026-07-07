@@ -12,7 +12,7 @@ public static class MesoriaSetup
 {
     const string FONT_SDF_PATH = "Assets/_Game/Art/Fonts/malgun SDF.asset";
 
-    [MenuItem("MSRPG/Setup Mesoria Scene %#&m")]
+    [MenuItem("MSRPG/Setup Mesoria Scene")]
     public static void Run()
     {
         var korFont = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(FONT_SDF_PATH);
