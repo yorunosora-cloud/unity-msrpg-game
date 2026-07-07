@@ -12,11 +12,10 @@ public class WorldMapPanel : MonoBehaviour
     [SerializeField] RectTransform playerDot;
     [SerializeField] TMP_Text      tooltip;
     [SerializeField] RawImage      mapBg;
+    [SerializeField] RawImage      fogOverlay;   // 부드러운 원형 안개 알파 마스크
     [SerializeField] float         mapFrameSize = 750f;
     [SerializeField] float         mapHalf      = 250f;
     [SerializeField] bool          isAtlantis   = false;
-
-    public Image[,] FogGrid;
 
     FogOfWar  _fog;
     Transform _player;
@@ -24,27 +23,15 @@ public class WorldMapPanel : MonoBehaviour
     bool _open;
     bool _texGenerated;
 
+    Texture2D _fogTex;
+    int       _lastFogVersion = -1;
+
     public bool IsOpen => _open;
 
     void Start()
     {
         _fog    = FindFirstObjectByType<FogOfWar>();
         _player = FindFirstObjectByType<PlayerController>()?.transform;
-
-        if (mapFrame != null)
-        {
-            var fogGridParent = mapFrame.Find("FogGridParent");
-            if (fogGridParent != null)
-            {
-                FogGrid = new Image[FogOfWar.GRID, FogOfWar.GRID];
-                for (int x = 0; x < FogOfWar.GRID; x++)
-                for (int y = 0; y < FogOfWar.GRID; y++)
-                {
-                    var cell = fogGridParent.Find($"FogCell_{x}_{y}");
-                    if (cell != null) FogGrid[x, y] = cell.GetComponent<Image>();
-                }
-            }
-        }
 
         if (!_texGenerated) { GenerateMapTexture(); _texGenerated = true; }
     }
@@ -72,15 +59,11 @@ public class WorldMapPanel : MonoBehaviour
 
     void Refresh()
     {
-        if (FogGrid != null && _fog != null)
+        // 안개 텍스처 갱신 (버전이 바뀐 경우에만 재생성 — 성능 throttle)
+        if (_fog != null && fogOverlay != null && _fog.Version != _lastFogVersion)
         {
-            for (int x = 0; x < FogOfWar.GRID; x++)
-            for (int y = 0; y < FogOfWar.GRID; y++)
-            {
-                var cell = FogGrid[x, y];
-                if (cell != null)
-                    cell.gameObject.SetActive(!_fog.IsCellRevealed(x, y));
-            }
+            RebuildFogTexture();
+            _lastFogVersion = _fog.Version;
         }
 
         var stale = new List<MapMarker>();
@@ -103,8 +86,8 @@ public class WorldMapPanel : MonoBehaviour
             float y = wp.z / mapHalf * (mapFrameSize * 0.5f);
             rt.anchoredPosition = new Vector2(x, y);
 
-            var cell   = _fog != null ? _fog.WorldToCell(wp) : new Vector2Int(0, 0);
-            bool shown = _fog == null || _fog.IsCellRevealed(cell.x, cell.y);
+            // 해제도 0.4 이상이면 마커 표시
+            bool shown = _fog == null || _fog.SampleReveal(wp) > 0.4f;
             rt.gameObject.SetActive(shown);
         }
 
@@ -114,6 +97,31 @@ public class WorldMapPanel : MonoBehaviour
             float py = _player.position.z / mapHalf * (mapFrameSize * 0.5f);
             playerDot.anchoredPosition = new Vector2(px, py);
         }
+    }
+
+    // ── 안개 텍스처 재생성 ──────────────────────────────────────────────────
+    void RebuildFogTexture()
+    {
+        int res = _fog.Resolution;
+        if (_fogTex == null)
+        {
+            _fogTex            = new Texture2D(res, res, TextureFormat.RGBA32, false);
+            _fogTex.filterMode = FilterMode.Bilinear;
+            _fogTex.wrapMode   = TextureWrapMode.Clamp;
+        }
+
+        var buf = _fog.RevealBuffer;
+        for (int ty = 0; ty < res; ty++)
+        for (int tx = 0; tx < res; tx++)
+        {
+            float reveal = buf[ty * res + tx];
+            float alpha  = (1f - reveal) * 0.85f;
+            _fogTex.SetPixel(tx, ty, new Color(0f, 0f, 0f, alpha));
+        }
+        _fogTex.Apply();
+
+        fogOverlay.texture = _fogTex;
+        fogOverlay.color   = Color.white;
     }
 
     RectTransform CreateIcon(MapMarker marker)
@@ -138,7 +146,7 @@ public class WorldMapPanel : MonoBehaviour
         if (tooltip != null) tooltip.text = text;
     }
 
-    // ── 텍스처 생성 분기 ─────────────────────────────────────────────────────
+    // ── 지형 텍스처 생성 분기 ────────────────────────────────────────────────
     void GenerateMapTexture()
     {
         if (isAtlantis) GenerateAtlantisTexture();
@@ -250,7 +258,7 @@ public class WorldMapPanel : MonoBehaviour
         var cBridge   = new Color(0.45f, 0.32f, 0.14f);
         var cPortal   = new Color(0.28f, 0.28f, 0.28f);
 
-        const float AX = 0f,    AZ = 0f,    AR = 250f;   // 아크시움
+        const float AX = 0f,     AZ = 0f,    AR = 250f;   // 아크시움
         const float EX = -1000f, EZ = -600f, ER = 350f;   // 유클리드
 
         // 아크시움→유클리드 단위 방향 벡터

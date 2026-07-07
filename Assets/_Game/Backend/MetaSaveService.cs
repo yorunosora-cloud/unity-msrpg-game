@@ -7,8 +7,8 @@ using PlayFab;
 using PlayFab.ClientModels;
 
 /// <summary>
-/// MetaState(Wallet·Roster·GachaState·IsAdmin)를 PlayFab UserData에 저장·복원합니다.
-/// 기존 SaveService와 동일한 패턴. 로그인 이후에만 호출하세요.
+/// MetaState(Wallet·Roster·GachaState·Crystals·StudyMats)를 PlayFab UserData에 저장·복원합니다.
+/// 로그인 이후에만 호출하세요.
 /// </summary>
 public static class MetaSaveService
 {
@@ -17,7 +17,6 @@ public static class MetaSaveService
     const string KEY_GACHA    = "gacha";
     const string KEY_CRYSTALS = "crystals";
     const string KEY_STUDY    = "studyMats";
-    const string KEY_ADMIN    = "isAdmin";
 
     // ── 저장 ──────────────────────────────────────────────────────────────
 
@@ -51,7 +50,7 @@ public static class MetaSaveService
 
     // ── 복원 ──────────────────────────────────────────────────────────────
 
-    /// <summary>UserData 복원 후 ReadOnlyData에서 isAdmin 플래그를 읽습니다.</summary>
+    /// <summary>UserData(Wallet·Roster·GachaState·Crystals·StudyMats)를 PlayFab에서 복원합니다.</summary>
     public static void Load(Action onDone = null, Action<string> onError = null)
     {
         PlayFabClientAPI.GetUserData(
@@ -86,7 +85,7 @@ public static class MetaSaveService
                 }
 
                 Debug.Log("[MetaSave] 메타 복원 완료");
-                LoadAdminFlag(onDone, onError);
+                onDone?.Invoke();
             },
             err =>
             {
@@ -95,27 +94,4 @@ public static class MetaSaveService
             });
     }
 
-    // ── admin 플래그 (ReadOnlyData) ───────────────────────────────────────
-
-    static void LoadAdminFlag(Action onDone, Action<string> onError)
-    {
-        PlayFabClientAPI.GetUserReadOnlyData(
-            new GetUserDataRequest { Keys = new List<string> { KEY_ADMIN } },
-            result =>
-            {
-                MetaState.IsAdmin =
-                    result.Data != null &&
-                    result.Data.TryGetValue(KEY_ADMIN, out var v) &&
-                    v.Value.ToLower() == "true";
-
-                onDone?.Invoke();
-            },
-            err =>
-            {
-                // admin 확인 실패는 치명적이지 않음 — false 처리 후 계속
-                Debug.LogWarning($"[MetaSave] isAdmin 확인 실패: {err.GenerateErrorReport()}");
-                MetaState.IsAdmin = false;
-                onDone?.Invoke();
-            });
-    }
 }

@@ -37,6 +37,11 @@ public class GameBootstrap : MonoBehaviour
         MetaSaveService.Load(
             onDone:  () => Debug.Log("[GameBootstrap] MetaState 복원 완료"),
             onError: msg => Debug.LogWarning($"[GameBootstrap] MetaState 복원 실패 (기본값 사용): {msg}"));
+
+        // 문제 데이터 동기화(TitleData 델타 병합)
+        ProblemSyncService.Load(
+            onDone:  () => Debug.Log("[GameBootstrap] 문제 동기화 완료"),
+            onError: msg => Debug.LogWarning($"[GameBootstrap] 문제 동기화 실패 (로컬 시드만 사용): {msg}"));
     }
 
     void OnApplicationQuit()                        => AutoSave();

@@ -12,7 +12,7 @@ public static class MesoriaSetup
 {
     const string FONT_SDF_PATH = "Assets/_Game/Art/Fonts/malgun SDF.asset";
 
-    [MenuItem("MSRPG/Setup Mesoria Scene")]
+    [MenuItem("MSRPG/Setup Mesoria Scene %#&m")]
     public static void Run()
     {
         var korFont = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(FONT_SDF_PATH);
@@ -88,7 +88,7 @@ public static class MesoriaSetup
           r.anchoredPosition = new Vector2(-20f, -20f); }
 
         // 9-b. 계정 패널 (기본 비활성)
-        var panelGO = UIKit.Panel(canvasGO.transform, "AccountPanel", new Vector2(600f, 500f));
+        var panelGO = UIKit.Panel(canvasGO.transform, "AccountPanel", new Vector2(600f, 600f));
 
         // 제목
         UIKit.Label(panelGO.transform, "Title", "계정 정보",
@@ -107,7 +107,11 @@ public static class MesoriaSetup
 
         // 로그아웃 버튼 (위험색)
         var logoutBtn = UIKit.Button(panelGO.transform, "LogoutButton", "로그아웃",
-            UIKit.BtnKind.Danger, new Vector2(0, -100), new Vector2(380f, 70f));
+            UIKit.BtnKind.Danger, new Vector2(0, -80), new Vector2(380f, 70f));
+
+        // 관리자 로그인 버튼
+        var adminLoginBtn = UIKit.Button(panelGO.transform, "AdminLoginButton", "관리자 로그인",
+            UIKit.BtnKind.Neutral, new Vector2(0, -170), new Vector2(380f, 60f));
 
         // 닫기 버튼 (X, 우상단 앵커)
         var closeBtn = UIKit.Button(panelGO.transform, "CloseButton", "✕",
@@ -125,9 +129,10 @@ public static class MesoriaSetup
         apSO.FindProperty("panel").objectReferenceValue        = panelGO;
         apSO.FindProperty("usernameText").objectReferenceValue = userText.GetComponent<TextMeshProUGUI>();
         apSO.FindProperty("levelText").objectReferenceValue    = levelText.GetComponent<TextMeshProUGUI>();
-        apSO.FindProperty("openButton").objectReferenceValue   = openBtn.GetComponent<Button>();
-        apSO.FindProperty("closeButton").objectReferenceValue  = closeBtn.GetComponent<Button>();
-        apSO.FindProperty("logoutButton").objectReferenceValue = logoutBtn.GetComponent<Button>();
+        apSO.FindProperty("openButton").objectReferenceValue      = openBtn.GetComponent<Button>();
+        apSO.FindProperty("closeButton").objectReferenceValue     = closeBtn.GetComponent<Button>();
+        apSO.FindProperty("logoutButton").objectReferenceValue    = logoutBtn.GetComponent<Button>();
+        apSO.FindProperty("adminLoginButton").objectReferenceValue = adminLoginBtn.GetComponent<Button>();
         apSO.ApplyModifiedProperties();
 
         // 9-d. 상호작용 프롬프트 라벨 (하단 중앙, 기본 숨김) + PlayerInteractor 와이어링

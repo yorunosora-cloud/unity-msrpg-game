@@ -20,6 +20,19 @@ public class CharacterDatabase : ScriptableObject
         return null;
     }
 
+    /// <summary>주어진 skillId를 보유한 캐릭터를 검색. 없으면 null. (문제탭 분류·풀 역참조용)</summary>
+    public CharacterDef FindBySkillId(string skillId)
+    {
+        if (string.IsNullOrEmpty(skillId)) return null;
+        foreach (var c in characters)
+        {
+            if (c == null || c.skills == null) continue;
+            foreach (var s in c.skills)
+                if (s != null && s.id == skillId) return c;
+        }
+        return null;
+    }
+
     /// <summary>특정 등급의 캐릭터 배열. 가챠 추첨에 사용.</summary>
     public CharacterDef[] ByRarity(Rarity rarity)
     {

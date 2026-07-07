@@ -82,7 +82,7 @@ public class Boss : MonoBehaviour, IDamageable
     {
         var body = GameObject.CreatePrimitive(PrimitiveType.Capsule);
         body.name = "BossBody";
-        Object.Destroy(body.GetComponent<CapsuleCollider>());
+        UnityEngine.Object.Destroy(body.GetComponent<CapsuleCollider>());
         body.transform.SetParent(transform, false);
         body.transform.localPosition = new Vector3(0f, 1.5f, 0f);
         body.transform.localScale    = new Vector3(1.2f, 1.5f, 1.2f);

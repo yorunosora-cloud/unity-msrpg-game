@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -109,64 +110,306 @@ public static class MetaUISetup
         iSo.ApplyModifiedProperties();
         UnityEventTools.AddVoidPersistentListener(closeBtnI.GetComponent<Button>().onClick, invCmp.OnCloseClicked);
 
-        // ── AdminPanel (F1키, 중앙 숨김) ─────────────────────────────────
-        var adminPanel = UIKit.Panel(canvasGO.transform, "AdminPanel", new Vector2(700f, 1000f));
+        // ── AdminPanel (F1키, 중앙 숨김) — 4탭 구조 ─────────────────────
+        var adminPanel = UIKit.Panel(canvasGO.transform, "AdminPanel", new Vector2(700f, 1200f));
         adminPanel.SetActive(false);
-        UIKit.Label(adminPanel.transform, "Title", "관리자 패널  [F1]", UIKit.TextLevel.H1, new Vector2(0f, 450f));
+        UIKit.Label(adminPanel.transform, "Title", "관리자 패널  [F1]", UIKit.TextLevel.H1, new Vector2(0f, 545f));
+        UIKit.Divider(adminPanel.transform, new Vector2(0f, 508f), 660f);
 
-        var addGoldBtn      = UIKit.Button(adminPanel.transform, "AddGoldBtn",      "+골드 1,000",    UIKit.BtnKind.Success, new Vector2(0f,  340f), new Vector2(580f, 65f), UITheme.FontBody+2);
-        var addPaperBtn     = UIKit.Button(adminPanel.transform, "AddPaperBtn",     "+논문 100",      UIKit.BtnKind.Success, new Vector2(0f,  260f), new Vector2(580f, 65f), UITheme.FontBody+2);
-        var addFocusBtn     = UIKit.Button(adminPanel.transform, "AddFocusBtn",     "+집중력 100",    UIKit.BtnKind.Success, new Vector2(0f,  180f), new Vector2(580f, 65f), UITheme.FontBody+2);
-        var addFragmentBtn  = UIKit.Button(adminPanel.transform, "AddFragmentBtn",  "+조각 50",       UIKit.BtnKind.Success, new Vector2(0f,  100f), new Vector2(580f, 65f), UITheme.FontBody+2);
-        var giveCrystalsBtn = UIKit.Button(adminPanel.transform, "GiveCrystalsBtn", "+결정(전종 10)", UIKit.BtnKind.Success, new Vector2(0f,   20f), new Vector2(580f, 65f), UITheme.FontBody+2);
+        // 탭바 버튼 4개 (x: -247, -82, 82, 247)
+        var tab0Btn = UIKit.Button(adminPanel.transform, "Tab0Btn", "커맨드",   UIKit.BtnKind.Primary, new Vector2(-247f, 460f), new Vector2(155f, 55f), UITheme.FontBody + 2);
+        var tab1Btn = UIKit.Button(adminPanel.transform, "Tab1Btn", "캐릭터",   UIKit.BtnKind.Neutral, new Vector2( -82f, 460f), new Vector2(155f, 55f), UITheme.FontBody + 2);
+        var tab2Btn = UIKit.Button(adminPanel.transform, "Tab2Btn", "플레이어", UIKit.BtnKind.Neutral, new Vector2(  82f, 460f), new Vector2(155f, 55f), UITheme.FontBody + 2);
+        var tab3Btn = UIKit.Button(adminPanel.transform, "Tab3Btn", "문제",     UIKit.BtnKind.Neutral, new Vector2( 247f, 460f), new Vector2(155f, 55f), UITheme.FontBody + 2);
+        UIKit.Divider(adminPanel.transform, new Vector2(0f, 428f), 660f);
 
-        var charInput = UIKit.Input(adminPanel.transform, "CharacterIdInput", "캐릭터 ID 입력", new Vector2(-60f, -60f), new Vector2(400f, 65f));
-        var giveBtn   = UIKit.Button(adminPanel.transform, "GiveCharacterBtn", "지급", UIKit.BtnKind.Primary, new Vector2(260f, -60f), new Vector2(150f, 65f));
+        // ── CommandPanel (탭0) ─────────────────────────────────────────
+        var commandPanel = new GameObject("CommandPanel");
+        commandPanel.transform.SetParent(adminPanel.transform, false);
+        {
+            var rt = commandPanel.AddComponent<RectTransform>();
+            rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
+            rt.sizeDelta = new Vector2(680f, 750f);
+            rt.anchoredPosition = new Vector2(0f, 45f);
+        }
 
-        var giveAllCharsBtn = UIKit.Button(adminPanel.transform, "GiveAllCharsBtn", "전체 캐릭터 지급", UIKit.BtnKind.Primary, new Vector2(0f, -120f), new Vector2(580f, 65f));
+        // 재화 지급
+        UIKit.Label(commandPanel.transform, "CurrencyHdr", "■  재화 지급", UIKit.TextLevel.Body, new Vector2(-140f, 340f));
+        var kindDropGO    = UIKit.Dropdown(commandPanel.transform, "KindDropdown",
+            new System.Collections.Generic.List<string> { "골드", "논문", "집중력", "조각" },
+            new Vector2(0f, 280f), new Vector2(420f, 55f));
+        var amountInputGO = UIKit.Input(commandPanel.transform,  "AmountInput",  "금액 (기본 1000)", new Vector2(-75f, 210f), new Vector2(270f, 55f));
+        var giveCurrBtn   = UIKit.Button(commandPanel.transform, "GiveCurrBtn",  "지급",  UIKit.BtnKind.Success, new Vector2(145f, 210f), new Vector2(130f, 55f));
 
-        var roll1Btn  = UIKit.Button(adminPanel.transform, "Roll1Btn",  "가챠 1회 (무료)", UIKit.BtnKind.Neutral, new Vector2(-160f, -210f), new Vector2(310f, 65f));
-        var roll10Btn = UIKit.Button(adminPanel.transform, "Roll10Btn", "10연 (무료)",      UIKit.BtnKind.Neutral, new Vector2( 160f, -210f), new Vector2(310f, 65f));
+        // 레벨 조작
+        UIKit.Divider(commandPanel.transform, new Vector2(0f, 170f), 640f);
+        UIKit.Label(commandPanel.transform, "LevelHdr", "■  레벨 조작", UIKit.TextLevel.Body, new Vector2(-140f, 140f));
+        var charDropGO    = UIKit.Dropdown(commandPanel.transform, "CharDropdown",
+            new System.Collections.Generic.List<string>(),
+            new Vector2(0f, 80f), new Vector2(420f, 55f));
+        var levelInputGO  = UIKit.Input(commandPanel.transform,  "LevelInput",   "레벨 값", new Vector2(-75f, 10f), new Vector2(270f, 55f));
+        var applyLevelBtn = UIKit.Button(commandPanel.transform, "ApplyLevelBtn","적용",  UIKit.BtnKind.Primary, new Vector2(145f, 10f), new Vector2(130f, 55f));
 
-        var resetBtn = UIKit.Button(adminPanel.transform, "ResetBtn", "계정 초기화", UIKit.BtnKind.Danger,   new Vector2(-200f, -300f), new Vector2(250f, 60f));
-        var saveBtn  = UIKit.Button(adminPanel.transform, "SaveBtn",  "강제 저장",   UIKit.BtnKind.Primary,  new Vector2(   0f, -300f), new Vector2(220f, 60f));
-        var loadBtn  = UIKit.Button(adminPanel.transform, "LoadBtn",  "불러오기",    UIKit.BtnKind.Neutral,  new Vector2( 200f, -300f), new Vector2(200f, 60f));
+        // 퀘스트 강제완료
+        UIKit.Divider(commandPanel.transform, new Vector2(0f, -30f), 640f);
+        UIKit.Label(commandPanel.transform, "QuestHdr", "■  퀘스트 강제완료", UIKit.TextLevel.Body, new Vector2(-100f, -60f));
+        var questInputGO  = UIKit.Input(commandPanel.transform,  "QuestInput",     "퀘스트 ID",  new Vector2(-85f,  -130f), new Vector2(340f, 55f));
+        var forceQuestBtn = UIKit.Button(commandPanel.transform, "ForceQuestBtn",  "강제 완료", UIKit.BtnKind.Neutral, new Vector2(185f, -130f), new Vector2(150f, 55f));
 
-        var statusAdmin = UIKit.Label(adminPanel.transform, "Status", "", UIKit.TextLevel.Body, new Vector2(0f, -400f));
-        var closeBtnA   = UIKit.Button(adminPanel.transform, "CloseBtn", "닫기  [F1]", UIKit.BtnKind.Neutral, new Vector2(0f, -490f), new Vector2(300f, 70f));
+        // 가챠 디버그
+        UIKit.Divider(commandPanel.transform, new Vector2(0f, -165f), 640f);
+        UIKit.Label(commandPanel.transform, "GachaHdr", "■  가챠 디버그", UIKit.TextLevel.Body, new Vector2(-140f, -195f));
+        var roll1BtnGO  = UIKit.Button(commandPanel.transform, "Roll1Btn",  "가챠 1회 (무료)", UIKit.BtnKind.Neutral, new Vector2(-155f, -255f), new Vector2(290f, 60f));
+        var roll10BtnGO = UIKit.Button(commandPanel.transform, "Roll10Btn", "10연 (무료)",     UIKit.BtnKind.Neutral, new Vector2( 155f, -255f), new Vector2(290f, 60f));
 
+        // 계정
+        UIKit.Divider(commandPanel.transform, new Vector2(0f, -295f), 640f);
+        UIKit.Label(commandPanel.transform, "AccountHdr", "■  계정", UIKit.TextLevel.Body, new Vector2(-175f, -320f));
+        var resetBtnGO = UIKit.Button(commandPanel.transform, "ResetBtn", "초기화",  UIKit.BtnKind.Danger,   new Vector2(-190f, -375f), new Vector2(180f, 55f));
+        var saveBtnGO  = UIKit.Button(commandPanel.transform, "SaveBtn",  "저장",    UIKit.BtnKind.Primary,  new Vector2(   0f, -375f), new Vector2(180f, 55f));
+        var loadBtnGO  = UIKit.Button(commandPanel.transform, "LoadBtn",  "불러오기",UIKit.BtnKind.Neutral,  new Vector2( 190f, -375f), new Vector2(180f, 55f));
+
+        var cmdCmp = commandPanel.AddComponent<CommandTab>();
+        var cmdSo  = new SerializedObject(cmdCmp);
+        cmdSo.FindProperty("kindDropdown").objectReferenceValue      = kindDropGO.GetComponent<TMP_Dropdown>();
+        cmdSo.FindProperty("amountInput").objectReferenceValue       = amountInputGO.GetComponent<TMP_InputField>();
+        cmdSo.FindProperty("giveCurrencyButton").objectReferenceValue= giveCurrBtn.GetComponent<Button>();
+        cmdSo.FindProperty("charDropdown").objectReferenceValue      = charDropGO.GetComponent<TMP_Dropdown>();
+        cmdSo.FindProperty("levelInput").objectReferenceValue        = levelInputGO.GetComponent<TMP_InputField>();
+        cmdSo.FindProperty("applyLevelButton").objectReferenceValue  = applyLevelBtn.GetComponent<Button>();
+        cmdSo.FindProperty("questIdInput").objectReferenceValue      = questInputGO.GetComponent<TMP_InputField>();
+        cmdSo.FindProperty("forceQuestButton").objectReferenceValue  = forceQuestBtn.GetComponent<Button>();
+        cmdSo.FindProperty("rollOneButton").objectReferenceValue     = roll1BtnGO.GetComponent<Button>();
+        cmdSo.FindProperty("rollTenButton").objectReferenceValue     = roll10BtnGO.GetComponent<Button>();
+        cmdSo.FindProperty("resetButton").objectReferenceValue       = resetBtnGO.GetComponent<Button>();
+        cmdSo.FindProperty("saveButton").objectReferenceValue        = saveBtnGO.GetComponent<Button>();
+        cmdSo.FindProperty("loadButton").objectReferenceValue        = loadBtnGO.GetComponent<Button>();
+        cmdSo.ApplyModifiedProperties();
+
+        // ── CharacterPanel (탭1) ───────────────────────────────────────
+        var characterPanel = new GameObject("CharacterPanel");
+        characterPanel.transform.SetParent(adminPanel.transform, false);
+        characterPanel.SetActive(false);
+        {
+            var rt = characterPanel.AddComponent<RectTransform>();
+            rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
+            rt.sizeDelta = new Vector2(680f, 750f);
+            rt.anchoredPosition = new Vector2(0f, 45f);
+        }
+
+        var searchInputGO  = UIKit.Input(characterPanel.transform,  "SearchInput", "이름 검색",  new Vector2(-90f, 325f), new Vector2(445f, 55f));
+        var giveAllBtnGO   = UIKit.Button(characterPanel.transform, "GiveAllBtn",  "전체 지급", UIKit.BtnKind.Success, new Vector2(228f, 325f), new Vector2(170f, 55f));
+        var charScrollList = UIKit.ScrollList(characterPanel.transform, "CharList", new Vector2(0f, -30f), new Vector2(660f, 615f));
+
+        var charTabCmp = characterPanel.AddComponent<CharacterTab>();
+        var charTabSo  = new SerializedObject(charTabCmp);
+        charTabSo.FindProperty("searchInput").objectReferenceValue  = searchInputGO.GetComponent<TMP_InputField>();
+        charTabSo.FindProperty("giveAllButton").objectReferenceValue= giveAllBtnGO.GetComponent<Button>();
+        charTabSo.FindProperty("contentRoot").objectReferenceValue  = charScrollList.content;
+        charTabSo.ApplyModifiedProperties();
+
+        // ── PlayerPanel (탭2) — 정렬 가능한 목록(로컬 더미 데이터) ──────
+        var playerPanel = new GameObject("PlayerPanel");
+        playerPanel.transform.SetParent(adminPanel.transform, false);
+        playerPanel.SetActive(false);
+        {
+            var rt = playerPanel.AddComponent<RectTransform>();
+            rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
+            rt.sizeDelta = new Vector2(680f, 750f);
+            rt.anchoredPosition = new Vector2(0f, 45f);
+        }
+
+        var sortDropGO   = UIKit.Dropdown(playerPanel.transform, "SortDropdown",
+            new System.Collections.Generic.List<string> { "이름", "PlayFabId", "마지막 로그인", "캐릭터 보유순" },
+            new Vector2(-90f, 325f), new Vector2(360f, 55f));
+        var orderBtnGO   = UIKit.Button(playerPanel.transform, "OrderBtn", "오름차순 ▲",
+            UIKit.BtnKind.Neutral, new Vector2(215f, 325f), new Vector2(200f, 55f));
+        var playerScroll = UIKit.ScrollList(playerPanel.transform, "PlayerList", new Vector2(0f, -30f), new Vector2(660f, 615f));
+
+        UIKit.Label(playerPanel.transform, "NoticeLabel",
+            "실제 계정 조작(지급/회수/초기화/경고)은 CloudScript 연동 후 다음 라운드에 구현됩니다.",
+            UIKit.TextLevel.Caption, new Vector2(0f, -365f));
+
+        var playerTabCmp = playerPanel.AddComponent<PlayerTab>();
+        var playerTabSo  = new SerializedObject(playerTabCmp);
+        playerTabSo.FindProperty("sortDropdown").objectReferenceValue = sortDropGO.GetComponent<TMP_Dropdown>();
+        playerTabSo.FindProperty("orderButton").objectReferenceValue  = orderBtnGO.GetComponent<Button>();
+        playerTabSo.FindProperty("contentRoot").objectReferenceValue  = playerScroll.content;
+        playerTabSo.ApplyModifiedProperties();
+
+        // ── ProblemPanel (탭3) — 문제 분류 트리 + 추가/수정/삭제 폼 ─────
+        var problemPanel = new GameObject("ProblemPanel");
+        problemPanel.transform.SetParent(adminPanel.transform, false);
+        problemPanel.SetActive(false);
+        {
+            var rt = problemPanel.AddComponent<RectTransform>();
+            rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
+            rt.sizeDelta = new Vector2(680f, 750f);
+            rt.anchoredPosition = new Vector2(0f, 45f);
+        }
+
+        var addProblemBtnGO = UIKit.Button(problemPanel.transform, "AddProblemBtn", "＋ 새 문제",
+            UIKit.BtnKind.Success, new Vector2(0f, 325f), new Vector2(300f, 55f));
+        var problemScroll = UIKit.ScrollList(problemPanel.transform, "ProblemTree", new Vector2(0f, -40f), new Vector2(660f, 615f));
+
+        var problemTabCmp = problemPanel.AddComponent<ProblemTab>();
+        var problemTabSo  = new SerializedObject(problemTabCmp);
+        problemTabSo.FindProperty("contentRoot").objectReferenceValue = problemScroll.content;
+        problemTabSo.FindProperty("addButton").objectReferenceValue   = addProblemBtnGO.GetComponent<Button>();
+
+        // ── ProblemFormPanel (문제탭 하위 오버레이) ──────────────────────
+        var formPanelGO = new GameObject("ProblemFormPanel");
+        formPanelGO.transform.SetParent(problemPanel.transform, false);
+        formPanelGO.SetActive(false);
+        {
+            var rt = formPanelGO.AddComponent<RectTransform>();
+            rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
+            rt.sizeDelta = new Vector2(660f, 700f);
+            rt.anchoredPosition = Vector2.zero;
+        }
+        formPanelGO.AddComponent<Image>().color = UITheme.PanelBgDark;
+
+        var idLabelGO = UIKit.Label(formPanelGO.transform, "IdLabel", "새 문제",
+            UIKit.TextLevel.Caption, new Vector2(0f, 320f), new Vector2(640f, 30f));
+
+        var purposeDropGO = UIKit.Dropdown(formPanelGO.transform, "PurposeDropdown", new List<string>(),
+            new Vector2(-165f, 280f), new Vector2(310f, 50f));
+        var difficultyDropGO = UIKit.Dropdown(formPanelGO.transform, "DifficultyDropdown", new List<string>(),
+            new Vector2(165f, 280f), new Vector2(310f, 50f));
+
+        var subjectDropGO = UIKit.Dropdown(formPanelGO.transform, "SubjectDropdown", new List<string>(),
+            new Vector2(-165f, 225f), new Vector2(310f, 50f));
+        var countryInputGO = UIKit.Input(formPanelGO.transform, "CountryInput", "국가(슬러그, 예: newton-empire)",
+            new Vector2(165f, 225f), new Vector2(310f, 50f));
+
+        var typeDropGO = UIKit.Dropdown(formPanelGO.transform, "TypeDropdown", new List<string>(),
+            new Vector2(-165f, 170f), new Vector2(310f, 50f));
+        var skillDropGO = UIKit.Dropdown(formPanelGO.transform, "SkillDropdown", new List<string>(),
+            new Vector2(165f, 170f), new Vector2(310f, 50f));
+
+        var promptInputGO = UIKit.Input(formPanelGO.transform, "PromptInput", "문제 지문",
+            new Vector2(0f, 105f), new Vector2(640f, 64f));
+        promptInputGO.GetComponent<TMP_InputField>().lineType = TMP_InputField.LineType.MultiLineNewline;
+
+        var choice1GO = UIKit.Input(formPanelGO.transform, "Choice1Input", "보기 1",
+            new Vector2(-165f, 40f), new Vector2(310f, 50f));
+        var choice2GO = UIKit.Input(formPanelGO.transform, "Choice2Input", "보기 2",
+            new Vector2(165f, 40f), new Vector2(310f, 50f));
+        var choice3GO = UIKit.Input(formPanelGO.transform, "Choice3Input", "보기 3",
+            new Vector2(-165f, -15f), new Vector2(310f, 50f));
+        var choice4GO = UIKit.Input(formPanelGO.transform, "Choice4Input", "보기 4",
+            new Vector2(165f, -15f), new Vector2(310f, 50f));
+
+        var correctIndexDropGO = UIKit.Dropdown(formPanelGO.transform, "CorrectIndexDropdown", new List<string>(),
+            new Vector2(-165f, -70f), new Vector2(310f, 50f));
+        var acceptedAnswersGO = UIKit.Input(formPanelGO.transform, "AcceptedAnswersInput", "정답(콤마 구분)",
+            new Vector2(165f, -70f), new Vector2(310f, 50f));
+
+        var explanationGO = UIKit.Input(formPanelGO.transform, "ExplanationInput", "해설(선택)",
+            new Vector2(0f, -140f), new Vector2(640f, 56f));
+        explanationGO.GetComponent<TMP_InputField>().lineType = TMP_InputField.LineType.MultiLineNewline;
+
+        var formStatusGO = UIKit.Label(formPanelGO.transform, "FormStatus", "",
+            UIKit.TextLevel.Caption, new Vector2(0f, -185f), new Vector2(640f, 26f));
+
+        var formSaveBtnGO   = UIKit.Button(formPanelGO.transform, "SaveBtn",   "저장",   UIKit.BtnKind.Primary, new Vector2(-220f, -235f), new Vector2(200f, 60f));
+        var formDeleteBtnGO = UIKit.Button(formPanelGO.transform, "DeleteBtn", "삭제",   UIKit.BtnKind.Danger,  new Vector2(   0f, -235f), new Vector2(200f, 60f));
+        var formCancelBtnGO = UIKit.Button(formPanelGO.transform, "CancelBtn", "취소",   UIKit.BtnKind.Neutral, new Vector2( 220f, -235f), new Vector2(200f, 60f));
+
+        var formCmp = formPanelGO.AddComponent<ProblemFormPanel>();
+        var formSo  = new SerializedObject(formCmp);
+        formSo.FindProperty("purposeDropdown").objectReferenceValue      = purposeDropGO.GetComponent<TMP_Dropdown>();
+        formSo.FindProperty("subjectDropdown").objectReferenceValue      = subjectDropGO.GetComponent<TMP_Dropdown>();
+        formSo.FindProperty("countryInput").objectReferenceValue         = countryInputGO.GetComponent<TMP_InputField>();
+        formSo.FindProperty("skillDropdown").objectReferenceValue        = skillDropGO.GetComponent<TMP_Dropdown>();
+        formSo.FindProperty("difficultyDropdown").objectReferenceValue   = difficultyDropGO.GetComponent<TMP_Dropdown>();
+        formSo.FindProperty("typeDropdown").objectReferenceValue         = typeDropGO.GetComponent<TMP_Dropdown>();
+        formSo.FindProperty("promptInput").objectReferenceValue          = promptInputGO.GetComponent<TMP_InputField>();
+        formSo.FindProperty("choice1Input").objectReferenceValue         = choice1GO.GetComponent<TMP_InputField>();
+        formSo.FindProperty("choice2Input").objectReferenceValue         = choice2GO.GetComponent<TMP_InputField>();
+        formSo.FindProperty("choice3Input").objectReferenceValue         = choice3GO.GetComponent<TMP_InputField>();
+        formSo.FindProperty("choice4Input").objectReferenceValue         = choice4GO.GetComponent<TMP_InputField>();
+        formSo.FindProperty("correctIndexDropdown").objectReferenceValue = correctIndexDropGO.GetComponent<TMP_Dropdown>();
+        formSo.FindProperty("acceptedAnswersInput").objectReferenceValue = acceptedAnswersGO.GetComponent<TMP_InputField>();
+        formSo.FindProperty("explanationInput").objectReferenceValue     = explanationGO.GetComponent<TMP_InputField>();
+        formSo.FindProperty("idLabel").objectReferenceValue               = idLabelGO.GetComponent<TMP_Text>();
+        formSo.FindProperty("statusText").objectReferenceValue           = formStatusGO.GetComponent<TMP_Text>();
+        formSo.FindProperty("saveButton").objectReferenceValue           = formSaveBtnGO.GetComponent<Button>();
+        formSo.FindProperty("deleteButton").objectReferenceValue         = formDeleteBtnGO.GetComponent<Button>();
+        formSo.FindProperty("cancelButton").objectReferenceValue         = formCancelBtnGO.GetComponent<Button>();
+        formSo.ApplyModifiedProperties();
+
+        problemTabSo.FindProperty("formPanel").objectReferenceValue = formCmp;
+        problemTabSo.ApplyModifiedProperties();
+
+        // ── 공유 상태·닫기 ────────────────────────────────────────────
+        var statusAdmin = UIKit.Label(adminPanel.transform, "Status",  "", UIKit.TextLevel.Body, new Vector2(0f, -450f));
+        var closeBtnA   = UIKit.Button(adminPanel.transform, "CloseBtn", "닫기  [F1]", UIKit.BtnKind.Neutral, new Vector2(0f, -520f), new Vector2(300f, 70f));
+
+        // ── AdminPanel 컴포넌트 부착·와이어링 ─────────────────────────
         var adminCmp = adminPanel.AddComponent<AdminPanel>();
         var aSo = new SerializedObject(adminCmp);
-        aSo.FindProperty("addGoldButton").objectReferenceValue       = addGoldBtn.GetComponent<Button>();
-        aSo.FindProperty("addPaperButton").objectReferenceValue      = addPaperBtn.GetComponent<Button>();
-        aSo.FindProperty("addFocusButton").objectReferenceValue      = addFocusBtn.GetComponent<Button>();
-        aSo.FindProperty("addFragmentButton").objectReferenceValue   = addFragmentBtn.GetComponent<Button>();
-        aSo.FindProperty("giveCrystalsButton").objectReferenceValue  = giveCrystalsBtn.GetComponent<Button>();
-        aSo.FindProperty("characterIdInput").objectReferenceValue    = charInput.GetComponent<TMP_InputField>();
-        aSo.FindProperty("giveCharacterButton").objectReferenceValue    = giveBtn.GetComponent<Button>();
-        aSo.FindProperty("giveAllCharactersButton").objectReferenceValue = giveAllCharsBtn.GetComponent<Button>();
-        aSo.FindProperty("debugRollOneButton").objectReferenceValue  = roll1Btn.GetComponent<Button>();
-        aSo.FindProperty("debugRollTenButton").objectReferenceValue  = roll10Btn.GetComponent<Button>();
-        aSo.FindProperty("resetAccountButton").objectReferenceValue  = resetBtn.GetComponent<Button>();
-        aSo.FindProperty("forceSaveButton").objectReferenceValue     = saveBtn.GetComponent<Button>();
-        aSo.FindProperty("forceLoadButton").objectReferenceValue     = loadBtn.GetComponent<Button>();
-        aSo.FindProperty("statusText").objectReferenceValue          = statusAdmin.GetComponent<TMP_Text>();
-        aSo.FindProperty("closeButton").objectReferenceValue         = closeBtnA.GetComponent<Button>();
+
+        var tabButtonsProp = aSo.FindProperty("tabButtons");
+        tabButtonsProp.arraySize = 4;
+        tabButtonsProp.GetArrayElementAtIndex(0).objectReferenceValue = tab0Btn.GetComponent<Button>();
+        tabButtonsProp.GetArrayElementAtIndex(1).objectReferenceValue = tab1Btn.GetComponent<Button>();
+        tabButtonsProp.GetArrayElementAtIndex(2).objectReferenceValue = tab2Btn.GetComponent<Button>();
+        tabButtonsProp.GetArrayElementAtIndex(3).objectReferenceValue = tab3Btn.GetComponent<Button>();
+
+        var tabPanelsProp = aSo.FindProperty("tabPanels");
+        tabPanelsProp.arraySize = 4;
+        tabPanelsProp.GetArrayElementAtIndex(0).objectReferenceValue = commandPanel;
+        tabPanelsProp.GetArrayElementAtIndex(1).objectReferenceValue = characterPanel;
+        tabPanelsProp.GetArrayElementAtIndex(2).objectReferenceValue = playerPanel;
+        tabPanelsProp.GetArrayElementAtIndex(3).objectReferenceValue = problemPanel;
+
+        aSo.FindProperty("statusText").objectReferenceValue  = statusAdmin.GetComponent<TMP_Text>();
+        aSo.FindProperty("closeButton").objectReferenceValue = closeBtnA.GetComponent<Button>();
         aSo.ApplyModifiedProperties();
 
-        UnityEventTools.AddVoidPersistentListener(addGoldBtn.GetComponent<Button>().onClick,      adminCmp.OnAddGold);
-        UnityEventTools.AddVoidPersistentListener(addPaperBtn.GetComponent<Button>().onClick,     adminCmp.OnAddPaper);
-        UnityEventTools.AddVoidPersistentListener(addFocusBtn.GetComponent<Button>().onClick,     adminCmp.OnAddFocus);
-        UnityEventTools.AddVoidPersistentListener(addFragmentBtn.GetComponent<Button>().onClick,  adminCmp.OnAddFragment);
-        UnityEventTools.AddVoidPersistentListener(giveCrystalsBtn.GetComponent<Button>().onClick, adminCmp.OnGiveCrystals);
-        UnityEventTools.AddVoidPersistentListener(giveBtn.GetComponent<Button>().onClick,             adminCmp.OnGiveCharacter);
-        UnityEventTools.AddVoidPersistentListener(giveAllCharsBtn.GetComponent<Button>().onClick,     adminCmp.OnGiveAllCharacters);
-        UnityEventTools.AddVoidPersistentListener(roll1Btn.GetComponent<Button>().onClick,            adminCmp.OnDebugRollOne);
-        UnityEventTools.AddVoidPersistentListener(roll10Btn.GetComponent<Button>().onClick,       adminCmp.OnDebugRollTen);
-        UnityEventTools.AddVoidPersistentListener(resetBtn.GetComponent<Button>().onClick,        adminCmp.OnResetAccount);
-        UnityEventTools.AddVoidPersistentListener(saveBtn.GetComponent<Button>().onClick,         adminCmp.OnForceSave);
-        UnityEventTools.AddVoidPersistentListener(loadBtn.GetComponent<Button>().onClick,         adminCmp.OnForceLoad);
-        UnityEventTools.AddVoidPersistentListener(closeBtnA.GetComponent<Button>().onClick,       adminCmp.OnCloseClicked);
+        UnityEventTools.AddVoidPersistentListener(tab0Btn.GetComponent<Button>().onClick,  adminCmp.OnTab0);
+        UnityEventTools.AddVoidPersistentListener(tab1Btn.GetComponent<Button>().onClick,  adminCmp.OnTab1);
+        UnityEventTools.AddVoidPersistentListener(tab2Btn.GetComponent<Button>().onClick,  adminCmp.OnTab2);
+        UnityEventTools.AddVoidPersistentListener(tab3Btn.GetComponent<Button>().onClick,  adminCmp.OnTab3);
+        UnityEventTools.AddVoidPersistentListener(closeBtnA.GetComponent<Button>().onClick, adminCmp.OnCloseClicked);
+
+        // CommandTab·CharacterTab·PlayerTab·ProblemTab에 owner 주입
+        cmdSo.FindProperty("owner").objectReferenceValue    = adminCmp;
+        cmdSo.ApplyModifiedProperties();
+        charTabSo.FindProperty("owner").objectReferenceValue = adminCmp;
+        charTabSo.ApplyModifiedProperties();
+        playerTabSo.FindProperty("owner").objectReferenceValue = adminCmp;
+        playerTabSo.ApplyModifiedProperties();
+        problemTabSo.FindProperty("owner").objectReferenceValue = adminCmp;
+        problemTabSo.ApplyModifiedProperties();
+
+        // ── AdminLoginPanel (관리자 비밀 키 입력 패널, 기본 비활성) ──────────
+        var adminLoginPanelGO = UIKit.Panel(canvasGO.transform, "AdminLoginPanel", new Vector2(600f, 420f));
+        adminLoginPanelGO.SetActive(false);
+
+        UIKit.Label(adminLoginPanelGO.transform, "Title",  "관리자 인증",         UIKit.TextLevel.H1,   new Vector2(0f,  155f));
+        UIKit.Label(adminLoginPanelGO.transform, "Desc",   "비밀 키를 입력하세요", UIKit.TextLevel.Body, new Vector2(0f,   90f));
+        var keyInput   = UIKit.Input(adminLoginPanelGO.transform,  "KeyInput",   "비밀 키",  new Vector2(0f,   15f), new Vector2(500f, 70f));
+        var confirmBtn = UIKit.Button(adminLoginPanelGO.transform, "ConfirmBtn", "확인",
+            UIKit.BtnKind.Primary, new Vector2(-130f, -75f), new Vector2(220f, 65f));
+        var closeBtnL  = UIKit.Button(adminLoginPanelGO.transform, "CloseBtn",  "닫기",
+            UIKit.BtnKind.Neutral, new Vector2( 130f, -75f), new Vector2(220f, 65f));
+        var statusL    = UIKit.Label(adminLoginPanelGO.transform,  "Status",    "",          UIKit.TextLevel.Body, new Vector2(0f, -155f));
+
+        // 비밀번호 마스킹
+        var keyInputCmp = keyInput.GetComponent<TMP_InputField>();
+        keyInputCmp.contentType = TMP_InputField.ContentType.Password;
+        keyInputCmp.ForceLabelUpdate();
+
+        var adminLoginCmp = adminLoginPanelGO.AddComponent<AdminLoginPanel>();
+        var alSo = new SerializedObject(adminLoginCmp);
+        alSo.FindProperty("panel").objectReferenceValue         = adminLoginPanelGO;
+        alSo.FindProperty("keyInput").objectReferenceValue      = keyInputCmp;
+        alSo.FindProperty("confirmButton").objectReferenceValue = confirmBtn.GetComponent<Button>();
+        alSo.FindProperty("closeButton").objectReferenceValue   = closeBtnL.GetComponent<Button>();
+        alSo.FindProperty("statusText").objectReferenceValue    = statusL.GetComponent<TMP_Text>();
+        alSo.ApplyModifiedProperties();
 
         // ── RnEPanel (K키, R&E) ─────────────────────────────────────────
         // 허브 구조: 3열 그리드 → 카드 클릭 → 개인 창
@@ -980,7 +1223,7 @@ public static class MetaUISetup
         frameRt.anchoredPosition = Vector2.zero;
         frameGO.AddComponent<Image>().color = new Color(0.77f, 0.64f, 0.42f, 1f);
 
-        // MapBg — 위성뷰 지형 텍스처 (FogGrid 뒤에 렌더)
+        // MapBg — 위성뷰 지형 텍스처 (FogOverlay 뒤에 렌더)
         var mapBgGO = new GameObject("MapBg");
         mapBgGO.transform.SetParent(frameGO.transform, false);
         var mapBgRt = mapBgGO.AddComponent<RectTransform>();
@@ -988,34 +1231,15 @@ public static class MetaUISetup
         mapBgRt.offsetMin = Vector2.zero; mapBgRt.offsetMax = Vector2.zero;
         mapBgGO.AddComponent<RawImage>().color = Color.white;
 
-        // FogGridParent — 안개 셀 부모, 전체 채움
-        var fogParentGO = new GameObject("FogGridParent");
-        fogParentGO.transform.SetParent(frameGO.transform, false);
-        var fogParentRt = fogParentGO.AddComponent<RectTransform>();
-        fogParentRt.anchorMin = Vector2.zero; fogParentRt.anchorMax = Vector2.one;
-        fogParentRt.offsetMin = Vector2.zero; fogParentRt.offsetMax = Vector2.zero;
-
-        // 8×8 안개 셀 생성
-        var fogGrid = new Image[8, 8];
-        float cellSize = 750f / 8f; // 93.75f
-        for (int x = 0; x < 8; x++)
-        {
-            for (int y = 0; y < 8; y++)
-            {
-                var cellGO = new GameObject($"FogCell_{x}_{y}");
-                cellGO.transform.SetParent(fogParentGO.transform, false);
-                var cellRt = cellGO.AddComponent<RectTransform>();
-                cellRt.anchorMin        = Vector2.zero;
-                cellRt.anchorMax        = Vector2.zero;
-                cellRt.sizeDelta        = new Vector2(cellSize, cellSize);
-                // 맵 중앙 = (0,0), FogGridParent의 (0,0)앵커는 로컬 (-375,-375).
-                // 셀 (x,y)의 중심 픽셀 = -375 + (x+0.5)*cellSize → anchoredPosition = (x+0.5)*cellSize
-                cellRt.anchoredPosition = new Vector2((x + 0.5f) * cellSize, (y + 0.5f) * cellSize);
-                var cellImg = cellGO.AddComponent<Image>();
-                cellImg.color = new Color(0f, 0f, 0f, 0.85f);
-                fogGrid[x, y] = cellImg;
-            }
-        }
+        // FogOverlay — 부드러운 원형 안개 알파 마스크 (MapBg 위, 마커 아래)
+        var fogOverlayGO = new GameObject("FogOverlay");
+        fogOverlayGO.transform.SetParent(frameGO.transform, false);
+        var fogOverlayRt = fogOverlayGO.AddComponent<RectTransform>();
+        fogOverlayRt.anchorMin = Vector2.zero; fogOverlayRt.anchorMax = Vector2.one;
+        fogOverlayRt.offsetMin = Vector2.zero; fogOverlayRt.offsetMax = Vector2.zero;
+        var fogOverlayImg = fogOverlayGO.AddComponent<RawImage>();
+        fogOverlayImg.color = Color.white;
+        fogOverlayGO.GetComponent<UnityEngine.UI.Graphic>().raycastTarget = false;
 
         // MarkerIconParent — 마커 아이콘 부모, 전체 채움
         var markerParentGO = new GameObject("MarkerIconParent");
@@ -1064,11 +1288,9 @@ public static class MetaUISetup
         wmSo.FindProperty("playerDot").objectReferenceValue  = playerDotGO.GetComponent<RectTransform>();
         wmSo.FindProperty("tooltip").objectReferenceValue    = titleGO.GetComponent<TMP_Text>();
         wmSo.FindProperty("mapBg").objectReferenceValue      = mapBgGO.GetComponent<RawImage>();
+        wmSo.FindProperty("fogOverlay").objectReferenceValue = fogOverlayImg;
         wmSo.FindProperty("mapFrameSize").floatValue         = 750f;
         wmSo.ApplyModifiedProperties();
-
-        // FogGrid 직접 주입 (Image[,]은 직렬화 불가)
-        worldMap.FogGrid = fogGrid;
 
         // CloseBtn → worldMap.Close 와이어링
         UnityEventTools.AddVoidPersistentListener(closeBtnGO.GetComponent<Button>().onClick, worldMap.Close);

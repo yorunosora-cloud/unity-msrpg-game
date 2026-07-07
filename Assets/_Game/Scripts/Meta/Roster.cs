@@ -40,6 +40,23 @@ public class Roster
         return null;
     }
 
+    /// <summary>
+    /// 캐릭터 회수. 보유 중이었으면 제거 후 true, 없었으면 false.
+    /// </summary>
+    public bool Remove(string id)
+    {
+        for (int i = 0; i < _owned.Count; i++)
+        {
+            if (_owned[i].id == id)
+            {
+                _owned.RemoveAt(i);
+                OnChanged?.Invoke();
+                return true;
+            }
+        }
+        return false;
+    }
+
     /// <summary>UI 갱신이 필요할 때 외부에서 OnChanged 를 강제 발화한다.</summary>
     public void NotifyChanged() => OnChanged?.Invoke();
 

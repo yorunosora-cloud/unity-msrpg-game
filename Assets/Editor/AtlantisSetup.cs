@@ -103,7 +103,7 @@ public static class AtlantisSetup
           r.pivot = new Vector2(1f, 1f);
           r.anchoredPosition = new Vector2(-20f, -20f); }
 
-        var panelGO = UIKit.Panel(canvasGO.transform, "AccountPanel", new Vector2(600f, 500f));
+        var panelGO = UIKit.Panel(canvasGO.transform, "AccountPanel", new Vector2(600f, 600f));
         UIKit.Label(panelGO.transform, "Title", "계정 정보", UIKit.TextLevel.H1, new Vector2(0, 180));
         UIKit.Divider(panelGO.transform, new Vector2(0, 135), 520f);
         var userText  = UIKit.Label(panelGO.transform, "UsernameText", "아이디: —",
@@ -111,7 +111,10 @@ public static class AtlantisSetup
         var levelText = UIKit.Label(panelGO.transform, "LevelText", "레벨: —",
             UIKit.TextLevel.H2, new Vector2(0, 10), align: TextAlignmentOptions.MidlineLeft);
         var logoutBtn = UIKit.Button(panelGO.transform, "LogoutButton", "로그아웃",
-            UIKit.BtnKind.Danger, new Vector2(0, -100), new Vector2(380f, 70f));
+            UIKit.BtnKind.Danger, new Vector2(0, -80), new Vector2(380f, 70f));
+
+        var adminLoginBtn = UIKit.Button(panelGO.transform, "AdminLoginButton", "관리자 로그인",
+            UIKit.BtnKind.Neutral, new Vector2(0, -170), new Vector2(380f, 60f));
         var closeBtn  = UIKit.Button(panelGO.transform, "CloseButton", "✕",
             UIKit.BtnKind.Neutral, size: new Vector2(60f, 60f), fontSize: 24);
         { var r = closeBtn.GetComponent<RectTransform>();
@@ -125,9 +128,10 @@ public static class AtlantisSetup
         apSO.FindProperty("panel").objectReferenceValue        = panelGO;
         apSO.FindProperty("usernameText").objectReferenceValue = userText.GetComponent<TextMeshProUGUI>();
         apSO.FindProperty("levelText").objectReferenceValue    = levelText.GetComponent<TextMeshProUGUI>();
-        apSO.FindProperty("openButton").objectReferenceValue   = openBtn.GetComponent<Button>();
-        apSO.FindProperty("closeButton").objectReferenceValue  = closeBtn.GetComponent<Button>();
-        apSO.FindProperty("logoutButton").objectReferenceValue = logoutBtn.GetComponent<Button>();
+        apSO.FindProperty("openButton").objectReferenceValue       = openBtn.GetComponent<Button>();
+        apSO.FindProperty("closeButton").objectReferenceValue      = closeBtn.GetComponent<Button>();
+        apSO.FindProperty("logoutButton").objectReferenceValue     = logoutBtn.GetComponent<Button>();
+        apSO.FindProperty("adminLoginButton").objectReferenceValue = adminLoginBtn.GetComponent<Button>();
         apSO.ApplyModifiedProperties();
 
         // 7-b. 상호작용 프롬프트 라벨
@@ -582,11 +586,11 @@ public static class AtlantisSetup
 
     // ── 아틀란티스 지도 MetaCanvas ────────────────────────────────────────────
     // FogOfWar mapHalf=1600 (아크시움 r=250, 유클리드 center=-1000,-600 r=350 포함)
-    // viewRange=150  →  미니맵과 안개 반경 일치
+    // viewRange=200  →  미니맵 표시 반경과 동일, 텍스처 방식이므로 셀 커버리지 걱정 불필요
     static void BuildAtlantisMetaCanvas(GameObject player, TMP_FontAsset font)
     {
-        const float MAP_HALF    = 1600f;
-        const float VIEW_RANGE  = 150f;
+        const float MAP_HALF      = 1600f;
+        const float VIEW_RANGE    = 200f;  // FogOfWar + MinimapHud 공통 반경
 
         // FogOfWar 파라미터 설정
         var fog   = player.GetComponent<FogOfWar>();
@@ -671,6 +675,7 @@ public static class AtlantisSetup
         frameRt.anchoredPosition = Vector2.zero;
         frameGO.AddComponent<Image>().color = new Color(0.06f, 0.08f, 0.18f, 1f); // 아틀란티스 테두리
 
+        // MapBg — 지형 텍스처 (가장 아래)
         var mapBgGO = new GameObject("MapBg");
         mapBgGO.transform.SetParent(frameGO.transform, false);
         var mapBgRt = mapBgGO.AddComponent<RectTransform>();
@@ -678,29 +683,17 @@ public static class AtlantisSetup
         mapBgRt.offsetMin = Vector2.zero; mapBgRt.offsetMax = Vector2.zero;
         mapBgGO.AddComponent<RawImage>().color = Color.white;
 
-        var fogParentGO = new GameObject("FogGridParent");
-        fogParentGO.transform.SetParent(frameGO.transform, false);
-        var fogParentRt = fogParentGO.AddComponent<RectTransform>();
-        fogParentRt.anchorMin = Vector2.zero; fogParentRt.anchorMax = Vector2.one;
-        fogParentRt.offsetMin = Vector2.zero; fogParentRt.offsetMax = Vector2.zero;
+        // FogOverlay — 부드러운 원형 안개 알파 마스크 (지형 위, 마커 아래)
+        var fogOverlayGO = new GameObject("FogOverlay");
+        fogOverlayGO.transform.SetParent(frameGO.transform, false);
+        var fogOverlayRt = fogOverlayGO.AddComponent<RectTransform>();
+        fogOverlayRt.anchorMin = Vector2.zero; fogOverlayRt.anchorMax = Vector2.one;
+        fogOverlayRt.offsetMin = Vector2.zero; fogOverlayRt.offsetMax = Vector2.zero;
+        var fogOverlayImg = fogOverlayGO.AddComponent<RawImage>();
+        fogOverlayImg.color = Color.white;
+        fogOverlayGO.GetComponent<UnityEngine.UI.Graphic>().raycastTarget = false;
 
-        var fogGrid   = new Image[8, 8];
-        float cellSize = 750f / 8f;
-        for (int x = 0; x < 8; x++)
-        for (int y = 0; y < 8; y++)
-        {
-            var cellGO = new GameObject($"FogCell_{x}_{y}");
-            cellGO.transform.SetParent(fogParentGO.transform, false);
-            var cellRt = cellGO.AddComponent<RectTransform>();
-            cellRt.anchorMin        = Vector2.zero;
-            cellRt.anchorMax        = Vector2.zero;
-            cellRt.sizeDelta        = new Vector2(cellSize, cellSize);
-            cellRt.anchoredPosition = new Vector2((x + 0.5f) * cellSize, (y + 0.5f) * cellSize);
-            var cellImg = cellGO.AddComponent<Image>();
-            cellImg.color = new Color(0f, 0f, 0f, 0.85f);
-            fogGrid[x, y] = cellImg;
-        }
-
+        // MarkerIconParent
         var markerParentGO = new GameObject("MarkerIconParent");
         markerParentGO.transform.SetParent(frameGO.transform, false);
         var markerParentRt = markerParentGO.AddComponent<RectTransform>();
@@ -744,12 +737,11 @@ public static class AtlantisSetup
         wmSo.FindProperty("playerDot").objectReferenceValue  = playerDotGO.GetComponent<RectTransform>();
         wmSo.FindProperty("tooltip").objectReferenceValue    = titleGO.GetComponent<TMP_Text>();
         wmSo.FindProperty("mapBg").objectReferenceValue      = mapBgGO.GetComponent<RawImage>();
+        wmSo.FindProperty("fogOverlay").objectReferenceValue = fogOverlayImg;
         wmSo.FindProperty("mapFrameSize").floatValue         = 750f;
         wmSo.FindProperty("mapHalf").floatValue              = MAP_HALF;
         wmSo.FindProperty("isAtlantis").boolValue            = true;
         wmSo.ApplyModifiedProperties();
-
-        worldMap.FogGrid = fogGrid;
 
         UnityEventTools.AddVoidPersistentListener(closeBtnGO.GetComponent<Button>().onClick, worldMap.Close);
 
@@ -759,6 +751,6 @@ public static class AtlantisSetup
         ctrlSo.ApplyModifiedProperties();
 
         panelGO.SetActive(false);
-        Debug.Log("[AtlantisSetup] AtlantisMetaCanvas 생성 완료 (미니맵 + 아틀란티스 지도)");
+        Debug.Log("[AtlantisSetup] AtlantisMetaCanvas 생성 완료 (미니맵 + 아틀란티스 지도, 부드러운 원형 안개)");
     }
 }

@@ -14,6 +14,10 @@ public class ProblemDef : ScriptableObject
     [Header("레벨업 난이도 (skillId가 비어 있을 때 유효)")]
     public ProblemDifficulty difficulty;
 
+    [Header("레벨업 문제 분류 (skillId가 비어 있을 때 유효) — 관리자 문제탭 트리용")]
+    public Continent subject;
+    public string    country;
+
     [Header("문제")]
     public ProblemType type;
     [TextArea(2, 6)]

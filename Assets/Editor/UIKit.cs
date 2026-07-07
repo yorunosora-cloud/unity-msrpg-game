@@ -297,6 +297,121 @@ public static class UIKit
         return go;
     }
 
+    // ══ 드롭다운 ════════════════════════════════════════════════════════
+
+    public static GameObject Dropdown(Transform parent, string name,
+        System.Collections.Generic.List<string> options, Vector2 pos, Vector2 size = default)
+    {
+        if (size == default) size = new Vector2(400f, 65f);
+
+        var go = new GameObject(name);
+        go.transform.SetParent(parent, false);
+        var rt = go.AddComponent<RectTransform>();
+        rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
+        rt.sizeDelta        = size;
+        rt.anchoredPosition = pos;
+        go.AddComponent<Image>().color = UITheme.PanelBgMid;
+
+        var dropdown = go.AddComponent<TMP_Dropdown>();
+
+        // Caption label (현재 선택 표시)
+        var labelGO = new GameObject("Label");
+        labelGO.transform.SetParent(go.transform, false);
+        var labelRT = labelGO.AddComponent<RectTransform>();
+        labelRT.anchorMin = Vector2.zero; labelRT.anchorMax = Vector2.one;
+        labelRT.offsetMin = new Vector2(12f, 4f); labelRT.offsetMax = new Vector2(-30f, -4f);
+        var labelTxt = labelGO.AddComponent<TextMeshProUGUI>();
+        labelTxt.fontSize  = UITheme.FontBody + 2;
+        labelTxt.color     = UITheme.TextPrimary;
+        labelTxt.alignment = TextAlignmentOptions.MidlineLeft;
+        if (Font != null) labelTxt.font = Font;
+        dropdown.captionText = labelTxt;
+
+        // Arrow
+        var arrowGO = new GameObject("Arrow");
+        arrowGO.transform.SetParent(go.transform, false);
+        var arrowRT = arrowGO.AddComponent<RectTransform>();
+        arrowRT.anchorMin = new Vector2(1f, 0f); arrowRT.anchorMax = Vector2.one;
+        arrowRT.offsetMin = new Vector2(-28f, 4f); arrowRT.offsetMax = new Vector2(-4f, -4f);
+        arrowGO.AddComponent<Image>().color = UITheme.TextSecondary;
+
+        // Template (펼쳐지는 목록)
+        var templateGO = new GameObject("Template");
+        templateGO.transform.SetParent(go.transform, false);
+        var templateRT = templateGO.AddComponent<RectTransform>();
+        templateRT.anchorMin = new Vector2(0f, 0f); templateRT.anchorMax = new Vector2(1f, 0f);
+        templateRT.pivot     = new Vector2(0.5f, 1f);
+        templateRT.anchoredPosition = new Vector2(0f, 0f);
+        float listH = options != null && options.Count > 0
+            ? Mathf.Min(options.Count * 50f, 200f) : 200f;
+        templateRT.sizeDelta = new Vector2(0f, listH);
+        templateGO.AddComponent<Image>().color = UITheme.PanelBgDark;
+        var sr = templateGO.AddComponent<ScrollRect>();
+        sr.horizontal = false;
+        sr.scrollSensitivity = 30f;
+        templateGO.SetActive(false);
+        dropdown.template = templateRT;
+
+        // Viewport
+        var vpGO = new GameObject("Viewport");
+        vpGO.transform.SetParent(templateGO.transform, false);
+        var vpRT = vpGO.AddComponent<RectTransform>();
+        vpRT.anchorMin = Vector2.zero; vpRT.anchorMax = Vector2.one;
+        vpRT.sizeDelta = Vector2.zero;
+        vpGO.AddComponent<RectMask2D>();
+        sr.viewport = vpRT;
+
+        // Content
+        var contentGO = new GameObject("Content");
+        contentGO.transform.SetParent(vpGO.transform, false);
+        var contentRT = contentGO.AddComponent<RectTransform>();
+        contentRT.anchorMin = new Vector2(0f, 1f); contentRT.anchorMax = new Vector2(1f, 1f);
+        contentRT.pivot     = new Vector2(0.5f, 1f);
+        contentRT.anchoredPosition = Vector2.zero;
+        contentRT.sizeDelta = Vector2.zero;
+        sr.content = contentRT;
+
+        // Item (각 항목 템플릿)
+        var itemGO = new GameObject("Item");
+        itemGO.transform.SetParent(contentGO.transform, false);
+        var itemRT = itemGO.AddComponent<RectTransform>();
+        itemRT.anchorMin = new Vector2(0f, 0.5f); itemRT.anchorMax = new Vector2(1f, 0.5f);
+        itemRT.sizeDelta = new Vector2(0f, 50f);
+        var itemBg = itemGO.AddComponent<Image>();
+        itemBg.color = UITheme.PanelBgMid;
+        var itemToggle = itemGO.AddComponent<Toggle>();
+        itemToggle.targetGraphic = itemBg;
+
+        // Checkmark (Toggle.graphic 필수)
+        var checkGO = new GameObject("Checkmark");
+        checkGO.transform.SetParent(itemGO.transform, false);
+        var checkRT = checkGO.AddComponent<RectTransform>();
+        checkRT.anchorMin = new Vector2(0f, 0.5f); checkRT.anchorMax = new Vector2(0f, 0.5f);
+        checkRT.sizeDelta = new Vector2(18f, 18f);
+        checkRT.anchoredPosition = new Vector2(14f, 0f);
+        var checkImg = checkGO.AddComponent<Image>();
+        checkImg.color = UITheme.BtnPrimary;
+        itemToggle.graphic = checkImg;
+
+        // Item Label
+        var itemLabelGO = new GameObject("Item Label");
+        itemLabelGO.transform.SetParent(itemGO.transform, false);
+        var itemLabelRT = itemLabelGO.AddComponent<RectTransform>();
+        itemLabelRT.anchorMin = Vector2.zero; itemLabelRT.anchorMax = Vector2.one;
+        itemLabelRT.offsetMin = new Vector2(36f, 4f); itemLabelRT.offsetMax = new Vector2(-8f, -4f);
+        var itemLabelTxt = itemLabelGO.AddComponent<TextMeshProUGUI>();
+        itemLabelTxt.fontSize  = UITheme.FontBody + 2;
+        itemLabelTxt.color     = UITheme.TextPrimary;
+        itemLabelTxt.alignment = TextAlignmentOptions.MidlineLeft;
+        if (Font != null) itemLabelTxt.font = Font;
+        dropdown.itemText = itemLabelTxt;
+
+        if (options != null && options.Count > 0)
+            dropdown.options = options.ConvertAll(o => new TMP_Dropdown.OptionData(o));
+
+        return go;
+    }
+
     // ══ 캐릭터 카드 (§E-2) ══════════════════════════════════════════════
 
     public static GameObject Card(Transform parent, string name,

@@ -1,16 +1,24 @@
 using UnityEngine;
 using UnityEditor;
+using System.Collections.Generic;
 
 /// <summary>
 /// 메조리아 허브 맵 v2 — 실크로드 척추 + 광장 골격
 /// 레이아웃 (남→북):
 ///   스폰(0,0,-100) → 남쪽 성문(z≈-130) → 길드 가로(z≈-70~-110)
 ///   → 실크로드 대광장(z=0) → 중립 조약의 탑(z≈+65) → 그랜드 하버(z≈+150)
-///   서쪽(x≈-87): 통합 학술원 / 동쪽(x≈+87): 지식의 거래소
+///   서쪽(x≈-87, z≈+10): 통합 학술원(HubLab)
+///   서쪽(x≈-87, z≈+55): 도서관(HubLibrary) ← 신규
+///   동쪽(x≈+87, z≈+10): 지식의 거래소(HubExchange)
+///   남서(x≈-65, z≈-80): 모험가 길드 본부(HubGuildHall) ← 재디자인
 ///
 /// 루트 GO 이름 보존 (MetaUISetup.WireBuilding 이름 기반):
 ///   HubLab, HubLibrary, HubGuildHall, HubPortal_*
-/// 신규: HubTreatyTower, HubGuildRow, HubCityBlocks
+/// 신규: HubExchange, HubTreatyTower, HubGuildRow, HubCityBlocks
+///
+/// 내부 입장 훅 (향후 ScenePortal 연결 예정):
+///   LibraryEntrance  → 씬 "LibraryInterior" / 복귀 스폰 "LibraryReturnSpawn"
+///   GuildEntrance    → 씬 "GuildInterior"   / 복귀 스폰 "GuildReturnSpawn"
 /// </summary>
 public static class MesoriaHubBuilder
 {
@@ -69,6 +77,14 @@ public static class MesoriaHubBuilder
     static readonly Color PlasterCream = new Color(0.94f, 0.91f, 0.82f); // 회반죽
     static readonly Color TimberBrown  = new Color(0.28f, 0.18f, 0.10f); // 목재 빔
 
+    // ── 구역별 포장재 팔레트 (BuildDistrictPaving) ─────────────────────────
+    static readonly Color PaveBase   = new Color(0.55f, 0.51f, 0.42f); // 중립 자갈 베이스
+    static readonly Color SlateCool  = new Color(0.50f, 0.55f, 0.60f); // 지식 구역 — 회청 석판
+    static readonly Color BrickOchre = new Color(0.62f, 0.42f, 0.26f); // 상업 구역 — 황토 벽돌
+    static readonly Color DeckWarm   = new Color(0.46f, 0.35f, 0.22f); // 생활 구역 — 목재/자갈
+    static readonly Color GraniteWet = new Color(0.34f, 0.37f, 0.42f); // 항구 구역 — 젖은 화강암
+    static readonly Color RoadLight  = new Color(0.72f, 0.68f, 0.58f); // 십자 도로 악센트
+
     static readonly Color[] PortalColors =
     {
         new Color(0.17f, 0.50f, 1.00f),
@@ -94,63 +110,195 @@ public static class MesoriaHubBuilder
         { "증명 부두", "연금 부두", "생명 항만", "지구 항만", "수학 부두", "데이터 항만" };
 
     // ── 레이아웃 상수 ─────────────────────────────────────────────────────────
-    const float PORTAL_R    = 40f;
-    const float BAZAAR_R    = 63f;
-    const float BUILDING_R  = 87f;
-    const float HARBOR_Z    = 155f;
-    const float GROUND_HALF = 250f;
-    const float SPINE_W     = 26f;
-    const float PLAZA_R     = 50f;
-    const float GATE_Z      = -130f;
-    const float TOWER_Z     = 65f;
+    const float PORTAL_R    = 52f;   // 포탈 링 반지름 (40 → 52)
+    const float BAZAAR_R    = 82f;   // 바자르 노점 반지름 (63 → 82)
+    const float BUILDING_R  = 130f;  // 주요 건물 동/서 거리 (87 → 130) — city block 최대 108+jitter≈116 바깥
+    const float HARBOR_Z    = 540f;  // 그랜드 하버 예약 북쪽 한계 (170 → 540)
+    const float GROUND_HALF = 600f;  // 전체 지면 반폭 (330 → 600)
+    const float SPINE_W     = 30f;   // 실크로드 대로 폭
+    const float PLAZA_R     = 65f;   // 중앙 광장 반지름
+    const float GATE_Z      = -560f; // 남쪽 성문 = 남쪽 벽 (-130 → -560)
+    const float TOWER_Z     = 75f;   // 조약의 탑 z
 
     // ─────────────────────────────────────────────────────────────────────────
     public static void Build()
     {
         BuildGround();
-        BuildPaving();
+        BuildRoadNetwork();
         BuildFountain();
         BuildPortalRing();
-        BuildBazaar();
-        BuildTreatyTower();
-        BuildMainBuildings();
-        BuildGuildRow();
-        BuildCityBlocks();
         BuildSouthGate();
-        BuildHarbor();
-        BuildBackgroundCity();
-        BuildScenery();
+        // ── 핵심 건물 (구역별 배치) ──────────────────────────────────────────
+        BuildAcademy();     // 서/지식 — 통합 학술원  (HubLab)
+        BuildLibrary();     // 서/지식 — 도서관        (HubLibrary)
+        BuildExchange();    // 동/상업 — 지식의 거래소 (HubExchange)
+        BuildGuildHall();   // 남/생활 — 모험가 길드   (HubGuildHall)
+        BuildFillerBuildings(); // 도로망 사이 빈 공간 채움 (구역색 + 골목 인접 + 섹터 블록)
         BuildWalls();
         AdjustLighting();
     }
 
     // ── 1. 지면 ──────────────────────────────────────────────────────────────
+    // 포장 활성 영역: x=±165, z=-125 ~ +170 → PaveBase 연속 바닥
+    // 그 바깥(벽까지)은 황토 흙 + 가장자리 잔디
+    const float PAVE_HALF_X = 560f;   // (165 → 560) 도시 전체 반폭
+    const float PAVE_Z_MIN  = -560f;  // GATE_Z
+    const float PAVE_Z_MAX  =  560f;
+
     static void BuildGround()
     {
-        // 전체 지면 — GROUND_HALF=250 → scale 0.2 = 500×500 (벽 경계와 일치)
-        // scale 0.1은 250×250이라 성문(z=-130) 포함 외곽이 바닥 없이 뻥 뚫림
+        var dirtColor  = new Color(0.46f, 0.38f, 0.26f); // 황토 흙
+        var grassColor = new Color(0.28f, 0.48f, 0.16f); // 짙은 잔디
+
+        // ─ 전체 황토 지면 (벽 경계까지) ─
         var g = GameObject.CreatePrimitive(PrimitiveType.Plane);
         g.name = "HubGround";
         g.transform.localScale = new Vector3(GROUND_HALF * 0.2f, 1f, GROUND_HALF * 0.2f);
-        ApplyColor(g, new Color(0.46f, 0.38f, 0.26f)); // 황토색 흙
+        ApplyColor(g, dirtColor);
+        // MeshCollider 유지 — 플레이어 지면 충돌체
 
-        // 외곽 잔디 구역 (동/서/남)
-        foreach (var (pos, sc) in new (Vector3 p, Vector3 s)[] {
-            (new Vector3(-175f, 0.001f,  0f),  new Vector3(10f, 1f, 25f)),
-            (new Vector3( 175f, 0.001f,  0f),  new Vector3(10f, 1f, 25f)),
-            (new Vector3(   0f, 0.001f,-185f), new Vector3(25f, 1f,  7f)),
+        // ─ 포장 활성 구역 전체를 PaveBase 얇은 바닥으로 깖 ─
+        // (구역 에이프런 + 도로 + 광장이 이 위에 올라감)
+        float paveW  = PAVE_HALF_X * 2f;
+        float paveD  = PAVE_Z_MAX - PAVE_Z_MIN;
+        float paveCZ = (PAVE_Z_MIN + PAVE_Z_MAX) * 0.5f;
+        var paveBase = new GameObject("HubPaveBase");
+        Box(paveBase.transform, "PaveFloor",
+            new Vector3(0f, 0.01f, paveCZ),
+            new Vector3(paveW, 0.04f, paveD), PaveBase);
+
+        // ─ 외곽 잔디 (포장 경계 바깥 벽 사이) ─
+        foreach (var (pos, sc) in new (Vector3 p, Vector3 s)[]
+        {
+            (new Vector3(-580f, 0.001f,   0f), new Vector3(30f, 1f, 80f)),
+            (new Vector3( 580f, 0.001f,   0f), new Vector3(30f, 1f, 80f)),
+            (new Vector3(   0f, 0.001f, 580f), new Vector3(80f, 1f, 30f)),
         })
         {
             var gp = GameObject.CreatePrimitive(PrimitiveType.Plane);
             gp.name = "HubGrassOuter";
             gp.transform.position   = pos;
             gp.transform.localScale = sc;
-            ApplyColor(gp, new Color(0.28f, 0.48f, 0.16f)); // 짙은 잔디
+            ApplyColor(gp, grassColor);
             Object.DestroyImmediate(gp.GetComponent<MeshCollider>());
         }
     }
 
-    // ── 2. 포장 시스템 (척추 대로 + 광장 + 연결로) ───────────────────────────
+    // ── 2. 구역별 포장 시스템 ─────────────────────────────────────────────────
+    // 4구역 에이프런(구역색) → 십자 도로(RoadLight) → 중앙 광장(StoneLight+격자)
+    static void BuildDistrictPaving()
+    {
+        var root = new GameObject("HubDistrictPaving");
+
+        const float SLAB_Y  = 0.05f;  // 에이프런 y (PaveBase=0.04 위)
+        const float ROAD_Y  = 0.12f;  // 도로 y (에이프런 위)
+        const float PLAZA_Y = 0.20f;  // 광장 y (도로 위)
+        const float T       = 0.10f;  // 슬래브 두께
+
+        // ── A. 4구역 에이프런 ─────────────────────────────────────────────────
+        // 서(지식): SlateCool, 동(상업): BrickOchre, 남(생활): DeckWarm, 북(항구): GraniteWet
+        // 에이프런들이 가운데(광장 반경 안)에서 겹쳐도 도로·광장이 위에서 덮음
+        Box(root.transform, "ApronWest",
+            new Vector3(-115f, SLAB_Y, 20f),
+            new Vector3(100f, T, 200f), SlateCool);
+        Box(root.transform, "ApronEast",
+            new Vector3( 115f, SLAB_Y, 20f),
+            new Vector3(100f, T, 200f), BrickOchre);
+        Box(root.transform, "ApronSouth",
+            new Vector3(0f, SLAB_Y, -100f),
+            new Vector3(170f, T, 70f), DeckWarm);
+        Box(root.transform, "ApronNorth",
+            new Vector3(0f, SLAB_Y, 110f),
+            new Vector3(170f, T, 130f), GraniteWet);
+
+        // ── B. 십자 도로 ──────────────────────────────────────────────────────
+        const float ROAD_T  = 0.12f;
+        const float EW_W    = 22f;    // 동/서 횡단로 폭
+
+        float spineLen = PAVE_Z_MAX - PAVE_Z_MIN;
+        float spineCZ  = (PAVE_Z_MIN + PAVE_Z_MAX) * 0.5f;
+        float ewLen    = PAVE_HALF_X * 2f;
+
+        // N/S 척추 대로
+        Box(root.transform, "RoadSpineNS",
+            new Vector3(0f, ROAD_Y, spineCZ),
+            new Vector3(SPINE_W, ROAD_T, spineLen), RoadLight);
+
+        // E/W 횡단로 (z=0 기준)
+        Box(root.transform, "RoadEW",
+            new Vector3(0f, ROAD_Y, 0f),
+            new Vector3(ewLen, ROAD_T, EW_W), RoadLight);
+
+        // 도로 연석 (척추)
+        float curbX  = SPINE_W * 0.5f + 0.75f;
+        float curbY  = ROAD_Y + ROAD_T * 0.5f + 0.05f;
+        float curbLen = spineLen;
+        Box(root.transform, "CurbNS_W", new Vector3(-curbX, curbY, spineCZ),
+            new Vector3(1.5f, ROAD_T + 0.10f, curbLen), StonePave);
+        Box(root.transform, "CurbNS_E", new Vector3( curbX, curbY, spineCZ),
+            new Vector3(1.5f, ROAD_T + 0.10f, curbLen), StonePave);
+
+        // 도로 연석 (횡단로)
+        float curbZ = EW_W * 0.5f + 0.75f;
+        Box(root.transform, "CurbEW_N", new Vector3(0f, curbY, curbZ),
+            new Vector3(ewLen, ROAD_T + 0.10f, 1.5f), StonePave);
+        Box(root.transform, "CurbEW_S", new Vector3(0f, curbY, -curbZ),
+            new Vector3(ewLen, ROAD_T + 0.10f, 1.5f), StonePave);
+
+        // 가로등 — 척추 남쪽 (6쌍)
+        for (int i = 0; i < 6; i++)
+        {
+            float lz = PAVE_Z_MIN + 5f + i * 18f;
+            LampPost(root.transform, new Vector3(-(SPINE_W * 0.5f + 2.5f), 0f, lz), $"LampS_W{i}");
+            LampPost(root.transform, new Vector3(  SPINE_W * 0.5f + 2.5f, 0f, lz), $"LampS_E{i}");
+        }
+        // 가로등 — 척추 북쪽 (4쌍)
+        for (int i = 0; i < 4; i++)
+        {
+            float lz = PLAZA_R + 5f + i * 14f;
+            LampPost(root.transform, new Vector3(-(SPINE_W * 0.5f + 2.5f), 0f, lz), $"LampN_W{i}");
+            LampPost(root.transform, new Vector3(  SPINE_W * 0.5f + 2.5f, 0f, lz), $"LampN_E{i}");
+        }
+        // 가로등 — 횡단로 (서/동 각 3쌍)
+        for (int i = 0; i < 3; i++)
+        {
+            float lx = PLAZA_R + 10f + i * 28f;
+            LampPost(root.transform, new Vector3(-lx, 0f,  EW_W * 0.5f + 2.5f), $"LampEW_W{i}N");
+            LampPost(root.transform, new Vector3(-lx, 0f, -EW_W * 0.5f - 2.5f), $"LampEW_W{i}S");
+            LampPost(root.transform, new Vector3( lx, 0f,  EW_W * 0.5f + 2.5f), $"LampEW_E{i}N");
+            LampPost(root.transform, new Vector3( lx, 0f, -EW_W * 0.5f - 2.5f), $"LampEW_E{i}S");
+        }
+
+        // ── C. 중앙 광장 (도로 위 최상단) ────────────────────────────────────
+        const float PLAZA_T  = 0.40f;
+        float plazaFloorY = PLAZA_Y;
+
+        Box(root.transform, "PlazaFloor",
+            new Vector3(0f, plazaFloorY, 0f),
+            new Vector3(PLAZA_R * 2f, PLAZA_T, PLAZA_R * 2f), StoneLight);
+
+        // 광장 격자 패턴
+        float gridTop = plazaFloorY + PLAZA_T * 0.5f + 0.01f;
+        for (int i = -4; i <= 4; i++)
+        {
+            if (i == 0) continue;
+            Box(root.transform, $"PlazaGridH_{i}",
+                new Vector3(0f, gridTop, i * 11f),
+                new Vector3(PLAZA_R * 2f, 0.02f, 0.55f), StonePave);
+            Box(root.transform, $"PlazaGridV_{i}",
+                new Vector3(i * 11f, gridTop, 0f),
+                new Vector3(0.55f, 0.02f, PLAZA_R * 2f), StonePave);
+        }
+
+        // 광장 테두리 경계석
+        float bTop = plazaFloorY + PLAZA_T * 0.5f + 0.05f;
+        Box(root.transform, "PlazaBorderN", new Vector3(0f, bTop,  PLAZA_R), new Vector3(PLAZA_R * 2f + 3f, 0.10f, 1.5f), StoneDark);
+        Box(root.transform, "PlazaBorderS", new Vector3(0f, bTop, -PLAZA_R), new Vector3(PLAZA_R * 2f + 3f, 0.10f, 1.5f), StoneDark);
+        Box(root.transform, "PlazaBorderE", new Vector3( PLAZA_R, bTop, 0f), new Vector3(1.5f, 0.10f, PLAZA_R * 2f + 3f), StoneDark);
+        Box(root.transform, "PlazaBorderW", new Vector3(-PLAZA_R, bTop, 0f), new Vector3(1.5f, 0.10f, PLAZA_R * 2f + 3f), StoneDark);
+    }
+
+    // ── (구) 2. 포장 시스템 — BuildDistrictPaving으로 교체됨, 미호출 ──────────
     static void BuildPaving()
     {
         var root = new GameObject("HubPaving");
@@ -287,6 +435,98 @@ public static class MesoriaHubBuilder
         }
     }
 
+    // ── 2b. 도로망 뼈대 (콘스탄티노플형) ─────────────────────────────────────────
+    // 십자 대로 + 환상로 3겹(16각형) + 대각 방사 4가지 + 절차 골목
+    // BuildDistrictPaving 대체. 구역 에이프런 없음(민바닥 위 도로만).
+    static void BuildRoadNetwork()
+    {
+        var root = new GameObject("HubRoadNetwork");
+
+        // 대로·환상·방사·골목 전 티어 동일 높이로 통일(티어 경계 단차 제거).
+        // 광장만 의도된 단차(PlazaBorder 연석)로 높게 유지.
+        const float ROAD_Y  = 0.12f; // 도로 전 티어 공통 높이
+        const float PLAZA_Y = 0.20f; // 광장 높이 (의도된 단차)
+        const float ROAD_T  = 0.15f; // 도로 두께 (전 티어 동일)
+
+        // ── A. 메세 대로 십자 ─────────────────────────────────────────────────
+        float spineLen = PAVE_Z_MAX - PAVE_Z_MIN; // 1120
+        float ewLen    = PAVE_HALF_X * 2f;         // 1120
+        float spineCZ  = (PAVE_Z_MIN + PAVE_Z_MAX) * 0.5f;
+
+        // N/S 척추 대로
+        Box(root.transform, "RoadSpineNS",
+            new Vector3(0f, ROAD_Y, spineCZ),
+            new Vector3(SPINE_W, ROAD_T, spineLen), RoadLight);
+        // E/W 메세
+        Box(root.transform, "RoadMeseEW",
+            new Vector3(0f, ROAD_Y, 0f),
+            new Vector3(ewLen, ROAD_T, 26f), RoadLight);
+
+        // ── B. 환상로 3겹 (16각형 근사) ─────────────────────────────────────────
+        // RingRoad가 각 변 + 꼭짓점 이음새 패치를 함께 생성(미터 갭/오버슈트 없음)
+        RingRoad(root.transform, 140f, 16, 18f, ROAD_Y, ROAD_T, RoadLight); // 내환
+        RingRoad(root.transform, 300f, 16, 16f, ROAD_Y, ROAD_T, RoadLight); // 중환
+        RingRoad(root.transform, 460f, 16, 14f, ROAD_Y, ROAD_T, RoadLight); // 외환
+
+        // ── C. 대각 방사 가지 4개 (내환 → 외환) ────────────────────────────────
+        // 방사 양끝은 항상 환상로의 기존 꼭짓점(정확히 22.5°배수)과 겹침 →
+        // RingRoad가 이미 놓은 이음새 패치가 방사-환상 접합부도 함께 커버함.
+        float[] diagAngles = { 45f, 135f, 225f, 315f };
+        for (int i = 0; i < 4; i++)
+        {
+            float rad = diagAngles[i] * Mathf.Deg2Rad;
+            float sx = Mathf.Sin(rad), sz = Mathf.Cos(rad);
+            var pa = new Vector2(140f * sx, 140f * sz);
+            var pb = new Vector2(460f * sx, 460f * sz);
+            RoadSeg(root.transform, $"Spoke_{(int)diagAngles[i]}",
+                pa, pb, 14f, ROAD_Y, ROAD_T, RoadLight);
+        }
+
+        // ── D. 골목 (GenerateAlleySegments 공유 — BuildFillerBuildings도 동일 목록 사용) ──
+        foreach (var seg in GenerateAlleySegments())
+            RoadSeg(root.transform, seg.name, seg.a, seg.b, seg.width, ROAD_Y, ROAD_T, StonePave);
+
+        // ── E. 중앙 광장 (십자·환상 위 최상단) ──────────────────────────────────
+        const float PLAZA_T = 0.40f;
+
+        Box(root.transform, "PlazaFloor",
+            new Vector3(0f, PLAZA_Y, 0f),
+            new Vector3(PLAZA_R * 2f, PLAZA_T, PLAZA_R * 2f), StoneLight);
+
+        float gridTop = PLAZA_Y + PLAZA_T * 0.5f + 0.01f;
+        for (int i = -4; i <= 4; i++)
+        {
+            if (i == 0) continue;
+            Box(root.transform, $"PlazaGridH_{i}",
+                new Vector3(0f, gridTop, i * 11f),
+                new Vector3(PLAZA_R * 2f, 0.02f, 0.55f), StonePave);
+            Box(root.transform, $"PlazaGridV_{i}",
+                new Vector3(i * 11f, gridTop, 0f),
+                new Vector3(0.55f, 0.02f, PLAZA_R * 2f), StonePave);
+        }
+        float bTop = PLAZA_Y + PLAZA_T * 0.5f + 0.05f;
+        Box(root.transform, "PlazaBorderN", new Vector3(0f, bTop,  PLAZA_R), new Vector3(PLAZA_R * 2f + 3f, 0.10f, 1.5f), StoneDark);
+        Box(root.transform, "PlazaBorderS", new Vector3(0f, bTop, -PLAZA_R), new Vector3(PLAZA_R * 2f + 3f, 0.10f, 1.5f), StoneDark);
+        Box(root.transform, "PlazaBorderE", new Vector3( PLAZA_R, bTop, 0f), new Vector3(1.5f, 0.10f, PLAZA_R * 2f + 3f), StoneDark);
+        Box(root.transform, "PlazaBorderW", new Vector3(-PLAZA_R, bTop, 0f), new Vector3(1.5f, 0.10f, PLAZA_R * 2f + 3f), StoneDark);
+
+        // ── F. 메인 가로등 (척추 + E/W 메세 도로변, 80단위 간격) ─────────────────
+        float spineOff = SPINE_W * 0.5f + 2.5f;
+        for (float lz = PAVE_Z_MIN + 10f; lz < PAVE_Z_MAX; lz += 80f)
+        {
+            if (Mathf.Abs(lz) < PLAZA_R + 5f) continue; // 광장 안쪽 제외
+            LampPost(root.transform, new Vector3(-spineOff, 0f, lz), $"LampSpW_{(int)(lz + 600f)}");
+            LampPost(root.transform, new Vector3( spineOff, 0f, lz), $"LampSpE_{(int)(lz + 600f)}");
+        }
+        float ewOff = 13f + 2.5f; // (26/2) + 2.5
+        for (float lx = -PAVE_HALF_X + 10f; lx < PAVE_HALF_X; lx += 80f)
+        {
+            if (Mathf.Abs(lx) < PLAZA_R + 5f) continue;
+            LampPost(root.transform, new Vector3(lx, 0f,  ewOff), $"LampMeN_{(int)(lx + 600f)}");
+            LampPost(root.transform, new Vector3(lx, 0f, -ewOff), $"LampMeS_{(int)(lx + 600f)}");
+        }
+    }
+
     static void LampPost(Transform parent, Vector3 pos, string n)
     {
         var go = new GameObject(n);
@@ -295,6 +535,284 @@ public static class MesoriaHubBuilder
         Box(go.transform, "Post",  new Vector3(0f, 3.0f, 0f), new Vector3(0.35f, 6.0f, 0.35f), StoneDark);
         var head = Box(go.transform, "Head", new Vector3(0f, 6.3f, 0f), new Vector3(1.0f, 0.45f, 1.0f), Gold);
         SetEmissive(head, Gold, GoldBright * 0.7f);
+    }
+
+    // 골목(방사 스텁 + 현 연결) 시드 고정 절차 생성 목록.
+    // BuildRoadNetwork(포장)와 BuildFillerBuildings(인접 건물)가 동일 목록을 공유해
+    // 항상 같은 골목 위치에 건물이 바짝 붙는다.
+    static List<(string name, Vector2 a, Vector2 b, float width)> GenerateAlleySegments()
+    {
+        var list = new List<(string name, Vector2 a, Vector2 b, float width)>();
+        var rng = new System.Random(20260629);
+        float[] allRadAngles = { 0f, 45f, 90f, 135f, 180f, 225f, 270f, 315f };
+        float[] ringR = { 140f, 300f, 460f };
+
+        for (int s = 0; s < 8; s++)
+        {
+            float a1 = allRadAngles[s];
+            float a2 = allRadAngles[(s + 1) % 8];
+            float aJit = (float)(rng.NextDouble() - 0.5) * 8f;
+            float aMid = (a1 + a2) * 0.5f + aJit;
+
+            for (int b = 0; b < 2; b++) // 0=내~중, 1=중~외
+            {
+                float r0 = ringR[b], r1 = ringR[b + 1];
+
+                // 방사 스텁: 섹터 중간 각도로 안쪽 링 → 바깥 링 (60% 확률)
+                if (rng.NextDouble() < 0.60)
+                {
+                    float ra = aMid * Mathf.Deg2Rad;
+                    var pa = new Vector2(r0 * Mathf.Sin(ra), r0 * Mathf.Cos(ra));
+                    var pb = new Vector2(r1 * Mathf.Sin(ra), r1 * Mathf.Cos(ra));
+                    list.Add(($"Alley_S{s}B{b}_Stub", pa, pb, 6f));
+                }
+
+                // 현 연결: 같은 밴드 내 인접 방사 사이를 잇는 가로 골목 (65% 확률)
+                if (rng.NextDouble() < 0.65)
+                {
+                    float rChord = Mathf.Lerp(r0, r1, 0.30f + (float)rng.NextDouble() * 0.40f);
+                    float j1 = (float)(rng.NextDouble() - 0.5) * 6f;
+                    float j2 = (float)(rng.NextDouble() - 0.5) * 6f;
+                    float ra1 = (a1 + j1) * Mathf.Deg2Rad;
+                    float ra2 = (a2 + j2) * Mathf.Deg2Rad;
+                    var pc = new Vector2(rChord * Mathf.Sin(ra1), rChord * Mathf.Cos(ra1));
+                    var pd = new Vector2(rChord * Mathf.Sin(ra2), rChord * Mathf.Cos(ra2));
+                    list.Add(($"Alley_S{s}B{b}_Chord", pc, pd, 5f));
+                }
+            }
+        }
+        return list;
+    }
+
+    // 주요 도로(십자·환상3·방사4) 중심선 목록 — 골목과 별개로 프론티지 채움에 사용.
+    // BuildRoadNetwork의 도로 배치와 동일한 반지름/폭 리터럴을 공유(의도적 중복, GenerateAlleySegments와 동일 관례).
+    static List<(string name, Vector2 a, Vector2 b, float width)> GenerateMainRoadSegments()
+    {
+        var list = new List<(string name, Vector2 a, Vector2 b, float width)>
+        {
+            ("SpineNS", new Vector2(0f, PAVE_Z_MIN), new Vector2(0f, PAVE_Z_MAX), SPINE_W),
+            ("MeseEW", new Vector2(-PAVE_HALF_X, 0f), new Vector2(PAVE_HALF_X, 0f), 26f),
+        };
+
+        (float R, int sides, float width)[] rings =
+        {
+            (140f, 16, 18f), (300f, 16, 16f), (460f, 16, 14f),
+        };
+        foreach (var (R, sides, width) in rings)
+        {
+            for (int i = 0; i < sides; i++)
+            {
+                float a0 = i       * Mathf.PI * 2f / sides;
+                float a1 = (i + 1) * Mathf.PI * 2f / sides;
+                var pa = new Vector2(R * Mathf.Sin(a0), R * Mathf.Cos(a0));
+                var pb = new Vector2(R * Mathf.Sin(a1), R * Mathf.Cos(a1));
+                list.Add(($"Ring{(int)R}_{i}", pa, pb, width));
+            }
+        }
+
+        float[] diagAngles = { 45f, 135f, 225f, 315f };
+        foreach (float deg in diagAngles)
+        {
+            float rad = deg * Mathf.Deg2Rad;
+            float sx = Mathf.Sin(rad), sz = Mathf.Cos(rad);
+            list.Add(($"Spoke_{(int)deg}", new Vector2(140f * sx, 140f * sz), new Vector2(460f * sx, 460f * sz), 14f));
+        }
+
+        return list;
+    }
+
+    // ── 2d. 일반 채움 건물 (도로망 골격 사이 빈 공간) ────────────────────────────
+    // 구역(십자 도로 기준 서=지식/동=상업/남=생활/북=항구)별 벽색 차별.
+    // A. 도로 프론티지 — 모든 주요 도로(십자·환상·방사)+골목 양옆에 문이 도로를 향하도록 촘촘히 배열.
+    // B. 섹터(8) × 밴드(3, 링 사이) 내부 그리드 — 프론티지 뒤 블록 안쪽까지 촘촘히 채움.
+    static void BuildFillerBuildings()
+    {
+        var root = new GameObject("HubFillerBuildings");
+        int idx = 0;
+        var placed = new List<(Vector2 pos, float radius)>();
+
+        var landmarks = new (float x, float z, float r)[]
+        {
+            (-105f, 35f, 26f),   // 학술원
+            (-105f, -35f, 26f),  // 도서관
+            (105f, 35f, 26f),    // 거래소
+            (-40f, -85f, 24f),   // 길드
+        };
+
+        // 모든 주요 도로 + 골목을 한 번에 합친 목록 — 건물이 어떤 도로 위에도 올라가지 않도록
+        // 배치 전 항상 이 목록 전체와 겹침을 검사한다(자기 자신이 속한 도로만 이름으로 제외).
+        var allRoads = GenerateMainRoadSegments();
+        allRoads.AddRange(GenerateAlleySegments());
+
+        bool TooClose(float x, float z, float radius)
+        {
+            float r = Mathf.Sqrt(x * x + z * z);
+            if (r < 75f + radius) return true; // 광장 + 포탈 링
+            if (Mathf.Abs(z - GATE_Z) < 22f + radius && Mathf.Abs(x) < 40f + radius) return true; // 남문
+            foreach (var (lx, lz, lr) in landmarks)
+                if ((x - lx) * (x - lx) + (z - lz) * (z - lz) < (lr + radius) * (lr + radius)) return true;
+            foreach (var p in placed)
+                if ((x - p.pos.x) * (x - p.pos.x) + (z - p.pos.y) * (z - p.pos.y) < (radius + p.radius) * (radius + p.radius)) return true;
+            return false;
+        }
+
+        bool OverlapsRoad(float x, float z, float radius, (string name, Vector2 a, Vector2 b, float width) seg)
+        {
+            Vector2 pt = new Vector2(x, z);
+            Vector2 d  = seg.b - seg.a;
+            float len  = d.magnitude;
+            if (len < 0.001f) return Vector2.Distance(pt, seg.a) < seg.width * 0.5f + radius;
+            d /= len;
+            float t = Mathf.Clamp(Vector2.Dot(pt - seg.a, d), 0f, len);
+            Vector2 closest = seg.a + d * t;
+            return Vector2.Distance(pt, closest) < seg.width * 0.5f + radius;
+        }
+
+        bool OverlapsAnyRoad(float x, float z, float radius, string excludeName)
+        {
+            foreach (var seg in allRoads)
+            {
+                if (excludeName != null && seg.name == excludeName) continue;
+                if (OverlapsRoad(x, z, radius, seg)) return true;
+            }
+            return false;
+        }
+
+        Color WallColorFor(float x, float z) =>
+            Mathf.Abs(x) >= Mathf.Abs(z) ? (x < 0f ? SlateCool : BrickOchre)
+                                          : (z < 0f ? DeckWarm : GraniteWet);
+
+        // 정면(문) = 로컬 -Z. rotY 회전 후 -Z가 세계 공간에서 faceDir를 향하게 하는 각도.
+        float FaceRotY(Vector2 faceDir) => Mathf.Atan2(-faceDir.x, -faceDir.y) * Mathf.Rad2Deg;
+
+        // placedClearance: 같은 줄(row)의 인접 건물끼리는 오검출 없게 폭(buildW) 기준의
+        // 느슨한 값을 넘기고, 서로 다른 패스(그리드 등)끼리는 대각선 기준의 보수적 값을 넘긴다.
+        bool SpawnFiller(float x, float z, float rotY, float buildW, float buildD, float buildH,
+            float placedClearance, bool withDoor, string ownRoadName)
+        {
+            float roadRadius = 0.5f * Mathf.Sqrt(buildW * buildW + buildD * buildD);
+            if (TooClose(x, z, placedClearance)) return false;
+            if (OverlapsAnyRoad(x, z, roadRadius, ownRoadName)) return false;
+
+            Color wall = WallColorFor(x, z);
+            var fb = new GameObject($"Filler_{idx++}");
+            fb.transform.SetParent(root.transform, false);
+            fb.transform.localPosition = new Vector3(x, 0f, z);
+            fb.transform.localRotation = Quaternion.Euler(0f, rotY, 0f);
+
+            Box(fb.transform, "Body",  new Vector3(0f, buildH * 0.5f, 0f), new Vector3(buildW, buildH, buildD), wall);
+            Box(fb.transform, "Found", new Vector3(0f, -0.3f, 0f), new Vector3(buildW + 0.8f, 0.6f, buildD + 0.8f), StoneDark);
+            float roofH = buildH * 0.3f;
+            float roofY = buildH + 0.2f + roofH * 0.5f;
+            Box(fb.transform, "RoofBase",    new Vector3(0f, buildH + 0.2f, 0f), new Vector3(buildW + 1.5f, 0.4f, buildD + 1.5f), TileRed);
+            Box(fb.transform, "RoofSlope_F", new Vector3(0f, roofY, -(buildD * 0.3f)), new Vector3(buildW + 0.8f, roofH, 0.8f), TileRed);
+            Box(fb.transform, "RoofSlope_B", new Vector3(0f, roofY,  (buildD * 0.3f)), new Vector3(buildW + 0.8f, roofH, 0.8f), TileRed);
+            Box(fb.transform, "RoofPeak",    new Vector3(0f, buildH + 0.2f + roofH, 0f), new Vector3(buildW + 0.3f, 0.5f, 0.8f), TimberBrown);
+
+            if (withDoor)
+            {
+                Box(fb.transform, "BeamH1", new Vector3(0f, buildH * 0.33f, -(buildD * 0.5f + 0.05f)), new Vector3(buildW + 0.2f, 0.35f, 0.25f), TimberBrown);
+                Box(fb.transform, "Door",   new Vector3(0f, 1.1f,           -(buildD * 0.5f + 0.08f)), new Vector3(1.6f, 2.2f, 0.15f), TimberBrown);
+            }
+            fb.isStatic = true;
+
+            placed.Add((new Vector2(x, z), placedClearance));
+            return true;
+        }
+
+        // 도로 중심선 목록을 따라 양옆에 문이 도로를 향하도록 촘촘히 줄지어 채움.
+        void LineFrontage(List<(string name, Vector2 a, Vector2 b, float width)> segs,
+            System.Random rng, float edgePad, float roadMargin,
+            float wMin, float wMax, float dMin, float dMax, float hMin, float hMax)
+        {
+            foreach (var seg in segs)
+            {
+                Vector2 full = seg.b - seg.a;
+                float totalLen = full.magnitude;
+                if (totalLen < wMin + edgePad * 2f) continue;
+                Vector2 d = full / totalLen;
+                Vector2 p = new Vector2(-d.y, d.x);
+
+                foreach (float side in new[] { -1f, 1f })
+                {
+                    float t = edgePad;
+                    while (t < totalLen - edgePad)
+                    {
+                        float buildW = wMin + (float)rng.NextDouble() * (wMax - wMin);
+                        if (t + buildW > totalLen - edgePad) break;
+
+                        float buildD = dMin + (float)rng.NextDouble() * (dMax - dMin);
+                        float buildH = hMin + (float)rng.NextDouble() * (hMax - hMin);
+                        float centerT = t + buildW * 0.5f;
+                        Vector2 posOnLine = seg.a + d * centerT;
+                        float offset = seg.width * 0.5f + buildD * 0.5f + roadMargin;
+                        Vector2 pos = posOnLine + p * (offset * side);
+                        Vector2 faceDir = -(p * side); // 건물 정면이 도로 중심선을 향함
+
+                        // 같은 줄 이웃과의 간격은 폭(buildW) 절반이면 충분 — 대각선 기준을 쓰면
+                        // 정상적으로 붙어있는 이웃까지 오검출로 튕겨 나가 줄이 끊어진다.
+                        SpawnFiller(pos.x, pos.y, FaceRotY(faceDir), buildW, buildD, buildH,
+                            buildW * 0.5f, true, seg.name);
+
+                        float gap = 0.5f + (float)rng.NextDouble() * 1.0f; // 촘촘히 — 최소 간격만
+                        t += buildW + gap;
+                    }
+                }
+            }
+        }
+
+        // ── A. 도로 프론티지 — 십자·환상·방사 대로 + 골목, 모든 도로 양옆에 문이 도로를 향하도록 배열 ──
+        // 크기는 학술원(28×15×20) 정도의 스케일로 통일.
+        var mainRng  = new System.Random(20260629 + 111);
+        var alleyRng = new System.Random(20260629 + 777);
+
+        LineFrontage(GenerateMainRoadSegments(), mainRng, edgePad: 6f, roadMargin: 5.5f,
+            wMin: 24f, wMax: 32f, dMin: 17f, dMax: 23f, hMin: 12f, hMax: 17f);
+
+        // 골목 — 도로변보다 여유폭을 확 줄여 캐릭터 1명이 겨우 지나갈 정도로 바짝 붙임(건물 자체 크기는 동일).
+        LineFrontage(GenerateAlleySegments(), alleyRng, edgePad: 3f, roadMargin: 0.6f,
+            wMin: 24f, wMax: 32f, dMin: 17f, dMax: 23f, hMin: 12f, hMax: 17f);
+
+        // ── B. 섹터(8) × 밴드(3, 링 사이) 내부 그리드 — 프론티지 뒤 블록 안쪽까지 촘촘히 채움 ──
+        var gridRng = new System.Random(20260629 + 999);
+        float[] sectorAngles = { 0f, 45f, 90f, 135f, 180f, 225f, 270f, 315f };
+        float[] bandMin = { 155f, 315f, 475f };
+        float[] bandMax = { 285f, 445f, 575f };
+        const float radialStep = 25f;
+        const float arcWidth   = 27f;
+
+        for (int s = 0; s < 8; s++)
+        {
+            float a1 = sectorAngles[s];
+            float a2 = a1 + 45f;
+            for (int b = 0; b < 3; b++)
+            {
+                float r0 = bandMin[b], r1 = bandMax[b];
+                for (float r = r0 + radialStep * 0.5f; r < r1; r += radialStep)
+                {
+                    float angStep = (arcWidth / r) * Mathf.Rad2Deg;
+                    float aPad    = angStep * 0.6f; // 스포크(섹터 경계) 회피 여유
+                    for (float ang = a1 + aPad; ang < a2 - aPad; ang += angStep)
+                    {
+                        if (gridRng.NextDouble() < 0.10) continue; // 자연스러운 빈틈만 소량
+
+                        float jr  = r + ((float)gridRng.NextDouble() - 0.5f) * (radialStep * 0.3f);
+                        float jang = ang + ((float)gridRng.NextDouble() - 0.5f) * angStep * 0.3f;
+                        float rad = jang * Mathf.Deg2Rad;
+                        float x = jr * Mathf.Sin(rad);
+                        float z = jr * Mathf.Cos(rad);
+
+                        float buildW = 22f + (float)gridRng.NextDouble() * 10f;
+                        float buildD = 16f + (float)gridRng.NextDouble() * 8f;
+                        float buildH = 11f + (float)gridRng.NextDouble() * 7f;
+                        // 정면이 도심(광장) 쪽을 향하도록 — 내부 블록 건물의 일관된 기본 방향.
+                        // 그리드 칸끼리는 배치가 덜 엄격하므로 대각선 기준의 보수적 간격을 사용.
+                        float roadRadius = 0.5f * Mathf.Sqrt(buildW * buildW + buildD * buildD);
+                        SpawnFiller(x, z, jang, buildW, buildD, buildH, roadRadius, false, null);
+                    }
+                }
+            }
+        }
     }
 
     // ── 3. 중앙 분수 (3단 비잔틴) ────────────────────────────────────────────
@@ -522,16 +1040,21 @@ public static class MesoriaHubBuilder
         tmm.footprintD  = 22f;
     }
 
-    // ── 7. 주요 건물 3기 ─────────────────────────────────────────────────────
+    // ── 7. 주요 건물 4기 ─────────────────────────────────────────────────────
     static void BuildMainBuildings()
     {
-        // 통합 학술원 (서, HubLab)
+        // 통합 학술원 (서, HubLab) — 튜더 반목조 양식
         ByzantineBuilding("HubLab", "통합 학술원", "[E]  통합 학술원",
             new Vector3(-BUILDING_R, 0f, 10f), 90f,
             w: 26f, h: 15f, d: 20f, wall: StoneWarm, dome: Gold);
 
-        // 지식의 거래소 (동, HubLibrary)
-        ByzantineBuilding("HubLibrary", "지식의 거래소", "[E]  지식의 거래소",
+        // 도서관 (서북, HubLibrary) — 학술원 북쪽 지식 구역
+        // MetaUISetup.WireBuilding("HubLibrary", …, "OpenLibrary") 가 가챠 패널로 자동 연결됨
+        LibraryBuilding("HubLibrary", "도서관", "[E]  도서관",
+            new Vector3(-BUILDING_R, 0f, 55f), 90f);
+
+        // 지식의 거래소 (동, HubExchange) — 상점·거래 허브 (향후 OpenExchange 연결)
+        ByzantineBuilding("HubExchange", "지식의 거래소", "[E]  지식의 거래소",
             new Vector3(BUILDING_R, 0f, 10f), -90f,
             w: 26f, h: 15f, d: 20f, wall: StoneWarm, dome: GoldBright);
     }
@@ -597,15 +1120,590 @@ public static class MesoriaHubBuilder
         mm.footprintD  = d;
     }
 
+    // ─────────────────────────────────────────────────────────────────────────
+    /// <summary>
+    /// 통합 학술원 (HubLab) — 튜더 반목조 몸체 + 고전 포치(기둥+페디먼트) 융합.
+    ///   · 정면 아키트레이브 + 삼각 페디먼트 — "학자들이 모이는 신전" 정체성
+    ///   · 아키트레이브 위 6개 과목색 스터드(PortalColors) — 모든 대륙 학문의 집결지 상징
+    /// </summary>
+    static void AcademyBuilding(string goName, string display, string prompt, Vector3 pos, float rotY)
+    {
+        const float W = 28f, H = 15f, D = 20f;
+
+        var root = new GameObject(goName);
+        root.transform.position = pos;
+        root.transform.rotation = Quaternion.Euler(0f, rotY, 0f);
+
+        var ia = root.AddComponent<Interactable>();
+        ia.displayName = display;
+        ia.promptText  = prompt;
+        ia.radius      = 10f;
+
+        Box(root.transform, "Foundation", new Vector3(0f, -0.4f, 0f), new Vector3(W + 5f, 0.8f, D + 5f), StoneDark);
+
+        float fz = D * 0.5f;
+        Box(root.transform, "Step1", new Vector3(0f, 0.20f, -(fz + 2.2f)), new Vector3(W * 0.60f, 0.40f, 2.2f), StoneWarm);
+        Box(root.transform, "Step2", new Vector3(0f, 0.55f, -(fz + 0.9f)), new Vector3(W * 0.55f, 0.40f, 1.8f), StoneCold);
+        Box(root.transform, "Step3", new Vector3(0f, 0.90f, -(fz + 0.1f)), new Vector3(W * 0.50f, 0.40f, 1.0f), StoneWarm);
+
+        Box(root.transform, "Body", new Vector3(0f, H * 0.5f + 0.2f, 0f), new Vector3(W, H, D), PlasterCream);
+
+        // 목조 빔 격자
+        float[] beamYs = { H * 0.25f + 0.2f, H * 0.52f + 0.2f, H * 0.78f + 0.2f };
+        foreach (float by in beamYs)
+            Box(root.transform, "BeamH", new Vector3(0f, by, -(D * 0.5f + 0.05f)), new Vector3(W + 0.2f, 0.5f, 0.3f), TimberBrown);
+        float[] beamXs = { -W * 0.28f, W * 0.28f };
+        foreach (float bx in beamXs)
+            Box(root.transform, "BeamV", new Vector3(bx, H * 0.5f + 0.2f, -(D * 0.5f + 0.05f)), new Vector3(0.4f, H + 0.4f, 0.3f), TimberBrown);
+
+        // 박공 지붕
+        float roofH = H * 0.45f;
+        float roofY = H + 0.2f + roofH * 0.5f;
+        Box(root.transform, "RoofBase",    new Vector3(0f, H + 0.2f, 0f),       new Vector3(W + 2f, 0.5f, D + 2f), TileRed);
+        Box(root.transform, "RoofSlope_F", new Vector3(0f, roofY, -(D * 0.3f)), new Vector3(W + 1f, roofH, 1.0f), TileRed);
+        Box(root.transform, "RoofSlope_B", new Vector3(0f, roofY,  (D * 0.3f)), new Vector3(W + 1f, roofH, 1.0f), TileRed);
+        Box(root.transform, "RoofPeak",    new Vector3(0f, H + 0.2f + roofH, 0f), new Vector3(W + 0.5f, 0.6f, 1.2f), TimberBrown);
+
+        float px = W * 0.28f;
+        Pillar(root.transform, "EntryPillar_LL", new Vector3(-px * 1.6f, 0f, -(D * 0.5f - 0.5f)), StoneDark);
+        Pillar(root.transform, "EntryPillar_L",  new Vector3(-px * 0.6f, 0f, -(D * 0.5f - 0.5f)), StoneDark);
+        Pillar(root.transform, "EntryPillar_R",  new Vector3( px * 0.6f, 0f, -(D * 0.5f - 0.5f)), StoneDark);
+        Pillar(root.transform, "EntryPillar_RR", new Vector3( px * 1.6f, 0f, -(D * 0.5f - 0.5f)), StoneDark);
+
+        // ── 정면 포치 (아키트레이브 + 삼각 페디먼트) — 학술원의 신전풍 정체성 ──
+        float porchZ = -(D * 0.5f + 1.4f);
+        float archY  = 9.2f;
+        Box(root.transform, "PorchArchitrave", new Vector3(0f, archY, porchZ), new Vector3(px * 3.6f, 1.0f, 1.6f), StoneWarm);
+        float pedH = 3.2f;
+        float pedY = archY + 0.5f + pedH * 0.5f;
+        Box(root.transform, "PorchPedimentBack", new Vector3(0f, pedY, porchZ), new Vector3(px * 3.6f, pedH, 0.3f), StoneWarm);
+        var pedL = Box(root.transform, "PorchPedSlope_L", new Vector3(-px * 0.9f, pedY, porchZ), new Vector3(px * 1.9f, 0.6f, 1.5f), StoneWarm);
+        pedL.transform.localRotation = Quaternion.Euler(0f, 0f, 14f);
+        var pedR = Box(root.transform, "PorchPedSlope_R", new Vector3( px * 0.9f, pedY, porchZ), new Vector3(px * 1.9f, 0.6f, 1.5f), StoneWarm);
+        pedR.transform.localRotation = Quaternion.Euler(0f, 0f, -14f);
+
+        // 아키트레이브 위 과목색 스터드 — "모든 대륙 학자가 모이는 곳" 상징
+        for (int i = 0; i < PortalColors.Length; i++)
+        {
+            float sx = (i - (PortalColors.Length - 1) * 0.5f) * (px * 3.6f / PortalColors.Length);
+            var stud = Sphere(root.transform, $"SubjectStud_{i}",
+                new Vector3(sx, archY + 0.55f, porchZ - 0.7f), Vector3.one * 0.7f, PortalColors[i]);
+            SetEmissive(stud, PortalColors[i], PortalColors[i] * 0.5f);
+            RemoveCollider(stud);
+        }
+
+        var banner = Box(root.transform, "Banner",
+            new Vector3(0f, H * 0.88f, -(D * 0.5f + 0.05f)),
+            new Vector3(W * 0.45f, H * 0.17f, 0.15f), Gold);
+        SetEmissive(banner, Gold, Gold * 0.2f);
+
+        Box(root.transform, "DoorCut", new Vector3(0f, H * 0.33f, -(D * 0.5f + 0.05f)),
+            new Vector3(W * 0.22f, H * 0.65f, 0.4f), StoneDark);
+
+        var mm = root.AddComponent<MapMarker>();
+        mm.kind        = MapMarker.IconKind.Building;
+        mm.displayName = display;
+        mm.iconColor   = Gold;
+        mm.footprintW  = W;
+        mm.footprintD  = D;
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    /// <summary>
+    /// 지식의 거래소 (HubExchange) — 바자르 파빌리온 지붕 + 천막/노점.
+    ///   · 작은 돔 3개(중앙+좌우)로 이스탄불 대바자르풍 실루엣
+    ///   · 입구 위 줄무늬 차양(천막) + 계단 옆 상자·자루 노점 + 랜턴
+    /// </summary>
+    static void ExchangeBuilding(string goName, string display, string prompt, Vector3 pos, float rotY)
+    {
+        const float W = 28f, H = 15f, D = 20f;
+
+        var root = new GameObject(goName);
+        root.transform.position = pos;
+        root.transform.rotation = Quaternion.Euler(0f, rotY, 0f);
+
+        var ia = root.AddComponent<Interactable>();
+        ia.displayName = display;
+        ia.promptText  = prompt;
+        ia.radius      = 10f;
+
+        Box(root.transform, "Foundation", new Vector3(0f, -0.4f, 0f), new Vector3(W + 5f, 0.8f, D + 5f), StoneDark);
+
+        float fz = D * 0.5f;
+        Box(root.transform, "Step1", new Vector3(0f, 0.20f, -(fz + 2.2f)), new Vector3(W * 0.60f, 0.40f, 2.2f), StoneWarm);
+        Box(root.transform, "Step2", new Vector3(0f, 0.55f, -(fz + 0.9f)), new Vector3(W * 0.55f, 0.40f, 1.8f), StoneCold);
+        Box(root.transform, "Step3", new Vector3(0f, 0.90f, -(fz + 0.1f)), new Vector3(W * 0.50f, 0.40f, 1.0f), StoneWarm);
+
+        Box(root.transform, "Body", new Vector3(0f, H * 0.5f + 0.2f, 0f), new Vector3(W, H, D), StoneWarm);
+
+        float px = W * 0.28f;
+        Pillar(root.transform, "EntryPillar_LL", new Vector3(-px * 1.6f, 0f, -(D * 0.5f - 0.5f)), StoneDark);
+        Pillar(root.transform, "EntryPillar_L",  new Vector3(-px * 0.6f, 0f, -(D * 0.5f - 0.5f)), StoneDark);
+        Pillar(root.transform, "EntryPillar_R",  new Vector3( px * 0.6f, 0f, -(D * 0.5f - 0.5f)), StoneDark);
+        Pillar(root.transform, "EntryPillar_RR", new Vector3( px * 1.6f, 0f, -(D * 0.5f - 0.5f)), StoneDark);
+
+        // ── 평지붕 받침 (돔 기단) ──
+        Box(root.transform, "RoofFlat", new Vector3(0f, H + 0.2f, 0f), new Vector3(W + 2f, 0.6f, D + 2f), StoneCold);
+
+        // ── 바자르 돔 3개 (중앙 + 좌/우) — 이스탄불 대바자르풍 실루엣 ──
+        float[] domeXs     = { -W * 0.30f, 0f, W * 0.30f };
+        float[] domeScales  = { 0.72f, 1.0f, 0.72f };
+        for (int i = 0; i < domeXs.Length; i++)
+        {
+            float dx    = domeXs[i];
+            float sc    = domeScales[i];
+            float drumH = 2.4f * sc;
+            float drumR = 4.2f * sc;
+            float drumY = H + 0.5f + drumH * 0.5f;
+            Cyl(root.transform, $"BazaarDrum_{i}", new Vector3(dx, drumY, 0f), new Vector3(drumR * 2f, drumH, drumR * 2f), StoneWarm);
+            float domeY = H + 0.5f + drumH;
+            Sphere(root.transform, $"BazaarDome_{i}", new Vector3(dx, domeY, 0f), new Vector3(drumR * 2.15f, drumR * 1.6f, drumR * 2.15f), GoldBright);
+            var finial = Sphere(root.transform, $"BazaarFinial_{i}", new Vector3(dx, domeY + drumR * 0.9f, 0f), Vector3.one * (0.8f * sc), Gold);
+            SetEmissive(finial, Gold, Gold * 0.4f);
+            RemoveCollider(finial);
+        }
+
+        // ── 입구 위 줄무늬 차양(천막) ──
+        float awningZ = -(D * 0.5f + 0.9f);
+        float awningY = H * 0.62f;
+        var awningColors = new[] { GoldBright, BrickOchre };
+        for (int i = 0; i < 5; i++)
+        {
+            float ax = (i - 2f) * (W * 0.18f);
+            var strip = Box(root.transform, $"AwningStrip_{i}", new Vector3(ax, awningY, awningZ), new Vector3(W * 0.19f, 0.3f, 2.6f), awningColors[i % 2]);
+            strip.transform.localRotation = Quaternion.Euler(18f, 0f, 0f);
+        }
+        Cyl(root.transform, "AwningPoleL", new Vector3(-W * 0.32f, awningY * 0.5f, awningZ - 1.3f), new Vector3(0.25f, awningY, 0.25f), TimberBrown);
+        Cyl(root.transform, "AwningPoleR", new Vector3( W * 0.32f, awningY * 0.5f, awningZ - 1.3f), new Vector3(0.25f, awningY, 0.25f), TimberBrown);
+
+        // ── 계단 옆 노점 (상자·자루 더미 + 랜턴) ──
+        var crateColors = new[] { TimberBrown, StoneWarm, BrickOchre };
+        foreach (float sideSign in new[] { -1f, 1f })
+        {
+            float cx = sideSign * (W * 0.34f);
+            float cz = -(fz + 1.5f);
+            float stackY = 0.2f;
+            for (int i = 0; i < crateColors.Length; i++)
+            {
+                float cs = 1.3f - i * 0.15f;
+                var crate = Box(root.transform, $"MarketCrate_{sideSign}_{i}", new Vector3(cx, stackY, cz), new Vector3(cs, 0.9f, cs), crateColors[i]);
+                crate.transform.localRotation = Quaternion.Euler(0f, i * 8f * sideSign, 0f);
+                stackY += 0.85f;
+            }
+            Cyl(root.transform, $"LanternPole_{sideSign}", new Vector3(cx, 2.5f, cz + 1.3f), new Vector3(0.2f, 5f, 0.2f), TimberBrown);
+            var lantern = Sphere(root.transform, $"Lantern_{sideSign}", new Vector3(cx, 4.9f, cz + 1.3f), Vector3.one * 0.9f, GoldBright);
+            SetEmissive(lantern, GoldBright, GoldBright * 0.75f);
+            RemoveCollider(lantern);
+        }
+
+        // ── 지붕선 골드 페넌트 리본 ──
+        for (int i = 0; i < 4; i++)
+        {
+            float fx = (i - 1.5f) * (W * 0.22f);
+            Cyl(root.transform, $"ExFlagPole_{i}", new Vector3(fx, H + 1.2f, -(D * 0.5f + 0.2f)), new Vector3(0.15f, 1.4f, 0.15f), TimberBrown);
+            var pennant = Box(root.transform, $"ExPennant_{i}", new Vector3(fx + 0.6f, H + 1.7f, -(D * 0.5f + 0.2f)), new Vector3(1.1f, 0.7f, 0.05f), i % 2 == 0 ? GoldBright : BrickOchre);
+            pennant.transform.localRotation = Quaternion.Euler(0f, 10f, 0f);
+        }
+
+        Box(root.transform, "DoorCut", new Vector3(0f, H * 0.33f, -(D * 0.5f + 0.05f)),
+            new Vector3(W * 0.22f, H * 0.65f, 0.4f), StoneDark);
+
+        var mm = root.AddComponent<MapMarker>();
+        mm.kind        = MapMarker.IconKind.Building;
+        mm.displayName = display;
+        mm.iconColor   = GoldBright;
+        mm.footprintW  = W;
+        mm.footprintD  = D;
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    /// <summary>
+    /// 도서관 (HubLibrary) — 장엄한 석조 도서관. 학술원(튜더 양식)과 외형 차별화.
+    ///   · 정면 고창(아치 창 3개) — StoneDark 프레임 + 은은한 학술 블루 발광
+    ///   · 측면 열람탑(Cyl 기둥 + Sphere 지식 오브)
+    ///   · 평지붕 + 파라펫 + 학술 배너 (BlueTeal 악센트)
+    ///   · 내부 입장 훅: 자식 GO "LibraryEntrance" + 씬 루트 "LibraryReturnSpawn"
+    ///     → 향후 ScenePortal.targetScene = "LibraryInterior" 로 연결
+    /// </summary>
+    static void LibraryBuilding(string goName, string display, string prompt, Vector3 pos, float rotY)
+    {
+        const float W  = 30f;   // 폭
+        const float H  = 18f;   // 본체 높이
+        const float D  = 22f;   // 깊이
+        // 학술 블루-틸 악센트 (기존 팔레트에 없는 도서관 전용)
+        var BlueTeal = new Color(0.35f, 0.55f, 0.65f);
+
+        var root = new GameObject(goName);
+        root.transform.position = pos;
+        root.transform.rotation = Quaternion.Euler(0f, rotY, 0f);
+
+        var ia = root.AddComponent<Interactable>();
+        ia.displayName = display;
+        ia.promptText  = prompt;
+        ia.radius      = 10f;
+
+        // ── 기단 + 계단 ──
+        Box(root.transform, "Foundation", new Vector3(0f, -0.4f, 0f), new Vector3(W + 6f, 0.8f, D + 6f), StoneDark);
+        float fz = D * 0.5f;
+        Box(root.transform, "Step1", new Vector3(0f, 0.20f, -(fz + 2.5f)), new Vector3(W * 0.55f, 0.40f, 2.5f), StoneWarm);
+        Box(root.transform, "Step2", new Vector3(0f, 0.55f, -(fz + 1.1f)), new Vector3(W * 0.50f, 0.40f, 2.0f), StoneCold);
+        Box(root.transform, "Step3", new Vector3(0f, 0.90f, -(fz + 0.2f)), new Vector3(W * 0.45f, 0.40f, 1.2f), StoneWarm);
+
+        // ── 계단 옆 책더미 소품 ('도서관' 정체성 보강) ──
+        var bookColors = new[] { new Color(0.55f, 0.20f, 0.16f), BlueTeal, TimberBrown, StoneWarm };
+        foreach (float sideSign in new[] { -1f, 1f })
+        {
+            float bx = sideSign * (W * 0.30f);
+            float bz = -(fz + 1.6f);
+            float stackY = 0.15f;
+            for (int i = 0; i < bookColors.Length; i++)
+            {
+                float bw = 1.6f - i * 0.12f;
+                var book = Box(root.transform, $"BookStack_{sideSign}_{i}",
+                    new Vector3(bx + (i % 2 == 0 ? 0.15f : -0.15f) * sideSign, stackY, bz),
+                    new Vector3(bw, 0.22f, 1.1f), bookColors[i]);
+                book.transform.localRotation = Quaternion.Euler(0f, (i - 1.5f) * 4f * sideSign, 0f);
+                stackY += 0.24f;
+            }
+        }
+
+        // ── 본체 (석조) ──
+        Box(root.transform, "Body", new Vector3(0f, H * 0.5f + 0.2f, 0f), new Vector3(W, H, D), StoneWarm);
+
+        // ── 정면 아치 창 3개 — StoneDark 프레임 + 발광 유리 패널 ──
+        float[] winXs = { -W * 0.30f, 0f, W * 0.30f };
+        for (int i = 0; i < 3; i++)
+        {
+            float wx = winXs[i];
+            float wFrontZ = -(D * 0.5f + 0.05f);
+            // 창 프레임 외곽 (약간 돌출)
+            Box(root.transform, $"WinFrame_{i}",
+                new Vector3(wx, H * 0.58f, wFrontZ),
+                new Vector3(5.5f, H * 0.62f, 0.35f), StoneDark);
+            // 발광 유리 패널
+            var glass = Box(root.transform, $"WinGlass_{i}",
+                new Vector3(wx, H * 0.58f, wFrontZ - 0.05f),
+                new Vector3(4.2f, H * 0.55f, 0.1f), BlueTeal);
+            SetEmissive(glass, BlueTeal, BlueTeal * 0.45f);
+            RemoveCollider(glass);
+            // 창 상단 키스톤 장식
+            Box(root.transform, $"WinKey_{i}",
+                new Vector3(wx, H * 0.58f + H * 0.32f, wFrontZ),
+                new Vector3(3.0f, 1.0f, 0.4f), StoneLight);
+        }
+
+        // ── 정면 입구 기둥 4개 ──
+        float px = W * 0.30f;
+        Pillar(root.transform, "EntryPillar_LL", new Vector3(-px * 1.55f, 0f, -(D * 0.5f - 0.5f)), StoneDark);
+        Pillar(root.transform, "EntryPillar_L",  new Vector3(-px * 0.55f, 0f, -(D * 0.5f - 0.5f)), StoneDark);
+        Pillar(root.transform, "EntryPillar_R",  new Vector3( px * 0.55f, 0f, -(D * 0.5f - 0.5f)), StoneDark);
+        Pillar(root.transform, "EntryPillar_RR", new Vector3( px * 1.55f, 0f, -(D * 0.5f - 0.5f)), StoneDark);
+
+        // ── 평지붕 + 파라펫 (브레스트워크) ──
+        Box(root.transform, "RoofFlat", new Vector3(0f, H + 0.2f, 0f), new Vector3(W + 2f, 0.6f, D + 2f), StoneCold);
+        // 파라펫 — 네 면
+        Box(root.transform, "ParapetF", new Vector3(0f,    H + 1.4f, -(D * 0.5f + 0.8f)), new Vector3(W + 2f, 2.2f, 0.6f), StoneDark);
+        Box(root.transform, "ParapetB", new Vector3(0f,    H + 1.4f,  (D * 0.5f + 0.8f)), new Vector3(W + 2f, 2.2f, 0.6f), StoneDark);
+        Box(root.transform, "ParapetL", new Vector3(-(W * 0.5f + 0.8f), H + 1.4f, 0f),    new Vector3(0.6f, 2.2f, D + 2f), StoneDark);
+        Box(root.transform, "ParapetR", new Vector3( (W * 0.5f + 0.8f), H + 1.4f, 0f),    new Vector3(0.6f, 2.2f, D + 2f), StoneDark);
+        // 파라펫 상단 코핑 스톤
+        Box(root.transform, "CopingF", new Vector3(0f,    H + 2.6f, -(D * 0.5f + 0.8f)), new Vector3(W + 2.8f, 0.4f, 0.9f), StoneLight);
+        Box(root.transform, "CopingB", new Vector3(0f,    H + 2.6f,  (D * 0.5f + 0.8f)), new Vector3(W + 2.8f, 0.4f, 0.9f), StoneLight);
+        Box(root.transform, "CopingL", new Vector3(-(W * 0.5f + 0.8f), H + 2.6f, 0f),    new Vector3(0.9f, 0.4f, D + 2.8f), StoneLight);
+        Box(root.transform, "CopingR", new Vector3( (W * 0.5f + 0.8f), H + 2.6f, 0f),    new Vector3(0.9f, 0.4f, D + 2.8f), StoneLight);
+
+        // ── 중앙 로톤다 돔 (도서관 실루엣의 핵심 — "도서관임"을 멀리서도 알림) ──
+        float domeBaseY = H + 2.9f;   // 코핑 위
+        float drumH     = 5.0f;
+        float drumR     = 9.0f;
+        float drumY     = domeBaseY + drumH * 0.5f;
+        Cyl(root.transform, "DomeDrum", new Vector3(0f, drumY, 0f), new Vector3(drumR * 2f, drumH, drumR * 2f), StoneLight);
+
+        // 드럼 둘레 수직 리브 12개
+        for (int i = 0; i < 12; i++)
+        {
+            float ang = i * 30f;
+            float rad = ang * Mathf.Deg2Rad;
+            float rx  = (drumR + 0.1f) * Mathf.Sin(rad);
+            float rz  = (drumR + 0.1f) * Mathf.Cos(rad);
+            var rib = Box(root.transform, $"DomeRib_{i}", new Vector3(rx, drumY, rz), new Vector3(0.6f, drumH + 0.3f, 0.5f), StoneDark);
+            rib.transform.localRotation = Quaternion.Euler(0f, ang, 0f);
+        }
+
+        // 클리어스토리 발광 창 띠 (리브 안쪽 — 열람실 불빛이 새어나오는 느낌)
+        var clerestory = Cyl(root.transform, "DomeClerestory",
+            new Vector3(0f, drumY, 0f), new Vector3(drumR * 1.93f, drumH * 0.7f, drumR * 1.93f), BlueTeal);
+        SetEmissive(clerestory, BlueTeal, BlueTeal * 0.55f);
+        RemoveCollider(clerestory);
+
+        // 유리 돔 (드럼 위, 상반구만 노출)
+        float domeTopY = domeBaseY + drumH;
+        var glassDome = Sphere(root.transform, "GlassDome", new Vector3(0f, domeTopY, 0f), new Vector3(19f, 12f, 19f), BlueTeal);
+        SetEmissive(glassDome, BlueTeal, BlueTeal * 0.4f);
+        RemoveCollider(glassDome);
+        // 돔 밑동 금 링
+        Cyl(root.transform, "DomeGoldRing", new Vector3(0f, domeTopY, 0f), new Vector3(19.6f, 0.6f, 19.6f), Gold);
+
+        // 정상 랜턴(큐폴라) — 지식의 등불
+        float lanternY = domeTopY + 6.2f;
+        Cyl(root.transform, "DomeLantern", new Vector3(0f, lanternY, 0f), new Vector3(2.6f, 2.6f, 2.6f), StoneLight);
+        var lanternTip = Sphere(root.transform, "DomeLanternTip", new Vector3(0f, lanternY + 1.8f, 0f), Vector3.one * 2.0f, GoldBright);
+        SetEmissive(lanternTip, GoldBright, GoldBright * 0.7f);
+        RemoveCollider(lanternTip);
+
+        // ── 측면 보조탑 (오른쪽 뒤쪽, 슬림하게 — 주 실루엣은 중앙 돔이 담당) ──
+        float towerX =  W * 0.58f;
+        float towerZ =  D * 0.28f;
+        float towerH = H + 6f;
+        Cyl(root.transform, "TowerCyl", new Vector3(towerX, towerH * 0.5f, towerZ), new Vector3(3f, towerH, 3f), StoneDark);
+        Cyl(root.transform, "TowerCap", new Vector3(towerX, towerH + 0.3f, towerZ), new Vector3(4f, 0.5f, 4f), StoneCold);
+
+        // ── 정면 펼친 책 엠블럼 (배너 대체 — 책 모티프로 도서관 정체성 강조) ──
+        float bookY = H - 1.5f;
+        float bookZ = -(D * 0.5f + 0.05f);
+        Box(root.transform, "BookCover", new Vector3(0f, bookY, bookZ), new Vector3(W * 0.36f, H * 0.13f, 0.15f), StoneLight);
+        var spine = Box(root.transform, "BookSpine",
+            new Vector3(0f, bookY, bookZ - 0.04f), new Vector3(0.5f, H * 0.13f + 0.1f, 0.12f), BlueTeal);
+        SetEmissive(spine, BlueTeal, BlueTeal * 0.35f);
+        // 펼쳐진 페이지 결 (좌/우 대각선)
+        foreach (float sideSign in new[] { -1f, 1f })
+        {
+            for (int p = 0; p < 3; p++)
+            {
+                float px2 = sideSign * (0.9f + p * (W * 0.11f));
+                var page = Box(root.transform, $"BookPageLine_{sideSign}_{p}",
+                    new Vector3(px2, bookY, bookZ - 0.02f), new Vector3(0.10f, H * 0.11f, 0.08f), StoneDark);
+                page.transform.localRotation = Quaternion.Euler(0f, 0f, sideSign * -6f);
+            }
+        }
+
+        // ── 입구 문 ──
+        Box(root.transform, "DoorCut", new Vector3(0f, H * 0.30f, -(D * 0.5f + 0.05f)),
+            new Vector3(W * 0.18f, H * 0.60f, 0.4f), StoneDark);
+
+        // ── 내부 입장 훅 ──────────────────────────────────────────────────────
+        // 향후 ScenePortal을 이 GO에 붙이고 WirePortal(ia, sp, "LibraryInterior", "LibraryReturnSpawn")
+        var entrance = new GameObject("LibraryEntrance");
+        entrance.transform.SetParent(root.transform, false);
+        entrance.transform.localPosition = new Vector3(0f, 0f, -(D * 0.5f + 1.5f)); // 문 바로 앞
+
+        // 씬 루트에 복귀 스폰 포인트 배치 (SpawnManager가 _PortalSpawn 키로 찾음)
+        var returnSpawn = new GameObject("LibraryReturnSpawn");
+        returnSpawn.transform.position = pos + Quaternion.Euler(0f, rotY, 0f) * new Vector3(0f, 0.5f, -(D * 0.5f + 5f));
+        // ─────────────────────────────────────────────────────────────────────
+
+        var mm = root.AddComponent<MapMarker>();
+        mm.kind        = MapMarker.IconKind.Building;
+        mm.displayName = display;
+        mm.iconColor   = BlueTeal;
+        mm.footprintW  = W;
+        mm.footprintD  = D;
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    /// <summary>
+    /// 모험가 길드 본부 (HubGuildHall) — 눈에 띄는 랜드마크.
+    ///   · 넓은 석벽 본체 + 중앙 종탑 (본체보다 높음)
+    ///   · 길드 엠블럼 (방패형 + X자 교차 장식) + 발광 배너
+    ///   · 입구 양옆 횃불
+    ///   · 내부 입장 훅: 자식 GO "GuildEntrance" + 씬 루트 "GuildReturnSpawn"
+    ///     → 향후 ScenePortal.targetScene = "GuildInterior" 로 연결
+    /// </summary>
+    static void GuildHall(Vector3 pos, float rotY)
+    {
+        const float W  = 34f;
+        const float H  = 16f;
+        const float D  = 24f;
+        const float TH = 28f;  // 종탑 높이
+
+        var TorchOrange = new Color(1.0f, 0.45f, 0.05f); // 횃불 발광색
+
+        var root = new GameObject("HubGuildHall");
+        root.transform.position = pos;
+        root.transform.rotation = Quaternion.Euler(0f, rotY, 0f);
+
+        var ia = root.AddComponent<Interactable>();
+        ia.displayName = "모험가 길드 본부";
+        ia.promptText  = "[E]  모험가 길드";
+        ia.radius      = 12f;
+
+        // ── 기단 + 계단 ──
+        Box(root.transform, "Foundation", new Vector3(0f, -0.4f, 0f), new Vector3(W + 6f, 0.8f, D + 6f), StoneDark);
+        float fz = D * 0.5f;
+        Box(root.transform, "Step1", new Vector3(0f, 0.20f, -(fz + 2.8f)), new Vector3(W * 0.55f, 0.40f, 2.8f), StoneWarm);
+        Box(root.transform, "Step2", new Vector3(0f, 0.58f, -(fz + 1.2f)), new Vector3(W * 0.50f, 0.40f, 2.2f), StoneCold);
+        Box(root.transform, "Step3", new Vector3(0f, 0.95f, -(fz + 0.2f)), new Vector3(W * 0.45f, 0.40f, 1.2f), StoneWarm);
+
+        // ── 본체 (StoneCold 석벽) ──
+        Box(root.transform, "Body", new Vector3(0f, H * 0.5f + 0.2f, 0f), new Vector3(W, H, D), StoneCold);
+
+        // ── 정면 목재 빔 (수평 3줄 + 수직 2줄) ──
+        float[] beamYs = { H * 0.25f + 0.2f, H * 0.52f + 0.2f, H * 0.78f + 0.2f };
+        foreach (float by in beamYs)
+            Box(root.transform, "BeamH", new Vector3(0f, by, -(D * 0.5f + 0.05f)), new Vector3(W + 0.2f, 0.6f, 0.3f), TimberBrown);
+        float[] beamXs = { -W * 0.30f, W * 0.30f };
+        foreach (float bx in beamXs)
+            Box(root.transform, "BeamV", new Vector3(bx, H * 0.5f + 0.2f, -(D * 0.5f + 0.05f)), new Vector3(0.4f, H + 0.4f, 0.3f), TimberBrown);
+
+        // ── 대각 목재 브레이스 (거친 목조 아지트 질감) ──
+        var braceA = Box(root.transform, "BraceX1",
+            new Vector3(-W * 0.15f, H * 0.5f + 0.2f, -(D * 0.5f + 0.08f)), new Vector3(0.35f, H * 0.85f, 0.25f), TimberBrown);
+        braceA.transform.localRotation = Quaternion.Euler(0f, 0f, 24f);
+        var braceB = Box(root.transform, "BraceX2",
+            new Vector3(W * 0.15f, H * 0.5f + 0.2f, -(D * 0.5f + 0.08f)), new Vector3(0.35f, H * 0.85f, 0.25f), TimberBrown);
+        braceB.transform.localRotation = Quaternion.Euler(0f, 0f, -24f);
+
+        // ── 박공 지붕 ──
+        float roofH = H * 0.40f;
+        float roofY = H + 0.2f + roofH * 0.5f;
+        Box(root.transform, "RoofBase",    new Vector3(0f, H + 0.2f, 0f),       new Vector3(W + 2f, 0.5f, D + 2f), TileRed);
+        Box(root.transform, "RoofSlope_F", new Vector3(0f, roofY, -(D * 0.28f)), new Vector3(W + 1f, roofH, 1.0f), TileRed);
+        Box(root.transform, "RoofSlope_B", new Vector3(0f, roofY,  (D * 0.28f)), new Vector3(W + 1f, roofH, 1.0f), TileRed);
+        Box(root.transform, "RoofPeak",    new Vector3(0f, H + 0.2f + roofH, 0f), new Vector3(W + 0.5f, 0.6f, 1.2f), TimberBrown);
+
+        // ── 과목색 깃발(펜넌트) — 다양한 모험가들이 모여드는 활기 표현 ──
+        float ridgeY = H + 0.2f + roofH;
+        float[] flagXs = { -W * 0.32f, -W * 0.12f, W * 0.08f, W * 0.26f, W * 0.40f };
+        for (int i = 0; i < flagXs.Length; i++)
+        {
+            var flagColor = PortalColors[i % PortalColors.Length];
+            float poleH = 3.5f + (i % 2) * 0.8f;
+            Cyl(root.transform, $"FlagPole_{i}", new Vector3(flagXs[i], ridgeY + poleH * 0.5f, 0f), new Vector3(0.25f, poleH, 0.25f), TimberBrown);
+            var pennant = Box(root.transform, $"Pennant_{i}",
+                new Vector3(flagXs[i] + 0.9f, ridgeY + poleH - 0.6f, 0f), new Vector3(1.8f, 1.0f, 0.06f), flagColor);
+            SetEmissive(pennant, flagColor, flagColor * 0.25f);
+            pennant.transform.localRotation = Quaternion.Euler(0f, 12f, 0f);
+        }
+
+        // ── 중앙 종탑 ──
+        float twX = 0f;
+        float twZ = D * 0.10f; // 약간 뒤쪽
+        Box(root.transform, "TowerBase", new Vector3(twX, TH * 0.3f, twZ), new Vector3(8f, TH * 0.6f, 8f), StoneCold);
+        Box(root.transform, "TowerUpper", new Vector3(twX, TH * 0.75f, twZ), new Vector3(6.5f, TH * 0.3f, 6.5f), StoneDark);
+        // 종탑 지붕 (피라미드형) — 4개의 기울어진 박스로 표현
+        float spireY = TH * 1.05f;
+        Box(root.transform, "TowerRoof_F", new Vector3(twX, spireY, twZ - 2.0f), new Vector3(6.5f, TH * 0.18f, 1.0f), TileRed);
+        Box(root.transform, "TowerRoof_B", new Vector3(twX, spireY, twZ + 2.0f), new Vector3(6.5f, TH * 0.18f, 1.0f), TileRed);
+        // 꼭대기 금 첨탑
+        Cyl(root.transform, "TowerSpire", new Vector3(twX, TH * 1.25f, twZ), new Vector3(0.8f, TH * 0.22f, 0.8f), Gold);
+        var spireTop = Sphere(root.transform, "TowerSpireTop", new Vector3(twX, TH * 1.38f, twZ), Vector3.one * 1.5f, GoldBright);
+        SetEmissive(spireTop, GoldBright, GoldBright * 0.5f);
+        RemoveCollider(spireTop);
+        // 탑 코너 가장자리 장식
+        foreach (var (ox, oz) in new (float, float)[] { (-3.5f,-3.5f),(-3.5f,3.5f),(3.5f,-3.5f),(3.5f,3.5f) })
+            Cyl(root.transform, $"TowerCorner",
+                new Vector3(twX + ox, TH * 0.5f, twZ + oz), new Vector3(0.8f, TH * 0.6f + 2f, 0.8f), StoneDark);
+
+        // ── 길드 엠블럼 (정면 중앙 방패 + X자 교차) ──
+        float emblemY = H * 0.55f;
+        float emblemZ = -(D * 0.5f + 0.1f);
+        // 방패형 박스
+        Box(root.transform, "EmblemShield", new Vector3(0f, emblemY, emblemZ),
+            new Vector3(5.5f, 6.5f, 0.3f), StoneDark);
+        // X자 교차 장식
+        var cross1 = Box(root.transform, "EmblemCross1",
+            new Vector3(0f, emblemY, emblemZ - 0.1f), new Vector3(0.6f, 5.5f, 0.25f), Gold);
+        SetEmissive(cross1, Gold, Gold * 0.3f);
+        var cross2 = Box(root.transform, "EmblemCross2",
+            new Vector3(0f, emblemY, emblemZ - 0.1f), new Vector3(5.5f, 0.6f, 0.25f), Gold);
+        SetEmissive(cross2, Gold, Gold * 0.3f);
+
+        // ── 발광 배너 ──
+        var banner = Box(root.transform, "Banner",
+            new Vector3(0f, H * 0.90f, -(D * 0.5f + 0.05f)),
+            new Vector3(W * 0.40f, H * 0.15f, 0.15f), Gold);
+        SetEmissive(banner, Gold, Gold * 0.22f);
+
+        // ── 현수 방패 간판 (아지트/여관 간판 느낌) ──
+        float signZ = -(D * 0.5f + 0.3f);
+        Box(root.transform, "SignBracket", new Vector3(0f, H * 0.62f, signZ), new Vector3(0.25f, 0.25f, 1.4f), TimberBrown);
+        Cyl(root.transform, "SignChain", new Vector3(0f, H * 0.55f, signZ + 0.65f), new Vector3(0.08f, 0.7f, 0.08f), StoneDark);
+        Box(root.transform, "SignPlate", new Vector3(0f, H * 0.46f, signZ + 0.65f), new Vector3(2.0f, 2.4f, 0.2f), StoneCold);
+        var signTrim = Box(root.transform, "SignTrim", new Vector3(0f, H * 0.46f, signZ + 0.53f), new Vector3(1.6f, 2.0f, 0.05f), Gold);
+        SetEmissive(signTrim, Gold, Gold * 0.3f);
+
+        // ── 정면 기둥 ──
+        float px = W * 0.30f;
+        Pillar(root.transform, "EntryPillar_LL", new Vector3(-px * 1.5f, 0f, -(D * 0.5f - 0.5f)), StoneDark);
+        Pillar(root.transform, "EntryPillar_L",  new Vector3(-px * 0.5f, 0f, -(D * 0.5f - 0.5f)), StoneDark);
+        Pillar(root.transform, "EntryPillar_R",  new Vector3( px * 0.5f, 0f, -(D * 0.5f - 0.5f)), StoneDark);
+        Pillar(root.transform, "EntryPillar_RR", new Vector3( px * 1.5f, 0f, -(D * 0.5f - 0.5f)), StoneDark);
+
+        // ── 입구 횃불 (양옆) ──
+        foreach (float tx in new[]{ -px * 1.9f, px * 1.9f })
+        {
+            Cyl(root.transform, "TorchPole", new Vector3(tx, 3.5f, -(D * 0.5f - 0.3f)), new Vector3(0.35f, 7f, 0.35f), TimberBrown);
+            var flame = Sphere(root.transform, "TorchFlame", new Vector3(tx, 7.5f, -(D * 0.5f - 0.3f)), Vector3.one * 1.0f, TorchOrange);
+            SetEmissive(flame, TorchOrange, TorchOrange * 0.8f);
+            RemoveCollider(flame);
+        }
+
+        // ── 의뢰 게시판 (문 왼편) — 모험가 길드의 핵심 상징 ──
+        float qbX = -px * 1.3f;
+        float qbZ = -(D * 0.5f - 0.15f);
+        Box(root.transform, "QuestBoardFrame", new Vector3(qbX, 3.2f, qbZ), new Vector3(3.4f, 4.2f, 0.35f), TimberBrown);
+        Box(root.transform, "QuestBoardPanel", new Vector3(qbX, 3.2f, qbZ - 0.06f), new Vector3(2.9f, 3.6f, 0.10f), StoneWarm);
+        var noticeColors = new[] { StoneLight, PlasterCream, StoneLight, PlasterCream };
+        for (int i = 0; i < noticeColors.Length; i++)
+        {
+            float nx = qbX + ((i % 2 == 0) ? -0.7f : 0.7f);
+            float ny = 4.0f - (i / 2) * 1.4f;
+            var notice = Box(root.transform, $"QuestNotice_{i}", new Vector3(nx, ny, qbZ - 0.12f), new Vector3(0.9f, 1.1f, 0.05f), noticeColors[i]);
+            notice.transform.localRotation = Quaternion.Euler(0f, 0f, (i % 2 == 0 ? 1f : -1f) * 5f);
+        }
+
+        // ── 무기 거치대 (문 오른편) ──
+        float wrX = px * 1.3f;
+        float wrZ = -(D * 0.5f - 0.15f);
+        Box(root.transform, "WeaponRackFrame", new Vector3(wrX, 2.6f, wrZ), new Vector3(2.6f, 0.3f, 0.3f), TimberBrown);
+        Cyl(root.transform, "WeaponRackPostL", new Vector3(wrX - 1.1f, 1.5f, wrZ), new Vector3(0.25f, 3.0f, 0.25f), TimberBrown);
+        Cyl(root.transform, "WeaponRackPostR", new Vector3(wrX + 1.1f, 1.5f, wrZ), new Vector3(0.25f, 3.0f, 0.25f), TimberBrown);
+        for (int i = 0; i < 3; i++)
+        {
+            float swX = wrX - 0.7f + i * 0.7f;
+            var hilt = Box(root.transform, $"SwordHilt_{i}", new Vector3(swX, 1.1f, wrZ + 0.1f), new Vector3(0.18f, 0.6f, 0.18f), TimberBrown);
+            hilt.transform.localRotation = Quaternion.Euler(0f, 0f, (i - 1) * 10f);
+            var blade = Box(root.transform, $"SwordBlade_{i}", new Vector3(swX, 2.4f, wrZ + 0.1f), new Vector3(0.12f, 2.6f, 0.05f), StoneCold);
+            blade.transform.localRotation = Quaternion.Euler(0f, 0f, (i - 1) * 10f);
+        }
+        var shield = Cyl(root.transform, "RackShield", new Vector3(wrX, 3.6f, wrZ + 0.15f), new Vector3(1.6f, 0.15f, 1.6f), StoneCold);
+        shield.transform.localRotation = Quaternion.Euler(90f, 0f, 8f);
+        var shieldBoss = Sphere(root.transform, "RackShieldBoss", new Vector3(wrX, 3.6f, wrZ + 0.05f), Vector3.one * 0.5f, Gold);
+        SetEmissive(shieldBoss, Gold, Gold * 0.3f);
+        RemoveCollider(shieldBoss);
+
+        // ── 입구 문 ──
+        Box(root.transform, "DoorCut", new Vector3(0f, H * 0.32f, -(D * 0.5f + 0.05f)),
+            new Vector3(W * 0.18f, H * 0.64f, 0.4f), StoneDark);
+
+        // ── 내부 입장 훅 ──────────────────────────────────────────────────────
+        // 향후 ScenePortal을 이 GO에 붙이고 WirePortal(ia, sp, "GuildInterior", "GuildReturnSpawn")
+        var entrance = new GameObject("GuildEntrance");
+        entrance.transform.SetParent(root.transform, false);
+        entrance.transform.localPosition = new Vector3(0f, 0f, -(D * 0.5f + 1.5f));
+
+        // 씬 루트에 복귀 스폰 포인트 배치
+        var returnSpawn = new GameObject("GuildReturnSpawn");
+        returnSpawn.transform.position = pos + Quaternion.Euler(0f, rotY, 0f) * new Vector3(0f, 0.5f, -(D * 0.5f + 5f));
+        // ─────────────────────────────────────────────────────────────────────
+
+        var mm = root.AddComponent<MapMarker>();
+        mm.kind        = MapMarker.IconKind.Building;
+        mm.displayName = "모험가 길드";
+        mm.iconColor   = Gold;
+        mm.footprintW  = W;
+        mm.footprintD  = D;
+    }
+
     // ── 8. 길드 가로 (HubGuildRow, z≈-60~-110) ──────────────────────────────
     static void BuildGuildRow()
     {
         var root = new GameObject("HubGuildRow");
 
-        // 모험가 길드 본부 (HubGuildHall) — 서쪽 길드 구역 앵커 (중앙 도로 비움)
-        ByzantineBuilding("HubGuildHall", "모험가 길드 본부", "[E]  모험가 길드",
-            new Vector3(-65f, 0f, -80f), 90f,
-            w: 28f, h: 14f, d: 20f, wall: StoneCold, dome: Gold);
+        // 모험가 길드 본부 (HubGuildHall) — 서쪽 길드 구역 랜드마크 (중앙 도로 비움)
+        // 향후 상호작용: WireBuilding("HubGuildHall", controller, "OpenGuild") 또는
+        //               WirePortal → ScenePortal("GuildInterior", "GuildReturnSpawn")
+        GuildHall(new Vector3(-110f, 0f, -80f), 90f);
 
         // 길드 파사드 (양측 각 3채)
         var guilds = new (string n, string display, Color wall, Color dome, float sx, float sz)[]
@@ -702,8 +1800,8 @@ public static class MesoriaHubBuilder
             var quadRoot = new GameObject($"Quad_{area}");
             quadRoot.transform.SetParent(root.transform, false);
 
-            float[] zOffsets = { zMin+12f, zMin+30f, zMin+48f, zMin+66f };
-            float[] xOffsets = { 35f, 58f, 82f };
+            float[] zOffsets = { zMin+12f, zMin+30f, zMin+48f, zMin+66f, zMin+84f };
+            float[] xOffsets = { 42f, 72f, 108f };  // BUILDING_R=130 바깥: max 108+jitter≈116 < 130
 
             foreach (float zBase in zOffsets)
             {
@@ -957,6 +2055,39 @@ public static class MesoriaHubBuilder
         }
     }
 
+    // ── 핵심 4건물 래퍼 ─────────────────────────────────────────────────────────
+    // 서/지식 — 통합 학술원 (HubLab) : MetaUISetup.WireBuilding("HubLab",…,"OpenLab") 자동 연결
+    static void BuildAcademy()
+    {
+        // E/W 횡단로(z=0) 북쪽에 위치, rotY=0: 로컬 -Z → 월드 -Z (남쪽/횡단로 방향)
+        AcademyBuilding("HubLab", "통합 학술원", "[E]  통합 학술원",
+            new Vector3(-105f, 0f, 35f), 0f);
+    }
+
+    // 서/지식 — 도서관 (HubLibrary) : MetaUISetup.WireBuilding("HubLibrary",…,"OpenLibrary") 자동 연결
+    static void BuildLibrary()
+    {
+        // E/W 횡단로(z=0) 남쪽에 위치, rotY=180: 로컬 -Z → 월드 +Z (북쪽/횡단로 방향)
+        LibraryBuilding("HubLibrary", "도서관", "[E]  도서관",
+            new Vector3(-105f, 0f, -35f), 180f);
+    }
+
+    // 동/상업 — 지식의 거래소 (HubExchange) : 향후 상점 연결 예정
+    static void BuildExchange()
+    {
+        // E/W 횡단로(z=0) 북쪽에 위치, rotY=0: 로컬 -Z → 월드 -Z (남쪽/횡단로 방향)
+        ExchangeBuilding("HubExchange", "지식의 거래소", "[E]  지식의 거래소",
+            new Vector3(105f, 0f, 35f), 0f);
+    }
+
+    // 남/생활 — 모험가 길드 본부 (HubGuildHall) : 내부 훅만(즉시 연결 없음)
+    // 척추 도로(x=0, 폭30) 서쪽에 배치. 동쪽(+x)은 여관·식당 확장 슬롯.
+    static void BuildGuildHall()
+    {
+        // rotY=-90: 로컬 -Z → 월드 +X (동쪽/척추 도로 방향)
+        GuildHall(new Vector3(-40f, 0f, -85f), -90f);
+    }
+
     // ── 13. 경계 벽 (불가시 충돌체) ─────────────────────────────────────────
     static void BuildWalls()
     {
@@ -1002,16 +2133,15 @@ public static class MesoriaHubBuilder
         SetEmissive(tcL, Gold, Gold * 0.28f); RemoveCollider(tcL);
         SetEmissive(tcR, Gold, Gold * 0.28f); RemoveCollider(tcR);
 
-        // 성벽 (동/서 방향)
-        Box(root.transform, "WallW", new Vector3(-75f, 7f, 0f), new Vector3(110f, 14f, 2.5f), StoneDark);
-        Box(root.transform, "WallE", new Vector3( 75f, 7f, 0f), new Vector3(110f, 14f, 2.5f), StoneDark);
+        // 성벽 (동/서 방향) — GROUND_HALF=600에 맞게 확장
+        Box(root.transform, "WallW", new Vector3(-310f, 7f, 0f), new Vector3(580f, 14f, 2.5f), StoneDark);
+        Box(root.transform, "WallE", new Vector3( 310f, 7f, 0f), new Vector3(580f, 14f, 2.5f), StoneDark);
 
-        // 성벽 흉벽 (크레넬레이션)
-        for (int i = -5; i <= 5; i++)
-        {
-            Box(root.transform, $"MerlW_{i+5}", new Vector3(-75f + i * 11f, 14.5f, 0f), new Vector3(4f, 2f, 3f), StoneCold);
-            Box(root.transform, $"MerlE_{i+5}", new Vector3( 75f + i * 11f, 14.5f, 0f), new Vector3(4f, 2f, 3f), StoneCold);
-        }
+        // 성벽 흉벽 (크레넬레이션) — 16단위 간격, 성문 개구부(±22) 제외
+        for (float mx = -595f; mx <= -25f; mx += 16f)
+            Box(root.transform, $"MerlW_{(int)(mx + 600f)}", new Vector3(mx, 14.5f, 0f), new Vector3(5f, 2f, 3f), StoneCold);
+        for (float mx = 25f; mx <= 595f; mx += 16f)
+            Box(root.transform, $"MerlE_{(int)(mx + 600f)}", new Vector3(mx, 14.5f, 0f), new Vector3(5f, 2f, 3f), StoneCold);
 
         var gm = root.AddComponent<MapMarker>();
         gm.kind        = MapMarker.IconKind.Gate;
@@ -1072,6 +2202,54 @@ public static class MesoriaHubBuilder
         else
         {
             Cyl(parent, n, localPos, new Vector3(0.9f, 9f, 0.9f), fallback);
+        }
+    }
+
+    // ── 도로 세그먼트 헬퍼 ───────────────────────────────────────────────────────
+
+    // a → b 를 잇는 임의 방향 도로 판. 콜라이더 제거(지면 충돌은 HubGround 담당).
+    // 길이는 두 점 사이 정확한 거리 — 오버슈트 없음(꼭짓점 이음새는 RoadJoint가 담당).
+    static GameObject RoadSeg(Transform parent, string name,
+        Vector2 a, Vector2 b, float width, float y, float thickness, Color c)
+    {
+        Vector2 d    = b - a;
+        float   len  = d.magnitude;
+        Vector2 mid  = (a + b) * 0.5f;
+        float   rotY = Mathf.Atan2(d.x, d.y) * Mathf.Rad2Deg; // +Z 기준
+        var go = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        go.name = name;
+        go.transform.SetParent(parent, false);
+        go.transform.localPosition = new Vector3(mid.x, y, mid.y);
+        go.transform.localRotation = Quaternion.Euler(0f, rotY, 0f);
+        go.transform.localScale    = new Vector3(width, thickness, len);
+        ApplyColor(go, c);
+        RemoveCollider(go);
+        return go;
+    }
+
+    // 도로 꼭짓점 이음새 패치 — 두 도로판이 각도를 이루며 만나는 지점의 미터 갭을
+    // 정사각형으로 덮어 매끈하게 연결(오버슈트로 인한 돌출 없이).
+    static GameObject RoadJoint(Transform parent, string name,
+        Vector2 pos, float size, float y, float thickness, Color c)
+    {
+        var go = Box(parent, name,
+            new Vector3(pos.x, y, pos.y), new Vector3(size, thickness, size), c);
+        RemoveCollider(go);
+        return go;
+    }
+
+    // 반지름 R 원을 sides 각형으로 근사한 환상로. 각 변 + 꼭짓점 이음새 패치를 함께 생성.
+    static void RingRoad(Transform parent, float R, int sides,
+        float width, float y, float thickness, Color c)
+    {
+        for (int i = 0; i < sides; i++)
+        {
+            float a0 = i       * Mathf.PI * 2f / sides;
+            float a1 = (i + 1) * Mathf.PI * 2f / sides;
+            var pa = new Vector2(R * Mathf.Sin(a0), R * Mathf.Cos(a0));
+            var pb = new Vector2(R * Mathf.Sin(a1), R * Mathf.Cos(a1));
+            RoadSeg(parent, $"Ring{(int)R}_{i}", pa, pb, width, y, thickness, c);
+            RoadJoint(parent, $"Ring{(int)R}_Joint{i}", pa, width * 1.6f, y, thickness, c);
         }
     }
 

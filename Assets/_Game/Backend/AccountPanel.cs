@@ -23,6 +23,7 @@ public class AccountPanel : MonoBehaviour
     [SerializeField] Button openButton;
     [SerializeField] Button closeButton;
     [SerializeField] Button logoutButton;
+    [SerializeField] Button adminLoginButton;
 
     // ─────────────────────────────────────────────────────────────────────────
 
@@ -32,6 +33,7 @@ public class AccountPanel : MonoBehaviour
         openButton.onClick.AddListener(Open);
         closeButton.onClick.AddListener(ClosePanel);
         logoutButton.onClick.AddListener(OnLogout);
+        if (adminLoginButton != null) adminLoginButton.onClick.AddListener(OnAdminLogin);
     }
 
     void Update()
@@ -77,5 +79,13 @@ public class AccountPanel : MonoBehaviour
     {
         if (PlayFabManager.Instance != null)
             PlayFabManager.Instance.Logout();
+    }
+
+    void OnAdminLogin()
+    {
+        ClosePanel();
+        // AdminLoginPanel은 별도 캔버스(MetaCanvas)에 있으므로 런타임 탐색
+        var loginPanel = FindFirstObjectByType<AdminLoginPanel>(FindObjectsInactive.Include);
+        loginPanel?.Open();
     }
 }

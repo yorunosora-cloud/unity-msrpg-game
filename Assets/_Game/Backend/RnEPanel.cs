@@ -644,7 +644,8 @@ public class RnEPanel : MonoBehaviour
         var skill = _selectedDef.skills[_selectedSkillIndex];
         if (skill == null) return;
 
-        _currentProblem = _problemDb?.BySkillId(skill.id);
+        // 스킬 해금·레벨업 공용 풀 — 해금은 "하" 난이도에서 랜덤 1개
+        _currentProblem = _problemDb?.RandomBySkillDifficulty(skill.id, ProblemDifficulty.Low);
         _overlayMode    = OverlayMode.SkillUnlock;
         _attemptsLeft   = 0;
 
@@ -672,10 +673,10 @@ public class RnEPanel : MonoBehaviour
         int thr = SkillScaling.Threshold(lv);
         if (_selectedOc.GetSkillProgress(skill.id).proficiency < thr) return;
 
-        // 상→중→하 문제 3개 뽑기
-        _levelUpProblems[0] = _problemDb?.RandomByDifficulty(ProblemDifficulty.High);
-        _levelUpProblems[1] = _problemDb?.RandomByDifficulty(ProblemDifficulty.Mid);
-        _levelUpProblems[2] = _problemDb?.RandomByDifficulty(ProblemDifficulty.Low);
+        // 상→중→하 문제 3개 뽑기 — 스킬 해금과 동일한 공용 풀(캐릭터+스킬별) 사용
+        _levelUpProblems[0] = _problemDb?.RandomBySkillDifficulty(skill.id, ProblemDifficulty.High);
+        _levelUpProblems[1] = _problemDb?.RandomBySkillDifficulty(skill.id, ProblemDifficulty.Mid);
+        _levelUpProblems[2] = _problemDb?.RandomBySkillDifficulty(skill.id, ProblemDifficulty.Low);
 
         _levelUpSlot = 0;
         _overlayMode = OverlayMode.SkillLevelUp;
