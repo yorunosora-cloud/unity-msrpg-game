@@ -59,6 +59,7 @@ public class PlayFabManager : MonoBehaviour
             {
                 Username = result.Username ?? username;
                 Debug.Log($"[PlayFab] 회원가입 성공: {Username}");
+                TrackLogin();
                 OnAuthSuccess?.Invoke();
             },
             err => HandleError(err));
@@ -82,6 +83,7 @@ public class PlayFabManager : MonoBehaviour
                 {
                     Username = result.InfoResultPayload?.AccountInfo?.Username ?? idOrEmail;
                     Debug.Log($"[PlayFab] 로그인 성공 (이메일): {Username}");
+                    TrackLogin();
                     OnAuthSuccess?.Invoke();
                 },
                 err => HandleError(err));
@@ -99,10 +101,19 @@ public class PlayFabManager : MonoBehaviour
                 {
                     Username = result.InfoResultPayload?.AccountInfo?.Username ?? idOrEmail;
                     Debug.Log($"[PlayFab] 로그인 성공 (아이디): {Username}");
+                    TrackLogin();
                     OnAuthSuccess?.Invoke();
                 },
                 err => HandleError(err));
         }
+    }
+
+    /// <summary>관리자 플레이어탭 목록에 노출되도록 자신의 PlayFabId를 서버 레지스트리에 등록합니다(실패해도 로그인 흐름은 계속됨).</summary>
+    void TrackLogin()
+    {
+        CloudScriptService.Execute("TrackPlayerLogin", new { },
+            null,
+            err => Debug.LogWarning($"[PlayFab] TrackPlayerLogin 실패: {err}"));
     }
 
     // ── 로그아웃 ──────────────────────────────────────────────────────────────

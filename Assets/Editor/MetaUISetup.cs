@@ -208,7 +208,7 @@ public static class MetaUISetup
         charTabSo.FindProperty("contentRoot").objectReferenceValue  = charScrollList.content;
         charTabSo.ApplyModifiedProperties();
 
-        // ── PlayerPanel (탭2) — 정렬 가능한 목록(로컬 더미 데이터) ──────
+        // ── PlayerPanel (탭2) — 실제 PlayFab 플레이어 목록 + 정지/삭제 ──────
         var playerPanel = new GameObject("PlayerPanel");
         playerPanel.transform.SetParent(adminPanel.transform, false);
         playerPanel.SetActive(false);
@@ -219,22 +219,64 @@ public static class MetaUISetup
             rt.anchoredPosition = new Vector2(0f, 45f);
         }
 
-        var sortDropGO   = UIKit.Dropdown(playerPanel.transform, "SortDropdown",
-            new System.Collections.Generic.List<string> { "이름", "PlayFabId", "마지막 로그인", "캐릭터 보유순" },
-            new Vector2(-90f, 325f), new Vector2(360f, 55f));
-        var orderBtnGO   = UIKit.Button(playerPanel.transform, "OrderBtn", "오름차순 ▲",
-            UIKit.BtnKind.Neutral, new Vector2(215f, 325f), new Vector2(200f, 55f));
-        var playerScroll = UIKit.ScrollList(playerPanel.transform, "PlayerList", new Vector2(0f, -30f), new Vector2(660f, 615f));
+        var sortDropGO = UIKit.Dropdown(playerPanel.transform, "SortDropdown",
+            new List<string> { "이름", "PlayFabId", "마지막 로그인", "가입일" },
+            new Vector2(-150f, 325f), new Vector2(280f, 55f));
+        var orderBtnGO = UIKit.Button(playerPanel.transform, "OrderBtn", "오름차순 ▲",
+            UIKit.BtnKind.Neutral, new Vector2(105f, 325f), new Vector2(150f, 55f));
+        var refreshBtnGO = UIKit.Button(playerPanel.transform, "RefreshBtn", "새로고침",
+            UIKit.BtnKind.Primary, new Vector2(258f, 325f), new Vector2(130f, 55f));
+        var playerScroll = UIKit.ScrollList(playerPanel.transform, "PlayerList",
+            new Vector2(0f, -30f), new Vector2(660f, 615f));
 
         UIKit.Label(playerPanel.transform, "NoticeLabel",
-            "실제 계정 조작(지급/회수/초기화/경고)은 CloudScript 연동 후 다음 라운드에 구현됩니다.",
+            "행의 [관리]로 해당 플레이어의 캐릭터 지급/회수·정지·삭제·초기화를 할 수 있습니다. 삭제·초기화는 되돌릴 수 없어 두 번 눌러 확인합니다.",
             UIKit.TextLevel.Caption, new Vector2(0f, -365f));
 
         var playerTabCmp = playerPanel.AddComponent<PlayerTab>();
         var playerTabSo  = new SerializedObject(playerTabCmp);
-        playerTabSo.FindProperty("sortDropdown").objectReferenceValue = sortDropGO.GetComponent<TMP_Dropdown>();
-        playerTabSo.FindProperty("orderButton").objectReferenceValue  = orderBtnGO.GetComponent<Button>();
-        playerTabSo.FindProperty("contentRoot").objectReferenceValue  = playerScroll.content;
+        playerTabSo.FindProperty("sortDropdown").objectReferenceValue  = sortDropGO.GetComponent<TMP_Dropdown>();
+        playerTabSo.FindProperty("orderButton").objectReferenceValue   = orderBtnGO.GetComponent<Button>();
+        playerTabSo.FindProperty("refreshButton").objectReferenceValue = refreshBtnGO.GetComponent<Button>();
+        playerTabSo.FindProperty("contentRoot").objectReferenceValue   = playerScroll.content;
+        playerTabSo.ApplyModifiedProperties();
+
+        // ── PlayerManagePanel — 플레이어 1명 전용 상세 패널(정지/삭제/초기화 + 캐릭터 지급·회수) ──
+        var managePanelGO = UIKit.Panel(adminPanel.transform, "PlayerManagePanel",
+            new Vector2(680f, 750f), new Vector2(0f, 45f));
+        managePanelGO.SetActive(false);
+
+        var manageTitle = UIKit.Label(managePanelGO.transform, "Title", "플레이어 관리",
+            UIKit.TextLevel.H2, new Vector2(0f, 335f), new Vector2(640f, 50f));
+
+        var manageBanBtnGO    = UIKit.Button(managePanelGO.transform, "BanBtn",    "정지",
+            UIKit.BtnKind.Neutral, new Vector2(-220f, 265f), new Vector2(200f, 55f));
+        var manageDeleteBtnGO = UIKit.Button(managePanelGO.transform, "DeleteBtn", "삭제",
+            UIKit.BtnKind.Danger,  new Vector2(0f, 265f),    new Vector2(200f, 55f));
+        var manageResetBtnGO  = UIKit.Button(managePanelGO.transform, "ResetBtn",  "계정 초기화",
+            UIKit.BtnKind.Danger,  new Vector2(220f, 265f),  new Vector2(200f, 55f));
+
+        var manageSearchGO = UIKit.Input(managePanelGO.transform, "SearchInput", "캐릭터 검색",
+            new Vector2(0f, 195f), new Vector2(420f, 55f));
+
+        var manageScroll = UIKit.ScrollList(managePanelGO.transform, "CharList",
+            new Vector2(0f, -70f), new Vector2(660f, 470f));
+
+        var manageCloseBtnGO = UIKit.Button(managePanelGO.transform, "CloseBtn", "닫기",
+            UIKit.BtnKind.Neutral, new Vector2(0f, -345f), new Vector2(220f, 60f));
+
+        var managePanelCmp = managePanelGO.AddComponent<PlayerManagePanel>();
+        var managePanelSo  = new SerializedObject(managePanelCmp);
+        managePanelSo.FindProperty("titleLabel").objectReferenceValue   = manageTitle.GetComponent<TMP_Text>();
+        managePanelSo.FindProperty("banButton").objectReferenceValue    = manageBanBtnGO.GetComponent<Button>();
+        managePanelSo.FindProperty("deleteButton").objectReferenceValue = manageDeleteBtnGO.GetComponent<Button>();
+        managePanelSo.FindProperty("resetButton").objectReferenceValue  = manageResetBtnGO.GetComponent<Button>();
+        managePanelSo.FindProperty("searchInput").objectReferenceValue  = manageSearchGO.GetComponent<TMP_InputField>();
+        managePanelSo.FindProperty("contentRoot").objectReferenceValue  = manageScroll.content;
+        managePanelSo.FindProperty("closeButton").objectReferenceValue  = manageCloseBtnGO.GetComponent<Button>();
+        managePanelSo.ApplyModifiedProperties();
+
+        playerTabSo.FindProperty("managePanel").objectReferenceValue = managePanelCmp;
         playerTabSo.ApplyModifiedProperties();
 
         // ── ProblemPanel (탭3) — 문제 분류 트리 + 추가/수정/삭제 폼 ─────
@@ -383,6 +425,8 @@ public static class MetaUISetup
         playerTabSo.ApplyModifiedProperties();
         problemTabSo.FindProperty("owner").objectReferenceValue = adminCmp;
         problemTabSo.ApplyModifiedProperties();
+        managePanelSo.FindProperty("owner").objectReferenceValue = adminCmp;
+        managePanelSo.ApplyModifiedProperties();
 
         // ── AdminLoginPanel (관리자 비밀 키 입력 패널, 기본 비활성) ──────────
         var adminLoginPanelGO = UIKit.Panel(canvasGO.transform, "AdminLoginPanel", new Vector2(600f, 420f));
