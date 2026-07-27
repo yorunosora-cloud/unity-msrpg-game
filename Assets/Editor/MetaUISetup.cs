@@ -110,6 +110,75 @@ public static class MetaUISetup
         iSo.ApplyModifiedProperties();
         UnityEventTools.AddVoidPersistentListener(closeBtnI.GetComponent<Button>().onClick, invCmp.OnCloseClicked);
 
+        // ── MailboxPanel (우편함, 계정 패널 버튼으로 열림, 중앙 숨김) ────
+        var mailboxPanel = UIKit.Panel(canvasGO.transform, "MailboxPanel", new Vector2(700f, 950f));
+        mailboxPanel.SetActive(false);
+        UIKit.Label(mailboxPanel.transform, "Title", "우편함", UIKit.TextLevel.H1, new Vector2(0f, 415f));
+        UIKit.Divider(mailboxPanel.transform, new Vector2(0f, 378f), 660f);
+        var mailScroll = UIKit.ScrollList(mailboxPanel.transform, "MailList", new Vector2(0f, 20f), new Vector2(676f, 630f));
+        var claimAllBtn = UIKit.Button(mailboxPanel.transform, "ClaimAllBtn", "모두 받기",
+            UIKit.BtnKind.Success, new Vector2(0f, -350f), new Vector2(300f, 65f));
+        var closeBtnM = UIKit.Button(mailboxPanel.transform, "CloseBtn", "닫기",
+            UIKit.BtnKind.Neutral, new Vector2(0f, -425f), new Vector2(300f, 65f));
+
+        var mailboxCmp = mailboxPanel.AddComponent<MailboxPanel>();
+        var mbSo = new SerializedObject(mailboxCmp);
+        mbSo.FindProperty("panel").objectReferenceValue          = mailboxPanel;
+        mbSo.FindProperty("contentRoot").objectReferenceValue    = mailScroll.content;
+        mbSo.FindProperty("closeButton").objectReferenceValue    = closeBtnM.GetComponent<Button>();
+        mbSo.FindProperty("claimAllButton").objectReferenceValue = claimAllBtn.GetComponent<Button>();
+        mbSo.ApplyModifiedProperties();
+
+        // ── MailDetail — 우편 상세창 오버레이(MailboxPanel 자식, Phase 3) ──
+        var mailDetailGO = new GameObject("MailDetail");
+        mailDetailGO.transform.SetParent(mailboxPanel.transform, false);
+        mailDetailGO.SetActive(false);
+        {
+            var rt = mailDetailGO.AddComponent<RectTransform>();
+            rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
+            rt.sizeDelta        = new Vector2(680f, 910f);
+            rt.anchoredPosition = Vector2.zero;
+        }
+        mailDetailGO.AddComponent<Image>().color = UITheme.PanelBgDark;
+
+        var mailDetailTitleGO  = UIKit.Label(mailDetailGO.transform, "Title", "",
+            UIKit.TextLevel.H1, new Vector2(0f, 400f), new Vector2(620f, 60f));
+        var mailDetailAttachGO = UIKit.Label(mailDetailGO.transform, "Attach", "",
+            UIKit.TextLevel.Body, new Vector2(0f, 350f), new Vector2(620f, 40f),
+            TextAlignmentOptions.Center, UITheme.TextSecondary);
+        UIKit.Divider(mailDetailGO.transform, new Vector2(0f, 320f), 620f);
+
+        var mailDetailScroll = UIKit.ScrollList(mailDetailGO.transform, "BodyScroll", new Vector2(0f, -20f), new Vector2(620f, 600f));
+        var mailDetailBodyGO = new GameObject("BodyText");
+        mailDetailBodyGO.transform.SetParent(mailDetailScroll.content, false);
+        var mailDetailBodyRt = mailDetailBodyGO.AddComponent<RectTransform>();
+        mailDetailBodyRt.anchorMin = new Vector2(0f, 1f); mailDetailBodyRt.anchorMax = new Vector2(1f, 1f);
+        mailDetailBodyRt.pivot     = new Vector2(0.5f, 1f);
+        mailDetailBodyRt.anchoredPosition = Vector2.zero;
+        mailDetailBodyRt.sizeDelta = new Vector2(0f, 0f); // MailboxPanel.OpenDetail()에서 preferredHeight로 세팅
+        var mailDetailBodyTxt = mailDetailBodyGO.AddComponent<TextMeshProUGUI>();
+        mailDetailBodyTxt.fontSize  = UITheme.FontBody;
+        mailDetailBodyTxt.color     = UITheme.TextPrimary;
+        mailDetailBodyTxt.alignment = TextAlignmentOptions.TopLeft;
+        mailDetailBodyTxt.enableWordWrapping = true;
+        if (UIKit.Font != null) mailDetailBodyTxt.font = UIKit.Font;
+
+        var mailDetailActionBtnGO = UIKit.Button(mailDetailGO.transform, "ActionBtn", "",
+            UIKit.BtnKind.Success, new Vector2(-150f, -400f), new Vector2(280f, 65f));
+        var mailDetailCloseBtnGO  = UIKit.Button(mailDetailGO.transform, "CloseBtn", "닫기",
+            UIKit.BtnKind.Neutral, new Vector2(150f, -400f), new Vector2(280f, 65f));
+
+        mbSo.FindProperty("detailPanel").objectReferenceValue        = mailDetailGO;
+        mbSo.FindProperty("detailTitle").objectReferenceValue        = mailDetailTitleGO.GetComponent<TMP_Text>();
+        mbSo.FindProperty("detailBody").objectReferenceValue         = mailDetailBodyTxt;
+        mbSo.FindProperty("detailBodyContent").objectReferenceValue  = mailDetailScroll.content;
+        mbSo.FindProperty("detailAttach").objectReferenceValue       = mailDetailAttachGO.GetComponent<TMP_Text>();
+        mbSo.FindProperty("detailActionButton").objectReferenceValue = mailDetailActionBtnGO.GetComponent<Button>();
+        mbSo.FindProperty("detailActionLabel").objectReferenceValue  = mailDetailActionBtnGO.transform.Find("Label").GetComponent<TMP_Text>();
+        mbSo.FindProperty("detailActionBg").objectReferenceValue     = mailDetailActionBtnGO.GetComponent<Image>();
+        mbSo.FindProperty("detailCloseButton").objectReferenceValue  = mailDetailCloseBtnGO.GetComponent<Button>();
+        mbSo.ApplyModifiedProperties();
+
         // ── AdminPanel (F1키, 중앙 숨김) — 4탭 구조 ─────────────────────
         var adminPanel = UIKit.Panel(canvasGO.transform, "AdminPanel", new Vector2(700f, 1200f));
         adminPanel.SetActive(false);
@@ -256,11 +325,14 @@ public static class MetaUISetup
         var manageResetBtnGO  = UIKit.Button(managePanelGO.transform, "ResetBtn",  "계정 초기화",
             UIKit.BtnKind.Danger,  new Vector2(220f, 265f),  new Vector2(200f, 55f));
 
+        var manageMailBtnGO = UIKit.Button(managePanelGO.transform, "MailBtn", "우편 발송",
+            UIKit.BtnKind.Primary, new Vector2(0f, 210f), new Vector2(300f, 50f));
+
         var manageSearchGO = UIKit.Input(managePanelGO.transform, "SearchInput", "캐릭터 검색",
-            new Vector2(0f, 195f), new Vector2(420f, 55f));
+            new Vector2(0f, 150f), new Vector2(420f, 55f));
 
         var manageScroll = UIKit.ScrollList(managePanelGO.transform, "CharList",
-            new Vector2(0f, -70f), new Vector2(660f, 470f));
+            new Vector2(0f, -95f), new Vector2(660f, 420f));
 
         var manageCloseBtnGO = UIKit.Button(managePanelGO.transform, "CloseBtn", "닫기",
             UIKit.BtnKind.Neutral, new Vector2(0f, -345f), new Vector2(220f, 60f));
@@ -271,9 +343,60 @@ public static class MetaUISetup
         managePanelSo.FindProperty("banButton").objectReferenceValue    = manageBanBtnGO.GetComponent<Button>();
         managePanelSo.FindProperty("deleteButton").objectReferenceValue = manageDeleteBtnGO.GetComponent<Button>();
         managePanelSo.FindProperty("resetButton").objectReferenceValue  = manageResetBtnGO.GetComponent<Button>();
+        managePanelSo.FindProperty("mailButton").objectReferenceValue   = manageMailBtnGO.GetComponent<Button>();
         managePanelSo.FindProperty("searchInput").objectReferenceValue  = manageSearchGO.GetComponent<TMP_InputField>();
         managePanelSo.FindProperty("contentRoot").objectReferenceValue  = manageScroll.content;
         managePanelSo.FindProperty("closeButton").objectReferenceValue  = manageCloseBtnGO.GetComponent<Button>();
+
+        // ── MailSendForm — 우편 발송 폼 오버레이(PlayerManagePanel 자식) ──
+        var mailFormGO = new GameObject("MailSendForm");
+        mailFormGO.transform.SetParent(managePanelGO.transform, false);
+        mailFormGO.SetActive(false);
+        {
+            var rt = mailFormGO.AddComponent<RectTransform>();
+            rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
+            rt.sizeDelta = new Vector2(620f, 560f);
+            rt.anchoredPosition = Vector2.zero;
+        }
+        mailFormGO.AddComponent<Image>().color = UITheme.PanelBgDark;
+
+        UIKit.Label(mailFormGO.transform, "Title", "우편 발송",
+            UIKit.TextLevel.H2, new Vector2(0f, 245f), new Vector2(560f, 50f));
+
+        var mailTitleGO = UIKit.Input(mailFormGO.transform, "TitleInput", "제목",
+            new Vector2(0f, 180f), new Vector2(560f, 55f));
+
+        var mailBodyGO = UIKit.Input(mailFormGO.transform, "BodyInput", "본문(선택)",
+            new Vector2(0f, 100f), new Vector2(560f, 90f));
+        mailBodyGO.GetComponent<TMP_InputField>().lineType = TMP_InputField.LineType.MultiLineNewline;
+
+        var mailAttachDropGO = UIKit.Dropdown(mailFormGO.transform, "AttachDropdown", new List<string>(),
+            new Vector2(-140f, 20f), new Vector2(270f, 55f));
+        var mailKindDropGO = UIKit.Dropdown(mailFormGO.transform, "KindDropdown", new List<string>(),
+            new Vector2(140f, 20f), new Vector2(270f, 55f));
+
+        var mailAmountGO = UIKit.Input(mailFormGO.transform, "AmountInput", "수량",
+            new Vector2(0f, -45f), new Vector2(270f, 55f));
+
+        var mailStatusGO = UIKit.Label(mailFormGO.transform, "Status", "",
+            UIKit.TextLevel.Caption, new Vector2(0f, -100f), new Vector2(560f, 30f));
+
+        var mailSendBtnGO   = UIKit.Button(mailFormGO.transform, "SendBtn",   "발송", UIKit.BtnKind.Success, new Vector2(-150f, -160f), new Vector2(180f, 55f));
+        var mailCancelBtnGO = UIKit.Button(mailFormGO.transform, "CancelBtn", "취소", UIKit.BtnKind.Neutral, new Vector2(150f, -160f),  new Vector2(180f, 55f));
+
+        var mailFormCmp = mailFormGO.AddComponent<MailSendForm>();
+        var mailFormSo  = new SerializedObject(mailFormCmp);
+        mailFormSo.FindProperty("titleInput").objectReferenceValue     = mailTitleGO.GetComponent<TMP_InputField>();
+        mailFormSo.FindProperty("bodyInput").objectReferenceValue      = mailBodyGO.GetComponent<TMP_InputField>();
+        mailFormSo.FindProperty("amountInput").objectReferenceValue    = mailAmountGO.GetComponent<TMP_InputField>();
+        mailFormSo.FindProperty("attachDropdown").objectReferenceValue = mailAttachDropGO.GetComponent<TMP_Dropdown>();
+        mailFormSo.FindProperty("kindDropdown").objectReferenceValue   = mailKindDropGO.GetComponent<TMP_Dropdown>();
+        mailFormSo.FindProperty("sendButton").objectReferenceValue     = mailSendBtnGO.GetComponent<Button>();
+        mailFormSo.FindProperty("cancelButton").objectReferenceValue   = mailCancelBtnGO.GetComponent<Button>();
+        mailFormSo.FindProperty("statusText").objectReferenceValue     = mailStatusGO.GetComponent<TMP_Text>();
+        mailFormSo.ApplyModifiedProperties();
+
+        managePanelSo.FindProperty("mailForm").objectReferenceValue = mailFormCmp;
         managePanelSo.ApplyModifiedProperties();
 
         playerTabSo.FindProperty("managePanel").objectReferenceValue = managePanelCmp;

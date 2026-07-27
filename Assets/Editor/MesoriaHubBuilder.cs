@@ -127,13 +127,16 @@ public static class MesoriaHubBuilder
         BuildRoadNetwork();
         BuildFountain();
         BuildPortalRing();
-        BuildSouthGate();
+        BuildCityGates();
         // ── 핵심 건물 (구역별 배치) ──────────────────────────────────────────
         BuildAcademy();     // 서/지식 — 통합 학술원  (HubLab)
         BuildLibrary();     // 서/지식 — 도서관        (HubLibrary)
         BuildExchange();    // 동/상업 — 지식의 거래소 (HubExchange)
         BuildGuildHall();   // 남/생활 — 모험가 길드   (HubGuildHall)
+        BuildTreatyTower();   // 정부 구역 — 중립 조약의 탑 (HubTreatyTower, 기존 정의만 있고 미호출 상태였음)
+        BuildCouncilPalace(); // 정부 구역 — 연합 의회궁 (HubCouncilPalace)
         BuildFillerBuildings(); // 도로망 사이 빈 공간 채움 (구역색 + 골목 인접 + 섹터 블록)
+        BuildNorthSea(); // 북쪽 해안 — 연합 의회궁 너머로 펼쳐지는 바다 (본격 항구 시설은 다음 과제)
         BuildWalls();
         AdjustLighting();
     }
@@ -168,11 +171,11 @@ public static class MesoriaHubBuilder
             new Vector3(paveW, 0.04f, paveD), PaveBase);
 
         // ─ 외곽 잔디 (포장 경계 바깥 벽 사이) ─
+        // 북쪽(z=580)은 이제 잔디가 아니라 연합 의회궁 + 바다 — 항목 제외(HubSeaNorth가 덮음).
         foreach (var (pos, sc) in new (Vector3 p, Vector3 s)[]
         {
             (new Vector3(-580f, 0.001f,   0f), new Vector3(30f, 1f, 80f)),
             (new Vector3( 580f, 0.001f,   0f), new Vector3(30f, 1f, 80f)),
-            (new Vector3(   0f, 0.001f, 580f), new Vector3(80f, 1f, 30f)),
         })
         {
             var gp = GameObject.CreatePrimitive(PrimitiveType.Plane);
@@ -511,14 +514,15 @@ public static class MesoriaHubBuilder
         Box(root.transform, "PlazaBorderW", new Vector3(-PLAZA_R, bTop, 0f), new Vector3(1.5f, 0.10f, PLAZA_R * 2f + 3f), StoneDark);
 
         // ── F. 메인 가로등 (척추 + E/W 메세 도로변, 80단위 간격) ─────────────────
-        float spineOff = SPINE_W * 0.5f + 2.5f;
+        // 연석 바로 옆에 세워 프론티지 건물(도로 여백 1.2f)과 안 겹치게 함.
+        float spineOff = SPINE_W * 0.5f + 0.5f;
         for (float lz = PAVE_Z_MIN + 10f; lz < PAVE_Z_MAX; lz += 80f)
         {
             if (Mathf.Abs(lz) < PLAZA_R + 5f) continue; // 광장 안쪽 제외
             LampPost(root.transform, new Vector3(-spineOff, 0f, lz), $"LampSpW_{(int)(lz + 600f)}");
             LampPost(root.transform, new Vector3( spineOff, 0f, lz), $"LampSpE_{(int)(lz + 600f)}");
         }
-        float ewOff = 13f + 2.5f; // (26/2) + 2.5
+        float ewOff = 13f + 0.5f;
         for (float lx = -PAVE_HALF_X + 10f; lx < PAVE_HALF_X; lx += 80f)
         {
             if (Mathf.Abs(lx) < PLAZA_R + 5f) continue;
@@ -637,6 +641,8 @@ public static class MesoriaHubBuilder
             (-105f, -35f, 26f),  // 도서관
             (105f, 35f, 26f),    // 거래소
             (-40f, -85f, 24f),   // 길드
+            (0f, 560f, 150f),    // 연합 의회궁 (북쪽 해안, z=560) — 정면 전정까지 필러 회피
+            (0f, 75f, 20f),      // 조약의 탑
         };
 
         // 모든 주요 도로 + 골목을 한 번에 합친 목록 — 건물이 어떤 도로 위에도 올라가지 않도록
@@ -648,7 +654,11 @@ public static class MesoriaHubBuilder
         {
             float r = Mathf.Sqrt(x * x + z * z);
             if (r < 75f + radius) return true; // 광장 + 포탈 링
-            if (Mathf.Abs(z - GATE_Z) < 22f + radius && Mathf.Abs(x) < 40f + radius) return true; // 남문
+            // 삼면 성문(남/동/서) — 성벽 좌우로 뻗는 벽 구조를 침범하지 않도록 제외.
+            // 북쪽은 성문이 없음(연합 의회궁 landmarks 항목이 그 구역을 커버).
+            if (Mathf.Abs(z - (-WALL_R)) < 22f + radius && Mathf.Abs(x) < 40f + radius) return true; // 남문
+            if (Mathf.Abs(x -   WALL_R)  < 22f + radius && Mathf.Abs(z) < 40f + radius) return true; // 동문
+            if (Mathf.Abs(x - (-WALL_R)) < 22f + radius && Mathf.Abs(z) < 40f + radius) return true; // 서문
             foreach (var (lx, lz, lr) in landmarks)
                 if ((x - lx) * (x - lx) + (z - lz) * (z - lz) < (lr + radius) * (lr + radius)) return true;
             foreach (var p in placed)
@@ -688,7 +698,7 @@ public static class MesoriaHubBuilder
         // placedClearance: 같은 줄(row)의 인접 건물끼리는 오검출 없게 폭(buildW) 기준의
         // 느슨한 값을 넘기고, 서로 다른 패스(그리드 등)끼리는 대각선 기준의 보수적 값을 넘긴다.
         bool SpawnFiller(float x, float z, float rotY, float buildW, float buildD, float buildH,
-            float placedClearance, bool withDoor, string ownRoadName)
+            float placedClearance, string ownRoadName)
         {
             float roadRadius = 0.5f * Mathf.Sqrt(buildW * buildW + buildD * buildD);
             if (TooClose(x, z, placedClearance)) return false;
@@ -709,11 +719,12 @@ public static class MesoriaHubBuilder
             Box(fb.transform, "RoofSlope_B", new Vector3(0f, roofY,  (buildD * 0.3f)), new Vector3(buildW + 0.8f, roofH, 0.8f), TileRed);
             Box(fb.transform, "RoofPeak",    new Vector3(0f, buildH + 0.2f + roofH, 0f), new Vector3(buildW + 0.3f, 0.5f, 0.8f), TimberBrown);
 
-            if (withDoor)
-            {
-                Box(fb.transform, "BeamH1", new Vector3(0f, buildH * 0.33f, -(buildD * 0.5f + 0.05f)), new Vector3(buildW + 0.2f, 0.35f, 0.25f), TimberBrown);
-                Box(fb.transform, "Door",   new Vector3(0f, 1.1f,           -(buildD * 0.5f + 0.08f)), new Vector3(1.6f, 2.2f, 0.15f), TimberBrown);
-            }
+            // 문 — 건물 크기에 비례해 확대(눈에 띄게), 모든 필러 건물에 빠짐없이 부착.
+            float doorW = Mathf.Clamp(buildW * 0.16f, 3.2f, 5.0f);
+            float doorH = Mathf.Clamp(buildH * 0.45f, 4.2f, 6.5f);
+            Box(fb.transform, "BeamH1",    new Vector3(0f, buildH * 0.72f, -(buildD * 0.5f + 0.05f)), new Vector3(buildW + 0.2f, 0.35f, 0.25f), TimberBrown);
+            Box(fb.transform, "Door",      new Vector3(0f, doorH * 0.5f,   -(buildD * 0.5f + 0.10f)), new Vector3(doorW, doorH, 0.2f), TimberBrown);
+            Box(fb.transform, "DoorLintel", new Vector3(0f, doorH + 0.15f, -(buildD * 0.5f + 0.08f)), new Vector3(doorW + 0.8f, 0.3f, 0.3f), StoneDark);
             fb.isStatic = true;
 
             placed.Add((new Vector2(x, z), placedClearance));
@@ -752,9 +763,9 @@ public static class MesoriaHubBuilder
                         // 같은 줄 이웃과의 간격은 폭(buildW) 절반이면 충분 — 대각선 기준을 쓰면
                         // 정상적으로 붙어있는 이웃까지 오검출로 튕겨 나가 줄이 끊어진다.
                         SpawnFiller(pos.x, pos.y, FaceRotY(faceDir), buildW, buildD, buildH,
-                            buildW * 0.5f, true, seg.name);
+                            buildW * 0.5f, seg.name);
 
-                        float gap = 0.5f + (float)rng.NextDouble() * 1.0f; // 촘촘히 — 최소 간격만
+                        float gap = 0.3f + (float)rng.NextDouble() * 0.6f; // 촘촘히 — 최소 간격만
                         t += buildW + gap;
                     }
                 }
@@ -763,13 +774,14 @@ public static class MesoriaHubBuilder
 
         // ── A. 도로 프론티지 — 십자·환상·방사 대로 + 골목, 모든 도로 양옆에 문이 도로를 향하도록 배열 ──
         // 크기는 학술원(28×15×20) 정도의 스케일로 통일.
+        // 도로-건물 간격은 어디서나 "캐릭터 한 명이 겨우 지나갈 정도"로 통일(완전히 붙이지는 않음).
         var mainRng  = new System.Random(20260629 + 111);
         var alleyRng = new System.Random(20260629 + 777);
 
-        LineFrontage(GenerateMainRoadSegments(), mainRng, edgePad: 6f, roadMargin: 5.5f,
+        LineFrontage(GenerateMainRoadSegments(), mainRng, edgePad: 6f, roadMargin: 1.2f,
             wMin: 24f, wMax: 32f, dMin: 17f, dMax: 23f, hMin: 12f, hMax: 17f);
 
-        // 골목 — 도로변보다 여유폭을 확 줄여 캐릭터 1명이 겨우 지나갈 정도로 바짝 붙임(건물 자체 크기는 동일).
+        // 골목 — 폭이 좁으므로 여유폭을 조금 더 줄여 바짝 붙임(건물 자체 크기는 동일).
         LineFrontage(GenerateAlleySegments(), alleyRng, edgePad: 3f, roadMargin: 0.6f,
             wMin: 24f, wMax: 32f, dMin: 17f, dMax: 23f, hMin: 12f, hMax: 17f);
 
@@ -777,9 +789,9 @@ public static class MesoriaHubBuilder
         var gridRng = new System.Random(20260629 + 999);
         float[] sectorAngles = { 0f, 45f, 90f, 135f, 180f, 225f, 270f, 315f };
         float[] bandMin = { 155f, 315f, 475f };
-        float[] bandMax = { 285f, 445f, 575f };
-        const float radialStep = 25f;
-        const float arcWidth   = 27f;
+        float[] bandMax = { 285f, 445f, 535f }; // 성벽(WALL_R=560)에 안 닿게 여유(건물 깊이+지터 감안)
+        const float radialStep = 21f;
+        const float arcWidth   = 24f;
 
         for (int s = 0; s < 8; s++)
         {
@@ -794,7 +806,7 @@ public static class MesoriaHubBuilder
                     float aPad    = angStep * 0.6f; // 스포크(섹터 경계) 회피 여유
                     for (float ang = a1 + aPad; ang < a2 - aPad; ang += angStep)
                     {
-                        if (gridRng.NextDouble() < 0.10) continue; // 자연스러운 빈틈만 소량
+                        if (gridRng.NextDouble() < 0.06) continue; // 자연스러운 빈틈만 소량
 
                         float jr  = r + ((float)gridRng.NextDouble() - 0.5f) * (radialStep * 0.3f);
                         float jang = ang + ((float)gridRng.NextDouble() - 0.5f) * angStep * 0.3f;
@@ -806,9 +818,9 @@ public static class MesoriaHubBuilder
                         float buildD = 16f + (float)gridRng.NextDouble() * 8f;
                         float buildH = 11f + (float)gridRng.NextDouble() * 7f;
                         // 정면이 도심(광장) 쪽을 향하도록 — 내부 블록 건물의 일관된 기본 방향.
-                        // 그리드 칸끼리는 배치가 덜 엄격하므로 대각선 기준의 보수적 간격을 사용.
-                        float roadRadius = 0.5f * Mathf.Sqrt(buildW * buildW + buildD * buildD);
-                        SpawnFiller(x, z, jang, buildW, buildD, buildH, roadRadius, false, null);
+                        // 반지름 방향 간격은 깊이(buildD) 절반이면 충분 — 대각선 기준을 쓰면
+                        // 정상 간격의 이웃 칸까지 오검출로 튕겨 나가 그리드가 듬성듬성해진다.
+                        SpawnFiller(x, z, jang, buildW, buildD, buildH, buildD * 0.5f, null);
                     }
                 }
             }
@@ -1312,6 +1324,109 @@ public static class MesoriaHubBuilder
         mm.kind        = MapMarker.IconKind.Building;
         mm.displayName = display;
         mm.iconColor   = GoldBright;
+        mm.footprintW  = W;
+        mm.footprintD  = D;
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    /// <summary>
+    /// 연합 의회궁 (HubCouncilPalace) — 메조리아는 왕/여왕이 없는 자치 도시국가·길드
+    /// 연합의 중립 지대이므로, "궁"은 군주의 궁전이 아니라 연합 회의체의 상징으로 설계.
+    ///   · 중앙 원형 의사당 드럼+돔 — "원탁"의 상징(왕좌 없음)
+    ///   · 좌우 대칭 대표단 윙(동/서 동일 크기) — 연합 구성원들의 대등함
+    ///   · 정면 전폭 콜로네이드 — 평지붕 엔타블러처(삼각 페디먼트 없음, 신전/군주 이미지 회피)
+    ///   · 6색 스터드(돔 밑동) + 6색 문장(엔타블러처) — PortalColors, 6개 학문/세력 연합 모티프
+    /// 광장의 약 3배 면적(250×160=40,000㎡) — 도시 내 최대 랜드마크.
+    /// </summary>
+    static void PalaceBuilding(string goName, string display, string prompt, Vector3 pos, float rotY)
+    {
+        const float W = 250f, D = 160f;
+        float fz = D * 0.5f; // 80 — 정면(로컬 -Z)까지 절반 깊이
+
+        var root = new GameObject(goName);
+        root.transform.position = pos;
+        root.transform.rotation = Quaternion.Euler(0f, rotY, 0f);
+
+        var ia = root.AddComponent<Interactable>();
+        ia.displayName = display;
+        ia.promptText  = prompt;
+        ia.radius      = 16f;
+
+        // ── 기단/포디움 ──
+        // 궁전이 도시 북쪽 끝(해안선)에 서서 후면이 바다 위로 나가므로, 기단을 깊게 내려
+        // 물에서 솟은 부두처럼 보이게 한다(상판 높이는 기존과 동일하게 유지).
+        Box(root.transform, "Foundation", new Vector3(0f, -4.5f, 0f), new Vector3(W + 4f, 10f, D + 4f), StoneDark);
+        Box(root.transform, "PodiumTop",  new Vector3(0f,  0.2f, 0f), new Vector3(W, 0.4f, D), StoneLight);
+
+        // ── 정면 대계단 (전면 폭의 약 1/3) ──
+        Box(root.transform, "Step1", new Vector3(0f, 0.20f, -(fz + 3.0f)), new Vector3(W * 0.35f, 0.5f, 3.0f), StoneWarm);
+        Box(root.transform, "Step2", new Vector3(0f, 0.60f, -(fz + 1.2f)), new Vector3(W * 0.32f, 0.5f, 2.4f), StoneCold);
+        Box(root.transform, "Step3", new Vector3(0f, 1.00f, -(fz + 0.1f)), new Vector3(W * 0.29f, 0.6f, 1.4f), StoneWarm);
+
+        // ── 중앙 의사당 드럼 + 돔 (원탁의 상징 — 왕좌 없음) ──
+        float drumY0 = 0.4f;
+        float drumH  = 24f;
+        Cyl(root.transform, "CouncilDrum", new Vector3(0f, drumY0 + drumH * 0.5f, 0f), new Vector3(56f, drumH, 56f), StoneWarm);
+        for (int i = 0; i < 16; i++)
+        {
+            float a = i * Mathf.PI * 2f / 16;
+            Box(root.transform, $"DrumRib_{i}",
+                new Vector3(Mathf.Sin(a) * 27.5f, drumY0 + drumH * 0.5f, Mathf.Cos(a) * 27.5f),
+                new Vector3(1.2f, drumH, 1.2f), StoneDark);
+        }
+        float domeY = drumY0 + drumH;
+        var dome = Sphere(root.transform, "CouncilDome", new Vector3(0f, domeY, 0f), new Vector3(56f, 28f, 56f), StoneCold);
+        RemoveCollider(dome);
+        var domeRing = Cyl(root.transform, "DomeGoldRing", new Vector3(0f, domeY + 0.3f, 0f), new Vector3(58f, 0.6f, 58f), Gold);
+        SetEmissive(domeRing, Gold, Gold * 0.3f);
+        Cyl(root.transform, "DomeLantern", new Vector3(0f, domeY + 14.5f, 0f), new Vector3(6f, 3f, 6f), StoneLight);
+        var finial = Sphere(root.transform, "DomeFinial", new Vector3(0f, domeY + 17f, 0f), Vector3.one * 2.4f, GoldBright);
+        SetEmissive(finial, GoldBright, GoldBright * 0.7f); RemoveCollider(finial);
+
+        // 돔 밑동 6색 스터드 — 6개 학문/세력이 대등하게 모이는 자리
+        for (int i = 0; i < PortalColors.Length; i++)
+        {
+            float a = i * Mathf.PI * 2f / PortalColors.Length;
+            var stud = Sphere(root.transform, $"CouncilStud_{i}",
+                new Vector3(Mathf.Sin(a) * 30f, domeY + 0.6f, Mathf.Cos(a) * 30f), Vector3.one * 1.6f, PortalColors[i]);
+            SetEmissive(stud, PortalColors[i], PortalColors[i] * 0.5f); RemoveCollider(stud);
+        }
+
+        // ── 좌우 대칭 대표단 윙 (동/서 동일 크기 — 연합 구성원의 대등함) ──
+        foreach (float side in new[] { -1f, 1f })
+        {
+            string tag = side < 0 ? "W" : "E";
+            float wx = 82f * side;
+            Box(root.transform, $"WingBody_{tag}", new Vector3(wx, drumY0 + 11f, 0f), new Vector3(85f, 22f, 85f), PlasterCream);
+            Box(root.transform, $"WingParapet_{tag}", new Vector3(wx, drumY0 + 22.3f, 0f), new Vector3(87f, 0.6f, 87f), StoneCold);
+        }
+
+        // ── 정면 전폭 콜로네이드 (평지붕 엔타블러처 — 페디먼트 없음) ──
+        float archZ = -(fz + 1.6f);
+        Box(root.transform, "Architrave",   new Vector3(0f, 9.5f,  archZ), new Vector3(W - 10f, 1.0f, 1.8f), StoneWarm);
+        Box(root.transform, "Entablature",  new Vector3(0f, 10.4f, archZ), new Vector3(W - 10f, 0.8f, 2.0f), StoneLight);
+        for (int i = 0; i < 10; i++)
+        {
+            float px = -110f + i * (220f / 9f);
+            Pillar(root.transform, $"FrontPillar_{i}", new Vector3(px, 0f, archZ + 0.9f), StoneDark);
+        }
+
+        // 엔타블러처 6색 문장/배너 — 6개 학문/세력 연합의 깃발
+        for (int i = 0; i < PortalColors.Length; i++)
+        {
+            float sx = (i - (PortalColors.Length - 1) * 0.5f) * (W * 0.8f / PortalColors.Length);
+            var plaque = Box(root.transform, $"CrestPlaque_{i}",
+                new Vector3(sx, 10.4f, archZ - 0.6f), new Vector3(6f, 1.6f, 0.2f), PortalColors[i]);
+            SetEmissive(plaque, PortalColors[i], PortalColors[i] * 0.35f);
+        }
+
+        // ── 정문 (드럼 정면) ──
+        Box(root.transform, "DoorCut", new Vector3(0f, 4.0f, -(fz + 0.05f)), new Vector3(14f, 8f, 0.4f), StoneDark);
+
+        var mm = root.AddComponent<MapMarker>();
+        mm.kind        = MapMarker.IconKind.Building;
+        mm.displayName = display;
+        mm.iconColor   = Gold;
         mm.footprintW  = W;
         mm.footprintD  = D;
     }
@@ -2088,6 +2203,23 @@ public static class MesoriaHubBuilder
         GuildHall(new Vector3(-40f, 0f, -85f), -90f);
     }
 
+    static void BuildCouncilPalace()
+    {
+        // rotY=0: 로컬 -Z → 월드 -Z (남쪽/조약의 탑·광장·척추 대로 방향).
+        // 도시 북쪽 끝(옛 성벽선 z=560)에 배치 — 정면(z=480)은 육지, 후면(z=640)은
+        // 바다 위로 나가 "해안에 선 궁전, 등 뒤로 바다"를 연출한다.
+        PalaceBuilding("HubCouncilPalace", "연합 의회궁", "[E]  연합 의회궁",
+            new Vector3(0f, 0f, 560f), 0f);
+    }
+
+    // 북쪽 해안 — 연합 의회궁(z=560, 후면 z=640) 너머로 펼쳐지는 바다.
+    // 지면 경계(GROUND_HALF=600)를 넘어서까지 깔아 궁전 후면이 물 위에 뜬 것처럼 보이게 한다.
+    // 본격 항구 시설(부두·창고·등대 = BuildHarbor)은 이번 범위 밖 — 바다만 먼저 놓는다.
+    static void BuildNorthSea()
+    {
+        Sea(null, "HubSeaNorth", new Vector3(0f, 0.15f, 800f), new Vector3(1500f, 1f, 420f));
+    }
+
     // ── 13. 경계 벽 (불가시 충돌체) ─────────────────────────────────────────
     static void BuildWalls()
     {
@@ -2108,11 +2240,26 @@ public static class MesoriaHubBuilder
         var r = go.GetComponent<Renderer>(); if (r) r.enabled = false;
     }
 
-    // ── 14. 남쪽 성문 (z=-130) ──────────────────────────────────────────────
-    static void BuildSouthGate()
+    // ── 14. 삼면 성문 (동/서/남, 직사각형 성벽) — 북쪽은 연합 의회궁 + 해안(바다) ──────
+    // 성벽 반지름 — 실제 지면 경계(GROUND_HALF=600)보다 40 안쪽(기존 남쪽 성문 GATE_Z와 동일선)
+    const float WALL_R = -GATE_Z; // 560
+
+    // 북쪽은 성문이 아니라 연합 의회궁 + 해안(바다) — BuildGate("North", …) 호출 없음.
+    static void BuildCityGates()
     {
-        var root = new GameObject("HubSouthGate");
-        root.transform.position = new Vector3(0f, 0f, GATE_Z);
+        BuildGate("South", new Vector3(0f, 0f, -WALL_R), 0f,  "남쪽 성문");
+        BuildGate("East",  new Vector3( WALL_R, 0f, 0f), 90f, "동쪽 성문");
+        BuildGate("West",  new Vector3(-WALL_R, 0f, 0f), 90f, "서쪽 성문");
+    }
+
+    // 성문 하나 + 좌우로 뻗는 성벽(흉벽 포함)을 생성. rotY=0이면 벽이 월드 X축(동서)으로
+    // 뻗고(남/북 성문), rotY=90이면 월드 Z축(남북)으로 뻗는다(동/서 성문) — 좌우 대칭 구조라
+    // 회전 방향(90 vs -90)은 결과가 동일.
+    static void BuildGate(string dirKey, Vector3 center, float rotY, string displayName)
+    {
+        var root = new GameObject($"Hub{dirKey}Gate");
+        root.transform.position = center;
+        root.transform.rotation = Quaternion.Euler(0f, rotY, 0f);
 
         // 성문 기둥 (좌/우)
         Box(root.transform, "GateL",    new Vector3(-13f,  7f, 0f), new Vector3(3f, 14f, 3f), StoneDark);
@@ -2133,19 +2280,19 @@ public static class MesoriaHubBuilder
         SetEmissive(tcL, Gold, Gold * 0.28f); RemoveCollider(tcL);
         SetEmissive(tcR, Gold, Gold * 0.28f); RemoveCollider(tcR);
 
-        // 성벽 (동/서 방향) — GROUND_HALF=600에 맞게 확장
-        Box(root.transform, "WallW", new Vector3(-310f, 7f, 0f), new Vector3(580f, 14f, 2.5f), StoneDark);
-        Box(root.transform, "WallE", new Vector3( 310f, 7f, 0f), new Vector3(580f, 14f, 2.5f), StoneDark);
+        // 성벽 (성문 좌우로 뻗음) — GROUND_HALF=600에 맞게 확장
+        Box(root.transform, "WallNeg", new Vector3(-310f, 7f, 0f), new Vector3(580f, 14f, 2.5f), StoneDark);
+        Box(root.transform, "WallPos", new Vector3( 310f, 7f, 0f), new Vector3(580f, 14f, 2.5f), StoneDark);
 
         // 성벽 흉벽 (크레넬레이션) — 16단위 간격, 성문 개구부(±22) 제외
         for (float mx = -595f; mx <= -25f; mx += 16f)
-            Box(root.transform, $"MerlW_{(int)(mx + 600f)}", new Vector3(mx, 14.5f, 0f), new Vector3(5f, 2f, 3f), StoneCold);
+            Box(root.transform, $"MerlNeg_{(int)(mx + 600f)}", new Vector3(mx, 14.5f, 0f), new Vector3(5f, 2f, 3f), StoneCold);
         for (float mx = 25f; mx <= 595f; mx += 16f)
-            Box(root.transform, $"MerlE_{(int)(mx + 600f)}", new Vector3(mx, 14.5f, 0f), new Vector3(5f, 2f, 3f), StoneCold);
+            Box(root.transform, $"MerlPos_{(int)(mx + 600f)}", new Vector3(mx, 14.5f, 0f), new Vector3(5f, 2f, 3f), StoneCold);
 
         var gm = root.AddComponent<MapMarker>();
         gm.kind        = MapMarker.IconKind.Gate;
-        gm.displayName = "남쪽 성문";
+        gm.displayName = displayName;
         gm.iconColor   = new Color(0.80f, 0.70f, 0.50f);
         gm.footprintW  = 160f;
         gm.footprintD  = 8f;
@@ -2252,6 +2399,7 @@ public static class MesoriaHubBuilder
             RoadJoint(parent, $"Ring{(int)R}_Joint{i}", pa, width * 1.6f, y, thickness, c);
         }
     }
+
 
     // ── 절차적 프리미티브 ─────────────────────────────────────────────────────
     static GameObject Cyl(Transform p, string n, Vector3 lp, Vector3 ls, Color c)

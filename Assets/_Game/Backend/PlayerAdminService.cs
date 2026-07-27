@@ -95,6 +95,27 @@ public static class PlayerAdminService
             onError);
     }
 
+    /// <summary>대상 계정 우편함에 우편(재화/결정 첨부 또는 메시지)을 발송합니다.</summary>
+    public static void SendMail(string playFabId, string title, string body,
+        MailAttachmentType attachType, int kindIndex, int amount,
+        Action onOk, Action<string> onErr)
+    {
+        string key = MetaState.AdminKey;
+        if (string.IsNullOrEmpty(key))       { onErr?.Invoke("관리자 키가 없습니다. 관리자 로그인을 먼저 하세요."); return; }
+        if (string.IsNullOrEmpty(playFabId)) { onErr?.Invoke("PlayFabId가 비어 있습니다."); return; }
+        if (string.IsNullOrEmpty(title))     { onErr?.Invoke("제목을 입력하세요."); return; }
+
+        CloudScriptService.Execute(
+            "AdminSendMail",
+            new { key, playFabId, title, body, attachType = (int)attachType, kindIndex, amount },
+            result =>
+            {
+                if (!IsSuccess(result)) { onErr?.Invoke(ErrorText(result)); return; }
+                onOk?.Invoke();
+            },
+            onErr);
+    }
+
     static void AdminAction(string functionName, string playFabId, Action onDone, Action<string> onError)
     {
         string key = MetaState.AdminKey;

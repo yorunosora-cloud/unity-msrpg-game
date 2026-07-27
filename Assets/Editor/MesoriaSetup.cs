@@ -87,6 +87,30 @@ public static class MesoriaSetup
           r.pivot = new Vector2(1f, 1f);
           r.anchoredPosition = new Vector2(-20f, -20f); }
 
+        // 계정 버튼 안읽음 배지 (계정 패널을 열지 않아도 보이는 상시 알림, Phase 3)
+        var accountBadgeGO = new GameObject("AccountBadge");
+        accountBadgeGO.transform.SetParent(openBtn.transform, false);
+        var accountBadgeRt = accountBadgeGO.AddComponent<RectTransform>();
+        accountBadgeRt.anchorMin = accountBadgeRt.anchorMax = new Vector2(1f, 1f);
+        accountBadgeRt.pivot     = new Vector2(1f, 1f);
+        accountBadgeRt.sizeDelta = new Vector2(44f, 30f);
+        accountBadgeRt.anchoredPosition = new Vector2(6f, 6f);
+        accountBadgeGO.AddComponent<Image>().color = UITheme.BtnDanger;
+        var accountBadgeTextGO = new GameObject("AccountBadgeText");
+        accountBadgeTextGO.transform.SetParent(accountBadgeGO.transform, false);
+        var accountBadgeTextRt = accountBadgeTextGO.AddComponent<RectTransform>();
+        accountBadgeTextRt.anchorMin = Vector2.zero;
+        accountBadgeTextRt.anchorMax = Vector2.one;
+        accountBadgeTextRt.sizeDelta = Vector2.zero;
+        var accountBadgeTxt = accountBadgeTextGO.AddComponent<TextMeshProUGUI>();
+        accountBadgeTxt.text      = "0";
+        accountBadgeTxt.fontSize  = 18;
+        accountBadgeTxt.color     = Color.white;
+        accountBadgeTxt.fontStyle = FontStyles.Bold;
+        accountBadgeTxt.alignment = TextAlignmentOptions.Center;
+        if (korFont != null) accountBadgeTxt.font = korFont;
+        accountBadgeGO.SetActive(false);
+
         // 9-b. 계정 패널 (기본 비활성)
         var panelGO = UIKit.Panel(canvasGO.transform, "AccountPanel", new Vector2(600f, 600f));
 
@@ -113,6 +137,32 @@ public static class MesoriaSetup
         var adminLoginBtn = UIKit.Button(panelGO.transform, "AdminLoginButton", "관리자 로그인",
             UIKit.BtnKind.Neutral, new Vector2(0, -170), new Vector2(380f, 60f));
 
+        // 우편함 버튼 + 안읽음 배지
+        var mailboxBtn = UIKit.Button(panelGO.transform, "MailboxButton", "우편함",
+            UIKit.BtnKind.Neutral, new Vector2(0, -245), new Vector2(380f, 60f));
+        var mailboxBadgeGO = new GameObject("MailboxBadge");
+        mailboxBadgeGO.transform.SetParent(mailboxBtn.transform, false);
+        var mailboxBadgeRt = mailboxBadgeGO.AddComponent<RectTransform>();
+        mailboxBadgeRt.anchorMin = mailboxBadgeRt.anchorMax = new Vector2(1f, 1f);
+        mailboxBadgeRt.pivot     = new Vector2(1f, 1f);
+        mailboxBadgeRt.sizeDelta = new Vector2(50f, 34f);
+        mailboxBadgeRt.anchoredPosition = new Vector2(6f, 10f);
+        mailboxBadgeGO.AddComponent<Image>().color = UITheme.BtnDanger;
+        var mailboxBadgeTextGO = new GameObject("MailboxBadgeText");
+        mailboxBadgeTextGO.transform.SetParent(mailboxBadgeGO.transform, false);
+        var mailboxBadgeTextRt = mailboxBadgeTextGO.AddComponent<RectTransform>();
+        mailboxBadgeTextRt.anchorMin = Vector2.zero;
+        mailboxBadgeTextRt.anchorMax = Vector2.one;
+        mailboxBadgeTextRt.sizeDelta = Vector2.zero;
+        var mailboxBadgeTxt = mailboxBadgeTextGO.AddComponent<TextMeshProUGUI>();
+        mailboxBadgeTxt.text      = "0";
+        mailboxBadgeTxt.fontSize  = 20;
+        mailboxBadgeTxt.color     = Color.white;
+        mailboxBadgeTxt.fontStyle = FontStyles.Bold;
+        mailboxBadgeTxt.alignment = TextAlignmentOptions.Center;
+        if (korFont != null) mailboxBadgeTxt.font = korFont;
+        mailboxBadgeGO.SetActive(false);
+
         // 닫기 버튼 (X, 우상단 앵커)
         var closeBtn = UIKit.Button(panelGO.transform, "CloseButton", "✕",
             UIKit.BtnKind.Neutral, size: new Vector2(60f, 60f), fontSize: 24);
@@ -133,6 +183,9 @@ public static class MesoriaSetup
         apSO.FindProperty("closeButton").objectReferenceValue     = closeBtn.GetComponent<Button>();
         apSO.FindProperty("logoutButton").objectReferenceValue    = logoutBtn.GetComponent<Button>();
         apSO.FindProperty("adminLoginButton").objectReferenceValue = adminLoginBtn.GetComponent<Button>();
+        apSO.FindProperty("mailboxButton").objectReferenceValue    = mailboxBtn.GetComponent<Button>();
+        apSO.FindProperty("mailboxBadge").objectReferenceValue     = mailboxBadgeTxt;
+        apSO.FindProperty("accountBadge").objectReferenceValue     = accountBadgeTxt;
         apSO.ApplyModifiedProperties();
 
         // 9-d. 상호작용 프롬프트 라벨 (하단 중앙, 기본 숨김) + PlayerInteractor 와이어링

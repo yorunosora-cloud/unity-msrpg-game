@@ -1,0 +1,47 @@
+# ── 코드값 범례 (continent/weakness, regionKind, tier, grouping 열은 아래 영문 코드 중 하나를 그대로 입력) ──
+# continent, weakness 열: Physics(물리) / Chemistry(화학) / Biology(생명과학) / EarthSci(지구과학) / Math(수학) / Info(정보) / Mesoria(메조리아)
+#   → weakness는 보통 continent와 동일(그 과목 스킬로 약점 공략). 혼종 몬스터만 다르게.
+# regionKind 열: Landmark(랜드마크) / MidZone(중간구역)
+# tier 열: Normal(잡몹) / MiniBoss(중간보스) / Boss(보스) — Boss는 07_보스전.md의 BossDef가 전투를 담당하므로 스탯 칸은 비워두고 bossDefId만 채움
+# grouping 열: Swarm(군집) / Solo(단일)
+# skills 열: "이름:타입" 쌍을 세미콜론(;)으로 구분. 타입은 자유 서술(근접/원거리/이동형/장판 등)
+# nation, region, family, habitat 열은 전부 한글 자유 서술 — 코드값 아님
+
+id,nameKo,continent,nation,region,regionKind,tier,family,grouping,habitat,levelMin,levelMax,weakness,maxHp,def,expReward,skills,dropGold,dropMaterialAmt,dropItems,iconPath,modelPath,desc,bossDefId
+
+# ===== Physics (물리 — 뉴토니아 퀀티카) =====
+# 국가: 뉴턴 제국 / 맥스웰 공국 / 볼츠만 열공화국 / 아인슈타인 연방 / 양자혁명군
+# 랜드마크: 만유인력의 왕궁, 빛의 속도 철로, 엔트로피의 대로, 시공간 왜곡 관측소, 슈뢰딩거의 상자 연구소
+# (아직 입력된 몬스터 없음 — 이 섹션 아래에 행을 추가하세요)
+
+# ===== Chemistry (화학 — 알케미아 신성연합) =====
+# 국가: 교황청 인오르가니아 / 황제령 오르가니아 / 피지컬리아 공국 / 아날리티카 연맹 / 오비탈 혁명파
+# 랜드마크: 원소 주기율표 대성당, 벤젠의 육각 신전, 촉매의 영원한 화로, 분광 분석의 등대, 전자구름의 혼돈 지대
+# (아직 입력된 몬스터 없음)
+
+# ===== Biology (생명과학 — 바이오스) =====
+# 국가: 헬릭스 제국 / 제네시스 왕국 / 에코스 연맹
+# 랜드마크: 이중나선 황궁, CRISPR 편집 연구소, 멘델의 유전 도서관, 해부학의 지하 성역, 진화의 세계수, 생태계 순환 대원
+# (아직 입력된 몬스터 없음)
+
+# ===== EarthSci (지구과학 — 테라 노바) =====
+# 국가: 천문 부족 / 해양 부족 / 대기 부족 / 지질 부족
+# 랜드마크: 거대 천문대 피라미드, 세계 해류 신전, 토네이도 정령의 영혼 평원, 판구조 산맥 신전, 판게아 유적
+# (아직 입력된 몬스터 없음)
+
+# ===== Math (수학 — 아틀란티스) =====
+# 국가: 유클리드 평원 / 산술의 탑 / 해석의 바다 / 대수의 숲 / 논리·집합의 고원 / 아크시움
+# 랜드마크: 유클리드 대성당, 힐베르트의 무한 호텔, 뉴턴-라이프니츠 폭포, 페르마의 마지막 서재, 러셀의 역설 탑, 세계수 아크시움
+math_forest-algebra_normal_unknown-vine,미지수 덩굴,Math,대수의 숲,대수의 숲,MidZone,Normal,식물형,Swarm,지상·밀림,3,5,Math,50,3,30,채찍질:근접,5,1,,,,대수의 숲에서 스스로도 미지수처럼 형태가 불명확한 덩굴형 몬스터. 여러 마리가 함께 자란다.,
+math_logic-highlands_miniboss_cantor-dragon,칸토르의 용,Math,논리·집합의 고원,러셀의 역설 탑,Landmark,MiniBoss,용족,Solo,공중,15,18,Math,220,10,150,무한도약:이동형; 모순의숨결:원거리,40,3,증명조각:1,,,무한대를 오가는 드래곤형 생물. 논리·집합의 고원에서 목격된다.,
+math_euclid-plains_boss_euclid,유클리드,Math,유클리드 평원,유클리드 대성당,Landmark,Boss,,Solo,,20,25,Math,,,,,,,,,,,BossDef(07_보스전.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Euclid
+
+# ===== Info (정보 — 사이버네시아) =====
+# 국가: 튜링 중앙집권국 / 오픈소스 연합 / 암호화 제국 / 데이터 마이닝 공화국 / 해커 길드
+# 랜드마크: 튜링 테스트 탑, 알고리즘 코어, 포크의 자유 광장, 불가능한 퍼즐 요새, 언더넷 심연
+# (아직 입력된 몬스터 없음)
+
+# ===== Mesoria (중앙대륙 — 메조리아) =====
+# 구역: 그랜드 하버 / 지식의 거래 시장 / 통합 학술원 / 실크로드 광장 / 중립 조약의 탑
+# 안전 허브 성격이 강해 몬스터가 적거나 없을 수 있음(이벤트성 등장 정도)
+# (아직 입력된 몬스터 없음)

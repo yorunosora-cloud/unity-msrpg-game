@@ -17,10 +17,12 @@ public class PlayerManagePanel : MonoBehaviour
     [SerializeField] Button         banButton;
     [SerializeField] Button         deleteButton;
     [SerializeField] Button         resetButton;
+    [SerializeField] Button         mailButton;
     [SerializeField] TMP_InputField searchInput;
     [SerializeField] RectTransform  contentRoot;
     [SerializeField] Button         closeButton;
     [SerializeField] AdminPanel     owner;
+    [SerializeField] MailSendForm   mailForm;
 
     const float ROW_H = 60f;
 
@@ -51,6 +53,7 @@ public class PlayerManagePanel : MonoBehaviour
         if (banButton    != null) banButton.onClick.AddListener(OnBanClicked);
         if (deleteButton != null) deleteButton.onClick.AddListener(OnDeleteClicked);
         if (resetButton  != null) resetButton.onClick.AddListener(OnResetClicked);
+        if (mailButton   != null) mailButton.onClick.AddListener(OnMailClicked);
         if (closeButton  != null) closeButton.onClick.AddListener(Close);
         if (searchInput  != null) searchInput.onValueChanged.AddListener(_ => RebuildCharList());
     }
@@ -135,6 +138,10 @@ public class PlayerManagePanel : MonoBehaviour
         if (_banLabel != null) _banLabel.text  = banned ? "정지 해제" : "정지";
         if (_banImage != null) _banImage.color = banned ? UITheme.BtnSuccess : UITheme.BtnNeutral;
     }
+
+    // ── 우편 발송 ─────────────────────────────────────────────────────────
+
+    void OnMailClicked() => mailForm?.Open(_target);
 
     // ── 삭제 (2단계 확인) ────────────────────────────────────────────────
 

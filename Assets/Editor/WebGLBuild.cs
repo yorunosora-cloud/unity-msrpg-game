@@ -90,7 +90,8 @@ public static class WebGLBuild
             var scenes = new[]
             {
                 "Assets/_Game/Scenes/Login.unity",
-                "Assets/_Game/Scenes/Mesoria.unity"
+                "Assets/_Game/Scenes/Mesoria.unity",
+                "Assets/_Game/Scenes/Atlantis.unity"
             };
 
             var options = new BuildPlayerOptions

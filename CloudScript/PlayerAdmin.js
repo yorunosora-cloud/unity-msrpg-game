@@ -25,6 +25,7 @@
 //   CloudScriptService.Execute("AdminGiveCharacter",   new { key, playFabId, charId }, onOk, onErr)
 //   CloudScriptService.Execute("AdminRevokeCharacter", new { key, playFabId, charId }, onOk, onErr)
 //   CloudScriptService.Execute("AdminResetAccount",    new { key, playFabId }, onOk, onErr)
+//   CloudScriptService.Execute("AdminSendMail",        new { key, playFabId, title, body, attachType, kindIndex, amount }, onOk, onErr)
 // ─────────────────────────────────────────────────────────────────────────────
 
 function loadPlayerStore() {
@@ -193,5 +194,31 @@ handlers.AdminResetAccount = function (args, context) {
         PlayFabId:    args.playFabId,
         KeysToRemove: ["wallet", "roster", "gacha", "crystals", "studyMats"]
     });
+    return { success: true };
+};
+
+// 대상 계정의 우편함(mailbox)에 우편 1건을 추가한다(설계 §14). read-modify-write.
+handlers.AdminSendMail = function (args, context) {
+    if (!checkAdminKey(args))            return { success: false, error: "auth" };
+    if (!args.playFabId || !args.title)  return { success: false, error: "invalid" };
+
+    var res = server.GetUserData({ PlayFabId: args.playFabId, Keys: ["mailbox"] });
+    var raw = res.Data && res.Data.mailbox && res.Data.mailbox.Value;
+    var box = raw ? JSON.parse(raw) : {};
+    if (!box.mails) box.mails = [];
+
+    box.mails.push({
+        id:         "mail_" + Date.now() + "_" + Math.floor(Math.random() * 100000),
+        sentUtc:    Date.now(),
+        title:      String(args.title),
+        body:       args.body ? String(args.body) : "",
+        attachType: args.attachType | 0,   // 0 None / 1 Currency / 2 Crystal / 3 Consumable
+        kindIndex:  args.kindIndex  | 0,
+        amount:     args.amount     | 0,
+        read:       false,
+        claimed:    false
+    });
+
+    server.UpdateUserData({ PlayFabId: args.playFabId, Data: { mailbox: JSON.stringify(box) } });
     return { success: true };
 };

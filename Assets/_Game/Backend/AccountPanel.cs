@@ -24,6 +24,11 @@ public class AccountPanel : MonoBehaviour
     [SerializeField] Button closeButton;
     [SerializeField] Button logoutButton;
     [SerializeField] Button adminLoginButton;
+    [SerializeField] Button mailboxButton;
+
+    [Header("우편함 배지")]
+    [SerializeField] TMP_Text mailboxBadge;   // 0이면 비활성화(숨김) — 계정 패널 내부, 우편함 버튼 위
+    [SerializeField] TMP_Text accountBadge;   // 0이면 비활성화(숨김) — 우상단 계정 열기 버튼 위, 패널을 안 열어도 보임
 
     // ─────────────────────────────────────────────────────────────────────────
 
@@ -34,6 +39,19 @@ public class AccountPanel : MonoBehaviour
         closeButton.onClick.AddListener(ClosePanel);
         logoutButton.onClick.AddListener(OnLogout);
         if (adminLoginButton != null) adminLoginButton.onClick.AddListener(OnAdminLogin);
+        if (mailboxButton    != null) mailboxButton.onClick.AddListener(OnMailboxClicked);
+
+        // GameBootstrap.Awake()가 모든 Start()보다 먼저 MetaState.Init()을 호출하므로 여기서는 항상 초기화되어 있다.
+        if (MetaState.IsInitialized)
+        {
+            MetaState.Mailbox.OnChanged += RefreshAllBadges;
+            RefreshAllBadges();
+        }
+    }
+
+    void OnDestroy()
+    {
+        if (MetaState.IsInitialized) MetaState.Mailbox.OnChanged -= RefreshAllBadges;
     }
 
     void Update()
@@ -73,6 +91,29 @@ public class AccountPanel : MonoBehaviour
 
         int playerLevel = PlayerRuntime.Stats?.Level ?? 1;
         levelText.text = $"플레이어 Lv.{playerLevel}";
+
+        RefreshAllBadges();
+    }
+
+    /// <summary>계정 패널 내부 배지 + 우상단 계정 열기 버튼 배지를 함께 갱신한다.
+    /// Mailbox.OnChanged 구독으로 수령·확인 직후에도 즉시 갱신되고, 패널을 열지 않아도
+    /// 우상단 배지로 미확인 우편을 알 수 있다(패널 내부 배지는 패널을 열었을 때만 보임).</summary>
+    void RefreshAllBadges()
+    {
+        if (!MetaState.IsInitialized) return;
+        int n = MetaState.Mailbox.UnreadCount();
+        string text = n > 99 ? "99+" : n.ToString();
+
+        if (mailboxBadge != null)
+        {
+            mailboxBadge.gameObject.SetActive(n > 0);
+            if (n > 0) mailboxBadge.text = text;
+        }
+        if (accountBadge != null)
+        {
+            accountBadge.gameObject.SetActive(n > 0);
+            if (n > 0) accountBadge.text = text;
+        }
     }
 
     void OnLogout()
@@ -87,5 +128,15 @@ public class AccountPanel : MonoBehaviour
         // AdminLoginPanel은 별도 캔버스(MetaCanvas)에 있으므로 런타임 탐색
         var loginPanel = FindFirstObjectByType<AdminLoginPanel>(FindObjectsInactive.Include);
         loginPanel?.Open();
+    }
+
+    void OnMailboxClicked()
+    {
+        ClosePanel();
+        // MailboxPanel은 별도 캔버스(MetaCanvas)에 있으므로 런타임 탐색.
+        // Open() 직전에 서버 재조회해 관리자가 그 사이 보낸 우편을 반영한다.
+        var mailboxPanel = FindFirstObjectByType<MailboxPanel>(FindObjectsInactive.Include);
+        if (mailboxPanel == null) return;
+        MetaSaveService.RefreshMailbox(() => mailboxPanel.Open());
     }
 }

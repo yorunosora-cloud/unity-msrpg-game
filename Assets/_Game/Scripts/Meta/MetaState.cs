@@ -9,6 +9,7 @@ public static class MetaState
     public static GachaState           GachaState     { get; private set; }
     public static CrystalWallet        Crystals       { get; private set; }
     public static StudyMaterialWallet  StudyMaterials { get; private set; }
+    public static Mailbox              Mailbox        { get; private set; }
 
     /// <summary>
     /// 세션 한정 관리자 플래그. CloudScript VerifyAdminKey 인증 성공 시 true로 세팅.
@@ -34,6 +35,7 @@ public static class MetaState
         GachaState     = new GachaState();
         Crystals       = new CrystalWallet();
         StudyMaterials = new StudyMaterialWallet();
+        Mailbox        = new Mailbox();
         IsAdmin        = false;
         AdminKey       = "";
     }
