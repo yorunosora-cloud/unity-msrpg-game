@@ -27,7 +27,31 @@ id,nameKo,continent,nation,region,regionKind,tier,family,grouping,habitat,levelM
 # ===== EarthSci (지구과학 — 테라 노바) =====
 # 국가: 천문 부족 / 해양 부족 / 대기 부족 / 지질 부족
 # 랜드마크: 거대 천문대 피라미드, 세계 해류 신전, 토네이도 정령의 영혼 평원, 판구조 산맥 신전, 판게아 유적
-# (아직 입력된 몬스터 없음)
+# 대기 부족 — 토네이도 정령의 영혼 평원(진입 던전, 권장 lv5-10): 협곡 공통 잡몹 2종(유물형) + 협곡별 전용 3종(중간보스 미니어 버전)
+earthsci_tornado-plains_normal_anemometer-tripod,풍속계 삼발이,EarthSci,대기 부족,토네이도 정령의 영혼 평원,Landmark,Normal,유물형,Solo,지상·협곡,5,8,EarthSci,70,5,40,회전베기:근접,8,1,,,,폭주한 풍속계(아네모미터)가 다리 셋 달린 유물형 몬스터로 변이했다. 협곡 전역에 출몰.,
+earthsci_tornado-plains_normal_radiosonde-balloon,라디오존데 풍선,EarthSci,대기 부족,토네이도 정령의 영혼 평원,Landmark,Normal,유물형,Solo,공중,5,8,EarthSci,55,3,40,바람구슬투척:원거리,8,1,,,,폭주한 라디오존데 풍선이 압력계를 흡수해 바람구슬을 쏘아내는 유물형 몬스터. 협곡 전역 공중에 부유한다.,
+earthsci_tornado-plains_normal_gale-sprite,바람정령 새끼,EarthSci,대기 부족,토네이도 정령의 영혼 평원,Landmark,Normal,정령,Swarm,공중·협곡,5,6,EarthSci,55,3,32,상승돌풍:이동형,6,1,,,,해들리의 파수꾼을 따르는 작은 바람 정령 새끼들. 해들리 협곡에서 무리지어 떠다닌다.,
+earthsci_tornado-plains_normal_mist-fox-kit,짧은다리 안개여우,EarthSci,대기 부족,토네이도 정령의 영혼 평원,Landmark,Normal,야수,Swarm,지상·협곡,6,7,EarthSci,65,4,38,안개도약:이동형,7,1,,,,페렐의 방랑자를 닮아 짧게 순간이동하듯 뛰어다니는 안개 여우 무리. 페렐 협곡에 서식한다.,
+earthsci_tornado-plains_normal_wind-wyrmling,바람무녀기,EarthSci,대기 부족,토네이도 정령의 영혼 평원,Landmark,Normal,용족,Swarm,지상·협곡,7,8,EarthSci,80,5,45,S자돌진:근접,9,1,,,,로스비의 이무기를 닮은 새끼 무녀기. S자로 구불거리며 로스비 협곡을 누빈다.,
+earthsci_tornado-plains_miniboss_hadley-guardian,해들리의 파수꾼,EarthSci,대기 부족,토네이도 정령의 영혼 평원,Landmark,MiniBoss,정령,Solo,공중,8,8,EarthSci,110,6,70,상승기류:장판; 하강기류:장판,20,2,협곡열쇠_해들리:1,,,해들리 순환의 상승·하강 기류를 다스리는 정령. 수직축 중심 전투 — 텔레그래프가 가장 정직해 진입 관문 역할을 한다.,
+earthsci_tornado-plains_miniboss_ferrel-wanderer,페렐의 방랑자,EarthSci,대기 부족,토네이도 정령의 영혼 평원,Landmark,MiniBoss,안개령,Solo,지상·협곡,9,9,EarthSci,130,7,85,순간이동일격:이동형; 안개장판:장판,25,2,협곡열쇠_페렐:1,,,페렐 순환의 불안정함을 닮아 짧은 거리를 무작위로 순간이동하는 안개 형체. 위치는 예측 불가하지만 공격 텔레그래프는 명확하다.,
+earthsci_tornado-plains_miniboss_rossby-wyrm,로스비의 이무기,EarthSci,대기 부족,토네이도 정령의 영혼 평원,Landmark,MiniBoss,용족,Solo,지상·협곡,9,10,EarthSci,160,8,100,S자돌진:이동형; 무녀기소환:소환,30,3,협곡열쇠_로스비:1,,,로스비파의 기상도 파동선을 형상화한 이무기. S자로 구불거리며 지나간 자리에 새끼 무녀기(바람무녀기)를 소환한다.,
+earthsci_tornado-plains_boss_hadley,해들리,EarthSci,대기 부족,토네이도 정령의 영혼 평원,Landmark,Boss,,Solo,,10,12,EarthSci,,,,,,,,,,BossDef(07_보스전.md·해들리.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Hadley
+earthsci_tornado-plains_boss_ferrel,페렐,EarthSci,대기 부족,토네이도 정령의 영혼 평원,Landmark,Boss,,Solo,,10,12,EarthSci,,,,,,,,,,BossDef(07_보스전.md·페렐.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Ferrel
+earthsci_tornado-plains_boss_rossby,로스비,EarthSci,대기 부족,토네이도 정령의 영혼 평원,Landmark,Boss,,Solo,,10,12,EarthSci,,,,,,,,,,BossDef(07_보스전.md·로스비.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Rossby
+
+# 판게아 유적(4부족 중앙 허브, 권장 lv10-15): 구역 공통 잡몹 2종(살아있는 지질/광물) + 구역별 전용 3종(중간보스 미니어 버전)
+earthsci_pangea-ruins_normal_rock-shard,암석파편,EarthSci,판게아 유적,판게아 유적,Landmark,Normal,광물형,Swarm,지상·균열,10,11,EarthSci,85,6,50,암석돌진:근접,9,1,,,,균열암석거인이 떨굴 때 함께 떨어진 파편이 생명력을 얻어 기어다니는 작은 암석 생명체. 판게아 유적 전역에 출몰.,
+earthsci_pangea-ruins_normal_salt-crystal,염분결정,EarthSci,판게아 유적,판게아 유적,Landmark,Normal,광물형,Swarm,해저·균열,10,11,EarthSci,75,5,48,결정파열:원거리,9,1,,,,대서양 염분 성분이 결정화된 덩어리. 물살 속에 느리게 떠다니다가 응결을 터뜨려 공격한다.,
+earthsci_pangea-ruins_normal_rock-giant-cub,새끼암석거인,EarthSci,판게아 유적,판게아 유적,Landmark,Normal,광물형,Solo,지상·열곡대,11,12,EarthSci,100,7,58,암석주먹:근접,11,1,,,,균열암석거인의 미니어 버전. 동아프리카 열곡대 구역에서 서식한다.,
+earthsci_pangea-ruins_normal_mini-chimney-crystal,미니굴뚝결정,EarthSci,판게아 유적,판게아 유적,Landmark,Normal,광물형,Solo,해저·해령,12,13,EarthSci,115,8,65,열수분사:원거리,13,1,,,,열수구 굴뚝괴물의 미니어 버전. 대서양 중앙해령 구역에서 서식한다.,
+earthsci_pangea-ruins_normal_lone-magnetite,홀자철석,EarthSci,판게아 유적,판게아 유적,Landmark,Normal,광물형,Solo,해저·해팽,13,14,EarthSci,130,9,72,자기충격:근접,15,1,,,,쌍둥자철석이 아직 하나이던 어린 상태. 동태평양 해팽 구역에서 서식한다.,
+earthsci_pangea-ruins_miniboss_rift-rock-giant,균열암석거인,EarthSci,판게아 유적,판게아 유적,Landmark,MiniBoss,광물형,Solo,지상·열곡대,12,12,EarthSci,150,9,95,암석강타:근접; 균열장판:범위형,28,2,판게아증거_베게너:1,,,동아프리카 열곡대의 갈라지는 대지를 형상화한 암석 거인. 판 조각 위에서 싸우며 몸이 점점 갈라진다 — 3종 중 가장 느리고 정직함(진입 관문 역할).,
+earthsci_pangea-ruins_miniboss_vent-chimney,열수구굴뚝괴물,EarthSci,판게아 유적,판게아 유적,Landmark,MiniBoss,광물형,Solo,해저·해령,13,13,EarthSci,180,10,110,광물분출:원거리; 압력파폭발:광역,32,2,판게아증거_홈스:1,,,대서양 중앙해령의 열수 분출구가 응결되어 생명을 얻은 광물 덩어리. 대류 메커니즘을 광물분출과 압력파로 형상화한다.,
+earthsci_pangea-ruins_miniboss_twin-magnetite,쌍둥자철석,EarthSci,판게아 유적,판게아 유적,Landmark,MiniBoss,광물형,Solo,해저·해팽,14,15,EarthSci,220,12,135,대칭공격:광역,36,3,판게아증거_헤스:1,,,동태평양 해팽의 대칭 자기줄무늬 증거를 형상화한 쌍둥이 자철석 결정체. 두 개체가 항상 대칭 위치에서 동시 공격 — 3종 중 가장 빠르고 복잡함(최고 난이도).,
+earthsci_pangea-ruins_boss_wegener,베게너,EarthSci,판게아 유적,판게아 유적,Landmark,Boss,,Solo,,12,14,EarthSci,,,,,,,,,,BossDef(07_보스전.md·베게너.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Wegener
+earthsci_pangea-ruins_boss_holmes,홈스,EarthSci,판게아 유적,판게아 유적,Landmark,Boss,,Solo,,12,14,EarthSci,,,,,,,,,,BossDef(07_보스전.md·홈스.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Holmes
+earthsci_pangea-ruins_boss_hess,헤스,EarthSci,판게아 유적,판게아 유적,Landmark,Boss,,Solo,,12,15,EarthSci,,,,,,,,,,BossDef(07_보스전.md·헤스.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Hess
 
 # ===== Math (수학 — 아틀란티스) =====
 # 국가: 유클리드 평원 / 산술의 탑 / 해석의 바다 / 대수의 숲 / 논리·집합의 고원 / 아크시움
