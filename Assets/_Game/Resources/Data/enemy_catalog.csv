@@ -53,6 +53,19 @@ earthsci_pangea-ruins_boss_wegener,베게너,EarthSci,판게아 유적,판게아
 earthsci_pangea-ruins_boss_holmes,홈스,EarthSci,판게아 유적,판게아 유적,Landmark,Boss,,Solo,,12,14,EarthSci,,,,,,,,,,BossDef(07_보스전.md·홈스.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Holmes
 earthsci_pangea-ruins_boss_hess,헤스,EarthSci,판게아 유적,판게아 유적,Landmark,Boss,,Solo,,12,15,EarthSci,,,,,,,,,,BossDef(07_보스전.md·헤스.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Hess
 
+# 거대 천문대 피라미드(천문 부족, 권장 lv14-19): 등반부 공통 잡몹 2종(별자리 수호자 정령 계열) + 계단별 전용 3종(중간보스 미니어 버전)
+earthsci_pyramid-observatory_normal_star-swarm-spirit,별무리정령,EarthSci,천문 부족,거대 천문대 피라미드,Landmark,Normal,정령,Swarm,공중,14,15,EarthSci,110,7,65,빛산탄:원거리,14,1,,,,밤하늘을 떠도는 작은 빛 입자들이 모여 이룬 정령. 반투명한 별무리 형태로 공중을 떠다니다가 빛을 협사해 공격한다.,
+earthsci_pyramid-observatory_normal_relief-guardian,부조수호상,EarthSci,천문 부족,거대 천문대 피라미드,Landmark,Normal,정령,Solo,지상,14,15,EarthSci,125,9,68,근접타격:근접,14,1,,,,피라미드 계단을 장식하던 석상 부조가 생명을 얻어 걸어다니는 수호상. 몸에 새겨진 별자리 문양이 움직일 때마다 희미하게 빛난다.,
+earthsci_pyramid-observatory_normal_baby-sun,새끼태양,EarthSci,천문 부족,거대 천문대 피라미드,Landmark,Normal,천체,Solo,공중,15,16,EarthSci,140,9,75,공전충돌:이동형,17,1,,,,떠도는 소형태양의 미니어 버전. 공전하는 행성 없이 홀로 반짝이며 코페르니쿠스 계단을 떠돈다.,
+earthsci_pyramid-observatory_normal_lone-moon,홀로위성,EarthSci,천문 부족,거대 천문대 피라미드,Landmark,Normal,천체,Solo,공중,16,17,EarthSci,160,10,85,위성돌진:이동형,19,1,,,,목성위성무리에서 떨어져나온 작은 위성 하나. 무리를 이루지 못한 채 갈릴레이 계단을 홀로 떠돈다.,
+earthsci_pyramid-observatory_normal_short-tail-comet,짧은꼬리혜성,EarthSci,천문 부족,거대 천문대 피라미드,Landmark,Normal,천체,Solo,공중,17,18,EarthSci,180,12,95,타원돌진:이동형,22,1,,,,타원궤도혜성의 미니어 버전. 꼬리가 짧아 궤도가 불안정하며 케플러 계단을 빠르게 가로지른다.,
+earthsci_pyramid-observatory_miniboss_drifting-sun,떠도는소형태양,EarthSci,천문 부족,거대 천문대 피라미드,Landmark,MiniBoss,천체,Solo,공중,16,16,EarthSci,170,10,110,공전장판조임:장판,25,2,천문열쇠_코페르니쿠스:1,,,자신을 중심으로 작은 행성들이 공전하는 미니어처 태양계 그 자체. 중심은 거의 정지한 채 공전 장판이 점점 조여들며 접근 — 지동설을 전투 구도로 직역한 3종 중 가장 정직한 관문.,
+earthsci_pyramid-observatory_miniboss_jovian-moons,목성위성무리,EarthSci,천문 부족,거대 천문대 피라미드,Landmark,MiniBoss,천체,Solo,공중,17,17,EarthSci,200,12,125,시차위성돌진:이동형,28,2,천문열쇠_갈릴레이:1,,,갈릴레이가 발견한 목성의 4대 위성(이오·유로파·가니메드·칼리스토)이 살아 움직이는 무리. 각기 다른 거리에서 공전하다 안쪽부터 순차적으로 근접 돌진한다.,
+earthsci_pyramid-observatory_miniboss_elliptical-comet,타원궤도혜성,EarthSci,천문 부족,거대 천문대 피라미드,Landmark,MiniBoss,천체,Solo,공중,18,19,EarthSci,240,14,150,근일점돌진:이동형,32,3,천문열쇠_케플러:1,,,길게 늘어진 타원 궤도를 실제로 그리며 이동하는 혜성체. 원일점에서는 느리게 접근하다 근일점 진입 순간 급가속해 돌진한다(케플러 제2법칙 직역) — 3종 중 가장 복잡한 최고 난이도.,
+earthsci_pyramid-observatory_boss_copernicus,코페르니쿠스,EarthSci,천문 부족,거대 천문대 피라미드,Landmark,Boss,,Solo,,16,18,EarthSci,,,,,,,,,,BossDef(07_보스전.md·코페르니쿠스.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Copernicus
+earthsci_pyramid-observatory_boss_galileo,갈릴레이,EarthSci,천문 부족,거대 천문대 피라미드,Landmark,Boss,,Solo,,16,18,EarthSci,,,,,,,,,,BossDef(07_보스전.md·갈릴레이.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Galileo
+earthsci_pyramid-observatory_boss_kepler,케플러,EarthSci,천문 부족,거대 천문대 피라미드,Landmark,Boss,,Solo,,16,19,EarthSci,,,,,,,,,,BossDef(07_보스전.md·케플러.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Kepler
+
 # ===== Math (수학 — 아틀란티스) =====
 # 국가: 유클리드 평원 / 산술의 탑 / 해석의 바다 / 대수의 숲 / 논리·집합의 고원 / 아크시움
 # 랜드마크: 유클리드 대성당, 힐베르트의 무한 호텔, 뉴턴-라이프니츠 폭포, 페르마의 마지막 서재, 러셀의 역설 탑, 세계수 아크시움
