@@ -66,6 +66,19 @@ earthsci_pyramid-observatory_boss_copernicus,코페르니쿠스,EarthSci,천문 
 earthsci_pyramid-observatory_boss_galileo,갈릴레이,EarthSci,천문 부족,거대 천문대 피라미드,Landmark,Boss,,Solo,,16,18,EarthSci,,,,,,,,,,BossDef(07_보스전.md·갈릴레이.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Galileo
 earthsci_pyramid-observatory_boss_kepler,케플러,EarthSci,천문 부족,거대 천문대 피라미드,Landmark,Boss,,Solo,,16,19,EarthSci,,,,,,,,,,BossDef(07_보스전.md·케플러.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Kepler
 
+# 세계 해류 신전(해양 부족, 권장 lv18-23): 갈래 공통 잡몹 2종(해류 기운을 받은 해양 생물) + 갈래별 전용 3종(중간보스 미니어 버전)
+earthsci_ocean-current-temple_normal_current-anchovy-swarm,조류멸치떼,EarthSci,해양 부족,세계 해류 신전,Landmark,Normal,해양생물,Swarm,수중,18,19,EarthSci,140,9,85,멸치돌진:원거리,18,1,,,,해류에 떠밀려 다니며 무리 지어 돌진하는 멸치 떼. 해류의 기운을 받아 대열째로 방향을 바꾸며 공격한다.,
+earthsci_ocean-current-temple_normal_coral-crab,산호갑각류,EarthSci,해양 부족,세계 해류 신전,Landmark,Normal,해양생물,Swarm,지상·해저,18,19,EarthSci,150,11,88,집게치기:근접,18,1,,,,해류의 기운이 석회화되어 갑각류의 몸에 산호처럼 스며든 형태. 신전 바닥을 기어다니며 집게로 공격한다.,
+earthsci_ocean-current-temple_normal_baby-drift-turtle,새끼표류거북,EarthSci,해양 부족,세계 해류 신전,Landmark,Normal,해양생물,Solo,수중,19,20,EarthSci,170,12,98,얼음갑각돌진:근접,21,1,,,,표류얼음거북의 미니어 버전. 난센 갈래에서 서식한다.,
+earthsci_ocean-current-temple_normal_baby-spiral-eel,애기나선장어,EarthSci,해양 부족,세계 해류 신전,Landmark,Normal,해양생물,Solo,수중,20,21,EarthSci,195,13,108,나선돌진:이동형,24,1,,,,나선조류장어의 미니어 버전. 에크만 갈래에서 서식한다.,
+earthsci_ocean-current-temple_normal_baby-circulation-whale,새끼순환고래,EarthSci,해양 부족,세계 해류 신전,Landmark,Normal,해양생물,Solo,수중,21,22,EarthSci,220,15,118,순환파동:광역,27,1,,,,심해순환고래의 미니어 버전. 스토멜 갈래에서 서식한다.,
+earthsci_ocean-current-temple_miniboss_drift-ice-turtle,표류얼음거북,EarthSci,해양 부족,세계 해류 신전,Landmark,MiniBoss,해양생물,Solo,수중,20,20,EarthSci,195,11,125,직선돌진:근접; 얼음파편산탄:원거리,38,2,해류열쇠_난센:1,,,북극 표류얼음을 등껍질처럼 뒤집어쓴 거대 거북. 난센이 북극 표류 중 에크만 수송 현상을 관찰했다는 업적을 느리고 정직한 2패턴으로 형상화 — 3종 중 가장 정직함(진입 관문 역할).,
+earthsci_ocean-current-temple_miniboss_spiral-current-eel,나선조류장어,EarthSci,해양 부족,세계 해류 신전,Landmark,MiniBoss,해양생물,Solo,수중,21,21,EarthSci,230,13,145,나선투사:원거리,42,2,해류열쇠_에크만:1,,,몸이 나선형으로 흐르는 장어형 생물. 에크만 나선(바람과 다른 각도로 흐르는 현상)을 투사체의 나선 궤적으로 직역한다.,
+earthsci_ocean-current-temple_miniboss_deep-circulation-whale,심해순환고래,EarthSci,해양 부족,세계 해류 신전,Landmark,MiniBoss,해양생물,Solo,수중,22,23,EarthSci,275,16,175,다중순환장판:광역,48,3,해류열쇠_스토멜:1,,,전 지구 심해 순환(컨베이어벨트) 무늬가 발광 문양으로 새겨진 거대한 고래. 스토멜의 종합 모델을 반영해 여러 순환 흐름이 동시에 발생하는 광역 장판을 사용 — 3종 중 가장 복잡하고 강력함(최고 난이도).,
+earthsci_ocean-current-temple_boss_nansen,난센,EarthSci,해양 부족,세계 해류 신전,Landmark,Boss,,Solo,,20,22,EarthSci,,,,,,,,,,BossDef(07_보스전.md·난센.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Nansen
+earthsci_ocean-current-temple_boss_ekman,에크만,EarthSci,해양 부족,세계 해류 신전,Landmark,Boss,,Solo,,20,22,EarthSci,,,,,,,,,,BossDef(07_보스전.md·에크만.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Ekman
+earthsci_ocean-current-temple_boss_stommel,스토멜,EarthSci,해양 부족,세계 해류 신전,Landmark,Boss,,Solo,,20,23,EarthSci,,,,,,,,,,BossDef(07_보스전.md·스토멜.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Stommel
+
 # ===== Math (수학 — 아틀란티스) =====
 # 국가: 유클리드 평원 / 산술의 탑 / 해석의 바다 / 대수의 숲 / 논리·집합의 고원 / 아크시움
 # 랜드마크: 유클리드 대성당, 힐베르트의 무한 호텔, 뉴턴-라이프니츠 폭포, 페르마의 마지막 서재, 러셀의 역설 탑, 세계수 아크시움
