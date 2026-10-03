@@ -90,6 +90,7 @@ earthsci_tectonic-mountain-temple_miniboss_tremor-fossil-dragon,진동화석룡,
 earthsci_tectonic-mountain-temple_miniboss_impact-fossil-plant,체감화석초,EarthSci,지질 부족,판구조 산맥 신전,Landmark,MiniBoss,화석생물,Solo,지상,26,27,EarthSci,310,19,200,체감디버프:근접,50,3,산맥열쇠_메르칼리:1,,,되살아난 피해 식물. 메르칼리의 지진 진도(주관적 체감 피해)를 화면 흔들림·조작 반전 등 체감형 디버프로 직역 — 3종 중 가장 위협적인 최고 난이도.,
 earthsci_tectonic-mountain-temple_boss_hutton,허턴,EarthSci,지질 부족,판구조 산맥 신전,Landmark,Boss,,Solo,,24,26,EarthSci,,,,,,,,,,BossDef(07_보스전.md·허턴.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Hutton
 earthsci_tectonic-mountain-temple_boss_richter,리히터,EarthSci,지질 부족,판구조 산맥 신전,Landmark,Boss,,Solo,,24,26,EarthSci,,,,,,,,,,BossDef(07_보스전.md·리히터.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Richter
+earthsci_tectonic-mountain-temple_boss_mercalli,메르칼리,EarthSci,지질 부족,판구조 산맥 신전,Landmark,Boss,,Solo,,24,27,EarthSci,,,,,,,,,,BossDef(07_보스전.md·메르칼리.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Mercalli
 
 # ===== Math (수학 — 아틀란티스) =====
 # 국가: 유클리드 평원 / 산술의 탑 / 해석의 바다 / 대수의 숲 / 논리·집합의 고원 / 아크시움
