@@ -79,6 +79,18 @@ earthsci_ocean-current-temple_boss_nansen,난센,EarthSci,해양 부족,세계 �
 earthsci_ocean-current-temple_boss_ekman,에크만,EarthSci,해양 부족,세계 해류 신전,Landmark,Boss,,Solo,,20,22,EarthSci,,,,,,,,,,BossDef(07_보스전.md·에크만.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Ekman
 earthsci_ocean-current-temple_boss_stommel,스토멜,EarthSci,해양 부족,세계 해류 신전,Landmark,Boss,,Solo,,20,23,EarthSci,,,,,,,,,,BossDef(07_보스전.md·스토멜.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Stommel
 
+# 판구조 산맥 신전(지질 부족, 권장 lv22-27): 갱도 공통 잡몹 2종(되살아난 화석) + 갱도별 전용 3종(중간보스 미니어 버전)
+earthsci_tectonic-mountain-temple_normal_fossil-trilobite,화석삼엽류,EarthSci,지질 부족,판구조 산맥 신전,Landmark,Normal,화석생물,Swarm,지상,22,23,EarthSci,170,11,100,집게협공:근접,24,1,,,,옛적에 갇힌 삼엽류가 지진의 기운으로 다시 움직이기 시작한 화석 생물. 갱도 바닥을 기어다니며 집게로 공격한다.,
+earthsci_tectonic-mountain-temple_normal_fossil-pterosaur,화석익룡류,EarthSci,지질 부족,판구조 산맥 신전,Landmark,Normal,화석생물,Swarm,공중,22,23,EarthSci,180,12,103,빛가루낙하:원거리,24,1,,,,화석화된 익룡이 되살아나 갱도 천장을 날아다니는 화석 생물. 날갯짓으로 발광 광물 가루를 떨어뜨려 공격한다.,
+earthsci_tectonic-mountain-temple_normal_baby-fossil-amphibian,새끼화석양서류,EarthSci,지질 부족,판구조 산맥 신전,Landmark,Normal,화석생물,Solo,지상,23,24,EarthSci,195,13,112,느린돌진:근접,27,1,,,,화석양서류의 미니어 버전. 허턴 갱도에서 서식한다.,
+earthsci_tectonic-mountain-temple_normal_baby-tremor-fossil,애기진동화석룡,EarthSci,지질 부족,판구조 산맥 신전,Landmark,Normal,화석생물,Solo,지상,24,25,EarthSci,220,15,122,진동파:광역,30,1,,,,진동화석룡의 미니어 버전. 리히터 갱도에서 서식한다.,
+earthsci_tectonic-mountain-temple_normal_fossil-sprout,화석새순,EarthSci,지질 부족,판구조 산맥 신전,Landmark,Normal,화석생물,Solo,지상,25,26,EarthSci,245,17,132,체감진동:광역,33,1,,,,체감화석초의 미니어 버전. 메르칼리 갱도에서 서식한다.,
+earthsci_tectonic-mountain-temple_miniboss_fossil-amphibian,화석양서류,EarthSci,지질 부족,판구조 산맥 신전,Landmark,MiniBoss,화석생물,Solo,지상,24,24,EarthSci,220,13,145,근접돌진:근접; 물웅덩이장판:지속,40,2,산맥열쇠_허턴:1,,,되살아난 고대 양서류. 허턴의 동일과정설("현재는 과거를 해석하는 열쇠")을 느리고 정직한 2패턴으로 형상화 — 3종 중 가장 정직함(진입 관문 역할).,
+earthsci_tectonic-mountain-temple_miniboss_tremor-fossil-dragon,진동화석룡,EarthSci,지질 부족,판구조 산맥 신전,Landmark,MiniBoss,화석생물,Solo,지상,25,25,EarthSci,260,16,170,단계별진동파:광역,44,2,산맥열쇠_리히터:1,,,되살아난 진동 장치 같은 화석룡. 리히터의 지진 규모(객관적 수치 측정)를 약·중·강 3단계 순차 발동 진동파로 직역한다.,
+earthsci_tectonic-mountain-temple_miniboss_impact-fossil-plant,체감화석초,EarthSci,지질 부족,판구조 산맥 신전,Landmark,MiniBoss,화석생물,Solo,지상,26,27,EarthSci,310,19,200,체감디버프:근접,50,3,산맥열쇠_메르칼리:1,,,되살아난 피해 식물. 메르칼리의 지진 진도(주관적 체감 피해)를 화면 흔들림·조작 반전 등 체감형 디버프로 직역 — 3종 중 가장 위협적인 최고 난이도.,
+earthsci_tectonic-mountain-temple_boss_hutton,허턴,EarthSci,지질 부족,판구조 산맥 신전,Landmark,Boss,,Solo,,24,26,EarthSci,,,,,,,,,,BossDef(07_보스전.md·허턴.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Hutton
+earthsci_tectonic-mountain-temple_boss_richter,리히터,EarthSci,지질 부족,판구조 산맥 신전,Landmark,Boss,,Solo,,24,26,EarthSci,,,,,,,,,,BossDef(07_보스전.md·리히터.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Richter
+
 # ===== Math (수학 — 아틀란티스) =====
 # 국가: 유클리드 평원 / 산술의 탑 / 해석의 바다 / 대수의 숲 / 논리·집합의 고원 / 아크시움
 # 랜드마크: 유클리드 대성당, 힐베르트의 무한 호텔, 뉴턴-라이프니츠 폭포, 페르마의 마지막 서재, 러셀의 역설 탑, 세계수 아크시움
