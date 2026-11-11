@@ -22,7 +22,19 @@ id,nameKo,continent,nation,region,regionKind,tier,family,grouping,habitat,levelM
 # ===== Biology (생명과학 — 바이오스) =====
 # 국가: 헬릭스 제국 / 제네시스 왕국 / 에코스 연맹
 # 랜드마크: 이중나선 황궁, CRISPR 편집 연구소, 멘델의 유전 도서관, 해부학의 지하 성역, 진화의 도원, 생태계 순환 대원
-# (아직 입력된 몬스터 없음)
+# 에코스 연맹 — 진화의 도원(바이오스 첫 던전): 던전은 플레이어 레벨에 완전 스케일링 → 아래 levelMin/levelMax·HP·DEF는 '스케일링 기준값'(고정 권장 레벨 아님)
+# 공통 잡몹 2종(전 구역) + 계절 구역별 전용 3종(중간보스 미니어 버전, 가을→여름→봄 고정 진행)
+biology_evolution-garden_normal_symbiotic-slime,공생슬라임,Biology,에코스 연맹,진화의 도원,Landmark,Normal,공생체,Swarm,지상,24,25,Biology,200,13,118,몸통박치기:근접,28,1,,,,여러 생물이 한 몸으로 공생하는 에코스 연맹 고유 슬라임. 전 구역 바닥을 굴러다니며 몸통으로 부딪친다.,
+biology_evolution-garden_normal_peach-blossom-moth,도화나비,Biology,에코스 연맹,진화의 도원,Landmark,Normal,곤충,Swarm,공중,24,25,Biology,190,12,120,꽃가루낙하:원거리,28,1,,,,도화 꽃잎 무늬 날개를 가진 나비. 전 구역 공중을 날며 꽃가루를 떨어뜨려 공격한다.,
+biology_evolution-garden_normal_baby-hoard-beetle,아기저장갑충,Biology,에코스 연맹,진화의 도원,Landmark,Normal,곤충,Solo,지상·가을,25,26,Biology,230,16,130,열매튕기기:원거리,30,1,,,,저장열매갑충의 미니어 버전. 가을 구역에서 작은 열매를 등에 지고 다니며 튕겨 공격한다.,
+biology_evolution-garden_normal_baby-surge-vine,애기덩굴수,Biology,에코스 연맹,진화의 도원,Landmark,Normal,식물형,Solo,지상·여름,26,27,Biology,255,17,140,덩굴채찍:근접,32,1,,,,폭생덩굴수의 미니어 버전. 여름 구역 열대 덩굴이 뭉친 작은 생물로 덩굴을 휘둘러 공격한다.,
+biology_evolution-garden_normal_spore-sproutling,포자새끼,Biology,에코스 연맹,진화의 도원,Landmark,Normal,포자생물,Swarm,지상·봄,27,28,Biology,280,18,150,포자폭발:광역,35,1,,,,개화포자모체가 퍼뜨린 포자 새끼. 봄 구역에서 무리지어 다니다 터지며 범위 피해를 준다.,
+biology_evolution-garden_miniboss_hoard-fruit-beetle,저장열매갑충,Biology,에코스 연맹,진화의 도원,Landmark,MiniBoss,계절변이체,Solo,지상·가을,26,26,Biology,330,20,210,열매던지기:장판; 저장방어:버프,52,2,도원열쇠_린네:1,,,등에 열매를 짊어진 거대 갑충. 가을의 저장 전략으로 열매를 던지고 먹어 회복하며 버틴다 — 3종 중 가장 정직한 입문 관문.,
+biology_evolution-garden_miniboss_surge-vine-beast,폭생덩굴수,Biology,에코스 연맹,진화의 도원,Landmark,MiniBoss,계절변이체,Solo,지상·여름,27,28,Biology,380,23,250,덩굴돌진:장판; 성장폭발:장판,58,3,도원열쇠_월리스:1,,,열대 덩굴이 얽힌 거대 수목형 생물. 여름의 성장 전략으로 덩굴이 길어지고 장판 반경이 커진다 — 중간 난이도.,
+biology_evolution-garden_miniboss_blossom-spore-mother,개화포자모체,Biology,에코스 연맹,진화의 도원,Landmark,MiniBoss,계절변이체,Solo,지상·봄,28,29,Biology,460,26,300,포자살포:소환; 개화폭발:광역,66,3,도원열쇠_다윈:1,,,도화처럼 꽃이 핀 거대 번식체. 봄의 번식 전략으로 포자 새끼를 늘리고 터뜨려 공격한다 — 완전 신규 패턴의 최고 난이도.,
+biology_evolution-garden_boss_linnaeus,린네,Biology,에코스 연맹,진화의 도원,Landmark,Boss,,Solo,,25,27,Biology,,,,,,,,,,BossDef(07_보스전.md·린네.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Linnaeus
+biology_evolution-garden_boss_wallace,월리스,Biology,에코스 연맹,진화의 도원,Landmark,Boss,,Solo,,26,28,Biology,,,,,,,,,,BossDef(07_보스전.md·월리스.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Wallace
+biology_evolution-garden_boss_darwin,다윈,Biology,에코스 연맹,진화의 도원,Landmark,Boss,,Solo,,27,29,Biology,,,,,,,,,,BossDef(07_보스전.md·다윈.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Darwin
 
 # ===== EarthSci (지구과학 — 테라 노바) =====
 # 국가: 천문 부족 / 해양 부족 / 대기 부족 / 지질 부족
