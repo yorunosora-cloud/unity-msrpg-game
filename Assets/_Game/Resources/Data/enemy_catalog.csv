@@ -39,6 +39,7 @@ biology_evolution-garden_boss_darwin,다윈,Biology,에코스 연맹,진화의 �
 # ===== EarthSci (지구과학 — 테라 노바) =====
 # 국가: 천문 부족 / 해양 부족 / 대기 부족 / 지질 부족
 # 랜드마크: 거대 천문대 피라미드, 세계 해류 신전, 토네이도 정령의 영혼 평원, 판구조 산맥 신전, 판게아 유적
+# ※ 레벨 스케일링 주석(2026-11): 아래 지구과학 섹션의 '권장 lvX-Y'와 levelMin/levelMax·HP·DEF는 모두 '스케일링 기준값'이다(고정 권장 레벨 아님, 설계도 21번 참조).
 # 대기 부족 — 토네이도 정령의 영혼 평원(진입 던전, 권장 lv5-10): 협곡 공통 잡몹 2종(유물형) + 협곡별 전용 3종(중간보스 미니어 버전)
 earthsci_tornado-plains_normal_anemometer-tripod,풍속계 삼발이,EarthSci,대기 부족,토네이도 정령의 영혼 평원,Landmark,Normal,유물형,Solo,지상·협곡,5,8,EarthSci,70,5,40,회전베기:근접,8,1,,,,폭주한 풍속계(아네모미터)가 다리 셋 달린 유물형 몬스터로 변이했다. 협곡 전역에 출몰.,
 earthsci_tornado-plains_normal_radiosonde-balloon,라디오존데 풍선,EarthSci,대기 부족,토네이도 정령의 영혼 평원,Landmark,Normal,유물형,Solo,공중,5,8,EarthSci,55,3,40,바람구슬투척:원거리,8,1,,,,폭주한 라디오존데 풍선이 압력계를 흡수해 바람구슬을 쏘아내는 유물형 몬스터. 협곡 전역 공중에 부유한다.,
