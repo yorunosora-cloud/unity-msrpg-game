@@ -26,6 +26,9 @@ public class SkillDef : ScriptableObject
     public string           factNoteKo;
     public string           gameNoteKo;
 
+    [Tooltip("skillType == FormChange일 때: 폼 전환 규칙(Z/X)")]
+    public FormChangeSpec   formChange;
+
     [Header("기본 정보")]
     public string         id;
     public string         nameKo;

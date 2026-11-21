@@ -21,6 +21,11 @@ public class CharacterDef : ScriptableObject
     [Header("스탯 (레벨 1 기준, 설계 §3)")]
     public CharacterStats baseStats;
 
+    [Header("폼 (설계도 22 §4-6) — 비어 있으면 단일 폼(기존 동작)")]
+    public CharacterForm[] forms;
+    [Tooltip("자동 폼 전환 규칙 (에네르기아·마시오&이네르셔·테르미아 등)")]
+    public FormAutoRule[]  autoRules;
+
     [Header("비주얼 (플레이스홀더)")]
     public Color portraitColor = Color.white;
 
