@@ -2,6 +2,8 @@
     "name": "MSRPG.Tests",
     "references": [
         "MSRPG",
+        "Unity.InputSystem",
+        "Unity.InputSystem.TestFramework",
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner"
     ],
