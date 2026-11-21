@@ -43,12 +43,18 @@ public class PlayerCombat : MonoBehaviour
 
     void DoAttack()
     {
-        _cooldownTimer = attackCooldown;
-
         var active = PlayerRuntime.Active;
-        if (active == null || active.IsDowned) return; // 기절 중엔 공격 불가
+        if (active == null || active.IsDowned)
+        {
+            _cooldownTimer = attackCooldown;
+            return; // 기절 중엔 공격 불가
+        }
 
-        int       atk     = active.Atk;
+        // 기본기(슬롯 0) 수치: 슬롯 0 스킬이 있으면 그 값, 없으면 인스펙터 기본값
+        var spec = BasicAttack.Resolve(active, attackRange, attackHalfAngle, attackCooldown);
+        _cooldownTimer = spec.cooldown;
+
+        int       atk     = Mathf.RoundToInt(active.Atk * spec.damageMultiplier);
         Continent element = active.Element;
         Vector3   origin  = transform.position;
         Vector3   forward = transform.forward;
@@ -62,10 +68,10 @@ public class PlayerCombat : MonoBehaviour
             toEnemy.y = 0f; // 수직 차이 무시 (수평 거리만 판정)
 
             float dist  = toEnemy.magnitude;
-            if (dist > attackRange) continue;
+            if (dist > spec.range) continue;
 
             float angle = Vector3.Angle(forward, toEnemy);
-            if (angle > attackHalfAngle) continue;
+            if (angle > spec.halfAngle) continue;
 
             enemy.ReceiveHit(element, atk);
         }
@@ -78,7 +84,7 @@ public class PlayerCombat : MonoBehaviour
             toBoss.y = 0f;
             float bossDist  = toBoss.magnitude;
             float bossAngle = Vector3.Angle(forward, toBoss);
-            if (bossDist <= attackRange && bossAngle <= attackHalfAngle)
+            if (bossDist <= spec.range && bossAngle <= spec.halfAngle)
                 ((IDamageable)boss).ReceiveHit(element, atk);
         }
 
@@ -90,7 +96,7 @@ public class PlayerCombat : MonoBehaviour
             toWp.y = 0f;
             float wpDist  = toWp.magnitude;
             float wpAngle = Vector3.Angle(forward, toWp);
-            if (wpDist <= attackRange && wpAngle <= attackHalfAngle)
+            if (wpDist <= spec.range && wpAngle <= spec.halfAngle)
                 wp.ReceiveHit(element, atk);
         }
 

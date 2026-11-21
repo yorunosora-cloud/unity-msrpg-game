@@ -140,4 +140,39 @@ public class CombatP1Tests
         var ch = MakeChar(null);
         Assert.AreEqual(-1, ch.IndexForSlot(1));
     }
+
+    // ════════════════════════════════════════════════════════════════════════
+    // BasicAttack — 기본기(슬롯 0) 수치 해석
+    // ════════════════════════════════════════════════════════════════════════
+
+    [Test]
+    public void BasicAttack_NoSlot0Skill_UsesDefaults()
+    {
+        var ch   = MakeChar(new[] { MakeSkill("a") });   // 레거시: 슬롯 1
+        var spec = BasicAttack.Resolve(ch, 2.2f, 60f, 0.5f);
+        Assert.AreEqual(2.2f, spec.range);
+        Assert.AreEqual(60f,  spec.halfAngle);
+        Assert.AreEqual(1f,   spec.damageMultiplier);
+        Assert.AreEqual(0.5f, spec.cooldown);
+    }
+
+    [Test]
+    public void BasicAttack_Slot0Skill_UsesSkillValues()
+    {
+        var basic = MakeSkill("basic", slot: 0, cd: 0.8f, range: 3.5f, halfAngle: 40f, mult: 1.2f);
+        var ch    = MakeChar(new[] { basic });
+        var spec  = BasicAttack.Resolve(ch, 2.2f, 60f, 0.5f);
+        Assert.AreEqual(3.5f, spec.range);
+        Assert.AreEqual(40f,  spec.halfAngle);
+        Assert.AreEqual(1.2f, spec.damageMultiplier);
+        Assert.AreEqual(0.8f, spec.cooldown);
+    }
+
+    [Test]
+    public void BasicAttack_NullCharacter_UsesDefaults()
+    {
+        var spec = BasicAttack.Resolve(null, 2.2f, 60f, 0.5f);
+        Assert.AreEqual(2.2f, spec.range);
+        Assert.AreEqual(1f,   spec.damageMultiplier);
+    }
 }
