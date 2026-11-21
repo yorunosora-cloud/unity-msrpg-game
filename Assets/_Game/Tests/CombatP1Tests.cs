@@ -175,4 +175,119 @@ public class CombatP1Tests
         Assert.AreEqual(2.2f, spec.range);
         Assert.AreEqual(1f,   spec.damageMultiplier);
     }
+
+    // ════════════════════════════════════════════════════════════════════════
+    // Party — 5명·전환 쿨타임·대기 캐릭터 틱
+    // ════════════════════════════════════════════════════════════════════════
+
+    static Party MakeParty(int count)
+    {
+        var members = new CombatCharacter[count];
+        for (int i = 0; i < count; i++) members[i] = MakeChar();
+        return new Party(members);
+    }
+
+    [Test]
+    public void Party_MaxSize_IsFive()
+    {
+        Assert.AreEqual(5, Party.MaxSize);
+    }
+
+    [Test]
+    public void Party_Constructor_KeepsAtMostFiveMembers()
+    {
+        var party = MakeParty(7);
+        Assert.AreEqual(5, party.Members.Count);
+    }
+
+    [Test]
+    public void Party_SwitchTo_FifthMember_Works()
+    {
+        var party = MakeParty(5);
+        Assert.IsTrue(party.SwitchTo(4));
+        Assert.AreEqual(4, party.ActiveIndex);
+    }
+
+    [Test]
+    public void Party_SwitchTo_StartsOneSecondCooldown()
+    {
+        var party = MakeParty(3);
+        Assert.IsTrue(party.SwitchTo(1));
+        Assert.AreEqual(Party.SwitchCooldown, party.SwitchCooldownRemaining, 0.0001f);
+        Assert.IsFalse(party.SwitchTo(2), "쿨타임 중에는 수동 전환 불가");
+        Assert.AreEqual(1, party.ActiveIndex);
+    }
+
+    [Test]
+    public void Party_SwitchTo_AfterCooldownElapsed_Works()
+    {
+        var party = MakeParty(3);
+        party.SwitchTo(1);
+        party.Tick(1f);
+        Assert.AreEqual(0f, party.SwitchCooldownRemaining, 0.0001f);
+        Assert.IsTrue(party.SwitchTo(2));
+    }
+
+    [Test]
+    public void Party_AutoSwitchToNext_IgnoresSwitchCooldown()
+    {
+        var party = MakeParty(3);
+        party.SwitchTo(1);                                   // 쿨타임 시작
+        party.Members[1].Damage(party.Members[1].MaxHp);     // 활성 기절
+        Assert.IsTrue(party.AutoSwitchToNext(), "기절로 인한 자동 교체는 쿨타임과 무관");
+        Assert.AreEqual(2, party.ActiveIndex);
+    }
+
+    [Test]
+    public void Party_AutoSwitchToNext_DoesNotStartCooldown()
+    {
+        var party = MakeParty(3);
+        party.Members[0].Damage(party.Members[0].MaxHp);
+        party.AutoSwitchToNext();
+        Assert.AreEqual(0f, party.SwitchCooldownRemaining, 0.0001f);
+    }
+
+    [Test]
+    public void Party_RestoreAll_ResetsSwitchCooldown()
+    {
+        var party = MakeParty(3);
+        party.SwitchTo(1);
+        party.RestoreAll();
+        Assert.AreEqual(0f, party.SwitchCooldownRemaining, 0.0001f);
+    }
+
+    [Test]
+    public void Party_Tick_AdvancesBenchMemberCooldowns()
+    {
+        var skill  = MakeSkill("a", cd: 3f);
+        var active = MakeChar();
+        var bench  = MakeChar(new[] { skill });
+        var party  = new Party(new[] { active, bench });
+
+        bench.CastSkill(0);                                   // 대기 멤버의 쿨타임 시작(3초)
+        Assert.AreEqual(3f, bench.CooldownRemaining(0), 0.0001f);
+
+        party.Tick(2f);
+        Assert.AreEqual(1f, bench.CooldownRemaining(0), 0.0001f, "대기 중에도 쿨타임이 흐른다");
+    }
+
+    [Test]
+    public void Party_RegenMpTick_RecoversBenchMp_ButNotDownedMp()
+    {
+        var active = MakeChar();
+        var bench  = MakeChar();
+        var downed = MakeChar();
+        var party  = new Party(new[] { active, bench, downed });
+
+        bench.UseMp(50);
+        downed.UseMp(50);
+        downed.Damage(downed.MaxHp);                          // 기절
+        int benchBefore  = bench.Mp;
+        int downedBefore = downed.Mp;
+
+        party.RegenMpTick(0.03f, 0.5f);
+
+        Assert.Greater(bench.Mp, benchBefore, "대기 멤버도 MP 자연회복");
+        Assert.AreEqual(downedBefore, downed.Mp, "기절한 멤버는 회복하지 않는다");
+    }
 }

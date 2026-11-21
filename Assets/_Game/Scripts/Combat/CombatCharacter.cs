@@ -194,6 +194,17 @@ public class CombatCharacter
         OnChanged?.Invoke("mp");
     }
 
+    /// <summary>
+    /// MP 자연회복 1틱 (기절 상태면 무시). 회복량 = max(1, round(MaxMp × 초당비율 × 틱초)).
+    /// 기존 PlayerSkills의 활성 캐릭터 전용 회복식과 동일 — 파티 전원(대기 포함)에 쓰도록 이동.
+    /// </summary>
+    public void RegenMpTick(float percentPerSecond, float tickSeconds)
+    {
+        if (IsDowned) return;
+        int amt = Math.Max(1, Mathf.RoundToInt(MaxMp * percentPerSecond * tickSeconds));
+        RecoverMp(amt);
+    }
+
     /// <summary>공격력 버프 적용 (중복 시 더 긴 쪽으로 갱신).</summary>
     public void ApplyAtkBuff(float multiplier, float duration)
     {
