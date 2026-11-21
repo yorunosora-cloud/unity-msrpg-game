@@ -117,6 +117,13 @@ public class Party
         foreach (var m in _members) m.RegenMpTick(percentPerSecond, tickSeconds);
     }
 
+    /// <summary>전투 구역 진입·이탈·씬 전환: 전원의 상태·스택·폼 초기화(HP·MP·쿨타임 유지). 설계도 22 §4-12.</summary>
+    public void ResetCombatState()
+    {
+        foreach (var m in _members) m.ResetCombatState();
+        OnPartyChanged?.Invoke();
+    }
+
     /// <summary>파티 전원 HP/MP 풀 회복, 활성 인덱스 0 복귀, 전환 쿨타임 초기화.</summary>
     public void RestoreAll()
     {

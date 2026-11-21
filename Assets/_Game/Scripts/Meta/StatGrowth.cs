@@ -11,9 +11,18 @@ public static class StatGrowth
 
     /// <summary>주어진 레벨에서의 최종 스탯을 계산합니다.</summary>
     public static CharacterStats ComputeStats(CharacterDef def, int level)
+        => ComputeStats(def, level, null);
+
+    /// <summary>폼 id가 주어지고 그 폼이 있으면 폼 baseStats로, 아니면 def.baseStats로 계산한다.</summary>
+    public static CharacterStats ComputeStats(CharacterDef def, int level, string formId)
     {
         float m = 1f + (level - 1) * Growth;
         var b   = def.baseStats;
+        if (!string.IsNullOrEmpty(formId) && def.forms != null)
+        {
+            foreach (var f in def.forms)
+                if (f != null && f.formId == formId) { b = f.baseStats; break; }
+        }
         return new CharacterStats
         {
             hp  = Mathf.RoundToInt(b.hp  * m),

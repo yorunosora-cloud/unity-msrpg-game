@@ -24,14 +24,23 @@ public class CombatCharacter
 
     const string LegacyAtkBuffId = "legacy_atk_buff";
 
+    // ── 폼 상태 (설계도 22 §4-6, §4-6-1) ──
+    string            _formId = string.Empty;
+    FormAutoEvaluator _auto;
+    float             _revertTimer = -1f;   // 자동 복귀 남은 시간(활성일 때만 감소). <0 이면 없음
+    string            _revertTo;
+    float             _sinceHit = 999f;     // 마지막 피격 후 경과(초)
+
     public CombatCharacter(CharacterDef def, OwnedCharacter owned)
     {
         _def     = def;
         _owned   = owned;
         _nextExp = ComputeNextExp(_owned.level);
+        _formId  = DefaultFormId;
+        _auto    = new FormAutoEvaluator(_def.autoRules);
 
         // 세션 시작 시 HP/MP 풀
-        var s = StatGrowth.ComputeStats(_def, _owned.level);
+        var s = Stats();
         _hp = s.hp;
         _mp = s.mp;
 
@@ -43,7 +52,38 @@ public class CombatCharacter
 
     public Continent Element     => _def.continent;
     public string    DisplayName => _def.nameKo;
-    public Color     TintColor   => _def.portraitColor;
+    public Color     TintColor   => CurrentForm != null ? CurrentForm.tint : _def.portraitColor;
+
+    // ── 폼 조회 ──
+    CharacterStats Stats() => StatGrowth.ComputeStats(_def, _owned.level, _formId);
+
+    public bool HasForms => _def.forms != null && _def.forms.Length > 0;
+
+    /// <summary>기본 폼 id(isDefault, 없으면 첫 폼). 폼이 없으면 빈 문자열.</summary>
+    public string DefaultFormId
+    {
+        get
+        {
+            if (!HasForms) return string.Empty;
+            foreach (var f in _def.forms) if (f != null && f.isDefault) return f.formId;
+            return _def.forms[0].formId;
+        }
+    }
+
+    CharacterForm FindForm(string id)
+    {
+        if (!HasForms || string.IsNullOrEmpty(id)) return null;
+        foreach (var f in _def.forms) if (f != null && f.formId == id) return f;
+        return null;
+    }
+
+    public CharacterForm   CurrentForm   => FindForm(_formId);
+    public CharacterRole   CurrentRole   => CurrentForm != null ? CurrentForm.role   : _def.role;
+    public Gender          CurrentGender => CurrentForm != null ? CurrentForm.gender : _def.gender;
+    public string          FormNameKo    => CurrentForm != null ? CurrentForm.nameKo : string.Empty;
+
+    /// <summary>마지막으로 피해를 받은 뒤 경과 시간(초). 탄소 동소 변환의 "최근 피격" 판정용.</summary>
+    public float SecondsSinceHitTaken => _sinceHit;
     public int       Level       => _owned.level;
     public string    Id          => _def.id;
 
@@ -58,8 +98,8 @@ public class CombatCharacter
 
     // ── 슬롯 해석 (설계도 22 §4-1) ─────────────────────────────────────────
 
-    /// <summary>현재 폼 id. P3(폼 시스템) 전까지는 항상 빈 문자열.</summary>
-    public string CurrentFormId => string.Empty;
+    /// <summary>현재 폼 id. 폼이 없는 캐릭터는 빈 문자열.</summary>
+    public string CurrentFormId => _formId;
 
     /// <summary>
     /// 인덱스 i 스킬의 슬롯(0~6). SkillDef.slot이 -1(레거시)이면 i+1.
@@ -83,11 +123,21 @@ public class CombatCharacter
         {
             var s = _def.skills[i];
             if (s == null) continue;
+            if (s.skillType == SkillKind.FormChange) continue;   // 폼 전환 스킬은 Z/X로만(Q 슬롯 제외)
             if (SlotOf(i) != slot) continue;
-            if (!string.IsNullOrEmpty(s.formReq) && s.formReq != CurrentFormId) continue;
+            if (!FormReqMatches(s.formReq)) continue;
             return i;
         }
         return -1;
+    }
+
+    /// <summary>formReq가 비었거나, 쉼표로 구분한 폼 중 현재 폼이 있으면 true.</summary>
+    bool FormReqMatches(string req)
+    {
+        if (string.IsNullOrEmpty(req)) return true;
+        foreach (var part in req.Split(','))
+            if (part.Trim() == _formId) return true;
+        return false;
     }
 
     /// <summary>인덱스 i의 남은 쿨타임 (초). 0이면 준비 완료.</summary>
@@ -130,11 +180,11 @@ public class CombatCharacter
 
     // ── 스탯 (현재 레벨 기준, 레벨업 시 재계산) ───────────────────────────
 
-    public int MaxHp => StatGrowth.ComputeStats(_def, _owned.level).hp;
-    public int MaxMp => StatGrowth.ComputeStats(_def, _owned.level).mp;
+    public int MaxHp => Stats().hp;
+    public int MaxMp => Stats().mp;
     /// <summary>현재 레벨 공격력 × 상태 효과 배율 (없으면 1.0).</summary>
-    public int Atk   => (int)(StatGrowth.ComputeStats(_def, _owned.level).atk * Status.Mult(StatKind.Atk));
-    public int Def   => (int)(StatGrowth.ComputeStats(_def, _owned.level).def * Status.Mult(StatKind.Def));
+    public int Atk   => (int)(Stats().atk * Status.Mult(StatKind.Atk));
+    public int Def   => (int)(Stats().def * Status.Mult(StatKind.Def));
 
     // ── HP/MP 상태 ─────────────────────────────────────────────────────────
 
@@ -170,6 +220,7 @@ public class CombatCharacter
     /// </summary>
     public void TickStatus(float dt, bool isActive)
     {
+        _sinceHit += dt;
         int before = Status.Count;
         Status.Tick(dt, isActive, d => Damage(d));
         if (Status.Count != before) OnChanged?.Invoke("buff");
@@ -195,6 +246,7 @@ public class CombatCharacter
     /// <summary>활성이 되는 순간 호출 — 예약 버프 시작.</summary>
     public void OnSwitchIn()
     {
+        _auto.OnSwitchIn();   // 자동 전환 카운터 초기화 (복귀 타이머는 유지)
         Status.OnSwitchIn();
         OnChanged?.Invoke("buff");
     }
@@ -357,7 +409,11 @@ public class CombatCharacter
     public void Damage(int amount)
     {
         _hp = Math.Max(0, _hp - amount);
-        if (_hp <= 0) Status.Clear();   // 기절 시 모든 상태(예약 버프 포함) 소멸
+        if (_hp <= 0)
+        {
+            Status.Clear();   // 기절 시 모든 상태(예약 버프 포함) 소멸
+            if (HasForms && _formId != DefaultFormId) ChangeForm(DefaultFormId, FormChangeCause.Revert);
+        }
         OnChanged?.Invoke("hp");
     }
 
@@ -366,6 +422,7 @@ public class CombatCharacter
     /// </summary>
     public int TakeHit(int rawDamage)
     {
+        _sinceHit = 0f;
         int dmg = (int)Math.Round(rawDamage * Status.Mult(StatKind.DamageTaken));
         if (dmg < 0) dmg = 0;
         dmg = Status.Absorb(dmg);
@@ -392,7 +449,11 @@ public class CombatCharacter
     /// <summary>HP/MP를 현재 레벨 기준 최대치로 완전 회복. 버프·쿨다운도 초기화.</summary>
     public void RestoreFull()
     {
-        var s = StatGrowth.ComputeStats(_def, _owned.level);
+        string prevForm = _formId;
+        _formId      = DefaultFormId;
+        _revertTimer = -1f;
+        _auto.OnSwitchIn();
+        var s = Stats();
         _hp = s.hp;
         _mp = s.mp;
 
@@ -400,7 +461,118 @@ public class CombatCharacter
         for (int i = 0; i < _cooldowns.Length; i++) _cooldowns[i] = 0f;
         Status.Clear();
 
+        if (prevForm != _formId) OnFormChanged?.Invoke(prevForm, _formId, FormChangeCause.Revert);
         OnChanged?.Invoke("restore");
+    }
+
+    // ── 폼 전환 (설계도 22 §4-6-1) ─────────────────────────────────────────
+
+    /// <summary>폼이 바뀌었을 때(이전, 새, 원인).</summary>
+    public event Action<string, string, FormChangeCause> OnFormChanged;
+
+    /// <summary>
+    /// 폼 변경. HP·MP는 비율로 이월, 쿨타임·상태 효과는 유지. 같은 폼·없는 폼이면 false.
+    /// 복귀 타이머는 초기화된다(수동 전환 스킬이 필요하면 직후에 다시 건다).
+    /// </summary>
+    public bool ChangeForm(string toForm, FormChangeCause cause)
+    {
+        if (FindForm(toForm) == null || toForm == _formId) return false;
+
+        string from = _formId;
+        int oldMaxHp = MaxHp, oldMaxMp = MaxMp;
+        _formId = toForm;
+        _hp = FormMath.CarryOver(_hp, oldMaxHp, MaxHp);
+        _mp = FormMath.CarryOver(_mp, oldMaxMp, MaxMp);
+        _revertTimer = -1f;
+        _revertTo    = null;
+        _auto.NotifyFormChanged();
+
+        OnFormChanged?.Invoke(from, toForm, cause);
+        OnChanged?.Invoke("form");
+        return true;
+    }
+
+    /// <summary>
+    /// 전환 키(0=Z, 1=X)로 수동 폼 전환 시도. 스턴·기절 중 불가, 해금·쿨타임·mp 필요
+    /// (재입력 복귀는 mp 무소모, 쿨타임은 적용). 성공 시 사용한 스킬 인덱스, 실패 시 -1.
+    /// </summary>
+    public int TryFormChange(int keyIndex, bool isMoving)
+    {
+        if (IsDowned || Status.IsStunned || !HasForms || _def.skills == null) return -1;
+
+        var ctx = new FormContext { secondsSinceHitTaken = _sinceHit, isMoving = isMoving };
+        for (int i = 0; i < _def.skills.Length; i++)
+        {
+            var s = _def.skills[i];
+            if (s == null || s.skillType != SkillKind.FormChange || s.formChange == null) continue;
+            if (s.formChange.keyIndex != keyIndex) continue;
+            if (!IsUnlocked(i) || !IsReady(i)) continue;
+
+            string to = FormChangeResolver.Resolve(s.formChange, _formId, DefaultFormId, ctx, out bool isRevert);
+            if (to == null || FindForm(to) == null) continue;
+
+            int cost = isRevert ? 0 : s.mpCost;
+            if (Mp < cost) continue;
+
+            if (cost > 0) UseMp(cost);
+            StartCooldown(i, s.cooldown);
+            if (!isRevert) AddProficiency(i);
+
+            ChangeForm(to, isRevert ? FormChangeCause.Revert : FormChangeCause.Manual);
+            if (!isRevert) StartRevertTimerIfNeeded(s.formChange, to);
+            return i;
+        }
+        return -1;
+    }
+
+    void StartRevertTimerIfNeeded(FormChangeSpec spec, string enteredForm)
+    {
+        if (spec.revertAfterSeconds <= 0f) return;
+        bool starts = spec.autoRevertForms != null && spec.autoRevertForms.Length > 0
+            ? Array.IndexOf(spec.autoRevertForms, enteredForm) >= 0
+            : enteredForm == spec.toForm;
+        if (!starts) return;
+        _revertTimer = spec.revertAfterSeconds;
+        _revertTo    = string.IsNullOrEmpty(spec.revertToForm) ? DefaultFormId : spec.revertToForm;
+    }
+
+    /// <summary>
+    /// 활성 캐릭터 전용 틱: 자동 복귀 타이머 + 자동 전환 평가(스턴과 무관). 대기 중에는 호출하지 않는다 → 일시정지.
+    /// </summary>
+    public void TickForm(float dt, CombatMotionState motion)
+    {
+        if (IsDowned || !HasForms) return;
+
+        if (_revertTimer > 0f)
+        {
+            _revertTimer -= dt;
+            if (_revertTimer <= 0f)
+            {
+                string to = _revertTo;
+                _revertTimer = -1f;
+                ChangeForm(to, FormChangeCause.Revert);
+                return;
+            }
+        }
+
+        if (_auto.HasRules)
+        {
+            string to = _auto.Evaluate(dt, motion, _formId);
+            if (to != null) ChangeForm(to, FormChangeCause.Auto);
+        }
+    }
+
+    /// <summary>적 타격 1회 등록(자동 폼 규칙의 연속 타격 카운터). attrs==null이면 연속이 끊긴다. P5에서 연결.</summary>
+    public void RegisterHit(IEnemyAttributes attrs) => _auto.RegisterHit(attrs);
+
+    /// <summary>전투 구역 진입·이탈·씬 전환 시: 상태·스택·폼 초기화. HP·MP·쿨타임은 유지 (설계도 §4-12).</summary>
+    public void ResetCombatState()
+    {
+        Status.Clear();
+        _auto.OnSwitchIn();
+        _revertTimer = -1f;
+        if (HasForms && _formId != DefaultFormId) ChangeForm(DefaultFormId, FormChangeCause.Revert);
+        OnChanged?.Invoke("buff");
     }
 
     // ── 성장 ──────────────────────────────────────────────────────────────
@@ -423,7 +595,7 @@ public class CombatCharacter
             _nextExp     = ComputeNextExp(_owned.level);
 
             // 레벨업: 최대치도 올라가므로 HP/MP 재계산 후 풀 회복
-            var s = StatGrowth.ComputeStats(_def, _owned.level);
+            var s = Stats();
             _hp       = s.hp;
             _mp       = s.mp;
             leveledUp = true;
@@ -449,7 +621,7 @@ public class CombatCharacter
         _owned.exp  = 0;
         _nextExp    = ComputeNextExp(_owned.level);
 
-        var s = StatGrowth.ComputeStats(_def, _owned.level);
+        var s = Stats();
         _hp = s.hp;
         _mp = s.mp;
 
