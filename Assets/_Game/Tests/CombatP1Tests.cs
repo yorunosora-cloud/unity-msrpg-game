@@ -78,4 +78,66 @@ public class CombatP1Tests
         Assert.AreEqual(-1, s.slot);
         Assert.IsTrue(string.IsNullOrEmpty(s.formReq));
     }
+
+    // ════════════════════════════════════════════════════════════════════════
+    // CombatCharacter — 슬롯 해석
+    // ════════════════════════════════════════════════════════════════════════
+
+    [Test]
+    public void SlotOf_Legacy_IsIndexPlusOne()
+    {
+        var ch = MakeChar(new[] { MakeSkill("a"), MakeSkill("b") });
+        Assert.AreEqual(1, ch.SlotOf(0));
+        Assert.AreEqual(2, ch.SlotOf(1));
+    }
+
+    [Test]
+    public void SlotOf_ExplicitSlot_IsHonored()
+    {
+        var ch = MakeChar(new[] { MakeSkill("basic", slot: 0), MakeSkill("t", slot: 2) });
+        Assert.AreEqual(0, ch.SlotOf(0));
+        Assert.AreEqual(2, ch.SlotOf(1));
+    }
+
+    [Test]
+    public void SlotOf_NoSkill_ReturnsMinusOne()
+    {
+        var ch = MakeChar(new[] { MakeSkill("a") });
+        Assert.AreEqual(-1, ch.SlotOf(5));
+        Assert.AreEqual(-1, ch.SlotOf(-1));
+    }
+
+    [Test]
+    public void IndexForSlot_Legacy_ResolvesByIndexPlusOne()
+    {
+        var ch = MakeChar(new[] { MakeSkill("a"), MakeSkill("b") });
+        Assert.AreEqual(0,  ch.IndexForSlot(1));
+        Assert.AreEqual(1,  ch.IndexForSlot(2));
+        Assert.AreEqual(-1, ch.IndexForSlot(0), "레거시 캐릭터는 슬롯 0(기본기)이 비어 있다");
+        Assert.AreEqual(-1, ch.IndexForSlot(3));
+    }
+
+    [Test]
+    public void IndexForSlot_ExplicitSlots_ResolvesBySlot()
+    {
+        var ch = MakeChar(new[] { MakeSkill("basic", slot: 0), MakeSkill("t", slot: 2) });
+        Assert.AreEqual(0,  ch.IndexForSlot(0));
+        Assert.AreEqual(1,  ch.IndexForSlot(2));
+        Assert.AreEqual(-1, ch.IndexForSlot(1));
+    }
+
+    [Test]
+    public void IndexForSlot_FormReqMismatch_IsSkipped()
+    {
+        // P1: CurrentFormId는 항상 "" → formReq가 있는 스킬은 해석되지 않는다
+        var ch = MakeChar(new[] { MakeSkill("p", slot: 1, formReq: "Particle"), MakeSkill("any", slot: 1) });
+        Assert.AreEqual(1, ch.IndexForSlot(1), "formReq가 맞지 않는 스킬은 건너뛰고 다음 스킬을 찾는다");
+    }
+
+    [Test]
+    public void IndexForSlot_NullSkillsArray_ReturnsMinusOne()
+    {
+        var ch = MakeChar(null);
+        Assert.AreEqual(-1, ch.IndexForSlot(1));
+    }
 }

@@ -53,6 +53,40 @@ public class CombatCharacter
     public SkillDef SkillAt(int i)
         => (_def.skills != null && i >= 0 && i < _def.skills.Length) ? _def.skills[i] : null;
 
+    // ── 슬롯 해석 (설계도 22 §4-1) ─────────────────────────────────────────
+
+    /// <summary>현재 폼 id. P3(폼 시스템) 전까지는 항상 빈 문자열.</summary>
+    public string CurrentFormId => string.Empty;
+
+    /// <summary>
+    /// 인덱스 i 스킬의 슬롯(0~6). SkillDef.slot이 -1(레거시)이면 i+1.
+    /// 스킬이 없으면 -1.
+    /// </summary>
+    public int SlotOf(int i)
+    {
+        var s = SkillAt(i);
+        if (s == null) return -1;
+        return s.slot >= 0 ? s.slot : SkillSlots.LegacySlot(i);
+    }
+
+    /// <summary>
+    /// 슬롯 s를 채우는 스킬의 배열 인덱스. 현재 폼과 맞는(formReq가 비었거나 같은) 첫 스킬.
+    /// 없으면 -1. 이후 CastSkill/CanCast 등 인덱스 기반 API에 그대로 넘긴다.
+    /// </summary>
+    public int IndexForSlot(int slot)
+    {
+        if (_def.skills == null) return -1;
+        for (int i = 0; i < _def.skills.Length; i++)
+        {
+            var s = _def.skills[i];
+            if (s == null) continue;
+            if (SlotOf(i) != slot) continue;
+            if (!string.IsNullOrEmpty(s.formReq) && s.formReq != CurrentFormId) continue;
+            return i;
+        }
+        return -1;
+    }
+
     /// <summary>인덱스 i의 남은 쿨타임 (초). 0이면 준비 완료.</summary>
     public float CooldownRemaining(int i)
         => (i >= 0 && i < _cooldowns.Length) ? Math.Max(0f, _cooldowns[i]) : 0f;
