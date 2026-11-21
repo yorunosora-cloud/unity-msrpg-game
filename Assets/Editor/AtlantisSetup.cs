@@ -371,8 +371,8 @@ public static class AtlantisSetup
 
     static void CreatePartyHud(Transform canvasParent, TMP_FontAsset font)
     {
-        const int   SlotCount = 3;
-        const float SlotW     = 130f, SlotH = 190f, SlotGap = 6f;
+        const int   SlotCount = Party.MaxSize;
+        const float SlotW     = 108f, SlotH = 190f, SlotGap = 6f;
 
         var rootGO = new GameObject("PartyHudRoot");
         rootGO.transform.SetParent(canvasParent, false);
@@ -449,7 +449,7 @@ public static class AtlantisSetup
 
     static void CreateSkillBarHud(Transform canvasParent, GameObject canvasGO, TMP_FontAsset font)
     {
-        const int   MaxSlots = 6;
+        const int   MaxSlots = SkillSlots.Count;
         const float SlotW = 95f, SlotH = 115f, SlotGap = 6f;
         float totalW = SlotW * MaxSlots + SlotGap * (MaxSlots - 1);
 
@@ -466,7 +466,7 @@ public static class AtlantisSetup
         var nameTexts  = new TMP_Text[MaxSlots];
         var cdOverlays = new Image[MaxSlots];
         var slotBgs    = new Image[MaxSlots];
-        string[] keys  = { "U", "I", "O", "H", "J", "K" };
+        string[] keys  = { "Q", "R", "T", "F", "V", "G", "B" };
 
         for (int i = 0; i < MaxSlots; i++)
         {

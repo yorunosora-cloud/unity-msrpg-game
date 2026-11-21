@@ -4,21 +4,19 @@ using TMPro;
 
 /// <summary>
 /// 화면 하단 중앙 스킬 바 HUD.
-/// 활성 캐릭터가 보유한 스킬을 E/R/T/F/V/G 키 라벨과 함께 표시한다.
+/// 활성 캐릭터가 보유한 스킬을 Q/R/T/F/V/G/B 키 라벨(스킬의 슬롯에서 도출)과 함께 표시한다.
 /// 캐릭터 교체 시 슬롯 내용·개수가 갱신된다.
 /// </summary>
 public class SkillBarHud : MonoBehaviour
 {
-    // ── 6슬롯 참조 배열 (MesoriaSetup이 직렬화로 주입) ─────────────────────
+    // ── 7슬롯 참조 배열 (MesoriaSetup이 직렬화로 주입) ─────────────────────
 
     [SerializeField] GameObject[]  _slotRoots;        // 슬롯 루트 (enable/disable)
-    [SerializeField] TMP_Text[]    _slotKeyLabels;   // "E" / "R" / … / "G"
+    [SerializeField] TMP_Text[]    _slotKeyLabels;   // "Q" / "R" / … / "B"
     [SerializeField] TMP_Text[]    _slotNameTexts;   // skill.nameKo
     [SerializeField] Image[]       _slotCdOverlays;  // 쿨다운 오버레이 (fillAmount 1→0)
     [SerializeField] Image[]       _slotBgs;         // MP 부족 시 어둡게
     [SerializeField] GameObject[]  _slotLockOverlays; // 잠긴 스킬 자물쇠 오버레이
-
-    static readonly string[] KeyLabels = { "U", "I", "O", "H", "J", "K" };
 
     const float DimAlpha   = 0.4f; // MP 부족·쿨다운 시 배경 투명도
     const float NormalAlpha = 0.85f;
@@ -92,7 +90,7 @@ public class SkillBarHud : MonoBehaviour
             var skill = _active.SkillAt(i);
 
             if (_slotKeyLabels  != null && i < _slotKeyLabels.Length  && _slotKeyLabels[i]  != null)
-                _slotKeyLabels[i].text = KeyLabels[i];
+                _slotKeyLabels[i].text = SkillSlots.KeyLabel(_active.SlotOf(i));
 
             if (_slotNameTexts  != null && i < _slotNameTexts.Length  && _slotNameTexts[i]  != null)
                 _slotNameTexts[i].text = skill?.nameKo ?? "—";

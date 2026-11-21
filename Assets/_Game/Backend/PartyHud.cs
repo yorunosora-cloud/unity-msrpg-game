@@ -3,7 +3,7 @@ using UnityEngine.UI;
 using TMPro;
 
 /// <summary>
-/// 화면 우하단 파티 슬롯 HUD (최대 3칸).
+/// 화면 우하단 파티 슬롯 HUD (최대 5칸).
 /// HP/MP 바: CombatHud와 동일하게 Image.Type.Simple + anchorMax.x 방식으로 너비 제어.
 /// 감소는 MoveTowards로 부드럽게, 회복/부활은 즉시.
 /// 슬롯 배경색: 상태 기반 (기본/활성/기절). 속성 색 미사용.
