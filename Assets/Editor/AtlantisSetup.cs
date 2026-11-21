@@ -388,6 +388,7 @@ public static class AtlantisSetup
         var statusTexts   = new TMP_Text[SlotCount];
         var nameTexts     = new TMP_Text[SlotCount];
         var levelTexts    = new TMP_Text[SlotCount];
+        var buffTexts     = new TMP_Text[SlotCount];
         var hpFills       = new Image[SlotCount];
         var hpTexts       = new TMP_Text[SlotCount];
         var mpFills       = new Image[SlotCount];
@@ -425,6 +426,8 @@ public static class AtlantisSetup
                 new Vector2(0f,0.64f), new Vector2(1f,0.86f), new Vector2(5f, 0f), true,  TextAlignmentOptions.MidlineLeft);
             levelTexts[i]  = CreateSlotLabel(slotGO.transform, "LevelText",  "Lv.1",13, font,
                 new Vector2(0f,0.50f), new Vector2(1f,0.64f), new Vector2(5f, 0f), false, TextAlignmentOptions.MidlineLeft);
+            buffTexts[i]   = CreateSlotLabel(slotGO.transform, "BuffText",   "",    12, font,
+                new Vector2(0.35f,0.50f), new Vector2(1f,0.64f), new Vector2(-4f, 0f), false, TextAlignmentOptions.MidlineRight);
 
             (hpFills[i], hpTexts[i]) = CreateStatBar(slotGO.transform, "HP", new Color(0.15f,0.85f,0.3f),
                 new Vector2(0f,0.30f), new Vector2(1f,0.48f), font, 5f);
@@ -440,6 +443,7 @@ public static class AtlantisSetup
         SetObjArray(hudSO, "_slotStatusTexts",    statusTexts);
         SetObjArray(hudSO, "_slotNameTexts",      nameTexts);
         SetObjArray(hudSO, "_slotLevelTexts",     levelTexts);
+        SetObjArray(hudSO, "_slotBuffTexts",      buffTexts);
         SetObjArray(hudSO, "_slotHpFills",        hpFills);
         SetObjArray(hudSO, "_slotHpTexts",        hpTexts);
         SetObjArray(hudSO, "_slotMpFills",        mpFills);

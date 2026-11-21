@@ -17,6 +17,8 @@ public class PartyHud : MonoBehaviour
     [SerializeField] TMP_Text[] _slotStatusTexts;
     [SerializeField] TMP_Text[] _slotNameTexts;
     [SerializeField] TMP_Text[] _slotLevelTexts;
+    [Tooltip("슬롯별 상태 효과 요약(▲활성 ○예약 ▼해로움). 비어 있으면(구 씬) 표시 생략")]
+    [SerializeField] TMP_Text[] _slotBuffTexts;
     [SerializeField] Image[]    _slotHpFills;
     [SerializeField] TMP_Text[] _slotHpTexts;
     [SerializeField] Image[]    _slotMpFills;
@@ -34,6 +36,8 @@ public class PartyHud : MonoBehaviour
     static readonly Color DownedTextColor   = new Color(1.00f, 0.30f, 0.30f);
     static readonly Color ActiveTextColor   = new Color(1.00f, 0.95f, 0.20f);
     static readonly Color ReadyTextColor    = new Color(0.75f, 0.85f, 0.75f);
+    static readonly Color BuffTextColor     = new Color(0.55f, 1.00f, 0.60f);
+    static readonly Color BuffBenchColor    = new Color(0.60f, 0.75f, 0.60f, 0.65f);   // 대기=흐림
 
     // ── HP/MP 바 애니메이션 ───────────────────────────────────────────────
     const float DrainSpeed = 1.5f;
@@ -54,10 +58,34 @@ public class PartyHud : MonoBehaviour
 
     void Start() => TryConnect();
 
+    float _buffRefreshTimer;
+
     void Update()
     {
         if (_party != PlayerRuntime.Party) TryConnect();
         AnimateBars();
+
+        // 남은 시간 표시 갱신 (이벤트 없이 흐르는 시간)
+        _buffRefreshTimer += Time.deltaTime;
+        if (_buffRefreshTimer >= 0.25f)
+        {
+            _buffRefreshTimer = 0f;
+            RefreshBuffTexts();
+        }
+    }
+
+    void RefreshBuffTexts()
+    {
+        if (_party == null || _slotBuffTexts == null) return;
+        for (int i = 0; i < SlotCount && i < _party.Members.Count; i++)
+            UpdateBuffText(i, _party.Members[i], _party.ActiveIndex == i);
+    }
+
+    void UpdateBuffText(int i, CombatCharacter member, bool isActive)
+    {
+        if (_slotBuffTexts == null || i >= _slotBuffTexts.Length || _slotBuffTexts[i] == null) return;
+        _slotBuffTexts[i].text  = StatusSummary.Format(member.Status);
+        _slotBuffTexts[i].color = isActive ? BuffTextColor : BuffBenchColor;
     }
 
     void OnDestroy() => UnsubscribeParty();
@@ -278,6 +306,9 @@ public class PartyHud : MonoBehaviour
         // 레벨
         if (_slotLevelTexts[i])
             _slotLevelTexts[i].text = $"Lv.{member.Level}";
+
+        // 상태 효과 요약
+        UpdateBuffText(i, member, isActive);
 
         // HP 목표값 + 수치 텍스트 (바 시각은 AnimateBars 처리)
         if (_targHpFracs != null && i < _targHpFracs.Length)
