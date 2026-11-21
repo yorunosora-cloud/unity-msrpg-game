@@ -3,9 +3,9 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 /// <summary>
-/// 파티 빌드 및 1/2/3 키 캐릭터 교체 관리. Player GameObject에 부착.
-/// - Start(): 로스터 앞 3명(없으면 DB 앞 3명)으로 Party 생성 → PlayerRuntime 갱신
-/// - Update(): 1/2/3 키 입력 → Party.SwitchTo()
+/// 파티 빌드 및 1~5 키 캐릭터 교체 관리. Player GameObject에 부착.
+/// - Start(): 로스터 앞 5명(없으면 DB 앞 5명)으로 Party 생성 → PlayerRuntime 갱신
+/// - Update(): 1~5 키 입력 → Party.SwitchTo() (전환 쿨타임 1초는 Party가 검사)
 /// - 활성 캐릭터 기절 감지 → AutoSwitchToNext(). 전멸 시 PlayerDeath에 위임.
 /// </summary>
 [RequireComponent(typeof(BoxCharacterBuilder))]
@@ -53,27 +53,27 @@ public class PartyController : MonoBehaviour
 
         var members = new List<CombatCharacter>();
 
-        // 1순위: 로스터 앞 3명
+        // 1순위: 로스터 앞 5명
         var roster = MetaState.Roster;
         if (roster != null)
         {
             foreach (var owned in roster.Owned)
             {
-                if (members.Count >= 3) break;
+                if (members.Count >= Party.MaxSize) break;
                 var def = db.ById(owned.id);
                 if (def == null) continue;
                 members.Add(new CombatCharacter(def, owned));
             }
         }
 
-        // 폴백: DB 앞 3명 (로스터가 비었거나 로드 전)
+        // 폴백: DB 앞 5명 (로스터가 비었거나 로드 전)
         if (members.Count == 0)
         {
             int fallbackCount = 0;
             foreach (var def in db.All)
             {
                 if (def == null) continue;
-                if (fallbackCount >= 3) break;
+                if (fallbackCount >= Party.MaxSize) break;
                 var owned = new OwnedCharacter { id = def.id, level = 1, exp = 0 };
                 members.Add(new CombatCharacter(def, owned));
                 fallbackCount++;
@@ -120,9 +120,11 @@ public class PartyController : MonoBehaviour
         var kb = Keyboard.current;
         if (kb == null) return;
 
-        if (kb.digit1Key.wasPressedThisFrame) TrySwitchTo(0);
+        if      (kb.digit1Key.wasPressedThisFrame) TrySwitchTo(0);
         else if (kb.digit2Key.wasPressedThisFrame) TrySwitchTo(1);
         else if (kb.digit3Key.wasPressedThisFrame) TrySwitchTo(2);
+        else if (kb.digit4Key.wasPressedThisFrame) TrySwitchTo(3);
+        else if (kb.digit5Key.wasPressedThisFrame) TrySwitchTo(4);
     }
 
     void TrySwitchTo(int i)
