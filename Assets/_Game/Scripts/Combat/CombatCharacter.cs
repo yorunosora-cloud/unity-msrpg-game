@@ -82,6 +82,15 @@ public class CombatCharacter
     public Gender          CurrentGender => CurrentForm != null ? CurrentForm.gender : _def.gender;
     public string          FormNameKo    => CurrentForm != null ? CurrentForm.nameKo : string.Empty;
 
+    /// <summary>둔화 하한: 이동속도 배율은 이 값 아래로 내려가지 않는다 (설계도 §4-13).</summary>
+    public const float MinMoveSpeedMultiplier = 0.3f;
+
+    /// <summary>플레이어 이동속도에 곱할 배율(둔화 반영, 30% 바닥).</summary>
+    public float MoveSpeedMultiplier => Math.Max(MinMoveSpeedMultiplier, Status.Mult(StatKind.MoveSpeed));
+
+    /// <summary>이동·기본기·스킬·폼 전환·파티 전환이 가능한 상태(기절·스턴이 아님).</summary>
+    public bool CanAct => !IsDowned && !Status.IsStunned;
+
     /// <summary>마지막으로 피해를 받은 뒤 경과 시간(초). 탄소 동소 변환의 "최근 피격" 판정용.</summary>
     public float SecondsSinceHitTaken => _sinceHit;
     public int       Level       => _owned.level;

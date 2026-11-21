@@ -44,7 +44,7 @@ public class PlayerCombat : MonoBehaviour
     void DoAttack()
     {
         var active = PlayerRuntime.Active;
-        if (active == null || active.IsDowned)
+        if (active == null || !active.CanAct)   // 기절·스턴 중엔 공격 불가
         {
             _cooldownTimer = attackCooldown;
             return; // 기절 중엔 공격 불가

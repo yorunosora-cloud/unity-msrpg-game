@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 
 /// <summary>배율 상태 효과가 영향을 주는 능력치.</summary>
-public enum StatKind { Atk, Def, MoveSpeed, DamageTaken }
+public enum StatKind { Atk, Def, MoveSpeed, DamageTaken, CooldownRate }   // CooldownRate: 쿨타임 진행 배율(>1이 빠름)
 
 /// <summary>상태 효과의 동작 종류.</summary>
 public enum StatusKind { StatMod, Dot, Stun, Shield }

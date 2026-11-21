@@ -103,7 +103,7 @@ public class SkillBarHud : MonoBehaviour
     void OnChanged(string reason)
     {
         if (_active == null) return;
-        if (reason == "cooldown" || reason == "mp" || reason == "restore" || reason == "levelup" || reason == "unlock")
+        if (reason == "cooldown" || reason == "form" || reason == "mp" || reason == "restore" || reason == "levelup" || reason == "unlock")
             RefreshVisuals();
     }
 

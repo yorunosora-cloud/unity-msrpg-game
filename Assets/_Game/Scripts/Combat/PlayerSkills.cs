@@ -44,6 +44,9 @@ public class PlayerSkills : MonoBehaviour
         if (party != null) party.Tick(dt);
         else { active.TickCooldowns(dt); active.TickBuffs(dt); }
 
+        // 활성 캐릭터 폼 틱(자동 복귀 타이머·자동 전환 평가). 대기 캐릭터는 호출하지 않아 일시정지.
+        active.TickForm(dt, PlayerRuntime.Motion);
+
         if (UIManager.IsAnyPanelOpen) return;
 
         // 자연 MP 회복: 파티 전원(대기 포함, 기절 제외)
@@ -59,6 +62,11 @@ public class PlayerSkills : MonoBehaviour
         if (kb == null) return;
 
         if (!skillsEnabled) return;
+        if (!active.CanAct) return;   // 스턴·기절 중에는 스킬·폼 전환 불가 (설계도 §4-13)
+
+        // 폼 전환 키: Z=0, X=1
+        if (kb.zKey.wasPressedThisFrame) active.TryFormChange(0, PlayerRuntime.Motion.isMoving);
+        if (kb.xKey.wasPressedThisFrame) active.TryFormChange(1, PlayerRuntime.Motion.isMoving);
 
         for (int i = 0; i < SlotKeys.Length; i++)
             if (kb[SlotKeys[i]].wasPressedThisFrame)

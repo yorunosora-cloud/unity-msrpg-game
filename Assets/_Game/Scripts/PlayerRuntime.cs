@@ -13,4 +13,7 @@ public static class PlayerRuntime
 
     /// <summary>현재 활성 캐릭터. PartyController가 교체 시마다 갱신.</summary>
     public static CombatCharacter Active { get; set; }
+
+    /// <summary>플레이어 이동·점프 상태 스냅샷. PlayerController가 매 프레임 갱신 (폼 자동 전환 등이 읽는다).</summary>
+    public static CombatMotionState Motion { get; set; }
 }

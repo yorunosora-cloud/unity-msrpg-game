@@ -106,7 +106,8 @@ public class Party
         _switchCd = Mathf.Max(0f, _switchCd - dt);
         for (int i = 0; i < _members.Count; i++)
         {
-            _members[i].TickCooldowns(dt);
+            // 쿨타임은 CooldownRate 배율만큼 빠르게(공격속도·고유 시간 패시브용)
+            _members[i].TickCooldowns(dt * _members[i].Status.Mult(StatKind.CooldownRate));
             _members[i].TickStatus(dt, i == ActiveIndex);
         }
     }

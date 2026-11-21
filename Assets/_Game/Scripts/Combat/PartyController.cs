@@ -130,6 +130,7 @@ public class PartyController : MonoBehaviour
     void TrySwitchTo(int i)
     {
         if (_party == null || i >= _party.Members.Count) return;
+        if (PlayerRuntime.Active != null && !PlayerRuntime.Active.CanAct) return;   // 스턴 중 파티 전환 불가 (§4-13)
         _party.SwitchTo(i); // 성공 시 OnActiveChanged가 발생
     }
 
@@ -138,7 +139,9 @@ public class PartyController : MonoBehaviour
     void OnMemberChanged(string reason)
     {
         if (_party == null) return;
-        if (!PlayerRuntime.Active.IsDowned) return; // 활성 캐릭터만 확인
+        if (reason == "form") { ApplyActiveTint(); return; }   // 폼이 바뀌면 몸 색 갱신
+        if (reason != "hp") return;                 // 기절은 HP 변화로만 발생. (OnSwitchIn의 "buff" 등으로 자동 교체가 재귀 호출되는 것을 방지)
+        if (_party.Active == null || !_party.Active.IsDowned) return; // 활성 캐릭터만 확인
 
         // 전멸 여부 먼저 확인 → PlayerDeath에 위임 (아무것도 안 함)
         if (_party.AllDowned) return;

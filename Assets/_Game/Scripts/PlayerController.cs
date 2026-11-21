@@ -60,11 +60,20 @@ public class PlayerController : MonoBehaviour
             jump = kb.spaceKey.wasPressedThisFrame;
         }
 
+        // 스턴: 이동·점프 입력 차단 (설계도 22 §4-13). 둔화: 이동속도 배율(30% 바닥)
+        var activeChar = PlayerRuntime.Active;
+        float moveMult = 1f;
+        if (activeChar != null)
+        {
+            if (activeChar.Status.IsStunned) { h = 0f; v = 0f; run = false; jump = false; }
+            moveMult = activeChar.MoveSpeedMultiplier;
+        }
+
         Vector3 desiredDir = new Vector3(h, 0f, v);
         if (desiredDir.sqrMagnitude > 1f) desiredDir.Normalize();
         bool hasInput = desiredDir.sqrMagnitude > 0.01f;
 
-        float   targetSpeed = hasInput ? (run ? runSpeed : walkSpeed) : 0f;
+        float   targetSpeed = hasInput ? (run ? runSpeed : walkSpeed) * moveMult : 0f;
         Vector3 targetVel   = hasInput ? desiredDir * targetSpeed : Vector3.zero;
 
         // 수직 속도: 공중엔 중력, 지상/예비동작엔 작은 하방 압력
@@ -147,6 +156,16 @@ public class PlayerController : MonoBehaviour
         // 예비동작 중 발판 끝에서 떨어진 경우
         if (_jumpPhase == JumpPhase.Anticipating && !_cc.isGrounded)
             _jumpPhase = JumpPhase.Airborne;
+
+        // 폼 자동 전환·패시브가 읽는 이동 상태 스냅샷
+        float hSpeed = _horizVel.magnitude;
+        PlayerRuntime.Motion = new CombatMotionState
+        {
+            speedRatio    = runSpeed > 0f ? hSpeed / runSpeed : 0f,
+            isMoving      = hSpeed > 0.1f,
+            isAirborne    = _jumpPhase == JumpPhase.Airborne,
+            verticalSpeed = _velocityY,
+        };
 
         _builder?.SetLocomotion(_horizVel.magnitude, _cc.isGrounded,
                                 _jumpPhase == JumpPhase.Anticipating, landingImpact);

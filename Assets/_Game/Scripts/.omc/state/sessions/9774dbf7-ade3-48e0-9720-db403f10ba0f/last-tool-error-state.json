@@ -1,0 +1,7 @@
+{
+  "tool_name": "Bash",
+  "tool_input_preview": "{\"command\":\"node - <<'EOF'\\nconst fs=require('fs');\\nfunction edit(path, pairs){\\n  let s=fs.readFileSync(path,'utf8'); const crlf=s.includes('\\\\r\\\\n'); if(crlf) s=s.replace(/\\\\r\\\\n/g,'\\\\n');\\n  for(c...",
+  "error": "Exit code 2\n/usr/bin/bash: -c: line 131: unexpected EOF while looking for matching `''",
+  "timestamp": "2026-11-21T11:12:49.593Z",
+  "retry_count": 1
+}
