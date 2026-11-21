@@ -115,7 +115,7 @@ public class Enemy : MonoBehaviour, IDamageable
                     _attackTimer = 0f;
                     var active = PlayerRuntime.Active;
                     if (active != null && !active.IsDowned)
-                        active.Damage(contactDamage);
+                        active.TakeHit(contactDamage);   // 받는 피해 배율·보호막 적용
                 }
             }
         }

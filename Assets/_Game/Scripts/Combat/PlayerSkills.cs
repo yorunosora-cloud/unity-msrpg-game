@@ -40,11 +40,9 @@ public class PlayerSkills : MonoBehaviour
         float dt    = Time.deltaTime;
 
         // 쿨다운 틱: 파티 전원(대기 포함) + 전환 쿨타임. UI가 열려 있어도 계속 감소.
+        // 상태 효과도 Party.Tick이 처리(활성 여부 전달). 파티가 없으면 활성 캐릭터만.
         if (party != null) party.Tick(dt);
-        else               active.TickCooldowns(dt);
-
-        // 버프 틱: 활성 캐릭터만 (버프 타이머는 활성일 때만 흐른다)
-        active.TickBuffs(dt);
+        else { active.TickCooldowns(dt); active.TickBuffs(dt); }
 
         if (UIManager.IsAnyPanelOpen) return;
 

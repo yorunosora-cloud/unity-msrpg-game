@@ -18,8 +18,11 @@ public class CombatCharacter
 
     // ── 스킬 쿨다운 · 버프 상태 ────────────────────────────────────────────
     float[] _cooldowns;      // 스킬 인덱스별 남은 쿨타임 (초). 길이 = skills.Length
-    float   _atkBuffMult  = 1f;  // 공격력 버프 배율 (1f = 변화 없음)
-    float   _atkBuffTimer = 0f;  // 버프 남은 시간 (0 이하면 비활성)
+
+    /// <summary>상태 효과 컨테이너 (버프·디버프·도트·스턴·보호막). 설계도 22 §4-4.</summary>
+    public StatusHolder Status { get; } = new StatusHolder();
+
+    const string LegacyAtkBuffId = "legacy_atk_buff";
 
     public CombatCharacter(CharacterDef def, OwnedCharacter owned)
     {
@@ -129,9 +132,9 @@ public class CombatCharacter
 
     public int MaxHp => StatGrowth.ComputeStats(_def, _owned.level).hp;
     public int MaxMp => StatGrowth.ComputeStats(_def, _owned.level).mp;
-    /// <summary>현재 레벨 공격력 × 버프 배율 (버프 없으면 1.0).</summary>
-    public int Atk   => (int)(StatGrowth.ComputeStats(_def, _owned.level).atk * _atkBuffMult);
-    public int Def   => StatGrowth.ComputeStats(_def, _owned.level).def;
+    /// <summary>현재 레벨 공격력 × 상태 효과 배율 (없으면 1.0).</summary>
+    public int Atk   => (int)(StatGrowth.ComputeStats(_def, _owned.level).atk * Status.Mult(StatKind.Atk));
+    public int Def   => (int)(StatGrowth.ComputeStats(_def, _owned.level).def * Status.Mult(StatKind.Def));
 
     // ── HP/MP 상태 ─────────────────────────────────────────────────────────
 
@@ -161,17 +164,25 @@ public class CombatCharacter
         }
     }
 
-    /// <summary>매 프레임 버프 타이머 감소. 만료 시 배율 초기화 + OnChanged("buff").</summary>
-    public void TickBuffs(float dt)
+    /// <summary>
+    /// 상태 효과 진행. isActive = 현재 활성 캐릭터인지(버프는 활성일 때만 흐름).
+    /// 도트 피해는 이 캐릭터에게 적용된다. 효과 수가 바뀌면 OnChanged("buff").
+    /// </summary>
+    public void TickStatus(float dt, bool isActive)
     {
-        if (_atkBuffTimer <= 0f) return;
-        _atkBuffTimer -= dt;
-        if (_atkBuffTimer <= 0f)
-        {
-            _atkBuffTimer = 0f;
-            _atkBuffMult  = 1f;
-            OnChanged?.Invoke("buff");
-        }
+        int before = Status.Count;
+        Status.Tick(dt, isActive, d => Damage(d));
+        if (Status.Count != before) OnChanged?.Invoke("buff");
+    }
+
+    /// <summary>활성 캐릭터 한 명만 쓰는 호환용 틱 (= TickStatus(dt, true)).</summary>
+    public void TickBuffs(float dt) => TickStatus(dt, true);
+
+    /// <summary>활성이 되는 순간 호출 — 예약 버프 시작.</summary>
+    public void OnSwitchIn()
+    {
+        Status.OnSwitchIn();
+        OnChanged?.Invoke("buff");
     }
 
     /// <summary>인덱스 i의 스킬이 쿨타임 만료 상태인지.</summary>
@@ -205,11 +216,14 @@ public class CombatCharacter
         RecoverMp(amt);
     }
 
-    /// <summary>공격력 버프 적용 (중복 시 더 긴 쪽으로 갱신).</summary>
+    /// <summary>공격력 버프 적용 (같은 버프는 더 강한 수치·더 긴 시간으로 갱신). 활성 캐릭터 자신용.</summary>
     public void ApplyAtkBuff(float multiplier, float duration)
     {
-        _atkBuffMult  = multiplier;
-        _atkBuffTimer = Math.Max(_atkBuffTimer, duration);
+        Status.Apply(new StatusEffect
+        {
+            Id = LegacyAtkBuffId, Kind = StatusKind.StatMod, Stat = StatKind.Atk,
+            Value = multiplier, Duration = duration, IsBeneficial = true,
+        }, ownerActive: true);
         OnChanged?.Invoke("buff");
     }
 
@@ -329,7 +343,22 @@ public class CombatCharacter
     public void Damage(int amount)
     {
         _hp = Math.Max(0, _hp - amount);
+        if (_hp <= 0) Status.Clear();   // 기절 시 모든 상태(예약 버프 포함) 소멸
         OnChanged?.Invoke("hp");
+    }
+
+    /// <summary>
+    /// 적의 공격 등 외부 피해 수신: 받는 피해 배율 → 보호막 흡수 → HP 감소. 실제 HP 감소량 반환.
+    /// </summary>
+    public int TakeHit(int rawDamage)
+    {
+        int dmg = (int)Math.Round(rawDamage * Status.Mult(StatKind.DamageTaken));
+        if (dmg < 0) dmg = 0;
+        dmg = Status.Absorb(dmg);
+        int before = _hp;
+        if (dmg > 0) Damage(dmg);
+        else OnChanged?.Invoke("buff");   // 보호막만 소모된 경우 표시 갱신
+        return before - _hp;
     }
 
     public void Heal(int amount)
@@ -355,8 +384,7 @@ public class CombatCharacter
 
         // 쿨다운·버프 초기화
         for (int i = 0; i < _cooldowns.Length; i++) _cooldowns[i] = 0f;
-        _atkBuffMult  = 1f;
-        _atkBuffTimer = 0f;
+        Status.Clear();
 
         OnChanged?.Invoke("restore");
     }

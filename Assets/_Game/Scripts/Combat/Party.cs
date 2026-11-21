@@ -70,6 +70,7 @@ public class Party
 
         ActiveIndex = i;
         _switchCd   = SwitchCooldown;
+        _members[i].OnSwitchIn();
         OnActiveChanged?.Invoke();
         return true;
     }
@@ -86,6 +87,7 @@ public class Party
             if (!_members[idx].IsDowned)
             {
                 ActiveIndex = idx;
+                _members[idx].OnSwitchIn();
                 OnActiveChanged?.Invoke();
                 return true;
             }
@@ -96,13 +98,17 @@ public class Party
     // ── 시간 진행 (대기 멤버 포함) ─────────────────────────────────────────
 
     /// <summary>
-    /// 전환 쿨타임과 파티 전원(대기 포함)의 스킬 쿨타임을 dt초 진행한다.
-    /// 버프 타이머는 포함하지 않는다(활성일 때만 흐르는 규칙은 P2의 StatusHolder에서 처리).
+    /// 전환 쿨타임, 파티 전원(대기 포함)의 스킬 쿨타임, 상태 효과를 dt초 진행한다.
+    /// 상태 효과는 활성 여부를 전달해 버프는 활성일 때만, 해로운 효과는 항상 흐른다.
     /// </summary>
     public void Tick(float dt)
     {
         _switchCd = Mathf.Max(0f, _switchCd - dt);
-        foreach (var m in _members) m.TickCooldowns(dt);
+        for (int i = 0; i < _members.Count; i++)
+        {
+            _members[i].TickCooldowns(dt);
+            _members[i].TickStatus(dt, i == ActiveIndex);
+        }
     }
 
     /// <summary>파티 전원(대기 포함, 기절 제외)의 MP 자연회복 1틱.</summary>

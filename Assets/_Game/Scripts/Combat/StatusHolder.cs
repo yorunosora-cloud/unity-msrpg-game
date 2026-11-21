@@ -114,6 +114,12 @@ public class StatusHolder
                 {
                     e.DotAccum -= whole;
                     dealDot?.Invoke(whole);
+                    // 콜백(피해→기절→Clear 등)이 목록을 바꿨으면 이 효과는 더 처리하지 않는다
+                    if (i >= _effects.Count || !ReferenceEquals(_effects[i], e))
+                    {
+                        i = Math.Min(i, _effects.Count);
+                        continue;
+                    }
                 }
             }
 
