@@ -178,6 +178,20 @@ public class CombatCharacter
     /// <summary>활성 캐릭터 한 명만 쓰는 호환용 틱 (= TickStatus(dt, true)).</summary>
     public void TickBuffs(float dt) => TickStatus(dt, true);
 
+    /// <summary>상태 효과 부여. ownerActive=false이면 이로운 효과는 예약된다.</summary>
+    public void ApplyStatus(StatusEffect e, bool ownerActive)
+    {
+        Status.Apply(e, ownerActive);
+        OnChanged?.Invoke("buff");
+    }
+
+    /// <summary>해로운 상태 효과 해제.</summary>
+    public void Cleanse()
+    {
+        Status.Cleanse();
+        OnChanged?.Invoke("buff");
+    }
+
     /// <summary>활성이 되는 순간 호출 — 예약 버프 시작.</summary>
     public void OnSwitchIn()
     {

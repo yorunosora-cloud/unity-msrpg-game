@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using UnityEngine;
 
-public class Boss : MonoBehaviour, IDamageable
+public class Boss : MonoBehaviour, ISkillTarget
 {
     public static Boss Active { get; private set; }
 
@@ -15,6 +15,11 @@ public class Boss : MonoBehaviour, IDamageable
     public bool    IsDead     => _unit == null || _unit.IsDead;
     public float   HpFraction => _unit?.HpFraction ?? 0f;
     public BossDef Def        => _def;
+
+    /// <summary>보스 상태 효과. 스턴·넉백·견인은 BossDef.ccImmune이면 면역. 설계도 22 §4-9.</summary>
+    public StatusHolder Status { get; } = new StatusHolder();
+
+    bool CcImmune => _def != null && _def.ccImmune;
 
     public event Action OnDefeated;
 
@@ -33,6 +38,31 @@ public class Boss : MonoBehaviour, IDamageable
         _unit = new EnemyUnit(_def.maxHp, _def.def, _def.weakness, expReward: 0);
     }
 
+    void Update()
+    {
+        if (_unit == null || _unit.IsDead || _defeated) return;
+        Status.Tick(Time.deltaTime, false, d => ApplyDamage(d, false));
+    }
+
+    public void ApplyStatus(StatusEffect effect)
+    {
+        if (effect == null) return;
+        if (effect.Kind == StatusKind.Stun && CcImmune) return;
+        Status.Apply(effect, ownerActive: true);
+    }
+
+    public void Displace(Vector3 origin, float distance, bool pull)
+    {
+        if (CcImmune) return;
+        Vector3 away = transform.position - origin; away.y = 0f;
+        float d = away.magnitude;
+        if (d < 0.001f) return;
+        transform.position += (away / d) * (pull ? -Mathf.Min(distance, d) : distance);
+    }
+
+    /// <summary>보스는 속성 표식을 받지 않는다(현재 미지원).</summary>
+    public void SetMark(Continent element) { }
+
     void OnEnable()
     {
         if (Active != null && Active != this)
@@ -50,6 +80,7 @@ public class Boss : MonoBehaviour, IDamageable
         if (_unit == null || _unit.IsDead || _defeated) return;
         bool isWeak = attackerElement == _unit.Weakness;
         int  dmg    = CombatMath.ComputeDamage(atk, _unit.Def, isWeak);
+        dmg = Mathf.Max(1, Mathf.RoundToInt(dmg * Status.Mult(StatKind.DamageTaken)));
         ApplyDamage(dmg, isWeak);
     }
 

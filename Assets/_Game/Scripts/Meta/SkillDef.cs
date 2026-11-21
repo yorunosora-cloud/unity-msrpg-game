@@ -14,6 +14,18 @@ public class SkillDef : ScriptableObject
     [Tooltip("이 스킬을 쓸 수 있는 폼 id. 비우면 모든 폼 (폼 시스템은 P3)")]
     public string formReq;
 
+    [Header("종류·형태·효과 목록 (설계도 22 P2)")]
+    public SkillKind        skillType = SkillKind.Active;
+    [Tooltip("판정 형태. Cone=range+halfAngle / Line=range+lineWidth / Circle=radius(시전자 중심)")]
+    public SkillShape       shape     = SkillShape.Cone;
+    public float            lineWidth = 1f;
+    public float            radius    = 3f;
+    [Tooltip("조합 효과 목록. 비어 있으면 아래 effectKind 경로(기존 4종)로 동작")]
+    public SkillEffectEntry[] effects;
+    [Tooltip("UI용: 사실 기반 설명 / 게임적 설정 설명")]
+    public string           factNoteKo;
+    public string           gameNoteKo;
+
     [Header("기본 정보")]
     public string         id;
     public string         nameKo;

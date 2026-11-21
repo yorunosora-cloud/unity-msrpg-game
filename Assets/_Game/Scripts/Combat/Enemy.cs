@@ -5,7 +5,7 @@ using UnityEngine;
 /// 적 MonoBehaviour.
 /// 정적 레지스트리(Enemy.All)를 통해 PlayerCombat이 물리 쿼리 없이 탐색한다.
 /// </summary>
-public class Enemy : MonoBehaviour, IDamageable
+public class Enemy : MonoBehaviour, ISkillTarget
 {
     Transform IDamageable.Transform => transform;
     bool      IDamageable.IsDead    => _unit == null || _unit.IsDead;
@@ -23,12 +23,17 @@ public class Enemy : MonoBehaviour, IDamageable
     [SerializeField] float attackRange     = 1.2f;
     [SerializeField] int   contactDamage   = 6;
     [SerializeField] float attackInterval  = 1.2f;
+    [Tooltip("true면 스턴·넉백·견인 면역")]
+    [SerializeField] bool  ccImmune        = false;
 
     // ── 공개 접근자 ─────────────────────────────────────────────────────────
     /// <summary>현재 씬에 활성화된 모든 Enemy 목록 (PlayerCombat이 탐색에 사용).</summary>
     public static readonly List<Enemy> All = new();
 
     public EnemyUnit Unit => _unit;
+
+    /// <summary>적 측 상태 효과(스턴·둔화·도트·받는피해배율 등). 설계도 22 §4-9.</summary>
+    public StatusHolder Status { get; } = new StatusHolder();
 
     // ── 내부 상태 ───────────────────────────────────────────────────────────
     EnemyUnit        _unit;
@@ -79,6 +84,11 @@ public class Enemy : MonoBehaviour, IDamageable
     void Update()
     {
         if (_unit == null || _unit.IsDead) return;
+
+        // 상태 효과는 플레이어 유무·UI와 무관하게 흐른다 (도트 포함)
+        Status.Tick(Time.deltaTime, false, ReceiveDot);
+        if (_unit == null || _unit.IsDead) return;
+
         if (_player == null) return;
         if (UIManager.IsAnyPanelOpen) return;
 
@@ -92,6 +102,8 @@ public class Enemy : MonoBehaviour, IDamageable
                 _bodyRenderer.material.color = _baseColor;
         }
 
+        if (Status.IsStunned) return;   // 스턴: 이동·공격 불가
+
         // 탐지 범위 내 → 추적
         if (dist <= detectRange)
         {
@@ -101,7 +113,7 @@ public class Enemy : MonoBehaviour, IDamageable
             // 공격 범위 밖이면 이동
             if (dist > attackRange)
             {
-                transform.position += dir * (moveSpeed * Time.deltaTime);
+                transform.position += dir * (moveSpeed * Status.Mult(StatKind.MoveSpeed) * Time.deltaTime);
                 if (dir != Vector3.zero)
                     transform.rotation = Quaternion.Slerp(transform.rotation,
                         Quaternion.LookRotation(dir), 10f * Time.deltaTime);
@@ -151,6 +163,27 @@ public class Enemy : MonoBehaviour, IDamageable
         return go;
     }
 
+    // ── 상태 효과 · 위치 이동 (ISkillTarget) ────────────────────────────────
+
+    public void ApplyStatus(StatusEffect effect)
+    {
+        if (effect == null) return;
+        if (effect.Kind == StatusKind.Stun && ccImmune) return;
+        Status.Apply(effect, ownerActive: true);   // 적 측 효과는 예약 개념 없음
+    }
+
+    public void Displace(Vector3 origin, float distance, bool pull)
+    {
+        if (ccImmune) return;
+        Vector3 away = transform.position - origin;
+        away.y = 0f;
+        float d = away.magnitude;
+        if (d < 0.001f) return;
+        Vector3 dir = away / d;
+        float move = pull ? -Mathf.Min(distance, d) : distance;   // 견인은 중심을 넘지 않는다
+        transform.position += dir * move;
+    }
+
     // ── 피격 ─────────────────────────────────────────────────────────────────
 
     /// <summary>PlayerCombat이 호출. 약점 여부를 계산해 데미지 적용.</summary>
@@ -160,6 +193,19 @@ public class Enemy : MonoBehaviour, IDamageable
 
         bool isWeak = attackerElement == _unit.Weakness;
         int  dmg    = CombatMath.ComputeDamage(atk, _unit.Def, isWeak);
+        dmg = Mathf.Max(1, Mathf.RoundToInt(dmg * Status.Mult(StatKind.DamageTaken)));   // 취약/피해감소
+        ApplyDamage(dmg, isWeak);
+    }
+
+    /// <summary>도트 등 방어력 무시 지속 피해.</summary>
+    void ReceiveDot(int amount)
+    {
+        if (_unit == null || _unit.IsDead || amount <= 0) return;
+        ApplyDamage(amount, false);
+    }
+
+    void ApplyDamage(int dmg, bool isWeak)
+    {
         _unit.TakeDamage(dmg);
 
         // 데미지 숫자 스폰

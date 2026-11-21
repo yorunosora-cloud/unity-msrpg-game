@@ -70,6 +70,27 @@ public static class SkillScaling
         return result;
     }
 
+    /// <summary>
+    /// 효과 목록 항목의 레벨별 유효 수치. 위력형(피해·회복·보호막·도트)은 곱, 버프 배율은 (배율−1) 부분만 곱,
+    /// 그 외(둔화·피해배율·거리 등)는 그대로.
+    /// </summary>
+    public static float ScaleEffectValue(SkillEffectEntry e, int level)
+    {
+        float mult = 1f + (level - 1) * PowerPerLevel;
+        switch (e.type)
+        {
+            case SkillEffectType.Damage:
+            case SkillEffectType.Heal:
+            case SkillEffectType.Shield:
+            case SkillEffectType.Dot:
+                return e.value * mult;
+            case SkillEffectType.StatBuff:
+                return 1f + (e.value - 1f) * mult;
+            default:
+                return e.value;
+        }
+    }
+
     // ── 숙련도 보너스 ─────────────────────────────────────────────────────────
 
     /// <summary>

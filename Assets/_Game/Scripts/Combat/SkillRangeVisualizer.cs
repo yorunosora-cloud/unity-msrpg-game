@@ -42,12 +42,50 @@ public static class SkillRangeVisualizer
     {
         if (skill == null || origin == null) return;
 
+        if (skill.effects != null && skill.effects.Length > 0)
+        {
+            ShowEffects(skill, origin);
+            return;
+        }
+
         Color c = KindColors[(int)skill.effectKind % KindColors.Length];
 
         if (skill.effectKind == SkillEffectKind.HealBuff)
             SpawnCircle(origin.position, HealRadius, c, CircleFadeDuration);
         else
             SpawnCone(origin.position, origin.forward, skill.range, skill.halfAngle, c, ConeFadeDuration);
+    }
+
+    /// <summary>효과 목록 스킬: shape에 맞는 외곽선. 적 대상 효과가 없으면 자신 주변 원(초록).</summary>
+    static void ShowEffects(SkillDef skill, Transform origin)
+    {
+        bool hitsEnemies = false;
+        foreach (var e in skill.effects)
+            if (e.target == TargetScope.EnemyArea) { hitsEnemies = true; break; }
+
+        if (!hitsEnemies)
+        {
+            SpawnCircle(origin.position, HealRadius, KindColors[2], CircleFadeDuration);
+            return;
+        }
+
+        Color c = KindColors[1];
+        switch (skill.shape)
+        {
+            case SkillShape.Line:   SpawnLine(origin.position, origin.forward, skill.range, skill.lineWidth, c, ConeFadeDuration); break;
+            case SkillShape.Circle: SpawnCircle(origin.position, skill.radius, c, CircleFadeDuration); break;
+            default:                SpawnCone(origin.position, origin.forward, skill.range, skill.halfAngle, c, ConeFadeDuration); break;
+        }
+    }
+
+    static void SpawnLine(Vector3 pos, Vector3 forward, float length, float width, Color color, float duration)
+    {
+        Vector3 f = new Vector3(forward.x, 0f, forward.z).normalized;
+        Vector3 r = new Vector3(f.z, 0f, -f.x) * (width * 0.5f);
+        float y = pos.y + 0.06f;
+        Vector3 a = new Vector3(pos.x, y, pos.z);
+        var pts = new[] { a - r, a + r, a + r + f * length, a - r + f * length, a - r };
+        Spawn(pts, 0.05f, color, duration);
     }
 
     // ── 부채꼴 ─────────────────────────────────────────────────────────────
