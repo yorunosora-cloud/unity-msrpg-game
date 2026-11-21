@@ -50,6 +50,20 @@ biology_ecosystem-arena_boss_humboldt,훔볼트,Biology,에코스 연맹,생태�
 biology_ecosystem-arena_boss_haeckel,헤켈,Biology,에코스 연맹,생태계 순환 대원,Landmark,Boss,,Solo,,26,28,Biology,,,,,,,,,,BossDef(07_보스전.md·헤켈.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Haeckel
 biology_ecosystem-arena_boss_odum,오덤,Biology,에코스 연맹,생태계 순환 대원,Landmark,Boss,,Solo,,27,29,Biology,,,,,,,,,,BossDef(07_보스전.md·오덤.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Odum
 
+# 제네시스 왕국 — 멘델의 유전 도서관(바이오스 세 번째 던전): 던전은 플레이어 레벨에 완전 스케일링 → 아래 levelMin/levelMax·HP·DEF는 '스케일링 기준값'(고정 권장 레벨 아님, 던전 간 보정 없음이라 다른 바이오스 던전과 같은 대역)
+# 공통 잡몹 2종(전 방군) + 방군 전용 3종(중간보스 미니어 버전, 노랑·주름→둥근·초록→주름·초록 고정 진행)
+biology_mendel-library_normal_pea-weevil,완두바구미,Biology,제네시스 왕국,멘델의 유전 도서관,Landmark,Normal,곤충,Swarm,지상,24,25,Biology,200,13,118,떼돌진:근접,28,1,,,,완두를 갉아먹는 해충. 전 방군 정원과 서가 사이를 무리로 달려든다.,
+biology_mendel-library_normal_pollen-moth,꽃가루나방,Biology,제네시스 왕국,멘델의 유전 도서관,Landmark,Normal,곤충,Swarm,공중,24,25,Biology,190,12,120,꽃가루낙하:원거리,28,1,,,,완두꽃을 수분시키는 나방. 전 방군 공중에서 꽃가루를 떨어뜨려 공격한다.,
+biology_mendel-library_normal_baby-wrinkled-pea,아기주름완두,Biology,제네시스 왕국,멘델의 유전 도서관,Landmark,Normal,식물형,Solo,지상·노랑주름 방군,25,26,Biology,230,16,130,완두탄:원거리,30,1,,,,주름완두거수의 미니어 버전. 노랑·주름 방군에서 작은 완두를 튕겨 공격한다.,
+biology_mendel-library_normal_baby-white-eye-fly,새끼흰눈초파리,Biology,제네시스 왕국,멘델의 유전 도서관,Landmark,Normal,곤충,Solo,지상·둥근초록 방군,26,27,Biology,255,17,140,섬광박치기:근접,32,1,,,,흰눈초파리의 미니어 버전. 둥근·초록 방군에서 빠르게 날아들며 박치기한다.,
+biology_mendel-library_normal_crumpled-kernel,쭈글낟알,Biology,제네시스 왕국,멘델의 유전 도서관,Landmark,Normal,식물형,Swarm,지상·주름초록 방군,27,28,Biology,280,18,150,낟알튕기기:광역,35,1,,,,쭈글초록변이체의 미니어 버전. 주름·초록 방군에서 무리지어 튀어 오르며 범위 피해를 준다.,
+biology_mendel-library_miniboss_wrinkled-pea-giant,주름완두거수,Biology,제네시스 왕국,멘델의 유전 도서관,Landmark,MiniBoss,형질발현체,Solo,지상·노랑주름 방군,26,26,Biology,330,20,210,주름접기:장판; 완두탄:원거리,52,2,도서관열쇠_멘델:1,,,주름진 열성 형질이 뭉친 거수. 바닥을 구겨 장판을 만들고 완두를 쏜다 — 3종 중 가장 정직한 입문 관문.,
+biology_mendel-library_miniboss_white-eye-fly,흰눈초파리,Biology,제네시스 왕국,멘델의 유전 도서관,Landmark,MiniBoss,형질발현체,Solo,지상·둥근초록 방군,27,28,Biology,380,23,250,흰눈섬광:광역; 연관돌진:이동형,58,3,도서관열쇠_모건:1,,,흰 눈 돌연변이 초파리 변이체. 시야를 방해하는 섬광과 두 개체가 연결되어 함께 돌진한다 — 중간 난이도.,
+biology_mendel-library_miniboss_crumpled-green-mutant,쭈글초록변이체,Biology,제네시스 왕국,멘델의 유전 도서관,Landmark,MiniBoss,형질발현체,Solo,지상·주름초록 방군,28,29,Biology,460,26,300,형질전이:장판; 변이증식:소환,66,3,도서관열쇠_매클린톡:1,,,이중 열성 변이체. 장판 위치가 순간이동하듯 옮겨지고 작은 변이 개체를 늘린다 — 완전 신규 패턴의 최고 난이도.,
+biology_mendel-library_boss_mendel,멘델,Biology,제네시스 왕국,멘델의 유전 도서관,Landmark,Boss,,Solo,,25,27,Biology,,,,,,,,,,BossDef(07_보스전.md·멘델.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Mendel
+biology_mendel-library_boss_morgan,모건,Biology,제네시스 왕국,멘델의 유전 도서관,Landmark,Boss,,Solo,,26,28,Biology,,,,,,,,,,BossDef(07_보스전.md·모건.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Morgan
+biology_mendel-library_boss_mcclintock,매클린톡,Biology,제네시스 왕국,멘델의 유전 도서관,Landmark,Boss,,Solo,,27,29,Biology,,,,,,,,,,BossDef(07_보스전.md·매클린톡.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,McClintock
+
 # ===== EarthSci (지구과학 — 테라 노바) =====
 # 국가: 천문 부족 / 해양 부족 / 대기 부족 / 지질 부족
 # 랜드마크: 거대 천문대 피라미드, 세계 해류 신전, 토네이도 정령의 영혼 평원, 판구조 산맥 신전, 판게아 유적
