@@ -8,6 +8,12 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "MSRPG/Skill Definition", fileName = "New Skill")]
 public class SkillDef : ScriptableObject
 {
+    [Header("슬롯 (설계도 22)")]
+    [Tooltip("키 슬롯 0~6 (Q/R/T/F/V/G/B). -1이면 레거시: 배열 인덱스+1")]
+    public int    slot = -1;
+    [Tooltip("이 스킬을 쓸 수 있는 폼 id. 비우면 모든 폼 (폼 시스템은 P3)")]
+    public string formReq;
+
     [Header("기본 정보")]
     public string         id;
     public string         nameKo;
