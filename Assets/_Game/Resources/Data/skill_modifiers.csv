@@ -1,0 +1,14 @@
+﻿# 패시브 상시 수정자 (1행 = 수정자 1개). 활성일 때 능력치 배율을 계속 계산한다. 설계도 22 §4-7 경로 B.
+# source: Constant(value=배율) / LostHpPercent(value=잃은 HP% 1당 감소율, cap=상한) / MovingRamp(value=이동 시 초당 증가, cap=상한, decayPerSecond=정지 시 초당 감소) / PartyPresence(value=배율, partyWide=true)
+# enemyAuraRadius>0이면 활성인 동안 이 반경 안의 모든 적에게 적용(본인에게는 적용되지 않음).  stat: skill_effects의 stat과 같은 코드
+
+skillId,order,source,stat,value,cap,decayPerSecond,partyWide,enemyAuraRadius,milestoneValue,milestoneCap
+lumiere_s4w,1,Constant,DamageTaken,0.5,,,,,,
+lumiere_s4w,2,Constant,SkillPower,2,,,,,,
+lumiere_s5p,1,Constant,MoveSpeed,1.1,,,,,,
+massio_inersha_s1,1,Constant,MoveSpeed,0.85,,,,6,,
+massio_inersha_s1,2,Constant,MoveSpeed,0.9,,,,,,
+massio_inersha_s1,3,Constant,Def,1.2,,,,,,
+massio_inersha_s4,1,Constant,MoveSpeed,1.15,,,,,,
+massio_inersha_s4,2,Constant,CooldownRate,1.25,,,,,,
+chrono_s4,1,PartyPresence,CooldownRate,1.1765,,,true,,,

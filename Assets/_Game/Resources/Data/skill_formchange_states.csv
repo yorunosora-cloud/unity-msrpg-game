@@ -1,0 +1,4 @@
+﻿# 상태연동(StateBased) 폼 전환의 상태 규칙 (예: 탄소 동소 변환). priority가 높은 규칙이 이긴다.
+# cond: Always / RecentlyHit(param=초) / Moving / Idle
+
+skillId,order,cond,param,toForm,priority

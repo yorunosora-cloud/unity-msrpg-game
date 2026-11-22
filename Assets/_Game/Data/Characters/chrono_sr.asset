@@ -1,0 +1,68 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 52b643bc733c46748835910b7c25db77, type: 3}
+  m_Name: chrono_sr
+  m_EditorClassIdentifier: MSRPG::CharacterDef
+  id: chrono_sr
+  nameKo: "\uD06C\uB85C\uB178"
+  nameEn: Chrono
+  continent: 0
+  country: newton-empire
+  rarity: 2
+  role: 2
+  baseStats:
+    hp: 2000
+    atk: 15
+    def: 15
+    spd: 20
+    mp: 30
+  forms: []
+  autoRules: []
+  attributes:
+    mass: 0
+    velocity: 0
+    temp: 0
+    charge: 0
+  personality: "\uB9E4\uC0AC\uC5D0 \uC5EC\uC720\uB86D\uACE0 \uC2E0\uC0AC\uC801\uC774\uC9C0\uB9CC,
+    \uC2DC\uAC04 \uC57D\uC18D\uC5D0\uB294 \uD55C \uCE58\uC758 \uC624\uCC28\uB3C4
+    \uD5C8\uC6A9\uD558\uC9C0 \uC54A\uB294\uB2E4"
+  basicAttackMotion: "\uC190\uBAA9 \uC2A4\uB0C5\uC73C\uB85C \uC2DC\uACC4\uBC14\uB298\uC744
+    \uC9E7\uAC8C \uCC0C\uB974\uB294 \uB3D9\uC791"
+  portraitColor: {r: 1, g: 1, b: 1, a: 1}
+  skills:
+  - {fileID: 11400000, guid: a2a93c988fb8adb4b8308f48f7034b79, type: 2}
+  - {fileID: 11400000, guid: fec1610684cf15d4682669689a90632d, type: 2}
+  - {fileID: 11400000, guid: 0e45e4d9320d64a41a3295add385c4df, type: 2}
+  - {fileID: 11400000, guid: 7d2a07eaf50a8d745a696ec9f71eec54, type: 2}
+  - {fileID: 11400000, guid: 943eda535991afe4e8a82f97ba7bb058, type: 2}
+  dexNumber: 0
+  gender: 0
+  concept: "\uC2DC\uAC04 \uAD00\uB9AC\uAD6D \uC9C1\uC6D0. 25\uC138 \uC815\uB3C4\uC758
+    \uC678\uD615\uC758 \uBBF8\uC18C\uB144"
+  appearance: "\uD0DC\uC5FD \uC2DC\uACC4 \uC0C9\uC758 \uC815\uC7A5\uACFC \uC704\uB85C
+    \uD070 \uC6D0\uD1B5\uD615 \uBAA8\uC790. \uB179\uC0C9 \uB2E8\uBC1C, \uC678\uC548\uACBD(\uD55C\uCABD\uB9CC
+    \uC788\uB294 \uC904\uB2EC\uB9B0 \uC548\uACBD), \uD68C\uC911\uC2DC\uACC4 \uC18C\uC9C0.
+    \uC544\uB798\uAC00 \uB113\uC740 \uD1B5\uBC14\uC9C0. \uD314\uB2E4\uB9AC\uAC00
+    \uAE38\uACE0 \uBE44\uC728\uC774 \uC88B\uC73C\uBA70 \uC6C3\uB294 \uC5BC\uAD74."
+  weapon: "\uD68C\uC911\uC2DC\uACC4\uC758 \uC2DC\uCE68\xB7\uBD84\uCE68\xB7\uCD08\uCE68"
+  loreKo: "\uC81C\uAD6D \uC2DC\uAC04 \uAD00\uB9AC\uAD6D\uC758 \uC2E0\uC0AC\uC801\uC778
+    \uC9C1\uC6D0\uC73C\uB85C, \uC81C\uAD6D\uC758 \uBAA8\uB4E0 \uC2DC\uACC4\uB97C
+    \uD55C \uCE58\uC758 \uC624\uCC28 \uC5C6\uC774 \uB9DE\uCD94\uB294 \uAC83\uC774
+    \uC5C5\uBB34\uB2E4. \uB2E4\uB9CC \uADF8\uC758 \uD68C\uC911\uC2DC\uACC4\uB9CC\uC740
+    \uAC00\uB054 \uC544\uC8FC \uC870\uAE08 \uB290\uB9AC\uAC8C \uAC00\uB294\uB370,
+    \uADF8\uB294 \uC6C3\uC73C\uBA70 \"\uACE0\uC7A5\uC774 \uC544\uB2D9\uB2C8\uB2E4\"\uB77C\uACE0\uB9CC
+    \uB2F5\uD55C\uB2E4."
+  synergyKind: 0
+  synergyMarkedBy: []
+  synergyComboName: 
+  gachaObtainable: 1
+  acquireCondition: 

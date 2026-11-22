@@ -1,0 +1,114 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 52b643bc733c46748835910b7c25db77, type: 3}
+  m_Name: massio_inersha_r
+  m_EditorClassIdentifier: MSRPG::CharacterDef
+  id: massio_inersha_r
+  nameKo: "\uB9C8\uC2DC\uC624 & \uC774\uB124\uB974\uC154"
+  nameEn: Massio & Inersha
+  continent: 0
+  country: newton-empire
+  rarity: 1
+  role: 1
+  baseStats:
+    hp: 2975
+    atk: 9
+    def: 26
+    spd: 9
+    mp: 13
+  forms:
+  - formId: Mass
+    nameKo: "\uB9C8\uC2DC\uC624"
+    role: 1
+    gender: 1
+    baseStats:
+      hp: 2975
+      atk: 9
+      def: 26
+      spd: 9
+      mp: 13
+    tint: {r: 0.16862746, g: 0.49803922, b: 1, a: 1}
+    isDefault: 1
+  - formId: Inertia
+    nameKo: "\uC774\uB124\uB974\uC154"
+    role: 0
+    gender: 0
+    baseStats:
+      hp: 1700
+      atk: 30
+      def: 9
+      spd: 17
+      mp: 13
+    tint: {r: 0.8509804, g: 0.21960784, b: 0.11764706, a: 1}
+    isDefault: 0
+  autoRules:
+  - cond: 4
+    param: 2
+    statKey: 
+    statCompare: 0
+    statThreshold: 0
+    consecutive: 0
+    toForm: Mass
+    priority: 1
+  - cond: 5
+    param: 2
+    statKey: 
+    statCompare: 0
+    statThreshold: 0
+    consecutive: 0
+    toForm: Inertia
+    priority: 1
+  attributes:
+    mass: 0
+    velocity: 0
+    temp: 0
+    charge: 0
+  personality: "\uC9C0\uD0AC \uC564 \uD558\uC774\uB4DC. \uB9C8\uC2DC\uC624\uC77C
+    \uB550 \uC5C4\uACA9\uD558\uACE0 \uC9C4\uC9C0\uD55C \uC2E0\uC0AC\uC801 \uAE30\uC0AC,
+    \uC774\uB124\uB974\uC154\uC77C \uB550 \uB2E4\uD608\uC9C8\uC758 \uC804\uD22C\uAD11"
+  basicAttackMotion: "\uB9C8\uC2DC\uC624 \u2014 \uB290\uB9AC\uACE0 \uBB35\uC9C1\uD55C
+    \uB300\uAC80 \uD718\uB450\uB974\uAE30 / \uC774\uB124\uB974\uC154 \u2014 \uBE60\uB974\uACE0
+    \uAC70\uCE5C \uB300\uB3C4 \uD718\uB450\uB974\uAE30"
+  portraitColor: {r: 1, g: 1, b: 1, a: 1}
+  skills:
+  - {fileID: 11400000, guid: ad0127df51e288142bdaad7609eb82ff, type: 2}
+  - {fileID: 11400000, guid: aee2391c80d82b44c8b5917e67d74acf, type: 2}
+  - {fileID: 11400000, guid: 2faac867c161c23418709d9be8d259d7, type: 2}
+  - {fileID: 11400000, guid: 6bc618cb311c5424cbdce2190118e284, type: 2}
+  - {fileID: 11400000, guid: 227035273d5620a4db6c59799fb68061, type: 2}
+  - {fileID: 11400000, guid: 53982547a02c73a4da065fa37943f1d5, type: 2}
+  dexNumber: 0
+  gender: 1
+  concept: "\uC9C0\uD0AC \uC564 \uD558\uC774\uB4DC \uCF58\uC149\uD2B8\uC758 \uAE30\uC0AC.
+    \uC5C4\uADFC\uC9C4 \uAE30\uC0AC(\uB9C8\uC2DC\uC624) \u2194 \uB2E4\uD608\uC9C8
+    \uC804\uD22C\uAD11(\uC774\uB124\uB974\uC154)"
+  appearance: "\uB9C8\uC2DC\uC624(\uC5EC\uC131): \uC911\uC138 \uAE30\uC0AC \uAC11\uC637,
+    \uAE54\uB054\uD55C \uB9DD\uD1A0(\uB274\uD134 \uC81C\uAD6D \uD30C\uB791 \uBC14\uD0D5\uC5D0
+    \uC0AC\uACFC\xB7\uD3EC\uBB3C\uC120 \uADA4\uC801 \uBB38\uC591), \uAE08\uBC1C,
+    \uB179\uC548, \uC5B4\uB450\uC6B4 \uB208\uBE5B, \uC9C4\uC9C0\uD55C \uD45C\uC815.
+    / \uC774\uB124\uB974\uC154(\uB0A8\uC131): \uAC00\uBCBC\uC6B4 \uC637, \uBD89\uC740
+    \uCC22\uC5B4\uC9C4 \uB9DD\uD1A0, \uAC00\uC8FD \uBD80\uCE20, \uC801\uBC1C, \uD751\uC548,
+    \uB0A0\uCE74\uB85C\uC6B4 \uC774\uBE68, \uB208\uC5D0 \uD749\uD130."
+  weapon: "\uB9C8\uC2DC\uC624 \u2014 \uB290\uB9AC\uC9C0\uB9CC \uAC15\uB825\uD55C
+    \uB300\uAC80 / \uC774\uB124\uB974\uC154 \u2014 \uBE60\uB974\uACE0 \uBB35\uC9C1\uD55C
+    \uB300\uB3C4"
+  loreKo: "\uD3C9\uC18C\uC5D4 \uC5C4\uACA9\uD558\uACE0 \uC2E0\uC0AC\uC801\uC778 \uC81C\uAD6D
+    \uAE30\uC0AC \uB9C8\uC2DC\uC624\uC774\uC9C0\uB9CC, \uD55C \uBC88 \uC6C0\uC9C1\uC784\uC774
+    \uC2DC\uC791\uB418\uBA74 \uB2E4\uD608\uC9C8\uC758 \uC804\uD22C\uAD11 \uC774\uB124\uB974\uC154\uAC00
+    \uAE68\uC5B4\uB09C\uB2E4. \uB458\uC740 \uAC19\uC740 \uBAB8\uC744 \uC4F0\uBA74\uC11C\uB3C4
+    \uC11C\uB85C\uC758 \uAE30\uC5B5\uC744 \uC808\uBC18\uBC16\uC5D0 \uACF5\uC720\uD558\uC9C0
+    \uBABB\uD55C\uB2E4."
+  synergyKind: 0
+  synergyMarkedBy: []
+  synergyComboName: 
+  gachaObtainable: 1
+  acquireCondition: 

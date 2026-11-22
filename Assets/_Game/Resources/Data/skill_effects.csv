@@ -1,0 +1,23 @@
+﻿# 스킬 효과 목록 (1행 = 효과 1개, order 순서로 적용). 같은 skillId의 행이 있으면 효과 목록 경로로 동작(없으면 character_skills의 effectKind 경로). 패시브 스킬이면 발동 효과.
+# type: Damage / Heal / Shield / StatBuff / StatDebuff / Dot / Slow / Stun / DamageTakenMult / Knockback / Pull / Mark / SelfDamage / RestoreMp / Cleanse / Teleport / Reflect
+# target: EnemyArea / Self / Bench / SelfAndBench / HitTarget / Attacker     stat: Atk / Def / MoveSpeed / DamageTaken / CooldownRate / SkillPower / HitDamage / BasicPower
+# value: 효과별 수치(Damage=공격력 배율, Slow=이동속도 배율, StatBuff=능력치 배율, Knockback/Pull=거리, Reflect=받은 피해 비율).  targetCap: 최대 대상 수(0=제한 없음, 아군은 자신 포함)
+# milestoneValue / milestoneDuration: Lv.3 이상에서 대체되는 값(0=교체 없음).  whenForm: 폼 전환 패시브에서 새 폼이 이 id일 때만.  consumeOnHit: 다음 공격 행동에서 소모
+
+skillId,order,type,target,stat,value,duration,maxStacks,targetCap,areaRadius,milestoneValue,milestoneDuration,whenForm,consumeOnHit
+forte_s1,1,Damage,EnemyArea,,0.8,,,1,,,,,
+forte_s1,2,Slow,EnemyArea,,0.7,4,,1,,,6,,
+forte_s2,1,StatBuff,Self,Def,1.4,3,,,,1.6,,,
+forte_s2,2,Knockback,EnemyArea,,2,,,,,,,,
+forte_s3,1,Knockback,Attacker,,2,,,,,,,,
+forte_s4,1,Damage,EnemyArea,,2,,,,,2.5,,,
+forte_s5,1,Damage,EnemyArea,,0.6,,,,,,,,
+forte_s5,2,Pull,EnemyArea,,4,,,,,,,,
+forte_s6,1,Stun,EnemyArea,,,2,,1,,,2.5,,
+lumiere_s1p,1,Damage,EnemyArea,,1.5,,,1,,,,,
+lumiere_s1p,2,Stun,EnemyArea,,,1,,1,,,1.5,,
+lumiere_s1w,1,StatDebuff,EnemyArea,Atk,0.8,1,,,,,,,
+lumiere_s2p,1,Damage,EnemyArea,,2.4,,,,,,,,
+lumiere_s3p,1,Damage,HitTarget,,0.5,,,,1,,,,
+lumiere_s3w,1,Reflect,Attacker,,0.2,,,,,,,,
+massio_inersha_s2,1,DamageTakenMult,Self,,0.5,5,,,,,7,,

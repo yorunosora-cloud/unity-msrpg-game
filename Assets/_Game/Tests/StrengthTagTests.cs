@@ -6,7 +6,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.TestTools;
 
 /// <summary>설계도 18-A — Stage B·C: 해금 모델, 적 속성, 강점 태그 배율, 정밀 처치 등급.</summary>
-public class StrengthTagTests : InputTestFixture
+public class StrengthTagTests : InputFixtureBase
 {
     Keyboard   _kb;
     GameObject _player;

@@ -1,0 +1,17 @@
+﻿# 패시브 규칙 (skillType=Passive인 스킬마다 1행). 발동 효과는 skill_effects.csv, 상시 수정자는 skill_modifiers.csv. 설계도 22 §4-7.
+# trigger: None / OnHit / OnHitTaken / OnFormChange / HpBelowPercent / SelfDebuffed / SelfMoving / TargetMoving / PartyPresence
+# hitCount: PerAction(공격 행동당 1회) / PerTarget(적중 대상마다)     formula: None / Lorentz / Doppler / RangeWork / AxisDistance (value=c 등 공식 파라미터)
+# decay: None / ResetAfterIdle / DecayOneEvery / ConsumeAtCap     stackStat: 스택이 올리는 능력치 (skill_effects의 stat과 같은 코드)
+
+skillId,trigger,value,hitCount,internalCooldown,formula,milestoneValue,stackId,maxStacks,perStackValue,decay,decaySeconds,stackStat,damageRatio,cap,milestonePerStackValue,milestoneMaxStacks
+forte_s3,OnHitTaken,,,,,,,,,,,,,,,
+lumiere_s3p,OnHit,,PerTarget,,,,,,,,,,,,,
+lumiere_s3w,OnHitTaken,,,,,,,,,,,,,,,
+lumiere_s4w,None,,,,,,,,,,,,,,,
+lumiere_s4p,OnHit,2.5,PerAction,,,,quantum,4,,ConsumeAtCap,,HitDamage,,,,
+lumiere_s5w,TargetMoving,2000,,,Doppler,,,,,,,,,,,
+lumiere_s5p,None,,,,,,,,,,,,,,,
+massio_inersha_s1,None,,,,,,,,,,,,,,,
+massio_inersha_s4,None,,,,,,,,,,,,,,,
+chrono_s3,TargetMoving,2000,,,Lorentz,,,,,,,,,,,
+chrono_s4,PartyPresence,,,,,,,,,,,,,,,

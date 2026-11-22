@@ -5,7 +5,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.TestTools;
 
 /// <summary>설계도 22 P3 — Stage C·D: Z/X 폼 전환 입력, 자동 전환·복귀 틱, 플레이어 스턴·둔화.</summary>
-public class FormInputTests : InputTestFixture
+public class FormInputTests : InputFixtureBase
 {
     Keyboard   _kb;
     GameObject _player;
@@ -113,7 +113,9 @@ public class FormInputTests : InputTestFixture
         Assert.AreEqual("A", c.CurrentFormId, "다시 Z → 원래 폼");
         yield return new WaitForSeconds(0.2f);
         yield return TapUntil(_kb.xKey, () => c.CurrentFormId == "C");
-        Assert.AreEqual("C", c.CurrentFormId, "X = 키 1");
+        string formNow = c.CurrentFormId;
+        int direct = formNow == "C" ? -2 : c.TryFormChange(1, false);   // 진단: 코드로 직접 호출하면 되는가?
+        Assert.AreEqual("C", formNow, "X = 키 1 | direct:"+direct+" 진단: current==_kb:"+(Keyboard.current==_kb)+" xPressed:"+_kb.xKey.isPressed+" cd1:"+c.CooldownRemaining(1)+" unlocked1:"+c.IsUnlocked(1)+" active:"+(PlayerRuntime.Active==c)+" panel:"+UIManager.IsAnyPanelOpen+" canAct:"+c.CanAct+" form:"+c.CurrentFormId+" dt:"+Time.deltaTime+" kbEnabled:"+_kb.enabled);
     }
 
     [UnityTest]

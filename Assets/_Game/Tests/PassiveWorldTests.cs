@@ -7,7 +7,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.TestTools;
 
 /// <summary>설계도 22 P4 — Stage C: 월드 연결(PassiveHost·타격/피격 경로·적 마크·오라).</summary>
-public class PassiveWorldTests : InputTestFixture
+public class PassiveWorldTests : InputFixtureBase
 {
     Keyboard   _kb;
     GameObject _player;

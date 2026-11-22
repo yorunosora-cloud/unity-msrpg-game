@@ -9,7 +9,7 @@ using UnityEngine.TestTools;
 /// Input System 가상 키보드로 R/T/F/V/G/B·1~5·Q 입력이 실제 컴포넌트
 /// (PlayerSkills · PartyController · PlayerCombat)를 거쳐 동작하는지 검증한다.
 /// </summary>
-public class InputWiringTests : InputTestFixture
+public class InputWiringTests : InputFixtureBase
 {
     Keyboard   _kb;
     GameObject _player;

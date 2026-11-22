@@ -1,0 +1,93 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 539fd4fbbaba74c44988317c884b5b12, type: 3}
+  m_Name: lumiere_s2p
+  m_EditorClassIdentifier: MSRPG::SkillDef
+  slot: 2
+  formReq: Particle
+  skillType: 0
+  shape: 1
+  lineWidth: 0.6
+  radius: 3
+  effects:
+  - type: 0
+    target: 0
+    stat: 0
+    value: 2.4
+    duration: 0
+    maxStacks: 0
+    targetCap: 0
+    areaRadius: 0
+    milestoneValue: 0
+    milestoneDuration: 0
+    whenForm: 
+    consumeOnHit: 0
+  factNoteKo: "\uC720\uB3C4\uBC29\uCD9C(stimulated emission)\uC740 \uB808\uC774\uC800\uC758
+    \uBC1C\uAD11 \uC6D0\uB9AC\uB2E4."
+  gameNoteKo: 
+  passive:
+    trigger: 0
+    value: 0
+    hitCount: 0
+    internalCooldown: 0
+    stack:
+      stackId: 
+      maxStacks: 0
+      perStackValue: 0
+      decay: 0
+      decaySeconds: 0
+      stat: 0
+      damageRatio: 0
+      cap: 0
+      milestonePerStackValue: 0
+      milestoneMaxStacks: 0
+    effects: []
+    modifiers: []
+    formula: 0
+    milestoneValue: 0
+  formChange:
+    keyIndex: 0
+    mode: 0
+    fromForms: []
+    toForm: 
+    sequence: []
+    stateRules: []
+    revertAfterSeconds: 0
+    revertToForm: 
+    autoRevertForms: []
+    pressAgainReverts: 0
+  strengthTags: []
+  startUnlocked: 0
+  unlockCond: 
+  skillMotion: "\uAC15\uC18D\uAD6C \uD3FC\uC5D0\uC11C \uC77C\uC9C1\uC120\uC73C\uB85C
+    \uAC15\uD55C \uBE5B\uC904\uAE30 \uBC1C\uC0AC"
+  id: lumiere_s2p
+  nameKo: "\uC720\uB3C4\uBC29\uCD9C"
+  descKo: "\uAC15\uB825\uD55C \uAD11\uC790 \uD558\uB098\uB97C \uC77C\uC9C1\uC120\uC73C\uB85C
+    \uBC1C\uC0AC\uD574, \uAD00\uD1B5\uD558\uB294 \uBAA8\uB4E0 \uC801\uC744 \uAC19\uC740
+    \uD53C\uD574\uB85C \uD0C0\uACA9\uD55C\uB2E4."
+  mpCost: 7
+  cooldown: 9
+  effectKind: 0
+  range: 8
+  halfAngle: 70
+  damageMultiplier: 2.4
+  healPercent: 0.2
+  buffAtkMultiplier: 1.3
+  buffDuration: 5
+  milestoneLevel: 3
+  milestoneDescKo: "\uC0AC\uAC70\uB9AC \uD655\uC7A5"
+  milestoneExtraTargets: 0
+  milestoneRangeBonus: 2
+  milestoneHalfAngleBonus: 0
+  milestoneHealPercentBonus: 0
+  milestoneBuffDurationBonus: 0

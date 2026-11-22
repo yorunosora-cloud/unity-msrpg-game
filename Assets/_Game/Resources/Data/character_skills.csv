@@ -1,0 +1,37 @@
+﻿# 스킬 목록 (1행 = 스킬 1개). 설계도 18 §8-3, 22 §4-1~4-7.
+# slot: 0=Q 1=R 2=T 3=F 4=V 5=G 6=B (패시브는 키를 쓰지 않지만 표시용으로 슬롯을 적는다). 같은 슬롯의 액티브는 서로 다른 폼 전용(formReq)이어야 한다.
+# skillType: Active / Passive / FormChange     effectKind: Strike / Aoe / HealBuff / Mark (skill_effects.csv에 행이 없을 때 쓰는 기존 경로)
+# shape: Cone(range+halfAngle) / Line(range+lineWidth) / Circle(radius)     startUnlocked: true면 처음부터 사용, false면 R&E 문제풀이로 해금
+# strengthTags: tag_rules.csv의 tagId를 ; 로 구분     formReq: 폼 id를 ; 로 구분(비우면 모든 폼)     unlockCond: 조건타입:파라미터 (StoryFlag / DamageTakenPercent / PromotionRankAtLeast)
+# factNoteKo / gameNoteKo: 스킬 정보 UI의 "사실 기반" / "게임적 설정" 문구
+
+skillId,ownerId,slot,nameKo,descKo,skillType,startUnlocked,unlockCond,effectKind,mpCost,cooldown,shape,range,halfAngle,lineWidth,radius,damageMultiplier,healPercent,buffAtkMultiplier,buffDuration,strengthTags,formReq,skillMotion,factNoteKo,gameNoteKo,milestoneLevel,milestoneDescKo,milestoneExtraTargets,milestoneRangeBonus,milestoneHalfAngleBonus,milestoneHealPercentBonus,milestoneBuffDurationBonus
+forte_s0,forte_r,0,뉴턴 제2법칙,거대한 주먹으로 적을 내리찍는다.,Active,true,,Strike,0,1.5,Cone,2,50,,,1.2,,,,,,거대한 주먹을 내리찍음,,,,범위 확장,,1,,,
+forte_s1,forte_r,1,마찰력,적을 강하게 짓눌러 마찰력으로 이동속도를 늦춘다.,Active,false,,Strike,5,7,Cone,3,45,,,0.8,,,,,,손바닥으로 지면을 강하게 누르며 마찰 이펙트,,,,지속시간 증가,,,,,
+forte_s2,forte_r,2,수직항력,"방어 자세를 취해 방어력이 크게 오르며, 동시에 앞의 적을 강하게 밀어낸다.",Active,false,,HealBuff,6,10,Cone,2.5,90,,,,,,3,,,두 팔을 벌려 지면을 밟으며 밀어내는 자세,,넉백 거리는 문서에 명시가 없어 작용반작용과 같은 2.0으로 둔 임시값,,방어력 보너스 증가,,,,,
+forte_s3,forte_r,3,작용반작용,"공격을 받으면, 받은 만큼 정확히 반작용력이 발생해 공격자를 밀어낸다.",Passive,false,,Strike,,,,,,,,,,,,,,,뉴턴 제3법칙: 모든 작용에는 크기가 같고 방향이 반대인 반작용이 따른다.,,,,,,,,
+forte_s4,forte_r,4,탄성력,"고무줄처럼 몸을 뒤로 당겼다가, 튕겨나가듯 적에게 돌진한다.",Active,false,,Strike,7,9,Line,5,,0.6,,2,,,,,,몸을 뒤로 당겼다가 용수철처럼 튕겨나가는 돌진,,돌진 이동은 아직 구현되지 않아 직선 피해만 적용,,위력 증가,,,,,
+forte_s5,forte_r,5,만유인력,주변의 적들을 자신에게로 강하게 끌어당긴다.,Active,false,,Aoe,9,14,Circle,,,,4,0.6,,,,,,양팔을 벌려 중심으로 끌어당기는 동작,,,,범위 확장,,1,,,
+forte_s6,forte_r,6,부력,적을 공중으로 띄워 행동불능 상태로 만든다.,Active,false,,Strike,10,16,Cone,3.5,,,,0,,,,,,손바닥을 아래에서 위로 강하게 들어올림,,공중에 띄우는 연출은 아직 없어 스턴(행동불능)으로 근사,,행동불능 시간 증가,,,,,
+lumiere_s0,lumiere_ssr,0,이중성,입자형과 파동형을 오갈 수 있다. 형태에 따라 사용 가능한 스킬이 달라진다.,FormChange,true,,Strike,0,5,,,,,,,,,,,,빛 입자↔파동 전환 이펙트,,,,,,,,,
+lumiere_s1p,lumiere_ssr,1,광전효과,광자를 던진다. 명중 시 전류를 만들어내 적에게 피해를 입히고 마비시킨다.,Active,false,,Strike,4,5,Line,5,,0.5,,1.5,,,,,Particle,투구 폼으로 광자를 강속구처럼 던짐,,,,마비시간 증가,,,,,
+lumiere_s1w,lumiere_ssr,1,굴절,상대 공격의 방향을 휘게 만들어 명중률을 낮춘다.,Active,false,,Strike,5,6,Circle,,,,3,0,,,,,Wave,치어리딩 리본을 휘둘러 빛을 굴절,,명중률 스탯이 아직 없어 적 공격력 −20%(1초)로 임시 대체,,,,,,,
+lumiere_s2w,lumiere_ssr,2,복사,파장이 짧은 고에너지 빛(근거리 단일 고위력) 또는 파장이 긴 빛(원거리 광역)을 발사한다. 조준 거리에 따라 자동으로 전환된다.,Active,false,,Aoe,6,5,Cone,5,70,,,1,,,,,Wave,양손을 펼쳐 빛을 발사,,거리 기반 단파/장파 자동 전환은 아직 구현되지 않아 장파 기준만 적용,,장파 범위 확장,,1,,,
+lumiere_s2p,lumiere_ssr,2,유도방출,"강력한 광자 하나를 일직선으로 발사해, 관통하는 모든 적을 같은 피해로 타격한다.",Active,false,,Strike,7,9,Line,8,,0.6,,2.4,,,,,Particle,강속구 폼에서 일직선으로 강한 빛줄기 발사,유도방출(stimulated emission)은 레이저의 발광 원리다.,,,사거리 확장,,2,,,
+lumiere_s3p,lumiere_ssr,3,콤프턴 산란,"공격 적중 시, 타격 지점에서 데미지가 약한 광역 공격이 추가로 발생한다.",Passive,false,,Strike,,,,,,,,,,,,,Particle,,,,,,,,,,
+lumiere_s3w,lumiere_ssr,3,반사,"물리 공격을 받으면, 데미지의 일부를 돌려준다.",Passive,false,,Strike,,,,,,,,,,,,,Wave,,,,,,,,,,
+lumiere_s4w,lumiere_ssr,4,간섭,"받는 피해가 절반으로 줄고, 적에 대한 공격 피해가 2배가 된다.",Passive,false,,Strike,,,,,,,,,,,,,Wave,,,,,,,,,,
+lumiere_s4p,lumiere_ssr,4,에너지 양자화,공격할 때마다 에너지 양자가 쌓인다. 4개가 모이면 다음 타격이 폭발적으로 강해진다.,Passive,false,StoryFlag:newtonia_quantum_revolution_appeared,Strike,,,,,,,,,,,,,Particle,,E=hf: 빛 에너지는 불연속적인 단위(양자)로만 존재한다.,,,,,,,,
+lumiere_s5w,lumiere_ssr,5,도플러 효과,"상대와의 상대적 운동 상태에 따라 공격의 데미지·범위가 달라진다. 가까워지면(청색편이) 좁고 강하게, 멀어지면(적색편이) 넓고 약하게 퍼진다.",Passive,false,,Strike,,,,,,,,,,,,,Wave,,,피해 배율(×D)만 구현되어 있고 범위 변화(÷D)는 아직 적용되지 않음,,,,,,,
+lumiere_s5p,lumiere_ssr,5,광속 불변,"빛의 속력은 어떤 상황에서도 변하지 않는다. 이동속도를 늦추는 효과에 영향받지 않으며, 평소보다 더 민첩하게 움직인다.",Passive,false,,Strike,,,,,,,,,,,,,Particle,,,둔화 면역은 아직 구현되지 않아 이동속도 +10%만 적용,,,,,,,
+massio_inersha_s0,massio_inersha_r,0,대검 베기,대검을 휘두른다.,Active,true,,Strike,0,2,Cone,2,50,,,1.3,,,,,Mass,크게 원을 그리는 느린 횡베기,,,,사거리 확장,,1,,,
+massio_inersha_s1,massio_inersha_r,1,정지 관성,정지 상태를 유지하려는 성질. 상대의 이동 속도를 늦춘다. 본인도 이동속도가 느려지지만 방어력이 상승한다.,Passive,false,,Strike,,,,,,,,,,,,,Mass,,,적 이동속도 −15% 오라의 범위는 반경 6.0(잠정),,,,,,,
+massio_inersha_s2,massio_inersha_r,2,질량 보존,적의 공격에 의한 피해가 1/2배로 감소하는 방어막을 형성한다.,Active,false,,HealBuff,8,12,,,,,,,,,5,,Mass,대검을 지면에 꽂고 방어 자세,,,,지속시간 증가,,,,,
+massio_inersha_s3,massio_inersha_r,0,대도 강타,크고 긴 대도를 휘두른다.,Active,true,,Strike,0,0.6,Cone,1.8,40,,,1,,,,,Inertia,빠른 연속 베기,,Lv.3 공격 속도 증가(쿨타임 0.6→0.4)는 마일스톤 필드가 없어 아직 적용되지 않음,,공격 속도 증가,,,,,
+massio_inersha_s4,massio_inersha_r,1,운동 관성,운동 상태를 유지하려는 성질. 본인의 이동속도와 공격속도를 높인다.,Passive,false,,Strike,,,,,,,,,,,,,Inertia,,,공격속도(쿨타임 −20%)는 스킬 쿨타임에만 적용되고 기본기(Q) 쿨타임에는 아직 적용되지 않음,,,,,,,
+massio_inersha_s5,massio_inersha_r,2,관성력,"적이 운동 방향과 반대로 힘을 받는다. 힘의 크기는 적의 운동량에 비례하며, 힘을 받으면 적이 피해를 입는다.",Active,false,,Aoe,6,7,Cone,3.5,90,,,0.8,,,,고속,Inertia,대도로 강하게 내리쳐 충격파 발생,,,,범위 확장,,1,,,
+chrono_s0,chrono_sr,0,초침 찌르기,시계 초침으로 적을 찌른다.,Active,true,,Strike,0,1,Cone,2.5,45,,,0.8,,,,,,짧고 빠른 찌르기(손목 스냅),,,,연속 찌르기로 추가 대상 타격,1,,,,
+chrono_s1,chrono_sr,1,분침 베기,분침을 크게 휘둘러 벤다.,Active,false,,Strike,2,2,Cone,3,40,,,1.2,,,,,,넓은 궤적의 횡베기,,,,사거리 확장,,0.5,,,
+chrono_s2,chrono_sr,2,시침 강타,시침을 짧고 무겁게 내리찍는다.,Active,false,,Strike,4,4,Cone,2,30,,,2,,,,,,무거운 내리찍기,,,,적중 시 주변 소폭 충격파,,,15,,
+chrono_s3,chrono_sr,3,시간 지연,이동 중인 적에게 주는 피해가 증가한다.,Passive,false,,Strike,,,,,,,,,,,,,,,특수상대성이론의 시간 지연: 로렌츠 인자 γ = 1/√(1−(v/c)²).,"v는 적의 spd 스탯, c=2000(게임 내 광속 기준값). 적 spd 값은 적 도감에서 채워질 때까지 0이라 배율 1",,,,,,,
+chrono_s4,chrono_sr,4,고유 시간,파티에 포함되어 있으면(활성·대기 무관) 자신을 포함한 파티 전원의 스킬 재사용 대기시간이 감소한다.,Passive,false,,Strike,,,,,,,,,,,,,,,,쿨타임 −15%를 쿨타임 진행 배율 1/(1−0.15)≈1.1765로 표현,,,,,,,

@@ -1,0 +1,13 @@
+﻿# 강점 태그 사전 (전역 1장, 설계도 18 §3-4). 플레이어에게는 displayKo·iconId만 보이고 나머지는 계산용.
+# targetAttr: mass / velocity / temp / charge       direction: high(값이 클수록 유리) / low(작을수록 유리)
+# 배율 = clamp(baseMult + coeffPerUnit × delta, baseMult, capMult),  delta = high ? (값 − refValue) : (refValue − 값)
+
+tagId,displayKo,iconId,targetAttr,direction,baseMult,coeffPerUnit,refValue,capMult
+고온,열에 취약,,temp,high,1,0.001,300,2
+저온,냉기에 취약,,temp,low,1,0.002,300,1.8
+고속,빠른 적 특효,,velocity,high,1,0.01,50,1.8
+저속,둔한 적 특효,,velocity,low,1,0.01,50,1.8
+고질량,무거운 적 특효,,mass,high,1,0.005,100,1.8
+저질량,가벼운 적 특효,,mass,low,1,0.005,100,1.8
+양전하,양전하 반응,,charge,high,1,0.01,0,1.8
+음전하,음전하 반응,,charge,low,1,0.01,0,1.8

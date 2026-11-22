@@ -1,0 +1,7 @@
+﻿# 자동 폼 전환 규칙 (설계도 22 §4-6-1). 활성 캐릭터일 때만 평가, 우선순위(priority)가 높은 규칙이 이긴다.
+# cond: SpeedRatioAtLeast / SpeedRatioBelow / JumpApex / JumpFalling / IdleFor / MovingFor / HitTargetStat
+# param: 비율·속도·지속 초.  HitTargetStat: statKey(예 temp) + statCompare(AtLeast/Below) + statThreshold + consecutive(연속 횟수)
+
+ownerId,order,cond,param,statKey,statCompare,statThreshold,consecutive,toForm,priority
+massio_inersha_r,1,IdleFor,2,,,,,Mass,1
+massio_inersha_r,2,MovingFor,2,,,,,Inertia,1

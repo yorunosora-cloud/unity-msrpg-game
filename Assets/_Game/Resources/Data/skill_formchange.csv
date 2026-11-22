@@ -1,0 +1,6 @@
+﻿# 폼 전환 스킬의 규칙 (skillType=FormChange인 스킬마다 1행). 설계도 22 §4-6-1.
+# keyIndex: 0=Z 1=X     mode: Toggle(sequence 2개를 번갈아) / Sequential(순서대로, 마지막에선 불가) / Hub(fromForms에서 toForm으로) / StateBased(skill_formchange_states.csv)
+# fromForms / sequence / autoRevertForms: 폼 id를 ; 로 구분.  revertAfterSeconds>0이면 autoRevertForms(비우면 toForm)에 진입 후 그 시간이 지나 revertToForm(비우면 기본 폼)으로 복귀
+
+skillId,keyIndex,mode,fromForms,toForm,sequence,revertAfterSeconds,revertToForm,autoRevertForms,pressAgainReverts
+lumiere_s0,0,Toggle,,,Particle;Wave,,,,
