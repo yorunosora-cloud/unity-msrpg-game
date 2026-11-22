@@ -28,9 +28,10 @@ public static class CharacterCsvBuilder
     public const string FormChangeStates = "skill_formchange_states.csv";
     public const string Passives         = "skill_passives.csv";
     public const string Modifiers        = "skill_modifiers.csv";
+    public const string Codex            = "character_codex.csv";
 
     public static readonly string[] AllSheets =
-        { TagRules, Catalog, Forms, AutoRules, Skills, Effects, FormChange, FormChangeStates, Passives, Modifiers };
+        { TagRules, Catalog, Forms, AutoRules, Skills, Effects, FormChange, FormChangeStates, Passives, Modifiers, Codex };
 
     sealed class SkillEntry { public SkillDef def; public int line; public int order; public string[] forms; }
 
@@ -59,6 +60,7 @@ public static class CharacterCsvBuilder
         BuildEffects(Sheet(Effects), skills, res);
         BuildFormChange(Sheet(FormChange), Sheet(FormChangeStates), skills, forms, ctx, res);
         BuildPassives(Sheet(Passives), Sheet(Modifiers), skills, res);
+        BuildCodex(Sheet(Codex), chars, res);
 
         CheckSlotConflicts(ctx, res);
         return res;
@@ -537,6 +539,77 @@ public static class CharacterCsvBuilder
         foreach (var kv in skills)
             if (kv.Value.def.skillType == SkillKind.Passive && !seen.Contains(kv.Key))
                 res.report.Error(Passives, 0, $"skillId={kv.Key}", "Passive 스킬에는 skill_passives.csv 행이 필요합니다");
+    }
+
+    // ════════════════════════════════════════════════════════════════════════
+    // character_codex (교육 레이어, 설계도 18-C)
+    // ════════════════════════════════════════════════════════════════════════
+
+    static void BuildCodex(CsvTable t, Dictionary<string, CharacterDef> chars, ImportResult res)
+    {
+        if (t.Rows.Count == 0) return;
+        if (!t.RequireColumns(res.report, "ownerId")) return;
+        t.WarnUnknownColumns(res.report, "ownerId", "basicExplanation", "advancedExplanation", "realPrinciple", "sourceRef",
+            "conceptQ", "conceptChoices", "conceptAnswer", "affinityQ", "affinityChoices", "affinityConceptPick");
+
+        var concepts = new Dictionary<string, List<ConceptQuestion>>();
+        var affinities = new Dictionary<string, List<AffinityQuestion>>();
+
+        foreach (var row in t.Rows)
+        {
+            string owner = row.Str("ownerId", "", required: true);
+            row.Context = $"ownerId={owner}";
+            if (owner.Length == 0) continue;
+            if (!chars.TryGetValue(owner, out var c)) { row.Error($"ownerId '{owner}'가 character_catalog.csv에 없습니다"); continue; }
+
+            // 교육 문구는 캐릭터당 한 번만 정의
+            void Text(string col, string current, System.Action<string> set)
+            {
+                string v = row.Str(col);
+                if (v.Length == 0) return;
+                if (!string.IsNullOrEmpty(current)) { row.Error($"{col}가 이미 정의되어 있습니다(한 행에만 적으세요)"); return; }
+                set(v);
+            }
+            Text("basicExplanation",    c.basicExplanation,    v => c.basicExplanation = v);
+            Text("advancedExplanation", c.advancedExplanation, v => c.advancedExplanation = v);
+            Text("realPrinciple",       c.realPrinciple,       v => c.realPrinciple = v);
+            Text("sourceRef",           c.sourceRef,           v => c.sourceRef = v);
+
+            // 개념 문제 (4지선다 권장, 선택지 2개 이상, 정답 번호는 1부터)
+            string cq = row.Str("conceptQ");
+            var cch = row.List("conceptChoices");
+            int cans = row.Int("conceptAnswer");
+            if (cq.Length == 0)
+            {
+                if (cch.Length > 0 || cans != 0) row.Error("conceptChoices/conceptAnswer가 있는데 conceptQ(문제)가 없습니다");
+            }
+            else if (cch.Length < 2) row.Error($"개념 문제의 선택지는 2개 이상이어야 합니다(현재 {cch.Length}개)");
+            else if (cans < 1 || cans > cch.Length) row.Error($"conceptAnswer {cans}는 1~{cch.Length} 범위여야 합니다");
+            else
+            {
+                if (!concepts.TryGetValue(owner, out var l)) concepts[owner] = l = new();
+                l.Add(new ConceptQuestion { question = cq, choices = cch, answerIndex = cans - 1 });
+            }
+
+            // 호감도 개념 2지선다
+            string aq = row.Str("affinityQ");
+            var ach = row.List("affinityChoices");
+            int apick = row.Int("affinityConceptPick");
+            if (aq.Length == 0)
+            {
+                if (ach.Length > 0 || apick != 0) row.Error("affinityChoices/affinityConceptPick이 있는데 affinityQ(질문)가 없습니다");
+            }
+            else if (ach.Length != 2) row.Error($"호감도 질문은 2지선다여야 합니다(현재 선택지 {ach.Length}개)");
+            else if (apick < 1 || apick > 2) row.Error($"affinityConceptPick {apick}는 1 또는 2여야 합니다");
+            else
+            {
+                if (!affinities.TryGetValue(owner, out var l)) affinities[owner] = l = new();
+                l.Add(new AffinityQuestion { question = aq, choices = ach, conceptPick = apick - 1 });
+            }
+        }
+
+        foreach (var kv in concepts)   chars[kv.Key].conceptQuestions  = kv.Value.ToArray();
+        foreach (var kv in affinities) chars[kv.Key].affinityQuestions = kv.Value.ToArray();
     }
 
     // ════════════════════════════════════════════════════════════════════════
