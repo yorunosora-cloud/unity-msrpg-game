@@ -7,6 +7,8 @@ public enum TargetScope
     Self,           // 시전자(활성 캐릭터)
     Bench,          // 대기 아군(기절 제외). targetCap=1이고 대기 아군이 없으면 자신(fallbackSelf)
     SelfAndBench,   // 자신 + 대기 아군 (targetCap = 자신 포함 최대 인원)
+    HitTarget,      // 적중한 대상(OnHit 패시브 전용 — 적 대상이라 아군 해석에서는 비어 있음)
+    Attacker,       // 공격자(OnHitTaken 패시브 전용)
 }
 
 /// <summary>아군 대상 선택 규칙 (순수 정적, 테스트 가능).</summary>
@@ -20,7 +22,8 @@ public static class TargetResolver
                                                 TargetScope scope, int targetCap)
     {
         var result = new List<CombatCharacter>();
-        if (caster == null || scope == TargetScope.EnemyArea) return result;
+        if (caster == null || scope == TargetScope.EnemyArea
+            || scope == TargetScope.HitTarget || scope == TargetScope.Attacker) return result;
 
         if (scope == TargetScope.Self)
         {

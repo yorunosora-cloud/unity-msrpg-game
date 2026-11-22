@@ -26,6 +26,8 @@ public class SkillDef : ScriptableObject
     public string           factNoteKo;
     public string           gameNoteKo;
 
+    [Tooltip("skillType == Passive일 때: 패시브 규칙(설계도 22 §4-7)")]
+    public PassiveSpec      passive;
     [Tooltip("skillType == FormChange일 때: 폼 전환 규칙(Z/X)")]
     public FormChangeSpec   formChange;
 

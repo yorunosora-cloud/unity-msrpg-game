@@ -21,6 +21,7 @@ public enum SkillEffectType
     SelfDamage,      // value = 자신 MaxHp 비율 소모(최소 1 남김)
     RestoreMp,       // value = 대상 MaxMp 비율
     Cleanse,         // 해로운 상태 해제
+    Teleport,        // 전투 시작 위치로 이동(영벡터, 패시브)
 }
 
 /// <summary>스킬 효과 1건. 한 스킬이 여러 효과(피해 + 둔화 + 아군 버프)를 낸다.</summary>
@@ -34,4 +35,7 @@ public struct SkillEffectEntry
     public float           duration;
     public int             maxStacks;   // 0/1 = 스택 없음
     public int             targetCap;   // "최대 N명"(0=제한 없음). 아군 대상은 자신 포함
+    public float           areaRadius;  // >0이면 스킬 형태 대신 적중 지점 중심 이 반경(콤프턴 1.0)
+    public float           milestoneValue;     // Lv.3 교체값(0=교체 없음)
+    public float           milestoneDuration;
 }

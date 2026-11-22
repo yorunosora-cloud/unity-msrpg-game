@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 
 /// <summary>배율 상태 효과가 영향을 주는 능력치.</summary>
-public enum StatKind { Atk, Def, MoveSpeed, DamageTaken, CooldownRate }   // CooldownRate: 쿨타임 진행 배율(>1이 빠름)
+public enum StatKind { Atk, Def, MoveSpeed, DamageTaken, CooldownRate, SkillPower, HitDamage }   // SkillPower: 모든 스킬 위력 / HitDamage: 다음 타격 배율   // CooldownRate: 쿨타임 진행 배율(>1이 빠름)
 
 /// <summary>상태 효과의 동작 종류.</summary>
 public enum StatusKind { StatMod, Dot, Stun, Shield }
@@ -20,6 +20,7 @@ public class StatusEffect
     public float      Duration;            // 남은 시간(초). float.PositiveInfinity 허용
     public bool       IsBeneficial;        // 이로운 효과: 활성일 때만 시간이 흐른다
     public int        MaxStacks = 1;
+    public bool       ConsumeOnHit;        // 다음 공격 행동에서 소모(가속도·양자화)
 
     // ── 런타임 상태 (Apply/Tick이 관리) ──
     public int   Stacks = 1;
