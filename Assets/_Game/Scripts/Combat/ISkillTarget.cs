@@ -15,6 +15,9 @@ public interface ISkillTarget : IDamageable
     /// <summary>속성 표식 부여.</summary>
     void SetMark(Continent element);
 
+    /// <summary>물리량 속성(질량·속도·온도·전하). 강점 태그가 읽는다. 없으면 전부 0.</summary>
+    AttributeProfile Attributes { get; }
+
     /// <summary>적의 속도 스탯(로렌츠·도플러 공식 입력). 미설정이면 0.</summary>
     float Spd { get; }
 

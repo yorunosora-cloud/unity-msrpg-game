@@ -5,6 +5,7 @@ public struct BasicAttackSpec
     public float halfAngle;
     public float damageMultiplier;
     public float cooldown;
+    public string[] strengthTags;   // 슬롯 0 스킬의 강점 태그(없으면 null)
 }
 
 /// <summary>
@@ -34,6 +35,7 @@ public static class BasicAttack
         spec.halfAngle        = s.halfAngle;
         spec.damageMultiplier = s.damageMultiplier;
         spec.cooldown         = s.cooldown;
+        spec.strengthTags     = s.strengthTags != null && s.strengthTags.Length > 0 ? s.strengthTags : null;
         return spec;
     }
 }

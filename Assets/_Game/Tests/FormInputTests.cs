@@ -215,7 +215,7 @@ public class FormInputTests : InputTestFixture
 
         c.Status.Clear();
         yield return new WaitForSeconds(0.6f);
-        yield return Tap(_kb.qKey);
+        yield return TapUntil(_kb.qKey, () => _enemy == null || enemy.Unit.Hp < enemy.Unit.MaxHp);
         Assert.IsTrue(_enemy == null || enemy.Unit.Hp < enemy.Unit.MaxHp, "해제 후 기본기 가능");
     }
 

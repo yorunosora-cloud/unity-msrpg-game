@@ -28,6 +28,9 @@ public class Enemy : MonoBehaviour, ISkillTarget
     [Tooltip("true면 스턴·넉백·견인 면역")]
     [SerializeField] bool  ccImmune        = false;
 
+    [Header("물리량 속성 (설계도 18, v1 물리만)")]
+    [SerializeField] AttributeProfile attributes;
+
     // ── 공개 접근자 ─────────────────────────────────────────────────────────
     /// <summary>현재 씬에 활성화된 모든 Enemy 목록 (PlayerCombat이 탐색에 사용).</summary>
     public static readonly List<Enemy> All = new();
@@ -42,6 +45,18 @@ public class Enemy : MonoBehaviour, ISkillTarget
     readonly Dictionary<string, float> _marks = new();
 
     public float Spd => spd;
+
+    public AttributeProfile Attributes => attributes;
+
+    /// <summary>EnemySpawner·테스트가 Start 전에 속성을 주입한다. 17번 적 도감(EnemyDef)이 구현되면 그쪽에서 주입.</summary>
+    public void SetAttributes(AttributeProfile a) => attributes = a;
+
+    /// <summary>마지막 처치의 정밀 처치 등급 배율(처치하지 않았으면 1).</summary>
+    public float LastKillGrade { get; private set; } = 1f;
+
+    /// <summary>처치 보상량 = max(1, 기본 보상 × 등급). 기본 보상 = max(1, ExpReward/10).</summary>
+    public static int RewardAmount(int expReward, float grade)
+        => System.Math.Max(1, Mathf.RoundToInt(System.Math.Max(1, expReward / 10) * grade));
 
     /// <summary>EnemySpawner·테스트가 Start 전에 속도 스탯을 주입한다.</summary>
     public void SetSpd(float v) => spd = v;
@@ -244,6 +259,7 @@ public class Enemy : MonoBehaviour, ISkillTarget
 
     void ApplyDamage(int dmg, bool isWeak)
     {
+        int hpBefore = _unit.Hp;
         _unit.TakeDamage(dmg);
 
         // 데미지 숫자 스폰
@@ -260,7 +276,11 @@ public class Enemy : MonoBehaviour, ISkillTarget
         }
 
         if (_unit.IsDead)
+        {
+            // 정밀 처치: 처치 직전 HP와 최종 피해(방어·받는피해배율 적용 후)로 등급 계산 (설계도 18 §3-10)
+            LastKillGrade = PrecisionKillGrader.Grade(hpBefore, dmg);
             Die();
+        }
     }
 
     // ── 내부 헬퍼 ───────────────────────────────────────────────────────────
@@ -269,7 +289,7 @@ public class Enemy : MonoBehaviour, ISkillTarget
     {
         // 처치 시 해당 과목 연구 자원 지급 (캐릭터 EXP 직접 지급 X — K 패널에서 자원 소모로 레벨업)
         if (MetaState.IsInitialized)
-            MetaState.StudyMaterials.Add(_unit.Weakness, System.Math.Max(1, _unit.ExpReward / 10));
+            MetaState.StudyMaterials.Add(_unit.Weakness, RewardAmount(_unit.ExpReward, LastKillGrade));
 
         _hpBar?.gameObject.SetActive(false);
         Destroy(gameObject);

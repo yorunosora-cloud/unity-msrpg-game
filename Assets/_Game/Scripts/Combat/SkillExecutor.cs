@@ -15,7 +15,8 @@ public static class SkillExecutor
     /// <param name="origin">발동자 Transform (위치·전방 방향 기준)</param>
     public static void Execute(SkillDef skill, int skillIndex, CombatCharacter caster, Transform origin)
     {
-        var ctx = new ActionCtx { origin = origin, skillId = skill.id, actionId = CombatCharacter.NewActionId() };
+        var ctx = new ActionCtx { origin = origin, skillId = skill.id, actionId = CombatCharacter.NewActionId(),
+                                  tags = skill.strengthTags };
 
         // 효과 목록이 있으면 새 경로, 비어 있으면 기존 effectKind 경로(호환)
         if (skill.effects != null && skill.effects.Length > 0)
@@ -54,6 +55,7 @@ public static class SkillExecutor
         public float          hitMult = 1f;
         public float          range;
         public List<HitInfo>  hits = new();
+        public string[]       tags;     // 스킬의 강점 태그
     }
 
     // ── 효과 목록 경로 (설계도 22 §4-3) ───────────────────────────────────
@@ -132,7 +134,7 @@ public static class SkillExecutor
             {
                 case SkillEffectType.Damage:
                     HitPipeline.Apply(t, Mathf.RoundToInt(caster.Atk * v), caster, ctx.hitMult, ctx.range,
-                                      ctx.origin.position, ctx.skillId, false, ctx.actionId, ctx.hits);
+                                      ctx.origin.position, ctx.skillId, false, ctx.actionId, ctx.hits, ctx.tags);
                     break;
                 case SkillEffectType.Dot:
                     t.ApplyStatus(Harmful(skill, e, StatusKind.Dot, StatKind.Atk, caster.Atk * v));
@@ -188,7 +190,7 @@ public static class SkillExecutor
 
         for (int i = 0; i < hitCount && i < targets.Count; i++)
             HitPipeline.Apply(targets[i].enemy, atk, caster, ctx.hitMult, ctx.range, origin.position,
-                              ctx.skillId, false, ctx.actionId, ctx.hits);
+                              ctx.skillId, false, ctx.actionId, ctx.hits, ctx.tags);
     }
 
     // ── Aoe — 부채꼴 내 모든 적 범위 공격 ─────────────────────────────────
@@ -202,7 +204,7 @@ public static class SkillExecutor
             if (!IsValidTarget(enemy, origin, eff.range, eff.halfAngle, out _))
                 continue;
             HitPipeline.Apply(enemy, atk, caster, ctx.hitMult, ctx.range, origin.position,
-                              ctx.skillId, false, ctx.actionId, ctx.hits);
+                              ctx.skillId, false, ctx.actionId, ctx.hits, ctx.tags);
         }
     }
 

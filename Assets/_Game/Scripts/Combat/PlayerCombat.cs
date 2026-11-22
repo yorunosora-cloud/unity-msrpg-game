@@ -74,7 +74,7 @@ public class PlayerCombat : MonoBehaviour
             float angle = Vector3.Angle(forward, toEnemy);
             if (angle > spec.halfAngle) continue;
 
-            HitPipeline.Apply(enemy, atk, active, hitMult, spec.range, origin, "basic", true, actionId, hits);
+            HitPipeline.Apply(enemy, atk, active, hitMult, spec.range, origin, "basic", true, actionId, hits, spec.strengthTags);
         }
 
         // Boss 본체 타격
@@ -86,7 +86,7 @@ public class PlayerCombat : MonoBehaviour
             float bossDist  = toBoss.magnitude;
             float bossAngle = Vector3.Angle(forward, toBoss);
             if (bossDist <= spec.range && bossAngle <= spec.halfAngle)
-                HitPipeline.Apply(boss, atk, active, hitMult, spec.range, origin, "basic", true, actionId, hits);
+                HitPipeline.Apply(boss, atk, active, hitMult, spec.range, origin, "basic", true, actionId, hits, spec.strengthTags);
         }
 
         // 노출된 약점 코어 타격

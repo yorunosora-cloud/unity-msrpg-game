@@ -31,6 +31,15 @@ public class SkillDef : ScriptableObject
     [Tooltip("skillType == FormChange일 때: 폼 전환 규칙(Z/X)")]
     public FormChangeSpec   formChange;
 
+    [Header("강점 태그·해금 (설계도 18)")]
+    [Tooltip("tag_rules의 tagId. 대상의 물리량 속성을 읽어 피해 배율을 곱한다")]
+    public string[] strengthTags;
+    [Tooltip("true면 처음부터 사용 가능. false면 R&E 문제풀이로 해금(레거시: startUnlocked 스킬이 하나도 없으면 인덱스 0만 기본)")]
+    public bool     startUnlocked;
+    [Tooltip("추가 해금 조건 '조건타입:파라미터' (18-B에서 평가)")]
+    public string   unlockCond;
+    public string   skillMotion;
+
     [Header("기본 정보")]
     public string         id;
     public string         nameKo;

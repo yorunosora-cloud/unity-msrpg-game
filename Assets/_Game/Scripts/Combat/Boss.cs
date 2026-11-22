@@ -65,6 +65,7 @@ public class Boss : MonoBehaviour, ISkillTarget
 
     // 패시브 공식 입력: 보스는 속도 스탯·접근 판정·마크를 아직 지원하지 않는다(보스 설계 단계에서 확장)
     public float Spd => 0f;
+    public AttributeProfile Attributes => default;
     public float ApproachSign(Vector3 from) => 0f;
     public bool  HasMark(string id) => false;
     public void  AddMark(string id, float duration) { }

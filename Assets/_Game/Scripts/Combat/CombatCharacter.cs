@@ -32,6 +32,7 @@ public class CombatCharacter
     string            _revertTo;
     float             _sinceHit = 999f;     // 마지막 피격 후 경과(초)
     PassiveRunner     _passives;
+    bool              _hasStartUnlocked;   // startUnlocked 스킬이 하나라도 있으면 새 해금 모델
 
     public CombatCharacter(CharacterDef def, OwnedCharacter owned)
     {
@@ -40,6 +41,8 @@ public class CombatCharacter
         _nextExp = ComputeNextExp(_owned.level);
         _formId  = DefaultFormId;
         _auto    = new FormAutoEvaluator(_def.autoRules);
+        if (_def.skills != null)
+            foreach (var sk in _def.skills) if (sk != null && sk.startUnlocked) { _hasStartUnlocked = true; break; }
         _passives = new PassiveRunner(this, _def.skills);
         _passives.OnFire += f => PassiveFired?.Invoke(f);
 
@@ -222,9 +225,13 @@ public class CombatCharacter
         var skill = SkillAt(i);
         if (skill == null) return false;
 
-        if (_owned.unlockedSkillIds == null || _owned.unlockedSkillIds.Count == 0)
-            return i == 0;
+        if (skill.startUnlocked) return true;                       // 처음부터 사용 가능 (설계도 18 §8-2)
 
+        bool hasIds = _owned.unlockedSkillIds != null && _owned.unlockedSkillIds.Count > 0;
+        if (_hasStartUnlocked)                                      // 새 모델: 인덱스 0 자동 해금 없음
+            return hasIds && _owned.unlockedSkillIds.Contains(skill.id);
+
+        if (!hasIds) return i == 0;                                 // 레거시: 인덱스 0만 기본
         return _owned.unlockedSkillIds.Contains(skill.id);
     }
 
