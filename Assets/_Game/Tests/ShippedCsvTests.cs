@@ -56,8 +56,68 @@ public class ShippedCsvTests
     {
         var r = Load();
         Assert.AreEqual(4, r.characters.Count);
+        Assert.AreEqual(5, r.characters.Sum(c => c.conceptQuestions.Length), "개념 문제: 포르테 2 + 나머지 각 1");
         Assert.AreEqual(29, r.skills.Count, "포르테 7 + 루미에르 11 + 마시오&이네르셔 6 + 크로노 5");
         Assert.AreEqual(8, r.tagRules.Length);
+    }
+
+    // ════════════════════════════════════════════════════════════════════════
+    // 교육 레이어 (character_codex.csv, 18-C)
+    // ════════════════════════════════════════════════════════════════════════
+
+    [Test]
+    public void Codex_AllRepresentativeCharactersHaveEducationContent()
+    {
+        foreach (var c in Load().characters)
+        {
+            Assert.IsFalse(string.IsNullOrEmpty(c.basicExplanation), c.id + " basicExplanation");
+            Assert.IsFalse(string.IsNullOrEmpty(c.advancedExplanation), c.id + " advancedExplanation");
+            Assert.IsFalse(string.IsNullOrEmpty(c.realPrinciple), c.id + " realPrinciple");
+            Assert.IsFalse(string.IsNullOrEmpty(c.sourceRef), c.id + " sourceRef");
+            Assert.GreaterOrEqual(c.conceptQuestions.Length, 1, c.id + " 개념 문제");
+            foreach (var q in c.conceptQuestions)
+            {
+                Assert.GreaterOrEqual(q.choices.Length, 2);
+                Assert.That(q.answerIndex, Is.InRange(0, q.choices.Length - 1));
+            }
+            Assert.AreEqual(1, c.affinityQuestions.Length, c.id + " 호감도 질문");
+            Assert.AreEqual(2, c.affinityQuestions[0].choices.Length, "호감도 질문은 2지선다");
+        }
+    }
+
+    [Test]
+    public void Codex_ForteHasTwoQuestions_AndAnswersPointAtTheRightChoices()
+    {
+        var forte = Char("forte_r");
+        Assert.AreEqual(2, forte.conceptQuestions.Length);
+        StringAssert.Contains("서로 다른 물체", forte.conceptQuestions[0].choices[forte.conceptQuestions[0].answerIndex]);
+        Assert.AreEqual("마찰력", forte.conceptQuestions[1].choices[forte.conceptQuestions[1].answerIndex]);
+
+        var lum = Char("lumiere_ssr");
+        StringAssert.Contains("진동수", lum.conceptQuestions[0].choices[lum.conceptQuestions[0].answerIndex]);
+        var mas = Char("massio_inersha_r");
+        StringAssert.Contains("관성", mas.conceptQuestions[0].choices[mas.conceptQuestions[0].answerIndex]);
+        var chr = Char("chrono_sr");
+        StringAssert.Contains("더 느리게", chr.conceptQuestions[0].choices[chr.conceptQuestions[0].answerIndex]);
+    }
+
+    [Test]
+    public void Codex_ShippedContentWorksEndToEnd_ThroughCodexConcept()
+    {
+        var def = Char("massio_inersha_r");
+        var owned = new OwnedCharacter { id = def.id };
+        Assert.IsFalse(CodexConcept.IsAdvancedOpen(def, owned));
+        Assert.IsFalse(CodexConcept.TryAnswer(def, owned, 0, 0), "오답(승객에게 앞쪽 힘)");
+        Assert.IsTrue(CodexConcept.TryAnswer(def, owned, 0, def.conceptQuestions[0].answerIndex));
+        Assert.IsTrue(owned.advancedCodexUnlocked);
+    }
+
+    [Test]
+    public void Codex_AffinityPick_IsExactlyOneOfTheTwoChoices()
+    {
+        foreach (var c in Load().characters)
+            Assert.IsTrue(c.affinityQuestions[0].IsConceptPick(0) ^ c.affinityQuestions[0].IsConceptPick(1), c.id);
+        Assert.AreEqual(0, Char("lumiere_ssr").affinityQuestions[0].conceptPick, "둘 다 맞다 = 첫 번째 선택지");
     }
 
     // ════════════════════════════════════════════════════════════════════════
