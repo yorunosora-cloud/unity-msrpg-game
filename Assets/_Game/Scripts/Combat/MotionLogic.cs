@@ -16,6 +16,7 @@ public struct DashMotion
     public void Begin(Vector3 direction, float distance, float time)
     {
         _remainingTime = 0f;
+        if (distance < 0f) { direction = -direction; distance = -distance; }   // 음수 거리 = 후방(반동)
         direction.y = 0f;
         if (distance <= 0f || time <= 0f || direction.sqrMagnitude < 1e-6f) return;
         _velocity      = direction.normalized * (distance / time);

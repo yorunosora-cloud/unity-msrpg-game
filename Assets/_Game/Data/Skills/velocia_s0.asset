@@ -1,0 +1,89 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 539fd4fbbaba74c44988317c884b5b12, type: 3}
+  m_Name: velocia_s0
+  m_EditorClassIdentifier: MSRPG::SkillDef
+  slot: 0
+  formReq: 
+  skillType: 0
+  shape: 0
+  lineWidth: 1
+  radius: 3
+  effects: []
+  factNoteKo: "\uC18D\uB825\uC740 \uC18D\uB3C4(\uBCA1\uD130)\uC758 \uD06C\uAE30\uB9CC\uC744
+    \uB098\uD0C0\uB0B4\uB294 \uC2A4\uCE7C\uB77C\uB7C9\uC774\uB2E4."
+  gameNoteKo: 
+  passive:
+    trigger: 0
+    value: 0
+    hitCount: 0
+    internalCooldown: 0
+    stack:
+      stackId: 
+      maxStacks: 0
+      perStackValue: 0
+      decay: 0
+      decaySeconds: 0
+      stat: 0
+      damageRatio: 0
+      cap: 0
+      milestonePerStackValue: 0
+      milestoneMaxStacks: 0
+    effects: []
+    modifiers: []
+    formula: 0
+    milestoneValue: 0
+  formChange:
+    keyIndex: 0
+    mode: 0
+    fromForms: []
+    toForm: 
+    sequence: []
+    stateRules: []
+    revertAfterSeconds: 0
+    revertToForm: 
+    autoRevertForms: []
+    pressAgainReverts: 0
+  strengthTags: []
+  startUnlocked: 1
+  unlockCond: 
+  skillMotion: "\uC2A4\uD30C\uC774\uD06C\uD654\uB85C \uC9C0\uBA74\uC744 \uBC15\uCC28\uACE0
+    \uD30C\uACE0\uB4E4\uC5B4 \uC774\uC911\uB2E8\uB3C4\uB85C \uBCA0\uAE30"
+  id: velocia_s0
+  nameKo: "\uC18D\uB825"
+  descKo: "\uC21C\uAC04\uC801\uC73C\uB85C \uD30C\uACE0\uB4E4\uC5B4 \uC774\uC911\uB2E8\uB3C4\uB85C
+    \uBCA4\uB2E4."
+  mpCost: 0
+  cooldown: 0.6
+  effectKind: 0
+  range: 2
+  halfAngle: 40
+  damageMultiplier: 0.9
+  healPercent: 0.2
+  buffAtkMultiplier: 1.3
+  buffDuration: 5
+  milestoneLevel: 3
+  milestoneDescKo: "\uC7AC\uC0AC\uC6A9 \uB300\uAE30\uC2DC\uAC04 \uAC10\uC18C"
+  milestoneExtraTargets: 0
+  milestoneRangeBonus: 0
+  milestoneHalfAngleBonus: 0
+  milestoneHealPercentBonus: 0
+  milestoneBuffDurationBonus: 0
+  milestoneDamageBonus: 0
+  dashDistance: 0
+  dashTime: 0.15
+  autoSwitchDistance: 0
+  altEffectKind: 0
+  altRange: 0
+  altHalfAngle: 0
+  altDamageMultiplier: 1
+  milestoneCooldownBonus: -0.1

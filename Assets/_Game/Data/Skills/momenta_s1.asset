@@ -1,0 +1,104 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 539fd4fbbaba74c44988317c884b5b12, type: 3}
+  m_Name: momenta_s1
+  m_EditorClassIdentifier: MSRPG::SkillDef
+  slot: 1
+  formReq: 
+  skillType: 0
+  shape: 1
+  lineWidth: 0.5
+  radius: 3
+  effects:
+  - type: 0
+    target: 0
+    stat: 0
+    value: 1.3
+    duration: 0
+    maxStacks: 0
+    targetCap: 3
+    areaRadius: 0
+    milestoneValue: 0
+    milestoneDuration: 0
+    whenForm: 
+    consumeOnHit: 0
+  factNoteKo: "\uD0C4\uC131\uCDA9\uB3CC\uC740 \uCDA9\uB3CC \uD6C4\uC5D0\uB3C4 \uC6B4\uB3D9\uC5D0\uB108\uC9C0\uAC00
+    \uBCF4\uC874\uB418\uB294 \uCDA9\uB3CC\uC774\uB2E4."
+  gameNoteKo: "\uD295\uACA8\uB098\uAC00\uBA70 \uC804\uC774\uB418\uB294 \uC5F0\uC1C4
+    \uB300\uC2E0 \uC9C1\uC120\uC0C1 \uCD5C\uB300 3\uBA85\uC744 \uB3D9\uC2DC\uC5D0
+    \uD0C0\uACA9(Lv.3 4\uBA85\uC740 \uBBF8\uC801\uC6A9)"
+  passive:
+    trigger: 0
+    value: 0
+    hitCount: 0
+    internalCooldown: 0
+    stack:
+      stackId: 
+      maxStacks: 0
+      perStackValue: 0
+      decay: 0
+      decaySeconds: 0
+      stat: 0
+      damageRatio: 0
+      cap: 0
+      milestonePerStackValue: 0
+      milestoneMaxStacks: 0
+    effects: []
+    modifiers: []
+    formula: 0
+    milestoneValue: 0
+  formChange:
+    keyIndex: 0
+    mode: 0
+    fromForms: []
+    toForm: 
+    sequence: []
+    stateRules: []
+    revertAfterSeconds: 0
+    revertToForm: 
+    autoRevertForms: []
+    pressAgainReverts: 0
+  strengthTags: []
+  startUnlocked: 0
+  unlockCond: 
+  skillMotion: "\uD050\uB300\uB85C \uAC15\uD558\uAC8C \uCCD0\uC11C \uACF5\uC774 \uC5F0\uC1C4\uB85C
+    \uD295\uACA8\uB098\uAC00\uB294 \uADA4\uC801"
+  id: momenta_s1
+  nameKo: "\uD0C4\uC131\uCDA9\uB3CC"
+  descKo: "\uD050\uB300\uB85C \uAC15\uD558\uAC8C \uCCD0\uC11C, \uB9DE\uC740 \uC801\uC774
+    \uD295\uACA8\uB098\uAC00\uBA70 \uADFC\uCC98\uC758 \uB2E4\uB978 \uC801\uC744 \uC5F0\uC1C4\uB85C
+    \uD0C0\uACA9\uD55C\uB2E4."
+  mpCost: 5
+  cooldown: 6
+  effectKind: 0
+  range: 4
+  halfAngle: 70
+  damageMultiplier: 1.3
+  healPercent: 0.2
+  buffAtkMultiplier: 1.3
+  buffDuration: 5
+  milestoneLevel: 3
+  milestoneDescKo: "\uC5F0\uC1C4 \uB300\uC0C1 \uC99D\uAC00"
+  milestoneExtraTargets: 0
+  milestoneRangeBonus: 0
+  milestoneHalfAngleBonus: 0
+  milestoneHealPercentBonus: 0
+  milestoneBuffDurationBonus: 0
+  milestoneDamageBonus: 0
+  dashDistance: 0
+  dashTime: 0.15
+  autoSwitchDistance: 0
+  altEffectKind: 0
+  altRange: 0
+  altHalfAngle: 0
+  altDamageMultiplier: 1
+  milestoneCooldownBonus: 0

@@ -1,0 +1,100 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 539fd4fbbaba74c44988317c884b5b12, type: 3}
+  m_Name: axel_s3
+  m_EditorClassIdentifier: MSRPG::SkillDef
+  slot: 3
+  formReq: 
+  skillType: 1
+  shape: 0
+  lineWidth: 1
+  radius: 3
+  effects: []
+  factNoteKo: 
+  gameNoteKo: "\uD53C\uACA9 \uD6C4 1\uCD08 \uC548\uC5D0 \uB2E4\uC74C \uD0C0\uACA9
+    \uC704\uB825 +60%(\uC18C\uBAA8\uD615)"
+  passive:
+    trigger: 2
+    value: 0
+    hitCount: 0
+    internalCooldown: 0
+    stack:
+      stackId: 
+      maxStacks: 0
+      perStackValue: 0
+      decay: 0
+      decaySeconds: 0
+      stat: 0
+      damageRatio: 0
+      cap: 0
+      milestonePerStackValue: 0
+      milestoneMaxStacks: 0
+    effects:
+    - type: 3
+      target: 1
+      stat: 6
+      value: 1.6
+      duration: 1
+      maxStacks: 0
+      targetCap: 0
+      areaRadius: 0
+      milestoneValue: 0
+      milestoneDuration: 0
+      whenForm: 
+      consumeOnHit: 1
+    modifiers: []
+    formula: 0
+    milestoneValue: 0
+  formChange:
+    keyIndex: 0
+    mode: 0
+    fromForms: []
+    toForm: 
+    sequence: []
+    stateRules: []
+    revertAfterSeconds: 0
+    revertToForm: 
+    autoRevertForms: []
+    pressAgainReverts: 0
+  strengthTags: []
+  startUnlocked: 0
+  unlockCond: 
+  skillMotion: 
+  id: axel_s3
+  nameKo: "\uCE74\uC6B4\uD130"
+  descKo: "\uACF5\uACA9\uC744 \uBC1B\uC740 \uC9C1\uD6C4 \uC9E7\uC740 \uC2DC\uAC04
+    \uB3D9\uC548 \uB2E4\uC74C \uD0C0\uACA9\uC774 \uB354 \uAC15\uD574\uC9C4\uB2E4."
+  mpCost: 0
+  cooldown: 0
+  effectKind: 0
+  range: 3
+  halfAngle: 70
+  damageMultiplier: 1.5
+  healPercent: 0.2
+  buffAtkMultiplier: 1.3
+  buffDuration: 5
+  milestoneLevel: 3
+  milestoneDescKo: 
+  milestoneExtraTargets: 0
+  milestoneRangeBonus: 0
+  milestoneHalfAngleBonus: 0
+  milestoneHealPercentBonus: 0
+  milestoneBuffDurationBonus: 0
+  milestoneDamageBonus: 0
+  dashDistance: 0
+  dashTime: 0.15
+  autoSwitchDistance: 0
+  altEffectKind: 0
+  altRange: 0
+  altHalfAngle: 0
+  altDamageMultiplier: 1
+  milestoneCooldownBonus: 0

@@ -262,7 +262,7 @@ public static class CharacterCsvBuilder
             "effectKind", "mpCost", "cooldown", "shape", "range", "halfAngle", "lineWidth", "radius", "damageMultiplier", "healPercent",
             "buffAtkMultiplier", "buffDuration", "strengthTags", "formReq", "skillMotion", "factNoteKo", "gameNoteKo", "milestoneLevel",
             "milestoneDescKo", "milestoneExtraTargets", "milestoneRangeBonus", "milestoneHalfAngleBonus", "milestoneHealPercentBonus",
-            "milestoneBuffDurationBonus", "milestoneCooldownBonus", "dashDistance", "dashTime",
+            "milestoneBuffDurationBonus", "milestoneDamageBonus", "milestoneCooldownBonus", "dashDistance", "dashTime",
             "autoSwitchDistance", "altEffectKind", "altRange", "altHalfAngle", "altDamageMultiplier");
 
         var owned = ctx.owned;
@@ -307,6 +307,7 @@ public static class CharacterCsvBuilder
             s.milestoneHealPercentBonus = row.Float("milestoneHealPercentBonus");
             s.milestoneBuffDurationBonus = row.Float("milestoneBuffDurationBonus");
             s.milestoneCooldownBonus = row.Float("milestoneCooldownBonus");
+            s.milestoneDamageBonus = row.Float("milestoneDamageBonus");
             s.dashDistance = row.Float("dashDistance");
             s.dashTime = row.Float("dashTime", s.dashTime);
             s.autoSwitchDistance = row.Float("autoSwitchDistance");

@@ -1,0 +1,105 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 539fd4fbbaba74c44988317c884b5b12, type: 3}
+  m_Name: vektor_s1
+  m_EditorClassIdentifier: MSRPG::SkillDef
+  slot: 1
+  formReq: 
+  skillType: 0
+  shape: 1
+  lineWidth: 0.5
+  radius: 3
+  effects:
+  - type: 0
+    target: 0
+    stat: 0
+    value: 1.8
+    duration: 0
+    maxStacks: 0
+    targetCap: 0
+    areaRadius: 0
+    milestoneValue: 2.2
+    milestoneDuration: 0
+    whenForm: 
+    consumeOnHit: 0
+  factNoteKo: "\uC9C1\uC120\uAC70\uB9AC\uB294 \uACBD\uB85C\uC640 \uBB34\uAD00\uD558\uAC8C
+    \uB450 \uC9C0\uC810\uC744 \uC787\uB294 \uCD5C\uB2E8 \uAC70\uB9AC\uC774\uB2E4."
+  gameNoteKo: "\uD68C\uD53C \uBB34\uC2DC\uB294 \uD68C\uD53C \uC2A4\uD0EF\uC774 \uC544\uC9C1
+    \uC5C6\uC5B4 \uC801\uC6A9\uB418\uC9C0 \uC54A\uB294\uB2E4(\uAD00\uD1B5 \uD53C\uD574\uB9CC
+    \uAD6C\uD604)"
+  passive:
+    trigger: 0
+    value: 0
+    hitCount: 0
+    internalCooldown: 0
+    stack:
+      stackId: 
+      maxStacks: 0
+      perStackValue: 0
+      decay: 0
+      decaySeconds: 0
+      stat: 0
+      damageRatio: 0
+      cap: 0
+      milestonePerStackValue: 0
+      milestoneMaxStacks: 0
+    effects: []
+    modifiers: []
+    formula: 0
+    milestoneValue: 0
+  formChange:
+    keyIndex: 0
+    mode: 0
+    fromForms: []
+    toForm: 
+    sequence: []
+    stateRules: []
+    revertAfterSeconds: 0
+    revertToForm: 
+    autoRevertForms: []
+    pressAgainReverts: 0
+  strengthTags: []
+  startUnlocked: 0
+  unlockCond: 
+  skillMotion: "\uD65C\uC2DC\uC704\uB97C \uCD5C\uB300\uB85C \uB2F9\uACA8 \uAC15\uD558\uAC8C
+    \uBC1C\uC0AC"
+  id: vektor_s1
+  nameKo: "\uC9C1\uC120\uAC70\uB9AC"
+  descKo: "\uAC15\uD558\uAC8C \uB2F9\uAE34 \uD654\uC0B4\uC774 \uC9C1\uC120\uC0C1\uC758
+    \uBAA8\uB4E0 \uAC83\uC744 \uAD00\uD1B5\uD558\uBA70 \uB0A0\uC544\uAC04\uB2E4.
+    \uC7A5\uC560\uBB3C\uC774\uB098 \uD68C\uD53C \uB2A5\uB825\uC5D0 \uC601\uD5A5\uBC1B\uC9C0
+    \uC54A\uACE0 \uBA85\uC911\uD55C\uB2E4."
+  mpCost: 4
+  cooldown: 5
+  effectKind: 0
+  range: 8
+  halfAngle: 70
+  damageMultiplier: 1.8
+  healPercent: 0.2
+  buffAtkMultiplier: 1.3
+  buffDuration: 5
+  milestoneLevel: 3
+  milestoneDescKo: "\uAD00\uD1B5 \uD53C\uD574 \uC99D\uAC00"
+  milestoneExtraTargets: 0
+  milestoneRangeBonus: 0
+  milestoneHalfAngleBonus: 0
+  milestoneHealPercentBonus: 0
+  milestoneBuffDurationBonus: 0
+  milestoneDamageBonus: 0
+  dashDistance: 0
+  dashTime: 0.15
+  autoSwitchDistance: 0
+  altEffectKind: 0
+  altRange: 0
+  altHalfAngle: 0
+  altDamageMultiplier: 1
+  milestoneCooldownBonus: 0

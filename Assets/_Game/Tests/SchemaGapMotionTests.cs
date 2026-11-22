@@ -57,6 +57,53 @@ public class SchemaGapMotionTests
         Assert.AreEqual(2f, step.z, 0.001f);
     }
 
+    [Test]
+    public void Dash_NegativeDistance_MovesBackward()
+    {
+        var d = new DashMotion();
+        d.Begin(Vector3.forward, -3f, 0.2f);
+        Assert.IsTrue(d.Active);
+        var step = d.Step(1f);
+        Assert.AreEqual(-3f, step.z, 0.001f, "음수 거리 = 후방 반동");
+    }
+
+    // ════════════════════════════════════════════════════════════════════════
+    // Q 기본기 마일스톤 (사거리·각도·위력)
+    // ════════════════════════════════════════════════════════════════════════
+
+    [Test]
+    public void BasicAttack_AppliesMilestoneRangeAngleAndDamage_AtLevelThree()
+    {
+        var q = ScriptableObject.CreateInstance<SkillDef>();
+        q.id = "q"; q.slot = 0; q.range = 2f; q.halfAngle = 40f; q.damageMultiplier = 1.1f; q.cooldown = 0.7f;
+        q.milestoneLevel = 3; q.milestoneRangeBonus = 1.5f; q.milestoneHalfAngleBonus = 10f; q.milestoneDamageBonus = 0.2f;
+        var def = ScriptableObject.CreateInstance<CharacterDef>();
+        def.id = "bq"; def.nameKo = "c"; def.rarity = Rarity.N;
+        def.baseStats = new CharacterStats { hp = 100, atk = 10, def = 1, spd = 1, mp = 10 };
+        def.skills = new[] { q };
+        var owned = new OwnedCharacter { id = "bq", level = 1 };
+        var c = new CombatCharacter(def, owned);
+        c.Unlock(0);
+
+        var s1 = BasicAttack.Resolve(c, 9f, 9f, 9f);
+        Assert.AreEqual(2f, s1.range, 0.0001f); Assert.AreEqual(1.1f, s1.damageMultiplier, 0.0001f);
+
+        owned.GetSkillProgress("q").level = 3;
+        var s3 = BasicAttack.Resolve(c, 9f, 9f, 9f);
+        Assert.AreEqual(3.5f, s3.range, 0.0001f);
+        Assert.AreEqual(50f, s3.halfAngle, 0.0001f);
+        Assert.AreEqual(1.3f, s3.damageMultiplier, 0.0001f);
+    }
+
+    [Test]
+    public void SkillScaling_MilestoneDamageBonus_AddsToDamageMultiplier()
+    {
+        var s = ScriptableObject.CreateInstance<SkillDef>();
+        s.damageMultiplier = 1.2f; s.milestoneLevel = 3; s.milestoneDamageBonus = 0.3f;
+        Assert.AreEqual(1.2f, SkillScaling.Compute(s, 1).damageMultiplier, 0.0001f);
+        Assert.AreEqual(1.2f * (1f + 2 * SkillScaling.PowerPerLevel) + 0.3f, SkillScaling.Compute(s, 3).damageMultiplier, 0.0001f);
+    }
+
     // ════════════════════════════════════════════════════════════════════════
     // #2 띄우기 — 곡선
     // ════════════════════════════════════════════════════════════════════════

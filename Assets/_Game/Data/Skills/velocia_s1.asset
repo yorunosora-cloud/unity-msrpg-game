@@ -1,0 +1,118 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 539fd4fbbaba74c44988317c884b5b12, type: 3}
+  m_Name: velocia_s1
+  m_EditorClassIdentifier: MSRPG::SkillDef
+  slot: 1
+  formReq: 
+  skillType: 0
+  shape: 0
+  lineWidth: 1
+  radius: 3
+  effects:
+  - type: 0
+    target: 0
+    stat: 0
+    value: 1.4
+    duration: 0
+    maxStacks: 0
+    targetCap: 0
+    areaRadius: 0
+    milestoneValue: 0
+    milestoneDuration: 0
+    whenForm: 
+    consumeOnHit: 0
+  - type: 11
+    target: 0
+    stat: 0
+    value: 0
+    duration: 0
+    maxStacks: 0
+    targetCap: 0
+    areaRadius: 0
+    milestoneValue: 0
+    milestoneDuration: 0
+    whenForm: 
+    consumeOnHit: 0
+  factNoteKo: "\uC21C\uAC04\uC18D\uB3C4\uB294 \uC544\uC8FC \uC9E7\uC740 \uC2DC\uAC04
+    \uAC04\uACA9\uC5D0\uC11C\uC758 \uC18D\uB3C4\uC774\uB2E4."
+  gameNoteKo: "\uC804\uC6A9 \uB9C8\uD06C(velocia_v)\uC640 \uC5F0\uACC4\uAE30(\"\uC18D\uB3C4
+    \uB3C4\uCD9C\"\xB7\"\uAC00\uC18D\uB3C4 \uB3C4\uCD9C\")\uB294 \uC2DC\uB108\uC9C0
+    \uC2DC\uC2A4\uD15C(03) \uBBF8\uAD6C\uD604 \u2014 \uD53C\uD574 1.4\uC640 \uC18D\uC131
+    \uD45C\uC2DD\uB9CC \uC801\uC6A9"
+  passive:
+    trigger: 0
+    value: 0
+    hitCount: 0
+    internalCooldown: 0
+    stack:
+      stackId: 
+      maxStacks: 0
+      perStackValue: 0
+      decay: 0
+      decaySeconds: 0
+      stat: 0
+      damageRatio: 0
+      cap: 0
+      milestonePerStackValue: 0
+      milestoneMaxStacks: 0
+    effects: []
+    modifiers: []
+    formula: 0
+    milestoneValue: 0
+  formChange:
+    keyIndex: 0
+    mode: 0
+    fromForms: []
+    toForm: 
+    sequence: []
+    stateRules: []
+    revertAfterSeconds: 0
+    revertToForm: 
+    autoRevertForms: []
+    pressAgainReverts: 0
+  strengthTags: []
+  startUnlocked: 0
+  unlockCond: 
+  skillMotion: "\uC794\uC0C1\uC744 \uB0A8\uAE30\uBA70 \uC21C\uAC04\uC801\uC73C\uB85C
+    \uB3CC\uC9C4"
+  id: velocia_s1
+  nameKo: "\uC21C\uAC04\uC18D\uB3C4"
+  descKo: "\uC21C\uAC04\uC801\uC73C\uB85C \uAE09\uAC00\uC18D\uD574 \uC801\uC5D0\uAC8C
+    \uB2EC\uB824\uB4E4\uC5B4 \uAC15\uD0C0\uD558\uBA70, \uC18D\uB3C4 \uD45C\uC2DD\uC744
+    \uB0A8\uAE34\uB2E4. \uC9E7\uC740 \uCFE8\uD0C0\uC784\uC73C\uB85C \uBC18\uBCF5
+    \uC0AC\uC6A9 \uAC00\uB2A5\uD558\uB2E4."
+  mpCost: 3
+  cooldown: 2.5
+  effectKind: 3
+  range: 4
+  halfAngle: 30
+  damageMultiplier: 1.4
+  healPercent: 0.2
+  buffAtkMultiplier: 1.3
+  buffDuration: 5
+  milestoneLevel: 3
+  milestoneDescKo: "\uC7AC\uC0AC\uC6A9 \uB300\uAE30\uC2DC\uAC04 \uAC10\uC18C"
+  milestoneExtraTargets: 0
+  milestoneRangeBonus: 0
+  milestoneHalfAngleBonus: 0
+  milestoneHealPercentBonus: 0
+  milestoneBuffDurationBonus: 0
+  milestoneDamageBonus: 0
+  dashDistance: 0
+  dashTime: 0.15
+  autoSwitchDistance: 0
+  altEffectKind: 0
+  altRange: 0
+  altHalfAngle: 0
+  altDamageMultiplier: 1
+  milestoneCooldownBonus: -0.5

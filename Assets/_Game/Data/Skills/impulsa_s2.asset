@@ -1,0 +1,114 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 539fd4fbbaba74c44988317c884b5b12, type: 3}
+  m_Name: impulsa_s2
+  m_EditorClassIdentifier: MSRPG::SkillDef
+  slot: 2
+  formReq: 
+  skillType: 0
+  shape: 0
+  lineWidth: 1
+  radius: 3
+  effects:
+  - type: 0
+    target: 0
+    stat: 0
+    value: 1.4
+    duration: 0
+    maxStacks: 0
+    targetCap: 0
+    areaRadius: 0
+    milestoneValue: 0
+    milestoneDuration: 0
+    whenForm: 
+    consumeOnHit: 0
+  - type: 11
+    target: 0
+    stat: 0
+    value: 0
+    duration: 0
+    maxStacks: 0
+    targetCap: 0
+    areaRadius: 0
+    milestoneValue: 0
+    milestoneDuration: 0
+    whenForm: 
+    consumeOnHit: 0
+  factNoteKo: "\uCDA9\uACA9\uB7C9-\uC6B4\uB3D9\uB7C9 \uC815\uB9AC: \uCDA9\uACA9\uB7C9\uC740
+    \uC6B4\uB3D9\uB7C9\uC758 \uBCC0\uD654\uB7C9\uACFC \uAC19\uB2E4(J=\u0394p)."
+  gameNoteKo: "\uC804\uC6A9 \uB9C8\uD06C(impulsa_j, 6\uCD08\xB7Lv.3 8\uCD08)\uC640
+    \uBAA8\uBA58\uD0C0 \uC5F0\uACC4(\"\uCDA9\uACA9\uB7C9-\uC6B4\uB3D9\uB7C9 \uC815\uB9AC\")\uB294
+    \uC2DC\uB108\uC9C0 \uC2DC\uC2A4\uD15C(03) \uBBF8\uAD6C\uD604 \u2014 \uD53C\uD574
+    1.4\uC640 \uC18D\uC131 \uD45C\uC2DD\uB9CC \uC801\uC6A9"
+  passive:
+    trigger: 0
+    value: 0
+    hitCount: 0
+    internalCooldown: 0
+    stack:
+      stackId: 
+      maxStacks: 0
+      perStackValue: 0
+      decay: 0
+      decaySeconds: 0
+      stat: 0
+      damageRatio: 0
+      cap: 0
+      milestonePerStackValue: 0
+      milestoneMaxStacks: 0
+    effects: []
+    modifiers: []
+    formula: 0
+    milestoneValue: 0
+  formChange:
+    keyIndex: 0
+    mode: 0
+    fromForms: []
+    toForm: 
+    sequence: []
+    stateRules: []
+    revertAfterSeconds: 0
+    revertToForm: 
+    autoRevertForms: []
+    pressAgainReverts: 0
+  strengthTags: []
+  startUnlocked: 0
+  unlockCond: 
+  skillMotion: "\uD3EC\uD0C4\uC5D0 \uD45C\uC2DD \uAC01\uC778\uC744 \uC0C8\uACA8 \uBC1C\uC0AC"
+  id: impulsa_s2
+  nameKo: "\uCDA9\uACA9\uB7C9 \uC815\uB9AC"
+  descKo: "\uB300\uC0C1\uC5D0\uAC8C \uCDA9\uACA9\uB7C9 \uD45C\uC2DD\uC744 \uB0A8\uAE34\uB2E4."
+  mpCost: 6
+  cooldown: 8
+  effectKind: 3
+  range: 5
+  halfAngle: 40
+  damageMultiplier: 1.4
+  healPercent: 0.2
+  buffAtkMultiplier: 1.3
+  buffDuration: 5
+  milestoneLevel: 3
+  milestoneDescKo: "\uD45C\uC2DD \uC720\uC9C0\uC2DC\uAC04 \uC99D\uAC00"
+  milestoneExtraTargets: 0
+  milestoneRangeBonus: 0
+  milestoneHalfAngleBonus: 0
+  milestoneHealPercentBonus: 0
+  milestoneBuffDurationBonus: 0
+  milestoneDamageBonus: 0
+  dashDistance: 0
+  dashTime: 0.15
+  autoSwitchDistance: 0
+  altEffectKind: 0
+  altRange: 0
+  altHalfAngle: 0
+  altDamageMultiplier: 1
+  milestoneCooldownBonus: 0

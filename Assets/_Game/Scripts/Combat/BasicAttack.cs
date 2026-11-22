@@ -35,6 +35,12 @@ public static class BasicAttack
         spec.halfAngle        = s.halfAngle;
         spec.damageMultiplier = s.damageMultiplier;
         spec.cooldown         = SkillScaling.EffectiveCooldown(s, c.SkillLevel(idx));
+        if (s.milestoneLevel > 0 && c.SkillLevel(idx) >= s.milestoneLevel)
+        {
+            spec.range            += s.milestoneRangeBonus;
+            spec.halfAngle        += s.milestoneHalfAngleBonus;
+            spec.damageMultiplier += s.milestoneDamageBonus;
+        }
         spec.strengthTags     = s.strengthTags != null && s.strengthTags.Length > 0 ? s.strengthTags : null;
         return spec;
     }

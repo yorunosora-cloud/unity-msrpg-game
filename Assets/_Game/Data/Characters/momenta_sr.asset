@@ -1,0 +1,69 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 52b643bc733c46748835910b7c25db77, type: 3}
+  m_Name: momenta_sr
+  m_EditorClassIdentifier: MSRPG::CharacterDef
+  id: momenta_sr
+  nameKo: "\uBAA8\uBA58\uD0C0"
+  nameEn: Momenta
+  continent: 0
+  country: newton-empire
+  rarity: 2
+  role: 3
+  baseStats:
+    hp: 2000
+    atk: 20
+    def: 20
+    spd: 20
+    mp: 20
+  forms: []
+  autoRules: []
+  attributes:
+    mass: 0
+    velocity: 0
+    temp: 0
+    charge: 0
+  personality: "\uC790\uC2E0\uB9CC\uB9CC\uD55C \uD504\uB85C \uB2F9\uAD6C\uC120\uC218.
+    \uC5EC\uC720\uB86D\uC9C0\uB9CC \uACC4\uC0B0\uC740 \uC815\uD655\uD558\uB2E4"
+  basicAttackMotion: "\uD050\uB300\uB85C \uC9E7\uAC8C \uCC14\uB7EC \uCE58\uB294 \uB3D9\uC791"
+  basicExplanation: 
+  advancedExplanation: 
+  realPrinciple: 
+  sourceRef: 
+  conceptQuestions: []
+  affinityQuestions: []
+  portraitColor: {r: 1, g: 1, b: 1, a: 1}
+  skills:
+  - {fileID: 11400000, guid: d9f2e140ac35fd04d961c92651401688, type: 2}
+  - {fileID: 11400000, guid: 449af005b7de63446819ae90278bff24, type: 2}
+  - {fileID: 11400000, guid: e64776c591403844ea901417f28613b1, type: 2}
+  - {fileID: 11400000, guid: 0d0544d535f352b4cbaec6ffc2a1734a, type: 2}
+  - {fileID: 11400000, guid: 3b6f0eaf0bffaae489b92ccf22c85c56, type: 2}
+  dexNumber: 0
+  gender: 0
+  concept: "\uB2F9\uAD6C\uACF5\uC774 \uBD80\uB52A\uD600 \uC6B4\uB3D9\uB7C9\uC744
+    \uC8FC\uACE0\uBC1B\uB294 \uBAA8\uC2B5\uC744 \uADF8\uB300\uB85C \uC804\uD22C \uC2A4\uD0C0\uC77C\uB85C
+    \uC0BC\uC740 \uB2F9\uAD6C \uD504\uB85C"
+  appearance: "\uAE54\uB054\uD55C \uD504\uB85C \uB2F9\uAD6C\uC120\uC218 \uBCF5\uC7A5,
+    \uC190\uC5D0 \uAC10\uC544\uB454 \uCD08\uD06C\uAC00\uB8E8, \uC790\uC2E0\uB9CC\uB9CC\uD55C
+    \uBBF8\uC18C"
+  weapon: "\uD050\uB300"
+  loreKo: "\uB2F9\uAD6C\uACF5\uC774 \uBD80\uB52A\uD788\uB294 \uBAA8\uC591\uC0C8\uB97C
+    \uADF8\uB300\uB85C \uC804\uD22C\uB85C \uC62E\uAE34 \uC790\uC2E0\uB9CC\uB9CC\uD55C
+    \uD504\uB85C \uB2F9\uAD6C \uC120\uC218\uB2E4. \uADF8\uB294 \uD55C \uBC88 \uAC74\uB128
+    \uD798\uC774 \uC5B4\uB514\uAE4C\uC9C0 \uC774\uC5B4\uC9C0\uB294\uC9C0 \uB05D\uAE4C\uC9C0
+    \uACC4\uC0B0\uD55C\uB2E4."
+  synergyKind: 0
+  synergyMarkedBy: []
+  synergyComboName: 
+  gachaObtainable: 1
+  acquireCondition: 

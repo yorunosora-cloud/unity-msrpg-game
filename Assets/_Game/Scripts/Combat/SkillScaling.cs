@@ -65,6 +65,7 @@ public static class SkillScaling
             result.healPercent  += def.milestoneHealPercentBonus;
             result.buffDuration += def.milestoneBuffDurationBonus;
             result.extraTargets += def.milestoneExtraTargets;
+            result.damageMultiplier += def.milestoneDamageBonus;
         }
 
         return result;

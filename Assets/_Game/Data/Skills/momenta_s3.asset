@@ -1,0 +1,117 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 539fd4fbbaba74c44988317c884b5b12, type: 3}
+  m_Name: momenta_s3
+  m_EditorClassIdentifier: MSRPG::SkillDef
+  slot: 3
+  formReq: 
+  skillType: 0
+  shape: 0
+  lineWidth: 1
+  radius: 3
+  effects:
+  - type: 0
+    target: 0
+    stat: 0
+    value: 1
+    duration: 0
+    maxStacks: 0
+    targetCap: 1
+    areaRadius: 0
+    milestoneValue: 0
+    milestoneDuration: 0
+    whenForm: 
+    consumeOnHit: 0
+  - type: 7
+    target: 0
+    stat: 0
+    value: 0
+    duration: 3
+    maxStacks: 0
+    targetCap: 1
+    areaRadius: 0
+    milestoneValue: 0
+    milestoneDuration: 4
+    whenForm: 
+    consumeOnHit: 0
+  factNoteKo: "\uC644\uC804\uBE44\uD0C4\uC131\uCDA9\uB3CC\uC740 \uCDA9\uB3CC\uD55C
+    \uB450 \uBB3C\uCCB4\uAC00 \uD558\uB098\uB85C \uD569\uCCD0\uC838 \uD568\uAED8
+    \uC6C0\uC9C1\uC774\uB294 \uCDA9\uB3CC\uC774\uB2E4."
+  gameNoteKo: "\uACB0\uD569\xB7\uB04C\uACE0 \uC774\uB3D9\xB70.5\uCD08\uB9C8\uB2E4
+    \uCD94\uAC00 \uD53C\uD574\uB294 \uBBF8\uAD6C\uD604 \u2014 \uACB0\uD569 \uC9C0\uC18D\uC2DC\uAC04(3\uCD08,
+    Lv.3 4\uCD08)\uB9CC\uD07C \uC2A4\uD134\uC73C\uB85C \uADFC\uC0AC"
+  passive:
+    trigger: 0
+    value: 0
+    hitCount: 0
+    internalCooldown: 0
+    stack:
+      stackId: 
+      maxStacks: 0
+      perStackValue: 0
+      decay: 0
+      decaySeconds: 0
+      stat: 0
+      damageRatio: 0
+      cap: 0
+      milestonePerStackValue: 0
+      milestoneMaxStacks: 0
+    effects: []
+    modifiers: []
+    formula: 0
+    milestoneValue: 0
+  formChange:
+    keyIndex: 0
+    mode: 0
+    fromForms: []
+    toForm: 
+    sequence: []
+    stateRules: []
+    revertAfterSeconds: 0
+    revertToForm: 
+    autoRevertForms: []
+    pressAgainReverts: 0
+  strengthTags: []
+  startUnlocked: 0
+  unlockCond: 
+  skillMotion: "\uC801\uC744 \uBD99\uC7A1\uC544 \uD558\uB098\uB85C \uACB0\uD569\uC2DC\uD0A4\uB294
+    \uB3D9\uC791"
+  id: momenta_s3
+  nameKo: "\uC644\uC804\uBE44\uD0C4\uC131\uCDA9\uB3CC"
+  descKo: "\uC801\uACFC \uBD80\uB52A\uD600 \uD558\uB098\uB85C \uACB0\uD569\uD55C
+    \uB4A4, \uD558\uB098\uC758 \uC9C8\uB7C9\uCC98\uB7FC \uD568\uAED8 \uC6C0\uC9C1\uC774\uBA70
+    \uB04C\uACE0 \uB2E4\uB2CC\uB2E4."
+  mpCost: 12
+  cooldown: 20
+  effectKind: 0
+  range: 3
+  halfAngle: 45
+  damageMultiplier: 1
+  healPercent: 0.2
+  buffAtkMultiplier: 1.3
+  buffDuration: 5
+  milestoneLevel: 3
+  milestoneDescKo: "\uACB0\uD569 \uC9C0\uC18D\uC2DC\uAC04 \uC99D\uAC00"
+  milestoneExtraTargets: 0
+  milestoneRangeBonus: 0
+  milestoneHalfAngleBonus: 0
+  milestoneHealPercentBonus: 0
+  milestoneBuffDurationBonus: 0
+  milestoneDamageBonus: 0
+  dashDistance: 0
+  dashTime: 0.15
+  autoSwitchDistance: 0
+  altEffectKind: 0
+  altRange: 0
+  altHalfAngle: 0
+  altDamageMultiplier: 1
+  milestoneCooldownBonus: 0

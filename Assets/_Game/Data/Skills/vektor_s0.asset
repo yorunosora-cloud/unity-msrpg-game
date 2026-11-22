@@ -1,0 +1,87 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 539fd4fbbaba74c44988317c884b5b12, type: 3}
+  m_Name: vektor_s0
+  m_EditorClassIdentifier: MSRPG::SkillDef
+  slot: 0
+  formReq: 
+  skillType: 0
+  shape: 1
+  lineWidth: 0.4
+  radius: 3
+  effects: []
+  factNoteKo: "\uD06C\uAE30\uAC00 1\uC778 \uC21C\uC218 \uBC29\uD5A5 \uBCA1\uD130(\uB2E8\uC704\uBCA1\uD130)\uB294
+    \uBAA8\uB4E0 \uBCA1\uD130\uC758 \uAE30\uBCF8 \uB2E8\uC704\uC774\uB2E4."
+  gameNoteKo: 
+  passive:
+    trigger: 0
+    value: 0
+    hitCount: 0
+    internalCooldown: 0
+    stack:
+      stackId: 
+      maxStacks: 0
+      perStackValue: 0
+      decay: 0
+      decaySeconds: 0
+      stat: 0
+      damageRatio: 0
+      cap: 0
+      milestonePerStackValue: 0
+      milestoneMaxStacks: 0
+    effects: []
+    modifiers: []
+    formula: 0
+    milestoneValue: 0
+  formChange:
+    keyIndex: 0
+    mode: 0
+    fromForms: []
+    toForm: 
+    sequence: []
+    stateRules: []
+    revertAfterSeconds: 0
+    revertToForm: 
+    autoRevertForms: []
+    pressAgainReverts: 0
+  strengthTags: []
+  startUnlocked: 1
+  unlockCond: 
+  skillMotion: "\uD65C\uC744 \uB2F9\uACA8 \uC9E7\uAC8C \uC870\uC900 \uC0AC\uACA9"
+  id: vektor_s0
+  nameKo: "\uB2E8\uC704\uBCA1\uD130"
+  descKo: "\uD654\uC0B4\uC744 \uC9C1\uC120\uC73C\uB85C \uC3DC\uB2E4."
+  mpCost: 0
+  cooldown: 0.8
+  effectKind: 0
+  range: 6
+  halfAngle: 70
+  damageMultiplier: 1
+  healPercent: 0.2
+  buffAtkMultiplier: 1.3
+  buffDuration: 5
+  milestoneLevel: 3
+  milestoneDescKo: "\uC0AC\uAC70\uB9AC \uD655\uC7A5"
+  milestoneExtraTargets: 0
+  milestoneRangeBonus: 1.5
+  milestoneHalfAngleBonus: 0
+  milestoneHealPercentBonus: 0
+  milestoneBuffDurationBonus: 0
+  milestoneDamageBonus: 0
+  dashDistance: 0
+  dashTime: 0.15
+  autoSwitchDistance: 0
+  altEffectKind: 0
+  altRange: 0
+  altHalfAngle: 0
+  altDamageMultiplier: 1
+  milestoneCooldownBonus: 0

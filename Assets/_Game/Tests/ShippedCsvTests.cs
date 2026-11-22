@@ -55,20 +55,115 @@ public class ShippedCsvTests
     public void ShippedCsv_Counts()
     {
         var r = Load();
-        Assert.AreEqual(4, r.characters.Count);
-        Assert.AreEqual(5, r.characters.Sum(c => c.conceptQuestions.Length), "개념 문제: 포르테 2 + 나머지 각 1");
-        Assert.AreEqual(29, r.skills.Count, "포르테 7 + 루미에르 11 + 마시오&이네르셔 6 + 크로노 5");
+        Assert.AreEqual(9, r.characters.Count, "대표 4 + 물리 1묶음 5(벡토르·벨로시아·액셀·모멘타·임펄사)");
+        Assert.AreEqual(5, r.characters.Sum(c => c.conceptQuestions?.Length ?? 0), "개념 문제: 포르테 2 + 대표 나머지 각 1 (이관 캐릭터는 아직 교육 데이터 없음)");
+        Assert.AreEqual(50, r.skills.Count, "대표 29 + 벡토르 4 + 벨로시아 4 + 액셀 4 + 모멘타 5 + 임펄사 4");
         Assert.AreEqual(8, r.tagRules.Length);
+    }
+
+    [Test]
+    public void EveryShippedCharacter_HasUnlockedBasicSkill_WhenItHasOne()
+    {
+        foreach (var c in Load().characters)
+        {
+            var q = c.skills.Where(sk => sk.slot == SkillSlots.Basic && sk.skillType == SkillKind.Active).ToArray();
+            if (q.Length == 0) continue;   // 폼별 Q가 없는 캐릭터(루미에르)는 기본 평타를 쓴다
+            Assert.IsTrue(q.Any(sk => sk.startUnlocked), c.id + "의 기본기는 처음부터 열려 있어야 한다");
+        }
+    }
+
+    // ════════════════════════════════════════════════════════════════════════
+    // 물리 이관 1묶음: 벡토르·벨로시아·액셀·모멘타·임펄사
+    // ════════════════════════════════════════════════════════════════════════
+
+    [Test]
+    public void Batch1_Stats_MatchDocuments()
+    {
+        void Check(string id, int hp, int atk, int def, int spd, int mp, Rarity r, CharacterRole role)
+        {
+            var c = Char(id);
+            Assert.AreEqual((hp, atk, def, spd, mp), (c.baseStats.hp, c.baseStats.atk, c.baseStats.def, c.baseStats.spd, c.baseStats.mp), id);
+            Assert.AreEqual(r, c.rarity, id); Assert.AreEqual(role, c.role, id);
+            Assert.AreEqual(Continent.Physics, c.continent, id);
+        }
+        Check("vektor_sr", 2000, 38, 7, 22, 15, Rarity.SR, CharacterRole.Dealer);
+        Check("velocia_sr", 2000, 27, 10, 28, 15, Rarity.SR, CharacterRole.Dealer);
+        Check("axel_sr", 2000, 42, 10, 13, 15, Rarity.SR, CharacterRole.Dealer);
+        Check("momenta_sr", 2000, 20, 20, 20, 20, Rarity.SR, CharacterRole.AllRounder);
+        Check("impulsa_sr", 2000, 35, 10, 20, 15, Rarity.SR, CharacterRole.Dealer);
+    }
+
+    [Test]
+    public void Batch1_Vektor_ZeroVector_TeleportsAndCleansesBelowFortyPercent()
+    {
+        var s = Skill("vektor_s3");
+        Assert.AreEqual(SkillKind.Passive, s.skillType);
+        Assert.AreEqual(PassiveTriggerType.HpBelowPercent, s.passive.trigger);
+        Assert.AreEqual(0.4f, s.passive.value, 0.0001f);
+        Assert.AreEqual(60f, s.passive.internalCooldown);
+        CollectionAssert.AreEqual(new[] { SkillEffectType.Teleport, SkillEffectType.Cleanse }, s.passive.effects.Select(e => e.type));
+        Assert.AreEqual(1.8f, Skill("vektor_s1").effects[0].value); Assert.AreEqual(2.2f, Skill("vektor_s1").effects[0].milestoneValue);
+    }
+
+    [Test]
+    public void Batch1_Velocia_UniformMotion_RampsMoveSpeedAndCooldownRate()
+    {
+        var s = Skill("velocia_s3");
+        Assert.AreEqual(PassiveTriggerType.SelfMoving, s.passive.trigger);
+        var m = s.passive.modifiers;
+        Assert.AreEqual(2, m.Length);
+        Assert.IsTrue(m.All(x => x.source == ModifierSource.MovingRamp && x.value == 0.03f && x.cap == 0.3f && x.decayPerSecond == 0.05f));
+        CollectionAssert.AreEquivalent(new[] { StatKind.MoveSpeed, StatKind.CooldownRate }, m.Select(x => x.stat));
+        Assert.AreEqual(-0.1f, Skill("velocia_s0").milestoneCooldownBonus, 0.0001f);
+        Assert.AreEqual(-0.5f, Skill("velocia_s1").milestoneCooldownBonus, 0.0001f);
+    }
+
+    [Test]
+    public void Batch1_Axel_NewtonSecondLaw_UsesHighMassTag_AndCounterBuffsNextHit()
+    {
+        CollectionAssert.AreEqual(new[] { "고질량" }, Skill("axel_s1").strengthTags);
+        var c = Skill("axel_s3");
+        Assert.AreEqual(PassiveTriggerType.OnHitTaken, c.passive.trigger);
+        var e = c.passive.effects[0];
+        Assert.AreEqual((SkillEffectType.StatBuff, StatKind.HitDamage, 1.6f, 1f), (e.type, e.stat, e.value, e.duration));
+        Assert.IsTrue(e.consumeOnHit);
+        Assert.AreEqual(0.2f, Skill("axel_s0").milestoneDamageBonus, 0.0001f);
+    }
+
+    [Test]
+    public void Batch1_Momenta_MomentumConservation_IsDamageProportionalStack_CappedAt30Percent()
+    {
+        var st = Skill("momenta_s4").passive.stack;
+        Assert.AreEqual(0.1f, st.damageRatio, 0.0001f);
+        Assert.AreEqual(0.3f, st.cap, 0.0001f);
+        Assert.AreEqual(StatKind.Atk, st.stat);
+        Assert.AreEqual(StackDecay.ResetAfterIdle, st.decay);
+        Assert.AreEqual(5f, st.decaySeconds);
+        Assert.AreEqual(3, Skill("momenta_s1").effects[0].targetCap, "탄성충돌: 직선상 최대 3명");
+        Assert.IsTrue(Skill("momenta_s2").effects.Any(e => e.type == SkillEffectType.Knockback && e.value == 1.5f));
+    }
+
+    [Test]
+    public void Batch1_Impulsa_Recoil_IsBackwardDash_AndJFtStacksSkillPower()
+    {
+        var r = Skill("impulsa_s1");
+        Assert.AreEqual(-3f, r.dashDistance); Assert.AreEqual(0.2f, r.dashTime, 0.0001f);
+        var st = Skill("impulsa_s3").passive.stack;
+        Assert.AreEqual((5, 0.08f, 3f, StatKind.SkillPower), (st.maxStacks, st.perStackValue, st.decaySeconds, st.stat));
+        Assert.AreEqual(1f, Skill("impulsa_s0").milestoneRangeBonus);
     }
 
     // ════════════════════════════════════════════════════════════════════════
     // 교육 레이어 (character_codex.csv, 18-C)
     // ════════════════════════════════════════════════════════════════════════
 
+    static readonly string[] Representative = { "forte_r", "lumiere_ssr", "massio_inersha_r", "chrono_sr" };
+    static IEnumerable<CharacterDef> RepresentativeChars() => Load().characters.Where(c => Representative.Contains(c.id));
+
     [Test]
     public void Codex_AllRepresentativeCharactersHaveEducationContent()
     {
-        foreach (var c in Load().characters)
+        foreach (var c in RepresentativeChars())
         {
             Assert.IsFalse(string.IsNullOrEmpty(c.basicExplanation), c.id + " basicExplanation");
             Assert.IsFalse(string.IsNullOrEmpty(c.advancedExplanation), c.id + " advancedExplanation");
@@ -115,7 +210,7 @@ public class ShippedCsvTests
     [Test]
     public void Codex_AffinityPick_IsExactlyOneOfTheTwoChoices()
     {
-        foreach (var c in Load().characters)
+        foreach (var c in RepresentativeChars())
             Assert.IsTrue(c.affinityQuestions[0].IsConceptPick(0) ^ c.affinityQuestions[0].IsConceptPick(1), c.id);
         Assert.AreEqual(0, Char("lumiere_ssr").affinityQuestions[0].conceptPick, "둘 다 맞다 = 첫 번째 선택지");
     }

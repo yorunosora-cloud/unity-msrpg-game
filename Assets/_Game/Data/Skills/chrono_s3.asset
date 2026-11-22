@@ -79,6 +79,7 @@ MonoBehaviour:
   milestoneHalfAngleBonus: 0
   milestoneHealPercentBonus: 0
   milestoneBuffDurationBonus: 0
+  milestoneDamageBonus: 0
   dashDistance: 0
   dashTime: 0.15
   autoSwitchDistance: 0

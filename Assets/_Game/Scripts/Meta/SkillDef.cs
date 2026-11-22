@@ -85,8 +85,11 @@ public class SkillDef : ScriptableObject
     public float  milestoneHealPercentBonus;
     [Tooltip("HealBuff: 버프 지속시간 보너스 (초)")]
     public float  milestoneBuffDurationBonus;
+    [Tooltip("마일스톤 위력 보너스(damageMultiplier에 더함)")]
+    public float  milestoneDamageBonus;
+
     [Header("돌진 (설계도 18 §8-5 #1)")]
-    [Tooltip("시전 시 전방으로 이동하는 거리(m). 0이면 이동 없음")]
+    [Tooltip("시전 시 전방으로 이동하는 거리(m). 음수면 후방 반동. 0이면 이동 없음")]
     public float  dashDistance;
     [Tooltip("돌진에 걸리는 시간(초)")]
     public float  dashTime = 0.15f;
