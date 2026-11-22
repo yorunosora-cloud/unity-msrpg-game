@@ -93,6 +93,20 @@ biology_double-helix-palace_boss_watson,왓슨,Biology,헬릭스 제국,이중�
 biology_double-helix-palace_boss_crick,크릭,Biology,헬릭스 제국,이중나선 황궁,Landmark,Boss,,Solo,,25,27,Biology,,,,,,,,,,BossDef(07_보스전.md·크릭.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Crick
 biology_double-helix-palace_boss_franklin,프랭클린,Biology,헬릭스 제국,이중나선 황궁,Landmark,Boss,,Solo,,27,29,Biology,,,,,,,,,,BossDef(07_보스전.md·프랭클린.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Franklin
 
+# 헬릭스 제국 — CRISPR 편집 연구소(바이오스 여섯 번째·마지막 던전): 던전은 플레이어 레벨에 완전 스케일링 → 아래 levelMin/levelMax·HP·DEF는 '스케일링 기준값'(고정 권장 레벨 아님, 던전 간 보정 없음이라 다른 바이오스 던전과 같은 대역)
+# 공통 잡몹 2종(전 구역, 형질전환쥐는 이중나선 황궁 공통이라 제외) + 구역 전용 3종(중간보스 미니어 버전, 절단→삽입→다중 편집 구역 고정 진행)
+biology_crispr-lab_normal_crispr-rose,CRISPR 장미,Biology,헬릭스 제국,CRISPR 편집 연구소,Landmark,Normal,식물형,Swarm,지상,24,25,Biology,200,13,118,가시찌르기:근접,28,1,,,,유전자를 자유롭게 편집할 수 있는 가시 장미. 전 구역 바닥에서 무리지어 가시로 찌른다.,
+biology_crispr-lab_normal_editing-drone,편집드론,Biology,헬릭스 제국,CRISPR 편집 연구소,Landmark,Normal,기계,Swarm,공중,24,25,Biology,190,12,120,편집빔:원거리,28,1,,,,홀로그램 편집 빔을 쏘는 연구소 드론. 전 구역 공중에서 공격한다.,
+biology_crispr-lab_normal_tiny-cut-fragment,작은절단파편,Biology,헬릭스 제국,CRISPR 편집 연구소,Landmark,Normal,변이체,Solo,지상·절단 구역,25,26,Biology,230,16,130,파편박치기:근접,30,1,,,,절단파편체의 미니어 버전. 절단 구역에서 잘린 조각으로 박치기한다.,
+biology_crispr-lab_normal_tiny-misinsert-piece,작은오삽입조각,Biology,헬릭스 제국,CRISPR 편집 연구소,Landmark,Normal,변이체,Solo,지상·삽입 구역,26,27,Biology,255,17,140,조각튕기기:원거리,32,1,,,,오삽입합성체의 미니어 버전. 삽입 구역에서 잘못 끼워진 조각을 튕겨 쏜다.,
+biology_crispr-lab_normal_tiny-mutant-editor,작은변이편집체,Biology,헬릭스 제국,CRISPR 편집 연구소,Landmark,Normal,변이체,Swarm,지상·다중 편집 구역,27,28,Biology,280,18,150,돌발폭발:광역,35,1,,,,다중편집변이체의 미니어 버전. 다중 편집 구역에서 무리지어 예고 없이 터지며 범위 피해를 준다.,
+biology_crispr-lab_miniboss_cut-fragment,절단파편체,Biology,헬릭스 제국,CRISPR 편집 연구소,Landmark,MiniBoss,편집오류변이체,Solo,지상·절단 구역,26,26,Biology,330,20,210,파편투척:원거리; 절단선:장판,52,2,연구소열쇠_샤르팡티에:1,,,편집으로 잘려 나온 DNA 조각이 뭉친 존재. 조각을 부채꼴로 던지고 직선 절단선을 긋는다 — 3종 중 가장 정직한 입문 관문.,
+biology_crispr-lab_miniboss_misinsert-composite,오삽입합성체,Biology,헬릭스 제국,CRISPR 편집 연구소,Landmark,MiniBoss,편집오류변이체,Solo,지상·삽입 구역,27,28,Biology,380,23,250,불규칙융합:장판; 삽입돌출:장판,58,3,연구소열쇠_다우드나:1,,,잘못 끼워진 조각들이 붙은 합성 변이체. 불규칙한 위치에 장판을 만들고 바닥에서 조각이 솟는다 — 중간 난이도.,
+biology_crispr-lab_miniboss_multi-edit-mutant,다중편집변이체,Biology,헬릭스 제국,CRISPR 편집 연구소,Landmark,MiniBoss,편집오류변이체,Solo,지상·다중 편집 구역,28,29,Biology,460,26,300,다점절단:장판; 오프타겟폭발:광역,66,3,연구소열쇠_장펑:1,,,여러 지점이 동시에 어긋난 변이체. 여러 곳을 동시에 절단하고 예고 없는 위치에서 돌발 폭발한다 — 완전 신규 패턴의 최고 난이도.,
+biology_crispr-lab_boss_charpentier,샤르팡티에,Biology,헬릭스 제국,CRISPR 편집 연구소,Landmark,Boss,,Solo,,25,27,Biology,,,,,,,,,,BossDef(07_보스전.md·샤르팡티에.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Charpentier
+biology_crispr-lab_boss_doudna,다우드나,Biology,헬릭스 제국,CRISPR 편집 연구소,Landmark,Boss,,Solo,,26,28,Biology,,,,,,,,,,BossDef(07_보스전.md·다우드나.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Doudna
+biology_crispr-lab_boss_zhang,장펑,Biology,헬릭스 제국,CRISPR 편집 연구소,Landmark,Boss,,Solo,,27,29,Biology,,,,,,,,,,BossDef(07_보스전.md·장펑.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Zhang
+
 # ===== EarthSci (지구과학 — 테라 노바) =====
 # 국가: 천문 부족 / 해양 부족 / 대기 부족 / 지질 부족
 # 랜드마크: 거대 천문대 피라미드, 세계 해류 신전, 토네이도 정령의 영혼 평원, 판구조 산맥 신전, 판게아 유적
