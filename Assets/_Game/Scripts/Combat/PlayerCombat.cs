@@ -31,7 +31,7 @@ public class PlayerCombat : MonoBehaviour
 
     void Update()
     {
-        _cooldownTimer -= Time.deltaTime;
+        _cooldownTimer = TickAttackCooldown(_cooldownTimer, Time.deltaTime, PlayerRuntime.Active);
 
         if (UIManager.IsAnyPanelOpen) return;
 
@@ -41,6 +41,10 @@ public class PlayerCombat : MonoBehaviour
         if (kb.qKey.wasPressedThisFrame && _cooldownTimer <= 0f)
             DoAttack();
     }
+
+    /// <summary>기본기 쿨타임을 dt초 진행한다. 캐릭터의 쿨타임 진행 배율(CooldownRate)을 반영(없으면 1배).</summary>
+    public static float TickAttackCooldown(float remaining, float dt, CombatCharacter c)
+        => remaining - dt * (c != null ? c.StatMult(StatKind.CooldownRate) : 1f);
 
     void DoAttack()
     {

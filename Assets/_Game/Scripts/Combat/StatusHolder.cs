@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 
 /// <summary>배율 상태 효과가 영향을 주는 능력치.</summary>
-public enum StatKind { Atk, Def, MoveSpeed, DamageTaken, CooldownRate, SkillPower, HitDamage, BasicPower }   // SkillPower: 모든 공격 위력 / HitDamage: 다음 타격 배율(소모형) / BasicPower: 기본기 위력   // CooldownRate: 쿨타임 진행 배율(>1이 빠름)
+public enum StatKind { Atk, Def, MoveSpeed, DamageTaken, CooldownRate, SkillPower, HitDamage, BasicPower, Accuracy }   // SkillPower: 모든 공격 위력 / HitDamage: 다음 타격 배율(소모형) / BasicPower: 기본기 위력   // CooldownRate: 쿨타임 진행 배율(>1이 빠름) / Accuracy: 적 공격 명중률 배율(1=100%, 0.8=80%)
 
 /// <summary>상태 효과의 동작 종류.</summary>
 public enum StatusKind { StatMod, Dot, Stun, Shield }

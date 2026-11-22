@@ -85,4 +85,6 @@ public class SkillDef : ScriptableObject
     public float  milestoneHealPercentBonus;
     [Tooltip("HealBuff: 버프 지속시간 보너스 (초)")]
     public float  milestoneBuffDurationBonus;
+    [Tooltip("마일스톤 쿨타임 변화(초, 음수=단축). 레벨 ≥ milestoneLevel일 때 cooldown에 더하며 0 미만으로는 내려가지 않는다")]
+    public float  milestoneCooldownBonus;
 }

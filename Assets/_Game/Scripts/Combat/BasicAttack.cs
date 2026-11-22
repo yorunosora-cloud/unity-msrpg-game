@@ -34,7 +34,7 @@ public static class BasicAttack
         spec.range            = s.range;
         spec.halfAngle        = s.halfAngle;
         spec.damageMultiplier = s.damageMultiplier;
-        spec.cooldown         = s.cooldown;
+        spec.cooldown         = SkillScaling.EffectiveCooldown(s, c.SkillLevel(idx));
         spec.strengthTags     = s.strengthTags != null && s.strengthTags.Length > 0 ? s.strengthTags : null;
         return spec;
     }

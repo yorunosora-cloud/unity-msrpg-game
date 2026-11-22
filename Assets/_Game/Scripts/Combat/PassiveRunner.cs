@@ -257,6 +257,19 @@ public class PassiveRunner
         return m;
     }
 
+    /// <summary>활성인 동안 둔화 면역 수정자가 하나라도 살아 있는지.</summary>
+    public bool IsSlowImmune
+    {
+        get
+        {
+            if (!_isActive) return false;
+            foreach (var n in Live())
+                foreach (var m in n.mods)
+                    if (m.ImmuneToSlow) return true;
+            return false;
+        }
+    }
+
     /// <summary>파티 전원에 적용되는 수정자(활성·대기 무관). 같은 패시브 id 중복 제거는 호출 쪽(Party) 책임.</summary>
     public IEnumerable<(string id, ModifierState mod)> PartyWideModifiers()
     {

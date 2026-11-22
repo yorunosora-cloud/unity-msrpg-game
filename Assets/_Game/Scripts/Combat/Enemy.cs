@@ -179,11 +179,25 @@ public class Enemy : MonoBehaviour, ISkillTarget
                 {
                     _attackTimer = 0f;
                     var active = PlayerRuntime.Active;
-                    if (active != null && !active.IsDowned)
+                    if (active != null && !active.IsDowned && RollHit())
                         active.TakeHit(contactDamage, this);   // 받는 피해 배율·보호막 적용, 패시브(반사·작용반작용)가 공격자를 안다
                 }
             }
         }
+    }
+
+    // ── 명중 ─────────────────────────────────────────────────────────────────
+
+    /// <summary>테스트용 주사위 주입(0~1 반환). null이면 UnityEngine.Random.</summary>
+    public static System.Func<float> HitRoll;
+
+    /// <summary>이 적의 공격이 명중하는지. 명중률 배율(Accuracy)이 1 이상이면 항상 명중.</summary>
+    public bool RollHit()
+    {
+        float acc = Status.Mult(StatKind.Accuracy);
+        if (acc >= 1f) return true;
+        float roll = HitRoll != null ? HitRoll() : Random.value;
+        return roll < acc;
     }
 
     // ── 표식 ─────────────────────────────────────────────────────────────────

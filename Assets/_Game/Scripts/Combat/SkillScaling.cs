@@ -70,6 +70,14 @@ public static class SkillScaling
         return result;
     }
 
+    /// <summary>스킬 레벨을 반영한 쿨타임(마일스톤 쿨타임 변화 적용, 0 미만 방지).</summary>
+    public static float EffectiveCooldown(SkillDef def, int level)
+    {
+        float cd = def.cooldown;
+        if (def.milestoneLevel > 0 && level >= def.milestoneLevel) cd += def.milestoneCooldownBonus;
+        return Mathf.Max(0f, cd);
+    }
+
     /// <summary>
     /// 효과 목록 항목의 레벨별 유효 수치. 위력형(피해·회복·보호막·도트)은 곱, 버프 배율은 (배율−1) 부분만 곱,
     /// 그 외(둔화·피해배율·거리 등)는 그대로.

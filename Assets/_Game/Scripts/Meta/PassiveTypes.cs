@@ -57,6 +57,7 @@ public struct PassiveModifierSpec
     public float          decayPerSecond;   // MovingRamp: 정지 시 초당 감소
     public bool           partyWide;        // PartyPresence: 파티 전원(대기 포함)에 적용
     public float          enemyAuraRadius;  // >0이면 적 오라: 활성인 동안 이 반경 안의 모든 적에게 적용
+    public bool           immuneToSlow;     // true면 활성인 동안 이동속도 감소(둔화) 디버프를 받지 않는다
     public float          milestoneValue;   // Lv.3 교체값
     public float          milestoneCap;
 }

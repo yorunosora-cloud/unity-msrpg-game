@@ -309,10 +309,17 @@ public class CombatCharacter
     /// <summary>상태 효과 부여. ownerActive=false이면 이로운 효과는 예약된다.</summary>
     public void ApplyStatus(StatusEffect e, bool ownerActive)
     {
+        if (IsSlowedBy(e) && IsSlowImmune) return;   // 둔화 면역: 이동속도 감소 디버프만 무시
         Status.Apply(e, ownerActive);
         OnChanged?.Invoke("buff");
         if (!e.IsBeneficial) _passives.NotifySelfDebuffed();
     }
+
+    /// <summary>둔화 면역 패시브가 활성인지(설계도 18 §8-5 G3).</summary>
+    public bool IsSlowImmune => _passives.IsSlowImmune;
+
+    static bool IsSlowedBy(StatusEffect e)
+        => e.Kind == StatusKind.StatMod && e.Stat == StatKind.MoveSpeed && !e.IsBeneficial && e.Value < 1f;
 
     /// <summary>해로운 상태 효과 해제.</summary>
     public void Cleanse()
@@ -387,7 +394,7 @@ public class CombatCharacter
         if (!CanCast(i)) return null;
         var skill = SkillAt(i);
         UseMp(skill.mpCost);
-        StartCooldown(i, skill.cooldown);
+        StartCooldown(i, SkillScaling.EffectiveCooldown(skill, SkillLevel(i)));
         AddProficiency(i);   // 시전 성공 시 숙련도 +1
         return skill;
     }
@@ -602,7 +609,7 @@ public class CombatCharacter
             if (Mp < cost) continue;
 
             if (cost > 0) UseMp(cost);
-            StartCooldown(i, s.cooldown);
+            StartCooldown(i, SkillScaling.EffectiveCooldown(s, SkillLevel(i)));
             if (!isRevert) AddProficiency(i);
 
             ChangeForm(to, isRevert ? FormChangeCause.Revert : FormChangeCause.Manual);

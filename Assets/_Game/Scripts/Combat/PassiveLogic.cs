@@ -130,6 +130,7 @@ public class ModifierState
     public StatKind Stat => _spec.stat;
     public bool IsPartyWide => _spec.partyWide || _spec.source == ModifierSource.PartyPresence;
     public float EnemyAuraRadius => _spec.enemyAuraRadius;
+    public bool  ImmuneToSlow    => _spec.immuneToSlow;
 
     /// <summary>MovingRamp 전용: 이동 중 초당 증가, 정지 시 초당 감소.</summary>
     public void Tick(float dt, bool isMoving)
