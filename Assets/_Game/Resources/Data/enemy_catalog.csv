@@ -64,6 +64,20 @@ biology_mendel-library_boss_mendel,멘델,Biology,제네시스 왕국,멘델의 
 biology_mendel-library_boss_morgan,모건,Biology,제네시스 왕국,멘델의 유전 도서관,Landmark,Boss,,Solo,,26,28,Biology,,,,,,,,,,BossDef(07_보스전.md·모건.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Morgan
 biology_mendel-library_boss_mcclintock,매클린톡,Biology,제네시스 왕국,멘델의 유전 도서관,Landmark,Boss,,Solo,,27,29,Biology,,,,,,,,,,BossDef(07_보스전.md·매클린톡.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,McClintock
 
+# 제네시스 왕국 — 해부학의 지하 성역(바이오스 네 번째 던전): 던전은 플레이어 레벨에 완전 스케일링 → 아래 levelMin/levelMax·HP·DEF는 '스케일링 기준값'(고정 권장 레벨 아님, 던전 간 보정 없음이라 다른 바이오스 던전과 같은 대역)
+# 공통 잡몹 2종(전 단계) + 단계 전용 3종(중간보스 미니어 버전, 장기→조직→세포 수준 확대 하강 고정 진행)
+biology_anatomy-sanctum_normal_anatomy-doll,해부인형,Biology,제네시스 왕국,해부학의 지하 성역,Landmark,Normal,해부모형,Swarm,지상,24,25,Biology,200,13,118,달려들기:근접,28,1,,,,작은 해부학 인형이 무리로 달려든다. 전 단계 바닥을 휩쓴다.,
+biology_anatomy-sanctum_normal_microscope-ghost,현미경유령,Biology,제네시스 왕국,해부학의 지하 성역,Landmark,Normal,광학물,Swarm,공중,24,25,Biology,190,12,120,광선발사:원거리,28,1,,,,떠다니는 현미경 렌즈가 광선을 쏜다. 전 단계 공중에서 공격한다.,
+biology_anatomy-sanctum_normal_baby-plant-model,아기식물모형,Biology,제네시스 왕국,해부학의 지하 성역,Landmark,Normal,해부모형,Solo,지상·장기 수준,25,26,Biology,230,16,130,뿌리찌르기:근접,30,1,,,,식물해부모형의 미니어 버전. 장기 수준 구역에서 작은 뿌리로 찌른다.,
+biology_anatomy-sanctum_normal_baby-animal-model,아기동물모형,Biology,제네시스 왕국,해부학의 지하 성역,Landmark,Normal,해부모형,Solo,지상·조직 수준,26,27,Biology,255,17,140,근육박치기:근접,32,1,,,,동물해부모형의 미니어 버전. 조직 수준 구역에서 근육을 수축해 박치기한다.,
+biology_anatomy-sanctum_normal_tiny-dividing-cell,작은분열세포,Biology,제네시스 왕국,해부학의 지하 성역,Landmark,Normal,세포모형,Swarm,지상·세포 수준,27,28,Biology,280,18,150,세포분열:광역,35,1,,,,분열세포모형의 미니어 버전. 세포 수준 구역에서 무리지어 분열하며 범위 피해를 준다.,
+biology_anatomy-sanctum_miniboss_plant-anatomy-model,식물해부모형,Biology,제네시스 왕국,해부학의 지하 성역,Landmark,MiniBoss,해부모형,Solo,지상·장기 수준,26,26,Biology,330,20,210,뿌리뻗기:장판; 잎부채질:광역,52,2,성역열쇠_슐라이덴:1,,,뿌리·줄기·잎 단면이 드러난 거대 식물 모형. 뿌리를 뻗고 잎으로 밀쳐 낸다 — 3종 중 가장 정직한 입문 관문.,
+biology_anatomy-sanctum_miniboss_animal-anatomy-model,동물해부모형,Biology,제네시스 왕국,해부학의 지하 성역,Landmark,MiniBoss,해부모형,Solo,지상·조직 수준,27,28,Biology,380,23,250,근육수축돌진:이동형; 신경충격:장판,58,3,성역열쇠_슈반:1,,,근육·신경 조직이 드러난 동물 모형. 수축해 돌진하고 신경 충격이 선을 따라 이동한다 — 중간 난이도.,
+biology_anatomy-sanctum_miniboss_dividing-cell-model,분열세포모형,Biology,제네시스 왕국,해부학의 지하 성역,Landmark,MiniBoss,세포모형,Solo,지상·세포 수준,28,29,Biology,460,26,300,세포분열:장판; 핵막붕괴:광역,66,3,성역열쇠_피르호:1,,,분열하는 세포 모형. 둘로 갈라져 동시 공격하고 핵막이 터지며 확산한다 — 완전 신규 패턴의 최고 난이도.,
+biology_anatomy-sanctum_boss_schleiden,슐라이덴,Biology,제네시스 왕국,해부학의 지하 성역,Landmark,Boss,,Solo,,25,27,Biology,,,,,,,,,,BossDef(07_보스전.md·슐라이덴.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Schleiden
+biology_anatomy-sanctum_boss_schwann,슈반,Biology,제네시스 왕국,해부학의 지하 성역,Landmark,Boss,,Solo,,26,28,Biology,,,,,,,,,,BossDef(07_보스전.md·슈반.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Schwann
+biology_anatomy-sanctum_boss_virchow,피르호,Biology,제네시스 왕국,해부학의 지하 성역,Landmark,Boss,,Solo,,27,29,Biology,,,,,,,,,,BossDef(07_보스전.md·피르호.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Virchow
+
 # ===== EarthSci (지구과학 — 테라 노바) =====
 # 국가: 천문 부족 / 해양 부족 / 대기 부족 / 지질 부족
 # 랜드마크: 거대 천문대 피라미드, 세계 해류 신전, 토네이도 정령의 영혼 평원, 판구조 산맥 신전, 판게아 유적
