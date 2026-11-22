@@ -206,7 +206,8 @@ public class CollectionPanel : MonoBehaviour
         ClearDetailContent();
 
         _detailView.SetActive(true);
-        CodexDetailBuilder.Build(_detailScrollContent, def, owned);
+        CodexDetailBuilder.Build(_detailScrollContent, def, owned,
+            onChanged: () => ShowDetail(def, owned));   // 개념 문제를 풀면 상세를 다시 그린다
     }
 
     /// <summary>뒤로 버튼 클릭 시 호출 — 상세 뷰 닫고 그리드로 복귀.</summary>

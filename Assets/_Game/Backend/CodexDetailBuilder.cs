@@ -23,13 +23,17 @@ public static class CodexDetailBuilder
     /// <summary>
     /// container 에 모든 섹션을 자식으로 추가하고 container 의 sizeDelta.y 를 갱신한다.
     /// </summary>
-    public static void Build(RectTransform container, CharacterDef def, OwnedCharacter owned)
+    /// <param name="onChanged">개념 문제를 풀어 상태가 바뀌면 호출(호출자가 상세를 다시 그린다).</param>
+    public static void Build(RectTransform container, CharacterDef def, OwnedCharacter owned, System.Action onChanged = null)
     {
         bool isOwned = owned != null;
         float y = 0f;
 
         y = BuildHeader(container, def, owned, isOwned, y);
         y = BuildLore(container, def, isOwned, y);
+        y = CodexConceptSection.Build(container, def, owned, y,
+            onCorrect: () => { MetaSaveService.Save(); MetaState.Roster?.NotifyChanged(); },   // 정답: 저장 + 로스터 알림
+            onChanged: onChanged);
         y = BuildStats(container, def, owned, isOwned, y);
         y = BuildSkills(container, def, owned, isOwned, y);
         y = BuildSynergy(container, def, isOwned, y);
