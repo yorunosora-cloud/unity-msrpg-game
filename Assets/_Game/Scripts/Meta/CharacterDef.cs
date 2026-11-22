@@ -31,6 +31,14 @@ public class CharacterDef : ScriptableObject
     public string personality;               // 성격 한 줄(호감도 대사·연출)
     public string basicAttackMotion;         // 평타 모션 id 훅
 
+    [Header("교육/도감 (설계도 18) — 기본 해설은 항상, 심화는 개념 문제 정답 시")]
+    [TextArea(2, 6)] public string basicExplanation;
+    [TextArea(2, 8)] public string advancedExplanation;
+    [TextArea(1, 4)] public string realPrinciple;
+    public string sourceRef;
+    public ConceptQuestion[]  conceptQuestions;
+    public AffinityQuestion[] affinityQuestions;   // 호감도 개념 2지선다(10번 구현 때 소비)
+
     [Header("비주얼 (플레이스홀더)")]
     public Color portraitColor = Color.white;
 

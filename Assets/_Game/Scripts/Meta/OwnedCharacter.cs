@@ -19,6 +19,9 @@ public class OwnedCharacter
     public int    exp   = 0; // 누적 EXP (레벨업 후 잔여 보존)
     public int    dupes = 0; // 중복 획득 횟수
 
+    // 도감 심화 해설 해금 여부(개념 문제 정답 시 true, 설계도 18-C). 구 세이브에는 없어 false로 로드된다.
+    public bool   advancedCodexUnlocked = false;
+
     // 해금된 스킬 ID 목록. 빈 목록이면 CombatCharacter 가 index 0을 기본 해금으로 간주한다.
     public List<string> unlockedSkillIds = new List<string>();
 
