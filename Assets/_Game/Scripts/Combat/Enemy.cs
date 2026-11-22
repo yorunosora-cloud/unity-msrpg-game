@@ -140,6 +140,7 @@ public class Enemy : MonoBehaviour, ISkillTarget
 
         // 상태 효과는 플레이어 유무·UI와 무관하게 흐른다 (도트 포함)
         Status.Tick(Time.deltaTime, false, ReceiveDot);
+        TickLaunch(Time.deltaTime);
         if (_unit == null || _unit.IsDead) return;
 
         if (_player == null) return;
@@ -183,6 +184,36 @@ public class Enemy : MonoBehaviour, ISkillTarget
                         active.TakeHit(contactDamage, this);   // 받는 피해 배율·보호막 적용, 패시브(반사·작용반작용)가 공격자를 안다
                 }
             }
+        }
+    }
+
+    // ── 띄우기 (설계도 18 §8-5 #2) ───────────────────────────────────────────
+
+    float _launchHeight, _launchDuration, _launchElapsed;
+    Transform _bodyTf;
+
+    /// <summary>현재 띄우기의 최대 높이(진행 중이 아니면 0).</summary>
+    public float LaunchHeight => _launchElapsed < _launchDuration ? _launchHeight : 0f;
+
+    /// <summary>현재 체력(Start 전에는 0).</summary>
+    public int CurrentHp => _unit?.Hp ?? 0;
+
+    public void Launch(float height, float duration)
+    {
+        if (ccImmune || height <= 0f || duration <= 0f) return;
+        _launchHeight = height; _launchDuration = duration; _launchElapsed = 0f;
+    }
+
+    void TickLaunch(float dt)
+    {
+        if (_launchElapsed >= _launchDuration) return;
+        _launchElapsed += dt;
+        if (_bodyTf == null && _bodyRenderer != null) _bodyTf = _bodyRenderer.transform;
+        if (_bodyTf != null)
+        {
+            var p = _bodyTf.localPosition;
+            p.y = 1f + LaunchCurve.Offset(_launchHeight, _launchDuration, _launchElapsed);
+            _bodyTf.localPosition = p;
         }
     }
 

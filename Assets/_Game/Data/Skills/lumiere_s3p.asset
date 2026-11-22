@@ -89,3 +89,11 @@ MonoBehaviour:
   milestoneHalfAngleBonus: 0
   milestoneHealPercentBonus: 0
   milestoneBuffDurationBonus: 0
+  dashDistance: 0
+  dashTime: 0.15
+  autoSwitchDistance: 0
+  altEffectKind: 0
+  altRange: 0
+  altHalfAngle: 0
+  altDamageMultiplier: 1
+  milestoneCooldownBonus: 0

@@ -20,9 +20,10 @@ MonoBehaviour:
   radius: 3
   effects: []
   factNoteKo: 
-  gameNoteKo: "\uAC70\uB9AC \uAE30\uBC18 \uB2E8\uD30C/\uC7A5\uD30C \uC790\uB3D9 \uC804\uD658\uC740
-    \uC544\uC9C1 \uAD6C\uD604\uB418\uC9C0 \uC54A\uC544 \uC7A5\uD30C \uAE30\uC900\uB9CC
-    \uC801\uC6A9"
+  gameNoteKo: "\uAC00\uC7A5 \uAC00\uAE4C\uC6B4 \uC801\uAE4C\uC9C0 3m \uC774\uB0B4\uBA74
+    \uB2E8\uD30C(\uB2E8\uC77C \uB300\uC0C1\xB7\uD53C\uD574 \xD71.6\xB7\uC0AC\uAC70\uB9AC
+    3m \uBD80\uCC44\uAF34), \uADF8\uB807\uC9C0 \uC54A\uC73C\uBA74 \uC7A5\uD30C(\uAE30\uBCF8
+    \uAD11\uC5ED)\uB85C \uC790\uB3D9 \uC804\uD658\uD55C\uB2E4"
   passive:
     trigger: 0
     value: 0
@@ -80,3 +81,11 @@ MonoBehaviour:
   milestoneHalfAngleBonus: 0
   milestoneHealPercentBonus: 0
   milestoneBuffDurationBonus: 0
+  dashDistance: 0
+  dashTime: 0.15
+  autoSwitchDistance: 3
+  altEffectKind: 0
+  altRange: 3
+  altHalfAngle: 40
+  altDamageMultiplier: 1.6
+  milestoneCooldownBonus: 0

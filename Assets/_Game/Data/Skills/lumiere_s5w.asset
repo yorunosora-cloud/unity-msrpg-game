@@ -20,9 +20,9 @@ MonoBehaviour:
   radius: 3
   effects: []
   factNoteKo: 
-  gameNoteKo: "\uD53C\uD574 \uBC30\uC728(\xD7D)\uB9CC \uAD6C\uD604\uB418\uC5B4 \uC788\uACE0
-    \uBC94\uC704 \uBCC0\uD654(\xF7D)\uB294 \uC544\uC9C1 \uC801\uC6A9\uB418\uC9C0
-    \uC54A\uC74C"
+  gameNoteKo: "\uBC94\uC704 \uBCC0\uD654(\xF7D)\uB294 \uC758\uB3C4\uC801\uC73C\uB85C
+    \uC801\uC6A9\uD558\uC9C0 \uC54A\uACE0 \uD53C\uD574 \uBC30\uC728(\xD7D)\uB9CC
+    \uAD6C\uD604\uD55C\uB2E4"
   passive:
     trigger: 7
     value: 2000
@@ -81,3 +81,11 @@ MonoBehaviour:
   milestoneHalfAngleBonus: 0
   milestoneHealPercentBonus: 0
   milestoneBuffDurationBonus: 0
+  dashDistance: 0
+  dashTime: 0.15
+  autoSwitchDistance: 0
+  altEffectKind: 0
+  altRange: 0
+  altHalfAngle: 0
+  altDamageMultiplier: 1
+  milestoneCooldownBonus: 0

@@ -84,6 +84,7 @@ public class PlayerSkills : MonoBehaviour
         if (skill == null) return;                   // MP 부족, 쿨다운 중, 잠금
 
         SkillExecutor.Execute(skill, index, active, transform);
+        if (skill.dashDistance > 0f) GetComponent<PlayerController>()?.StartDash(transform.forward, skill.dashDistance, skill.dashTime);
         _builder?.PlaySkill(skill.effectKind);       // effectKind별 전용 모션
         SkillRangeVisualizer.Show(skill, transform); // 범위 시각화
     }

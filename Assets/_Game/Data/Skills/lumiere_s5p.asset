@@ -20,8 +20,7 @@ MonoBehaviour:
   radius: 3
   effects: []
   factNoteKo: 
-  gameNoteKo: "\uB454\uD654 \uBA74\uC5ED\uC740 \uC544\uC9C1 \uAD6C\uD604\uB418\uC9C0
-    \uC54A\uC544 \uC774\uB3D9\uC18D\uB3C4 +10%\uB9CC \uC801\uC6A9"
+  gameNoteKo: 
   passive:
     trigger: 0
     value: 0
@@ -47,6 +46,7 @@ MonoBehaviour:
       decayPerSecond: 0
       partyWide: 0
       enemyAuraRadius: 0
+      immuneToSlow: 1
       milestoneValue: 0
       milestoneCap: 0
     formula: 0
@@ -88,3 +88,11 @@ MonoBehaviour:
   milestoneHalfAngleBonus: 0
   milestoneHealPercentBonus: 0
   milestoneBuffDurationBonus: 0
+  dashDistance: 0
+  dashTime: 0.15
+  autoSwitchDistance: 0
+  altEffectKind: 0
+  altRange: 0
+  altHalfAngle: 0
+  altDamageMultiplier: 1
+  milestoneCooldownBonus: 0

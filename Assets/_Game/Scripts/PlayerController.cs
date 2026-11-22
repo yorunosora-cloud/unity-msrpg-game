@@ -21,6 +21,14 @@ public class PlayerController : MonoBehaviour
     enum JumpPhase { Grounded, Anticipating, Airborne }
 
     CharacterController _cc;
+    DashMotion          _dash;
+
+    /// <summary>전방 돌진 시작(설계도 18 §8-5 #1). 돌진 중에는 이동 입력으로 인한 수평 이동이 무시된다.</summary>
+    public void StartDash(Vector3 direction, float distance, float time)
+    {
+        _dash.Begin(direction, distance, time);
+        if (_dash.Active) _horizVel = Vector3.zero;
+    }
     Animator            _animator;
     BoxCharacterBuilder _builder;
 
@@ -141,7 +149,9 @@ public class PlayerController : MonoBehaviour
         }
 
         float prevVelY = _velocityY;
-        _cc.Move((_horizVel + Vector3.up * _velocityY) * Time.deltaTime);
+        Vector3 horizMove = _horizVel;
+        if (_dash.Active) { _horizVel = Vector3.zero; horizMove = Vector3.zero; _cc.Move(_dash.Step(Time.deltaTime)); }
+        _cc.Move((horizMove + Vector3.up * _velocityY) * Time.deltaTime);
 
         // 착지 감지
         float landingImpact = 0f;

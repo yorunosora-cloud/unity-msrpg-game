@@ -32,8 +32,10 @@ MonoBehaviour:
     whenForm: 
     consumeOnHit: 0
   factNoteKo: 
-  gameNoteKo: "\uB3CC\uC9C4 \uC774\uB3D9\uC740 \uC544\uC9C1 \uAD6C\uD604\uB418\uC9C0
-    \uC54A\uC544 \uC9C1\uC120 \uD53C\uD574\uB9CC \uC801\uC6A9"
+  gameNoteKo: "\uB3CC\uC9C4 \uC774\uB3D9\uC740 \uC804\uBC29 3m\uB97C 0.15\uCD08\uC5D0
+    \uC774\uB3D9\uD55C\uB2E4(\uD53C\uD574\uB294 \uC2DC\uC804 \uC2DC\uC810\uC758 \uC9C1\uC120
+    \uBC94\uC704\uC5D0 \uC801\uC6A9). \uC774\uB3D9 \uC911\uC5D0\uB294 \uC774\uB3D9
+    \uC785\uB825\uC774 \uBB34\uC2DC\uB41C\uB2E4"
   passive:
     trigger: 0
     value: 0
@@ -90,3 +92,11 @@ MonoBehaviour:
   milestoneHalfAngleBonus: 0
   milestoneHealPercentBonus: 0
   milestoneBuffDurationBonus: 0
+  dashDistance: 3
+  dashTime: 0.15
+  autoSwitchDistance: 0
+  altEffectKind: 0
+  altRange: 0
+  altHalfAngle: 0
+  altDamageMultiplier: 1
+  milestoneCooldownBonus: 0

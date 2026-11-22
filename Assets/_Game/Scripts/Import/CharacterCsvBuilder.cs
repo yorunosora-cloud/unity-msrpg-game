@@ -262,7 +262,8 @@ public static class CharacterCsvBuilder
             "effectKind", "mpCost", "cooldown", "shape", "range", "halfAngle", "lineWidth", "radius", "damageMultiplier", "healPercent",
             "buffAtkMultiplier", "buffDuration", "strengthTags", "formReq", "skillMotion", "factNoteKo", "gameNoteKo", "milestoneLevel",
             "milestoneDescKo", "milestoneExtraTargets", "milestoneRangeBonus", "milestoneHalfAngleBonus", "milestoneHealPercentBonus",
-            "milestoneBuffDurationBonus");
+            "milestoneBuffDurationBonus", "milestoneCooldownBonus", "dashDistance", "dashTime",
+            "autoSwitchDistance", "altEffectKind", "altRange", "altHalfAngle", "altDamageMultiplier");
 
         var owned = ctx.owned;
         int order = 0;
@@ -305,6 +306,14 @@ public static class CharacterCsvBuilder
             s.milestoneHalfAngleBonus = row.Float("milestoneHalfAngleBonus");
             s.milestoneHealPercentBonus = row.Float("milestoneHealPercentBonus");
             s.milestoneBuffDurationBonus = row.Float("milestoneBuffDurationBonus");
+            s.milestoneCooldownBonus = row.Float("milestoneCooldownBonus");
+            s.dashDistance = row.Float("dashDistance");
+            s.dashTime = row.Float("dashTime", s.dashTime);
+            s.autoSwitchDistance = row.Float("autoSwitchDistance");
+            s.altEffectKind = row.Enum("altEffectKind", s.altEffectKind);
+            s.altRange = row.Float("altRange");
+            s.altHalfAngle = row.Float("altHalfAngle");
+            s.altDamageMultiplier = row.Float("altDamageMultiplier", s.altDamageMultiplier);
 
             if (id.Length == 0 || owner.Length == 0) continue;
             if (skills.ContainsKey(id)) { row.Error("skillId가 중복되었습니다"); continue; }
@@ -507,7 +516,7 @@ public static class CharacterCsvBuilder
         if (mods.Rows.Count > 0 && mods.RequireColumns(res.report, "skillId", "source", "stat"))
         {
             mods.WarnUnknownColumns(res.report, "skillId", "order", "source", "stat", "value", "cap", "decayPerSecond", "partyWide",
-                "enemyAuraRadius", "milestoneValue", "milestoneCap");
+                "enemyAuraRadius", "milestoneValue", "milestoneCap", "immuneToSlow");
             var by = new Dictionary<string, List<(int order, int idx, PassiveModifierSpec m)>>();
             int idx = 0;
             foreach (var row in mods.Rows)
@@ -520,6 +529,7 @@ public static class CharacterCsvBuilder
                     value = row.Float("value"), cap = row.Float("cap"), decayPerSecond = row.Float("decayPerSecond"),
                     partyWide = row.Bool("partyWide"), enemyAuraRadius = row.Float("enemyAuraRadius"),
                     milestoneValue = row.Float("milestoneValue"), milestoneCap = row.Float("milestoneCap"),
+                    immuneToSlow = row.Bool("immuneToSlow"),
                 };
                 if (sid.Length == 0) continue;
                 if (!skills.TryGetValue(sid, out var entry)) { row.Error($"skillId '{sid}'가 character_skills.csv에 없습니다"); continue; }

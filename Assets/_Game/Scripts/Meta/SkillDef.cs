@@ -85,6 +85,20 @@ public class SkillDef : ScriptableObject
     public float  milestoneHealPercentBonus;
     [Tooltip("HealBuff: 버프 지속시간 보너스 (초)")]
     public float  milestoneBuffDurationBonus;
+    [Header("돌진 (설계도 18 §8-5 #1)")]
+    [Tooltip("시전 시 전방으로 이동하는 거리(m). 0이면 이동 없음")]
+    public float  dashDistance;
+    [Tooltip("돌진에 걸리는 시간(초)")]
+    public float  dashTime = 0.15f;
+
+    [Header("거리 기반 자동 전환 (설계도 18 §8-5 #4)")]
+    [Tooltip("가장 가까운 적까지 이 거리(m) 이내면 아래 대체 값으로 발동. 0이면 사용 안 함")]
+    public float  autoSwitchDistance;
+    public SkillEffectKind altEffectKind = SkillEffectKind.Strike;
+    public float  altRange;
+    public float  altHalfAngle;
+    public float  altDamageMultiplier = 1f;
+
     [Tooltip("마일스톤 쿨타임 변화(초, 음수=단축). 레벨 ≥ milestoneLevel일 때 cooldown에 더하며 0 미만으로는 내려가지 않는다")]
     public float  milestoneCooldownBonus;
 }

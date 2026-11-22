@@ -47,6 +47,7 @@ MonoBehaviour:
       decayPerSecond: 0
       partyWide: 0
       enemyAuraRadius: 6
+      immuneToSlow: 0
       milestoneValue: 0
       milestoneCap: 0
     - source: 0
@@ -56,6 +57,7 @@ MonoBehaviour:
       decayPerSecond: 0
       partyWide: 0
       enemyAuraRadius: 0
+      immuneToSlow: 0
       milestoneValue: 0
       milestoneCap: 0
     - source: 0
@@ -65,6 +67,7 @@ MonoBehaviour:
       decayPerSecond: 0
       partyWide: 0
       enemyAuraRadius: 0
+      immuneToSlow: 0
       milestoneValue: 0
       milestoneCap: 0
     formula: 0
@@ -106,3 +109,11 @@ MonoBehaviour:
   milestoneHalfAngleBonus: 0
   milestoneHealPercentBonus: 0
   milestoneBuffDurationBonus: 0
+  dashDistance: 0
+  dashTime: 0.15
+  autoSwitchDistance: 0
+  altEffectKind: 0
+  altRange: 0
+  altHalfAngle: 0
+  altDamageMultiplier: 1
+  milestoneCooldownBonus: 0

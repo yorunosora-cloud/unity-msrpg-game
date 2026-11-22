@@ -61,6 +61,7 @@ public class Boss : MonoBehaviour, ISkillTarget
     }
 
     /// <summary>보스는 속성 표식을 받지 않는다(현재 미지원).</summary>
+    public void Launch(float height, float duration) { }   // 보스는 CC 면역 — 띄우지 않는다
     public void SetMark(Continent element) { }
 
     // 패시브 공식 입력: 보스는 속도 스탯·접근 판정·마크를 아직 지원하지 않는다(보스 설계 단계에서 확장)

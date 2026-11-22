@@ -175,9 +175,56 @@ public class ShippedCsvTests
         Assert.AreEqual(1f, grav.milestoneRangeBonus, "Lv.3 반경 4→5");
 
         var buoy = Skill("forte_s6");
-        Assert.AreEqual(SkillEffectType.Stun, buoy.effects[0].type);
+        Assert.AreEqual(SkillEffectType.Launch, buoy.effects[0].type, "부력 = 띄우기(스턴 + 연출)");
+        Assert.AreEqual(1.5f, buoy.effects[0].value, "띄우는 높이 1.5m");
         Assert.AreEqual(2f, buoy.effects[0].duration);
         Assert.AreEqual(2.5f, buoy.effects[0].milestoneDuration);
+
+        Assert.AreEqual(3f, line.dashDistance, "탄성력 돌진 3m");
+        Assert.AreEqual(0.15f, line.dashTime, 0.0001f);
+        Assert.AreEqual(0f, grav.dashDistance, "다른 스킬은 돌진 없음");
+    }
+
+    // ════════════════════════════════════════════════════════════════════════
+    // 스키마 갭 해소 데이터 (설계도 18 §8-5 #3·4·6·7)
+    // ════════════════════════════════════════════════════════════════════════
+
+    [Test]
+    public void Gap_Lumiere_Radiation_AutoSwitchesToShortWaveWithin3m()
+    {
+        var rad = Skill("lumiere_s2w");
+        Assert.AreEqual(3f, rad.autoSwitchDistance);
+        Assert.AreEqual(SkillEffectKind.Strike, rad.altEffectKind, "단파는 단일 대상");
+        Assert.AreEqual(3f, rad.altRange);
+        Assert.AreEqual(40f, rad.altHalfAngle);
+        Assert.AreEqual(1.6f, rad.altDamageMultiplier, 0.0001f);
+        Assert.AreEqual(SkillEffectKind.Aoe, rad.effectKind, "장파는 기본 광역");
+    }
+
+    [Test]
+    public void Gap_Lumiere_Refraction_UsesAccuracyNotAttack()
+    {
+        var e = Skill("lumiere_s1w").effects[0];
+        Assert.AreEqual(SkillEffectType.StatDebuff, e.type);
+        Assert.AreEqual(StatKind.Accuracy, e.stat);
+        Assert.AreEqual(0.8f, e.value, 0.0001f);
+    }
+
+    [Test]
+    public void Gap_Lumiere_LightSpeedInvariance_IsSlowImmune()
+    {
+        var m = Skill("lumiere_s5p").passive.modifiers;
+        Assert.AreEqual(1, m.Length);
+        Assert.IsTrue(m[0].immuneToSlow);
+        Assert.AreEqual(1.1f, m[0].value, 0.0001f, "이동속도 +10% 유지");
+    }
+
+    [Test]
+    public void Gap_Massio_GreatBladeStrike_CooldownDropsAtLevel3()
+    {
+        var s = Skill("massio_inersha_s3");
+        Assert.AreEqual(0.6f, SkillScaling.EffectiveCooldown(s, 1), 0.0001f);
+        Assert.AreEqual(0.4f, SkillScaling.EffectiveCooldown(s, 3), 0.0001f);
     }
 
     [Test]

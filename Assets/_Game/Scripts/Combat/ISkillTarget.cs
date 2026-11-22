@@ -12,6 +12,9 @@ public interface ISkillTarget : IDamageable
     /// <summary>origin 기준으로 밀어내기(pull=false) 또는 끌어당기기(pull=true). 면역이면 무시.</summary>
     void Displace(Vector3 origin, float distance, bool pull);
 
+    /// <summary>공중으로 띄우는 시각 연출(높이 m, 지속 초). 면역이면 무시. 행동불능은 호출자가 스턴으로 부여한다.</summary>
+    void Launch(float height, float duration);
+
     /// <summary>속성 표식 부여.</summary>
     void SetMark(Continent element);
 

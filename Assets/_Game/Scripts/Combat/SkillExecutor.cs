@@ -26,8 +26,19 @@ public static class SkillExecutor
         else
         {
             var eff = SkillScaling.Compute(skill, caster.SkillLevel(skillIndex));
+            var kind = skill.effectKind;
+            if (UseAlt(skill, NearestEnemyDistance(origin)))
+            {
+                // 가까운 적이 있으면 대체 발동(단파): 범위·배율을 바꾸되 레벨 위력 곡선은 유지
+                float lvMult = skill.damageMultiplier > 0f ? eff.damageMultiplier / skill.damageMultiplier : 1f;
+                eff.range            = skill.altRange;
+                eff.halfAngle        = skill.altHalfAngle;
+                eff.damageMultiplier = skill.altDamageMultiplier * lvMult;
+                eff.extraTargets     = 0;
+                kind                 = skill.altEffectKind;
+            }
             ctx.range = eff.range;
-            switch (skill.effectKind)
+            switch (kind)
             {
                 case SkillEffectKind.Strike:
                     ctx.hitMult = caster.HitMultiplier(false);
@@ -44,6 +55,25 @@ public static class SkillExecutor
 
         // 공격 행동의 적중을 한 번에 알림 → OnHit 패시브(스택·효과)
         if (ctx.hits.Count > 0) caster.NotifyHits(ctx.hits, false);
+    }
+
+    /// <summary>거리 기반 자동 전환 판정: 설정이 있고 가장 가까운 적이 경계 이내(포함)면 대체 발동.</summary>
+    public static bool UseAlt(SkillDef skill, float nearestDistance)
+        => skill.autoSwitchDistance > 0f && nearestDistance <= skill.autoSwitchDistance;
+
+    /// <summary>시전자(원점)에서 가장 가까운 살아 있는 적·보스까지의 수평 거리. 없으면 무한대.</summary>
+    public static float NearestEnemyDistance(Transform origin)
+    {
+        float best = float.PositiveInfinity;
+        void Consider(ISkillTarget t)
+        {
+            if (!IsAlive(t)) return;
+            Vector3 d = t.Transform.position - origin.position; d.y = 0f;
+            best = Mathf.Min(best, d.magnitude);
+        }
+        foreach (var e in Enemy.All.ToArray()) Consider(e);
+        if (Boss.Active != null) Consider(Boss.Active);
+        return best;
     }
 
     /// <summary>공격 행동 1회의 공유 상태(위력 배율·행동 id·적중 기록).</summary>
@@ -147,6 +177,10 @@ public static class SkillExecutor
                     break;
                 case SkillEffectType.StatDebuff:
                     t.ApplyStatus(Harmful(skill, e, StatusKind.StatMod, e.stat, v));
+                    break;
+                case SkillEffectType.Launch:
+                    t.ApplyStatus(Harmful(skill, e, StatusKind.Stun, StatKind.Atk, 0f));
+                    t.Launch(e.value, e.duration);
                     break;
                 case SkillEffectType.DamageTakenMult:
                     t.ApplyStatus(Harmful(skill, e, StatusKind.StatMod, StatKind.DamageTaken, v));
