@@ -78,6 +78,21 @@ biology_anatomy-sanctum_boss_schleiden,슐라이덴,Biology,제네시스 왕국,
 biology_anatomy-sanctum_boss_schwann,슈반,Biology,제네시스 왕국,해부학의 지하 성역,Landmark,Boss,,Solo,,26,28,Biology,,,,,,,,,,BossDef(07_보스전.md·슈반.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Schwann
 biology_anatomy-sanctum_boss_virchow,피르호,Biology,제네시스 왕국,해부학의 지하 성역,Landmark,Boss,,Solo,,27,29,Biology,,,,,,,,,,BossDef(07_보스전.md·피르호.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Virchow
 
+# 헬릭스 제국 — 이중나선 황궁(바이오스 다섯 번째 던전): 던전은 플레이어 레벨에 완전 스케일링 → 아래 levelMin/levelMax·HP·DEF는 '스케일링 기준값'(고정 권장 레벨 아님, 던전 간 보정 없음이라 다른 바이오스 던전과 같은 대역)
+# 공통 잡몹 2종(전 구역) + 구역 전용 3종(중간보스 미니어 버전: 왓슨 탑·크릭 탑 순서 자유, 정상 합류부는 두 탑 정복 후)
+# 왓슨 탑·크릭 탑 수호자와 보스는 순서 자유라 난이도를 동일하게 둠(나선독수리병기=전사번역병기, 왓슨=크릭)
+biology_double-helix-palace_normal_transgenic-mouse,형질전환쥐,Biology,헬릭스 제국,이중나선 황궁,Landmark,Normal,실험생물,Swarm,지상,24,25,Biology,200,13,118,갉아물기:근접,28,1,,,,헬릭스 제국의 실험 생물. 전 구역 바닥을 무리로 달려들며 문다.,
+biology_double-helix-palace_normal_helix-bat,나선박쥐,Biology,헬릭스 제국,이중나선 황궁,Landmark,Normal,실험생물,Swarm,공중,24,25,Biology,190,12,120,초음파발사:원거리,28,1,,,,DNA 나선 문양 날개의 박쥐. 전 구역 공중에서 초음파를 발사한다.,
+biology_double-helix-palace_normal_baby-helix-eagle,아기나선독수리,Biology,헬릭스 제국,이중나선 황궁,Landmark,Normal,병기,Solo,지상·왓슨 탑,25,26,Biology,230,16,130,나선돌진:근접,30,1,,,,나선독수리병기의 미니어 버전. 왓슨 탑에서 나선 궤적으로 돌진한다.,
+biology_double-helix-palace_normal_tiny-transcriptor,작은전사체,Biology,헬릭스 제국,이중나선 황궁,Landmark,Normal,병기,Solo,지상·크릭 탑,26,27,Biology,255,17,140,전사탄:원거리,32,1,,,,전사번역병기의 미니어 버전. 크릭 탑에서 RNA 복사본 탄을 쏜다.,
+biology_double-helix-palace_normal_twin-helix-fragment,쌍나선조각,Biology,헬릭스 제국,이중나선 황궁,Landmark,Normal,병기,Swarm,지상·정상 합류부,27,28,Biology,280,18,150,나선회전:광역,35,1,,,,쌍나선수호병기에서 떨어져 나온 조각. 정상 합류부에서 무리지어 회전하며 범위 피해를 준다.,
+biology_double-helix-palace_miniboss_helix-eagle-weapon,나선독수리병기,Biology,헬릭스 제국,이중나선 황궁,Landmark,MiniBoss,생체공학병기,Solo,지상·왓슨 탑,26,27,Biology,330,20,210,나선급강하:이동형; 깃털나선탄:원거리,52,2,황궁열쇠_왓슨:1,,,이중나선 독수리를 개조한 생체공학 병기. 나선 궤적으로 급강하하고 깃털을 쏜다 — 왓슨 탑 수호자(전사번역병기와 동급).,
+biology_double-helix-palace_miniboss_transcription-weapon,전사번역병기,Biology,헬릭스 제국,이중나선 황궁,Landmark,MiniBoss,생체공학병기,Solo,지상·크릭 탑,26,27,Biology,330,20,210,전사빔:장판; 단백질탄:원거리,52,2,황궁열쇠_크릭:1,,,중심원리를 형상화한 생체공학 병기. 지연된 빔이 장판으로 번역되고 단백질탄을 쏜다 — 크릭 탑 수호자(나선독수리병기와 동급).,
+biology_double-helix-palace_miniboss_twin-helix-guardian,쌍나선수호병기,Biology,헬릭스 제국,이중나선 황궁,Landmark,MiniBoss,생체공학병기,Solo,지상·정상 합류부,28,29,Biology,460,26,300,쌍나선회전:장판; 염기쌍폭발:광역,66,3,황궁열쇠_프랭클린:1,,,두 나선이 감긴 거대 병기. 두 나선 장판이 감기며 회전하고 염기쌍 연결선이 폭발한다 — 완전 신규 패턴의 최고 난이도.,
+biology_double-helix-palace_boss_watson,왓슨,Biology,헬릭스 제국,이중나선 황궁,Landmark,Boss,,Solo,,25,27,Biology,,,,,,,,,,BossDef(07_보스전.md·왓슨.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Watson
+biology_double-helix-palace_boss_crick,크릭,Biology,헬릭스 제국,이중나선 황궁,Landmark,Boss,,Solo,,25,27,Biology,,,,,,,,,,BossDef(07_보스전.md·크릭.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Crick
+biology_double-helix-palace_boss_franklin,프랭클린,Biology,헬릭스 제국,이중나선 황궁,Landmark,Boss,,Solo,,27,29,Biology,,,,,,,,,,BossDef(07_보스전.md·프랭클린.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Franklin
+
 # ===== EarthSci (지구과학 — 테라 노바) =====
 # 국가: 천문 부족 / 해양 부족 / 대기 부족 / 지질 부족
 # 랜드마크: 거대 천문대 피라미드, 세계 해류 신전, 토네이도 정령의 영혼 평원, 판구조 산맥 신전, 판게아 유적
