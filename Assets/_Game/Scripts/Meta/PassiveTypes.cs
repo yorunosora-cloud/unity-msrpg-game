@@ -40,7 +40,7 @@ public struct StackSpec
     {
         var s = this;
         if (!milestoneActive) return s;
-        if (milestonePerStackValue > 0f) s.perStackValue = milestonePerStackValue;
+        if (milestonePerStackValue != 0f) s.perStackValue = milestonePerStackValue;   // 0=교체 없음(음수 허용)
         if (milestoneMaxStacks > 0)      s.maxStacks     = milestoneMaxStacks;
         return s;
     }
@@ -73,4 +73,5 @@ public struct PassiveSpec
     public SkillEffectEntry[] effects;         // 경로 A 발동 효과
     public PassiveModifierSpec[] modifiers;    // 경로 B
     public PassiveFormulaId formula;           // 경로 C
+    public float            milestoneValue;    // Lv.3 교체값(회전축 최대 보너스 +30%→+40% 등)
 }

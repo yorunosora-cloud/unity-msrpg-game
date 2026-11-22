@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 
 /// <summary>배율 상태 효과가 영향을 주는 능력치.</summary>
-public enum StatKind { Atk, Def, MoveSpeed, DamageTaken, CooldownRate, SkillPower, HitDamage }   // SkillPower: 모든 스킬 위력 / HitDamage: 다음 타격 배율   // CooldownRate: 쿨타임 진행 배율(>1이 빠름)
+public enum StatKind { Atk, Def, MoveSpeed, DamageTaken, CooldownRate, SkillPower, HitDamage, BasicPower }   // SkillPower: 모든 공격 위력 / HitDamage: 다음 타격 배율(소모형) / BasicPower: 기본기 위력   // CooldownRate: 쿨타임 진행 배율(>1이 빠름)
 
 /// <summary>상태 효과의 동작 종류.</summary>
 public enum StatusKind { StatMod, Dot, Stun, Shield }
@@ -192,6 +192,10 @@ public class StatusHolder
         }
         return Math.Max(0, remaining);
     }
+
+    /// <summary>다음 공격 행동에서 소모되는 효과(ConsumeOnHit)를 제거한다. 제거 개수 반환.</summary>
+    public int ConsumeHitEffects()
+        => _effects.RemoveAll(e => e.ConsumeOnHit && !e.Pending);
 
     /// <summary>해로운 효과(디버프·도트·스턴) 해제.</summary>
     public void Cleanse() => _effects.RemoveAll(e => !e.IsBeneficial);

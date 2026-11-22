@@ -23,6 +23,8 @@ public class Enemy : MonoBehaviour, ISkillTarget
     [SerializeField] float attackRange     = 1.2f;
     [SerializeField] int   contactDamage   = 6;
     [SerializeField] float attackInterval  = 1.2f;
+    [Tooltip("속도 스탯(크로노 시간 지연·도플러 공식 입력). 값은 17번 적 도감 단계에서 채운다")]
+    [SerializeField] float spd             = 0f;
     [Tooltip("true면 스턴·넉백·견인 면역")]
     [SerializeField] bool  ccImmune        = false;
 
@@ -34,6 +36,33 @@ public class Enemy : MonoBehaviour, ISkillTarget
 
     /// <summary>적 측 상태 효과(스턴·둔화·도트·받는피해배율 등). 설계도 22 §4-9.</summary>
     public StatusHolder Status { get; } = new StatusHolder();
+
+    // ── 패시브 공식 입력(ISkillTarget) ──
+    Vector3 _vel, _lastPos;
+    readonly Dictionary<string, float> _marks = new();
+
+    public float Spd => spd;
+
+    public float ApproachSign(Vector3 from)
+    {
+        Vector3 to = from - transform.position; to.y = 0f;
+        Vector3 v  = _vel; v.y = 0f;
+        if (to.sqrMagnitude < 1e-6f || v.sqrMagnitude < 1e-4f) return 0f;
+        return Vector3.Dot(v.normalized, to.normalized) >= 0f ? 1f : -1f;
+    }
+
+    public bool HasMark(string id) => _marks.ContainsKey(id);
+    public void AddMark(string id, float duration) { if (!string.IsNullOrEmpty(id)) _marks[id] = duration; }
+
+    void TickMarks(float dt)
+    {
+        if (_marks.Count == 0) return;
+        foreach (var k in new List<string>(_marks.Keys))
+        {
+            _marks[k] -= dt;
+            if (_marks[k] <= 0f) _marks.Remove(k);
+        }
+    }
 
     // ── 내부 상태 ───────────────────────────────────────────────────────────
     EnemyUnit        _unit;
@@ -84,6 +113,12 @@ public class Enemy : MonoBehaviour, ISkillTarget
     void Update()
     {
         if (_unit == null || _unit.IsDead) return;
+
+        // 속도 추정·마크 시간
+        float frameDt = Time.deltaTime;
+        if (frameDt > 0f) _vel = (transform.position - _lastPos) / frameDt;
+        _lastPos = transform.position;
+        TickMarks(frameDt);
 
         // 상태 효과는 플레이어 유무·UI와 무관하게 흐른다 (도트 포함)
         Status.Tick(Time.deltaTime, false, ReceiveDot);

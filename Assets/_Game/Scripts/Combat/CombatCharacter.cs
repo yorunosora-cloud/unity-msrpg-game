@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -30,6 +31,7 @@ public class CombatCharacter
     float             _revertTimer = -1f;   // 자동 복귀 남은 시간(활성일 때만 감소). <0 이면 없음
     string            _revertTo;
     float             _sinceHit = 999f;     // 마지막 피격 후 경과(초)
+    PassiveRunner     _passives;
 
     public CombatCharacter(CharacterDef def, OwnedCharacter owned)
     {
@@ -38,6 +40,8 @@ public class CombatCharacter
         _nextExp = ComputeNextExp(_owned.level);
         _formId  = DefaultFormId;
         _auto    = new FormAutoEvaluator(_def.autoRules);
+        _passives = new PassiveRunner(this, _def.skills);
+        _passives.OnFire += f => PassiveFired?.Invoke(f);
 
         // 세션 시작 시 HP/MP 풀
         var s = Stats();
@@ -86,10 +90,58 @@ public class CombatCharacter
     public const float MinMoveSpeedMultiplier = 0.3f;
 
     /// <summary>플레이어 이동속도에 곱할 배율(둔화 반영, 30% 바닥).</summary>
-    public float MoveSpeedMultiplier => Math.Max(MinMoveSpeedMultiplier, Status.Mult(StatKind.MoveSpeed));
+    public float MoveSpeedMultiplier => Math.Max(MinMoveSpeedMultiplier, StatMult(StatKind.MoveSpeed));
 
     /// <summary>이동·기본기·스킬·폼 전환·파티 전환이 가능한 상태(기절·스턴이 아님).</summary>
     public bool CanAct => !IsDowned && !Status.IsStunned;
+
+    // ── 패시브 (설계도 22 §4-7) ──
+
+    /// <summary>소속 파티(Party 생성자가 설정). 대기 아군 대상 효과·파티 존재 수정자에 쓰인다.</summary>
+    public Party Party { get; internal set; }
+
+    /// <summary>패시브가 월드에 일으켜야 할 효과(PassiveHost가 구독해 실행).</summary>
+    public event Action<PassiveFire> PassiveFired;
+
+    /// <summary>레벨 스케일 전 기본 공격력(패시브 피해 비례 스택의 기준).</summary>
+    public int BaseAtk => Stats().atk;
+
+    /// <summary>능력치 배율 = 상태 효과 × 패시브(스택·상시 수정자) × 파티 존재 수정자.</summary>
+    public float StatMult(StatKind k)
+    {
+        float lost = MaxHp > 0 ? (1f - (float)_hp / MaxHp) * 100f : 0f;
+        float m = Status.Mult(k) * _passives.StatMult(k, lost);
+        if (Party != null) m *= Party.PresenceMult(k);
+        return m;
+    }
+
+    /// <summary>패시브 스택 수(디버그·HUD·테스트용).</summary>
+    public int PassiveStacks(string skillId) => _passives.Stacks(skillId);
+
+    /// <summary>공격 행동(기본기·스킬) 시작 시 1회 호출: 위력 배율을 계산하고 소모형 보너스(가속도·양자화)를 소모한다.</summary>
+    public float HitMultiplier(bool isBasic)
+    {
+        float m = StatMult(StatKind.SkillPower) * StatMult(StatKind.HitDamage);
+        if (isBasic) m *= StatMult(StatKind.BasicPower);
+        Status.ConsumeHitEffects();
+        m *= _passives.ConsumeCapStacks();
+        return m;
+    }
+
+    /// <summary>대상별 타격 공식 배율(로렌츠·도플러·일·회전축).</summary>
+    public float FormulaMultiplier(ISkillTarget target, float skillRange, Vector3 playerPos)
+        => _passives.FormulaMult(target, skillRange, playerPos);
+
+    /// <summary>공격 행동의 적중을 알린다(같은 행동은 actionId 동일). OnHit 패시브·스택 처리.</summary>
+    public void NotifyHits(List<HitInfo> hits, bool isBasic) => _passives.NotifyHits(hits, isBasic);
+
+    /// <summary>공격 행동 id 발급.</summary>
+    static int _nextActionId;
+    public static int NewActionId() => ++_nextActionId;
+
+    public IEnumerable<(string id, ModifierState mod)> PartyWideModifiers() => _passives.PartyWideModifiers();
+    public bool HasPartyWideModifiers => _passives.HasPartyWide;
+    public IEnumerable<(float radius, StatKind stat, float value)> EnemyAuras() => _passives.EnemyAuras();
 
     /// <summary>마지막으로 피해를 받은 뒤 경과 시간(초). 탄소 동소 변환의 "최근 피격" 판정용.</summary>
     public float SecondsSinceHitTaken => _sinceHit;
@@ -132,7 +184,7 @@ public class CombatCharacter
         {
             var s = _def.skills[i];
             if (s == null) continue;
-            if (s.skillType == SkillKind.FormChange) continue;   // 폼 전환 스킬은 Z/X로만(Q 슬롯 제외)
+            if (s.skillType != SkillKind.Active) continue;   // 폼 전환(Z/X)·패시브는 슬롯 키로 발동하지 않는다
             if (SlotOf(i) != slot) continue;
             if (!FormReqMatches(s.formReq)) continue;
             return i;
@@ -141,7 +193,7 @@ public class CombatCharacter
     }
 
     /// <summary>formReq가 비었거나, 쉼표로 구분한 폼 중 현재 폼이 있으면 true.</summary>
-    bool FormReqMatches(string req)
+    public bool FormReqMatches(string req)
     {
         if (string.IsNullOrEmpty(req)) return true;
         foreach (var part in req.Split(','))
@@ -192,8 +244,8 @@ public class CombatCharacter
     public int MaxHp => Stats().hp;
     public int MaxMp => Stats().mp;
     /// <summary>현재 레벨 공격력 × 상태 효과 배율 (없으면 1.0).</summary>
-    public int Atk   => (int)(Stats().atk * Status.Mult(StatKind.Atk));
-    public int Def   => (int)(Stats().def * Status.Mult(StatKind.Def));
+    public int Atk   => (int)(Stats().atk * StatMult(StatKind.Atk));
+    public int Def   => (int)(Stats().def * StatMult(StatKind.Def));
 
     // ── HP/MP 상태 ─────────────────────────────────────────────────────────
 
@@ -230,6 +282,7 @@ public class CombatCharacter
     public void TickStatus(float dt, bool isActive)
     {
         _sinceHit += dt;
+        _passives.Tick(dt, isActive);
         int before = Status.Count;
         Status.Tick(dt, isActive, d => Damage(d));
         if (Status.Count != before) OnChanged?.Invoke("buff");
@@ -243,6 +296,7 @@ public class CombatCharacter
     {
         Status.Apply(e, ownerActive);
         OnChanged?.Invoke("buff");
+        if (!e.IsBeneficial) _passives.NotifySelfDebuffed();
     }
 
     /// <summary>해로운 상태 효과 해제.</summary>
@@ -421,29 +475,35 @@ public class CombatCharacter
         if (_hp <= 0)
         {
             Status.Clear();   // 기절 시 모든 상태(예약 버프 포함) 소멸
+            _passives.Clear();
             if (HasForms && _formId != DefaultFormId) ChangeForm(DefaultFormId, FormChangeCause.Revert);
         }
+        else _passives.NotifyHp((float)_hp / MaxHp);   // 임계 통과 판정(영벡터)
         OnChanged?.Invoke("hp");
     }
 
     /// <summary>
     /// 적의 공격 등 외부 피해 수신: 받는 피해 배율 → 보호막 흡수 → HP 감소. 실제 HP 감소량 반환.
     /// </summary>
-    public int TakeHit(int rawDamage)
+    public int TakeHit(int rawDamage, ISkillTarget attacker = null)
     {
         _sinceHit = 0f;
-        int dmg = (int)Math.Round(rawDamage * Status.Mult(StatKind.DamageTaken));
+        int dmg = (int)Math.Round(rawDamage * StatMult(StatKind.DamageTaken));
         if (dmg < 0) dmg = 0;
+        int taken = dmg;                  // 보호막 흡수 전 피해(패시브 반사 등의 기준)
         dmg = Status.Absorb(dmg);
         int before = _hp;
         if (dmg > 0) Damage(dmg);
         else OnChanged?.Invoke("buff");   // 보호막만 소모된 경우 표시 갱신
-        return before - _hp;
+        int dealt = before - _hp;
+        _passives.NotifyHitTaken(new HitInfo { attacker = attacker, damage = taken });
+        return dealt;
     }
 
     public void Heal(int amount)
     {
         _hp = Math.Min(MaxHp, _hp + amount);
+        _passives.NotifyHp((float)_hp / MaxHp);
         OnChanged?.Invoke("hp");
     }
 
@@ -469,6 +529,7 @@ public class CombatCharacter
         // 쿨다운·버프 초기화
         for (int i = 0; i < _cooldowns.Length; i++) _cooldowns[i] = 0f;
         Status.Clear();
+        _passives.Clear();
 
         if (prevForm != _formId) OnFormChanged?.Invoke(prevForm, _formId, FormChangeCause.Revert);
         OnChanged?.Invoke("restore");
@@ -498,6 +559,7 @@ public class CombatCharacter
 
         OnFormChanged?.Invoke(from, toForm, cause);
         OnChanged?.Invoke("form");
+        _passives.NotifyFormChange(from, toForm);
         return true;
     }
 
@@ -550,7 +612,9 @@ public class CombatCharacter
     /// </summary>
     public void TickForm(float dt, CombatMotionState motion)
     {
-        if (IsDowned || !HasForms) return;
+        if (IsDowned) return;
+        _passives.TickMotion(dt, motion);   // 이동 램프 등 활성 캐릭터 전용 틱
+        if (!HasForms) return;
 
         if (_revertTimer > 0f)
         {
@@ -578,6 +642,7 @@ public class CombatCharacter
     public void ResetCombatState()
     {
         Status.Clear();
+        _passives.Clear();
         _auto.OnSwitchIn();
         _revertTimer = -1f;
         if (HasForms && _formId != DefaultFormId) ChangeForm(DefaultFormId, FormChangeCause.Revert);

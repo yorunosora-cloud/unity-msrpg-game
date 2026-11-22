@@ -21,6 +21,29 @@ public class Party
     /// <summary>수동 전환까지 남은 쿨타임(초). 0이면 전환 가능.</summary>
     public float SwitchCooldownRemaining => _switchCd;
 
+    /// <summary>전투 시작 위치 기록(영벡터). 전투 이벤트 시 NotifyCombat, 매 프레임 Tick.</summary>
+    public CombatAnchor Anchor { get; } = new CombatAnchor();
+
+    /// <summary>
+    /// 파티 존재 수정자(고유 시간·전자기력)의 능력치 k 배율. 활성·대기 무관, 같은 패시브 id는 1회만(설계도 §4-7 규칙 9).
+    /// </summary>
+    public float PresenceMult(StatKind k)
+    {
+        float m = 1f; HashSet<string> seen = null;
+        foreach (var mem in _members)
+        {
+            if (!mem.HasPartyWideModifiers) continue;
+            foreach (var (id, mod) in mem.PartyWideModifiers())
+            {
+                if (mod.Stat != k) continue;
+                seen ??= new HashSet<string>();
+                if (!seen.Add(id)) continue;
+                m *= mod.Multiplier(0f);
+            }
+        }
+        return m;
+    }
+
     public IReadOnlyList<CombatCharacter> Members    => _members;
     public int                            ActiveIndex { get; private set; }
     public CombatCharacter                Active      => _members.Count > 0 ? _members[ActiveIndex] : null;
@@ -37,6 +60,7 @@ public class Party
         {
             if (_members.Count >= MaxSize) break;
             _members.Add(m);
+            m.Party = this;
         }
         ActiveIndex = 0;
     }
@@ -104,10 +128,11 @@ public class Party
     public void Tick(float dt)
     {
         _switchCd = Mathf.Max(0f, _switchCd - dt);
+        Anchor.Tick(dt);
         for (int i = 0; i < _members.Count; i++)
         {
             // 쿨타임은 CooldownRate 배율만큼 빠르게(공격속도·고유 시간 패시브용)
-            _members[i].TickCooldowns(dt * _members[i].Status.Mult(StatKind.CooldownRate));
+            _members[i].TickCooldowns(dt * _members[i].StatMult(StatKind.CooldownRate));
             _members[i].TickStatus(dt, i == ActiveIndex);
         }
     }
@@ -122,6 +147,7 @@ public class Party
     public void ResetCombatState()
     {
         foreach (var m in _members) m.ResetCombatState();
+        Anchor.Clear();
         OnPartyChanged?.Invoke();
     }
 

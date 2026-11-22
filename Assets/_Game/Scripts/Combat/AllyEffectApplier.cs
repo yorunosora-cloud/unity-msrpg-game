@@ -41,7 +41,7 @@ public static class AllyEffectApplier
                 {
                     Id = Key(sourceId, e), Kind = StatusKind.StatMod, Stat = e.stat,
                     Value = value, Duration = e.duration, IsBeneficial = true,
-                    MaxStacks = Math.Max(1, e.maxStacks),
+                    MaxStacks = Math.Max(1, e.maxStacks), ConsumeOnHit = e.consumeOnHit,
                 }, targetIsActive);
                 return 0;
 

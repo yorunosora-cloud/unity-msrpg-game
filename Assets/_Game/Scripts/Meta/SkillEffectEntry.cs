@@ -22,6 +22,7 @@ public enum SkillEffectType
     RestoreMp,       // value = 대상 MaxMp 비율
     Cleanse,         // 해로운 상태 해제
     Teleport,        // 전투 시작 위치로 이동(영벡터, 패시브)
+    Reflect,         // value = 받은 피해의 비율을 공격자에게 반환(패시브 OnHitTaken, target=Attacker)
 }
 
 /// <summary>스킬 효과 1건. 한 스킬이 여러 효과(피해 + 둔화 + 아군 버프)를 낸다.</summary>
@@ -38,4 +39,6 @@ public struct SkillEffectEntry
     public float           areaRadius;  // >0이면 스킬 형태 대신 적중 지점 중심 이 반경(콤프턴 1.0)
     public float           milestoneValue;     // Lv.3 교체값(0=교체 없음)
     public float           milestoneDuration;
+    public string          whenForm;     // OnFormChange 패시브: 새 폼이 이 id일 때만 적용(비면 항상)
+    public bool            consumeOnHit; // 버프가 다음 공격 행동에서 소모됨(가속도·양자화)
 }

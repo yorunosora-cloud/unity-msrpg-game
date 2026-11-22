@@ -14,4 +14,14 @@ public interface ISkillTarget : IDamageable
 
     /// <summary>속성 표식 부여.</summary>
     void SetMark(Continent element);
+
+    /// <summary>적의 속도 스탯(로렌츠·도플러 공식 입력). 미설정이면 0.</summary>
+    float Spd { get; }
+
+    /// <summary>from(플레이어 위치) 기준 접근 중이면 +1, 후퇴 중이면 −1, 정지면 0.</summary>
+    float ApproachSign(Vector3 from);
+
+    /// <summary>id별 지속 마크(회전축 등). 지속시간이 지나면 사라진다.</summary>
+    bool HasMark(string id);
+    void AddMark(string id, float duration);
 }

@@ -59,7 +59,7 @@ public class InputWiringTests : InputTestFixture
     IEnumerator Tap(UnityEngine.InputSystem.Controls.KeyControl key)
     {
         Press(key);
-        yield return null;       // 이 프레임에 wasPressedThisFrame 처리
+        yield return null; yield return null;   // 2프레임 유지: 입력 처리·Update 순서에 덜 민감
         Release(key);
         yield return null;
     }
