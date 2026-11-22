@@ -133,7 +133,15 @@ public class CombatCharacter
         => _passives.FormulaMult(target, skillRange, playerPos);
 
     /// <summary>공격 행동의 적중을 알린다(같은 행동은 actionId 동일). OnHit 패시브·스택 처리.</summary>
-    public void NotifyHits(List<HitInfo> hits, bool isBasic) => _passives.NotifyHits(hits, isBasic);
+    public void NotifyHits(List<HitInfo> hits, bool isBasic)
+    {
+        if (hits == null || hits.Count == 0) return;
+        OnCombatActivity?.Invoke();
+        _passives.NotifyHits(hits, isBasic);
+    }
+
+    /// <summary>적중·피격 등 전투 활동 발생(전투 시작 위치 기록용).</summary>
+    public event Action OnCombatActivity;
 
     /// <summary>공격 행동 id 발급.</summary>
     static int _nextActionId;
@@ -496,6 +504,7 @@ public class CombatCharacter
         if (dmg > 0) Damage(dmg);
         else OnChanged?.Invoke("buff");   // 보호막만 소모된 경우 표시 갱신
         int dealt = before - _hp;
+        OnCombatActivity?.Invoke();
         _passives.NotifyHitTaken(new HitInfo { attacker = attacker, damage = taken });
         return dealt;
     }

@@ -43,6 +43,9 @@ public class Enemy : MonoBehaviour, ISkillTarget
 
     public float Spd => spd;
 
+    /// <summary>EnemySpawner·테스트가 Start 전에 속도 스탯을 주입한다.</summary>
+    public void SetSpd(float v) => spd = v;
+
     public float ApproachSign(Vector3 from)
     {
         Vector3 to = from - transform.position; to.y = 0f;
@@ -162,7 +165,7 @@ public class Enemy : MonoBehaviour, ISkillTarget
                     _attackTimer = 0f;
                     var active = PlayerRuntime.Active;
                     if (active != null && !active.IsDowned)
-                        active.TakeHit(contactDamage);   // 받는 피해 배율·보호막 적용
+                        active.TakeHit(contactDamage, this);   // 받는 피해 배율·보호막 적용, 패시브(반사·작용반작용)가 공격자를 안다
                 }
             }
         }

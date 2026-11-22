@@ -29,6 +29,8 @@ public class PlayerSkills : MonoBehaviour
     void Awake()
     {
         _builder = GetComponent<BoxCharacterBuilder>();
+        // 패시브의 월드 효과 실행기(씬 변경 없이 자동 부착)
+        if (GetComponent<PassiveHost>() == null) gameObject.AddComponent<PassiveHost>();
     }
 
     void Update()

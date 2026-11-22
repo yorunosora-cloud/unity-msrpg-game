@@ -15,30 +15,59 @@ public static class SkillExecutor
     /// <param name="origin">발동자 Transform (위치·전방 방향 기준)</param>
     public static void Execute(SkillDef skill, int skillIndex, CombatCharacter caster, Transform origin)
     {
+        var ctx = new ActionCtx { origin = origin, skillId = skill.id, actionId = CombatCharacter.NewActionId() };
+
         // 효과 목록이 있으면 새 경로, 비어 있으면 기존 effectKind 경로(호환)
         if (skill.effects != null && skill.effects.Length > 0)
         {
-            ExecuteEffects(skill, skillIndex, caster, origin);
-            return;
+            ExecuteEffects(skill, skillIndex, caster, origin, ctx);
+        }
+        else
+        {
+            var eff = SkillScaling.Compute(skill, caster.SkillLevel(skillIndex));
+            ctx.range = eff.range;
+            switch (skill.effectKind)
+            {
+                case SkillEffectKind.Strike:
+                    ctx.hitMult = caster.HitMultiplier(false);
+                    ExecStrike(eff, caster, origin, ctx);
+                    break;
+                case SkillEffectKind.Aoe:
+                    ctx.hitMult = caster.HitMultiplier(false);
+                    ExecAoe(eff, caster, origin, ctx);
+                    break;
+                case SkillEffectKind.HealBuff: ExecHealBuff(eff, caster, origin); break;
+                case SkillEffectKind.Mark:     ExecMark(eff, caster, origin);     break;
+            }
         }
 
-        var eff = SkillScaling.Compute(skill, caster.SkillLevel(skillIndex));
-        switch (skill.effectKind)
-        {
-            case SkillEffectKind.Strike:   ExecStrike(eff, caster, origin);   break;
-            case SkillEffectKind.Aoe:      ExecAoe(eff, caster, origin);      break;
-            case SkillEffectKind.HealBuff: ExecHealBuff(eff, caster, origin); break;
-            case SkillEffectKind.Mark:     ExecMark(eff, caster, origin);     break;
-        }
+        // 공격 행동의 적중을 한 번에 알림 → OnHit 패시브(스택·효과)
+        if (ctx.hits.Count > 0) caster.NotifyHits(ctx.hits, false);
+    }
+
+    /// <summary>공격 행동 1회의 공유 상태(위력 배율·행동 id·적중 기록).</summary>
+    sealed class ActionCtx
+    {
+        public Transform      origin;
+        public string         skillId;
+        public int            actionId;
+        public float          hitMult = 1f;
+        public float          range;
+        public List<HitInfo>  hits = new();
     }
 
     // ── 효과 목록 경로 (설계도 22 §4-3) ───────────────────────────────────
 
-    static void ExecuteEffects(SkillDef skill, int skillIndex, CombatCharacter caster, Transform origin)
+    static void ExecuteEffects(SkillDef skill, int skillIndex, CombatCharacter caster, Transform origin, ActionCtx ctx)
     {
         int level = caster.SkillLevel(skillIndex);
         var eff   = SkillScaling.Compute(skill, level);
         var party = PlayerRuntime.Party;
+        ctx.range = eff.range;
+
+        // 적에게 피해를 주는 행동이면 위력 배율을 1회 계산(소모형 보너스 소모)
+        foreach (var en in skill.effects)
+            if (en.type == SkillEffectType.Damage && en.target == TargetScope.EnemyArea) { ctx.hitMult = caster.HitMultiplier(false); break; }
 
         // 적 대상은 형태 판정으로 한 번만 수집(거리순). 마일스톤 범위 보너스 반영.
         List<(ISkillTarget t, float d)> area = null;
@@ -50,7 +79,7 @@ public static class SkillExecutor
             if (entry.target == TargetScope.EnemyArea)
             {
                 area ??= CollectInShape(skill, eff, origin);
-                ApplyToEnemies(entry, v, skill, caster, origin, area);
+                ApplyToEnemies(entry, v, skill, caster, origin, area, ctx);
             }
             else
             {
@@ -91,7 +120,7 @@ public static class SkillExecutor
     }
 
     static void ApplyToEnemies(SkillEffectEntry e, float v, SkillDef skill, CombatCharacter caster,
-                               Transform origin, List<(ISkillTarget t, float d)> area)
+                               Transform origin, List<(ISkillTarget t, float d)> area, ActionCtx ctx)
     {
         int n = e.targetCap > 0 ? Mathf.Min(e.targetCap, area.Count) : area.Count;
         for (int i = 0; i < n; i++)
@@ -102,7 +131,8 @@ public static class SkillExecutor
             switch (e.type)
             {
                 case SkillEffectType.Damage:
-                    t.ReceiveHit(caster.Element, Mathf.RoundToInt(caster.Atk * v));
+                    HitPipeline.Apply(t, Mathf.RoundToInt(caster.Atk * v), caster, ctx.hitMult, ctx.range,
+                                      ctx.origin.position, ctx.skillId, false, ctx.actionId, ctx.hits);
                     break;
                 case SkillEffectType.Dot:
                     t.ApplyStatus(Harmful(skill, e, StatusKind.Dot, StatKind.Atk, caster.Atk * v));
@@ -141,7 +171,7 @@ public static class SkillExecutor
 
     // ── Strike — 부채꼴 내 가장 가까운 적 1체(+추가 타겟) 고위력 공격 ────────
 
-    static void ExecStrike(EffectiveSkill eff, CombatCharacter caster, Transform origin)
+    static void ExecStrike(EffectiveSkill eff, CombatCharacter caster, Transform origin, ActionCtx ctx)
     {
         // 범위 내 적을 거리 순으로 정렬
         var targets = new List<(Enemy enemy, float dist)>();
@@ -157,12 +187,13 @@ public static class SkillExecutor
         int atk = Mathf.RoundToInt(caster.Atk * eff.damageMultiplier);
 
         for (int i = 0; i < hitCount && i < targets.Count; i++)
-            targets[i].enemy.ReceiveHit(caster.Element, atk);
+            HitPipeline.Apply(targets[i].enemy, atk, caster, ctx.hitMult, ctx.range, origin.position,
+                              ctx.skillId, false, ctx.actionId, ctx.hits);
     }
 
     // ── Aoe — 부채꼴 내 모든 적 범위 공격 ─────────────────────────────────
 
-    static void ExecAoe(EffectiveSkill eff, CombatCharacter caster, Transform origin)
+    static void ExecAoe(EffectiveSkill eff, CombatCharacter caster, Transform origin, ActionCtx ctx)
     {
         int atk = Mathf.RoundToInt(caster.Atk * eff.damageMultiplier);
 
@@ -170,7 +201,8 @@ public static class SkillExecutor
         {
             if (!IsValidTarget(enemy, origin, eff.range, eff.halfAngle, out _))
                 continue;
-            enemy.ReceiveHit(caster.Element, atk);
+            HitPipeline.Apply(enemy, atk, caster, ctx.hitMult, ctx.range, origin.position,
+                              ctx.skillId, false, ctx.actionId, ctx.hits);
         }
     }
 

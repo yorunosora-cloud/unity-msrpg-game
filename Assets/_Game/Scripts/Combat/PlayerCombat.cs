@@ -1,4 +1,5 @@
 using System.Linq;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -44,17 +45,17 @@ public class PlayerCombat : MonoBehaviour
     void DoAttack()
     {
         var active = PlayerRuntime.Active;
-        if (active == null || !active.CanAct)   // 기절·스턴 중엔 공격 불가
-        {
-            _cooldownTimer = attackCooldown;
-            return; // 기절 중엔 공격 불가
-        }
+        // 기절·스턴 중엔 공격 불가. 못 하는 공격이 쿨타임을 소모하지 않게(스턴이 풀리면 바로 공격 가능)
+        if (active == null || !active.CanAct) return;
 
         // 기본기(슬롯 0) 수치: 슬롯 0 스킬이 있으면 그 값, 없으면 인스펙터 기본값
         var spec = BasicAttack.Resolve(active, attackRange, attackHalfAngle, attackCooldown);
         _cooldownTimer = spec.cooldown;
 
         int       atk     = Mathf.RoundToInt(active.Atk * spec.damageMultiplier);
+        float     hitMult = active.HitMultiplier(true);          // 공격 행동당 1회(소모형 보너스 소모)
+        int       actionId = CombatCharacter.NewActionId();
+        var       hits    = new List<HitInfo>();
         Continent element = active.Element;
         Vector3   origin  = transform.position;
         Vector3   forward = transform.forward;
@@ -73,7 +74,7 @@ public class PlayerCombat : MonoBehaviour
             float angle = Vector3.Angle(forward, toEnemy);
             if (angle > spec.halfAngle) continue;
 
-            enemy.ReceiveHit(element, atk);
+            HitPipeline.Apply(enemy, atk, active, hitMult, spec.range, origin, "basic", true, actionId, hits);
         }
 
         // Boss 본체 타격
@@ -85,7 +86,7 @@ public class PlayerCombat : MonoBehaviour
             float bossDist  = toBoss.magnitude;
             float bossAngle = Vector3.Angle(forward, toBoss);
             if (bossDist <= spec.range && bossAngle <= spec.halfAngle)
-                ((IDamageable)boss).ReceiveHit(element, atk);
+                HitPipeline.Apply(boss, atk, active, hitMult, spec.range, origin, "basic", true, actionId, hits);
         }
 
         // 노출된 약점 코어 타격
@@ -97,8 +98,11 @@ public class PlayerCombat : MonoBehaviour
             float wpDist  = toWp.magnitude;
             float wpAngle = Vector3.Angle(forward, toWp);
             if (wpDist <= spec.range && wpAngle <= spec.halfAngle)
-                wp.ReceiveHit(element, atk);
+                wp.ReceiveHit(element, Mathf.RoundToInt(atk * hitMult));
         }
+
+        // 적중 알림: OnHit 패시브(스택·효과)
+        if (hits.Count > 0) active.NotifyHits(hits, true);
 
         // 공격 모션 트리거
         _builder?.PlayAttack();

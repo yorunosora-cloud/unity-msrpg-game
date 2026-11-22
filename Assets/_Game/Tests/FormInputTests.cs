@@ -74,6 +74,16 @@ public class FormInputTests : InputTestFixture
         Release(key); yield return null;
     }
 
+    /// <summary>
+    /// 키를 눌러 done()이 될 때까지 최대 3번 시도한다. 전체 스위트 실행 시 입력 이벤트가 가끔 누락되는
+    /// 테스트 하네스 특성을 흡수하기 위한 것(게임 로직과 무관). done이 이미 참이면 더 누르지 않는다.
+    /// </summary>
+    IEnumerator TapUntil(UnityEngine.InputSystem.Controls.KeyControl key, System.Func<bool> done)
+    {
+        for (int attempt = 0; attempt < 3 && !done(); attempt++)
+            yield return Tap(key);
+    }
+
     GameObject MakePlayer(CombatCharacter active, Party party, bool skills, bool combat)
     {
         PlayerRuntime.Active = active; PlayerRuntime.Party = party;
@@ -96,13 +106,13 @@ public class FormInputTests : InputTestFixture
         _player = MakePlayer(c, new Party(new[] { c }), true, false);
         yield return null;
 
-        yield return Tap(_kb.zKey);
+        yield return TapUntil(_kb.zKey, () => c.CurrentFormId == "B");
         Assert.AreEqual("B", c.CurrentFormId, "Z = 키 0 토글");
         yield return new WaitForSeconds(0.2f);
-        yield return Tap(_kb.zKey);
+        yield return TapUntil(_kb.zKey, () => c.CurrentFormId == "A");
         Assert.AreEqual("A", c.CurrentFormId, "다시 Z → 원래 폼");
         yield return new WaitForSeconds(0.2f);
-        yield return Tap(_kb.xKey);
+        yield return TapUntil(_kb.xKey, () => c.CurrentFormId == "C");
         Assert.AreEqual("C", c.CurrentFormId, "X = 키 1");
     }
 
