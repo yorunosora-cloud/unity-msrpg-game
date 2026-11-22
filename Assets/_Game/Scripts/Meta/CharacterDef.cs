@@ -26,6 +26,11 @@ public class CharacterDef : ScriptableObject
     [Tooltip("자동 폼 전환 규칙 (에네르기아·마시오&이네르셔·테르미아 등)")]
     public FormAutoRule[]  autoRules;
 
+    [Header("속성·성격·모션 (설계도 18)")]
+    public AttributeProfile attributes;      // 질량·속도·온도·전하(0=없음)
+    public string personality;               // 성격 한 줄(호감도 대사·연출)
+    public string basicAttackMotion;         // 평타 모션 id 훅
+
     [Header("비주얼 (플레이스홀더)")]
     public Color portraitColor = Color.white;
 
