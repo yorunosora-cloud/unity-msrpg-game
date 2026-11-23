@@ -1,0 +1,68 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 52b643bc733c46748835910b7c25db77, type: 3}
+  m_Name: worka_r
+  m_EditorClassIdentifier: MSRPG::CharacterDef
+  id: worka_r
+  nameKo: "\uC6CC\uB974\uCE74"
+  nameEn: Worka
+  continent: 0
+  country: newton-empire
+  rarity: 1
+  role: 1
+  baseStats:
+    hp: 2975
+    atk: 9
+    def: 26
+    spd: 9
+    mp: 13
+  forms: []
+  autoRules: []
+  attributes:
+    mass: 0
+    velocity: 0
+    temp: 0
+    charge: 0
+  personality: "\uB369\uC9C1\uD558\uACE0 \uC131\uC2E4\uD55C \uD604\uC7A5 \uC778\uBD80"
+  basicAttackMotion: "\uC9C0\uB808\uB300\uB97C \uD718\uB458\uB7EC \uB0B4\uB824\uCC0D\uB294
+    \uB3D9\uC791"
+  basicExplanation: 
+  advancedExplanation: 
+  realPrinciple: 
+  sourceRef: 
+  conceptQuestions: []
+  affinityQuestions: []
+  portraitColor: {r: 1, g: 1, b: 1, a: 1}
+  skills:
+  - {fileID: 11400000, guid: 1b0865361dbe47a4dbf2215088d1f2fa, type: 2}
+  - {fileID: 11400000, guid: 703356530419df94d9d814d3f53324c5, type: 2}
+  - {fileID: 11400000, guid: b4c257d68bc7fdb4b9399ae7cfb578e6, type: 2}
+  - {fileID: 11400000, guid: 8bb8cab43792219468149cd84f4fe9bc, type: 2}
+  dexNumber: 0
+  gender: 0
+  concept: "\uAC04\uB2E8\uD55C \uAE30\uACC4(\uC9C0\uB808\xB7\uB3C4\uB974\uB798\xB7\uBE57\uBA74)\uB97C
+    \uC9C1\uC811 \uB2E4\uB8E8\uB294 \uAC74\uC124/\uB9AC\uAE45 \uC778\uBD80. \"\uD798\uC744
+    \uC904\uC5EC\uB3C4 \uD55C \uC77C\uC758 \uC591\uC740 \uAC19\uB2E4\"\uB294 \uC77C\uC758
+    \uC6D0\uB9AC\uB97C \uADF8\uB300\uB85C \uCCB4\uD654"
+  appearance: "\uC548\uC804\uBAA8, \uC791\uC5C5\uBCF5, \uC5B4\uAE68\uC5D0 \uAC78\uCE5C
+    \uB3C4\uB974\uB798\uC904 \uBB49\uCE58, \uC190\uC5D0 \uB4E0 \uAE34 \uC9C0\uB808\uB300"
+  weapon: "\uC9C0\uB808\uB300, \uB3C4\uB974\uB798\uC904"
+  loreKo: "\uC9C0\uB808\uC640 \uB3C4\uB974\uB798\uC904\uB85C \uBB34\uAC70\uC6B4 \uAC83\uC744
+    \uC62E\uAE30\uB294 \uAC74\uC124 \uD604\uC7A5\uC758 \uC778\uBD80\uB85C, \uD798\uC744
+    \uC904\uC774\uBA74 \uADF8\uB9CC\uD07C \uBA40\uB9AC \uAC00\uC57C \uD55C\uB2E4\uB294
+    \uC774\uCE58\uB97C \uBAB8\uC73C\uB85C \uC548\uB2E4. \uB9D0\uC740 \uC801\uC9C0\uB9CC
+    \uC77C\uD558\uB294 \uBC29\uC2DD \uD558\uB098\uB85C \uC2E0\uB8B0\uB97C \uC5BB\uB294\uB2E4."
+  synergyKind: 0
+  synergyMarkedBy: []
+  synergyComboName: 
+  gachaObtainable: 1
+  acquireCondition: 

@@ -1,0 +1,73 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 52b643bc733c46748835910b7c25db77, type: 3}
+  m_Name: gyra_sr
+  m_EditorClassIdentifier: MSRPG::CharacterDef
+  id: gyra_sr
+  nameKo: "\uC790\uC774\uB77C"
+  nameEn: Gyra
+  continent: 0
+  country: newton-empire
+  rarity: 2
+  role: 0
+  baseStats:
+    hp: 2000
+    atk: 35
+    def: 10
+    spd: 20
+    mp: 15
+  forms: []
+  autoRules: []
+  attributes:
+    mass: 0
+    velocity: 0
+    temp: 0
+    charge: 0
+  personality: "\uD138\uD138\uD558\uACE0 \uC9C1\uC124\uC801\uC778 \uC7A5\uC778 \uAE30\uC9C8\uC758
+    \uC815\uBE44\uC0AC. \uB9D0\uBCF4\uB2E4 \uC190\uC774 \uBA3C\uC800 \uB098\uAC00\uACE0,
+    \uC190\uC7AC\uC8FC\uAC00 \uC88B\uB2E4. \uACE0\uC7A5 \uB09C \uAC83\uC744 \uADF8\uB0E5
+    \uB450\uC9C0 \uBABB\uD55C\uB2E4"
+  basicAttackMotion: "\uD070 \uB80C\uCE58\uB97C \uC606\uC73C\uB85C \uD718\uB458\uB7EC
+    \uD6C4\uB824\uCE68"
+  basicExplanation: 
+  advancedExplanation: 
+  realPrinciple: 
+  sourceRef: 
+  conceptQuestions: []
+  affinityQuestions: []
+  portraitColor: {r: 1, g: 1, b: 1, a: 1}
+  skills:
+  - {fileID: 11400000, guid: 5415082c91c991e4d9105cc7c073b24c, type: 2}
+  - {fileID: 11400000, guid: 6e8c4a2a1b2c9ea4b8dd43964bc88e61, type: 2}
+  - {fileID: 11400000, guid: c08bb1ad8875c5b48951a3ec0ab6c23c, type: 2}
+  - {fileID: 11400000, guid: 33f28566d7d27ac4780efdf91bccaa4d, type: 2}
+  - {fileID: 11400000, guid: 79cc938913f890b49bac8df714a41f5c, type: 2}
+  dexNumber: 0
+  gender: 1
+  concept: "\uBCFC\uD2B8\uB97C \uC870\uC774\uACE0 \uD478\uB294 \uC77C\uC774 \uACE7
+    \uB3CC\uB9BC\uD798\uC778 \uC815\uBE44\uC0AC. \uB80C\uCE58\uAC00 \uAE38\uC218\uB85D
+    \uC801\uC740 \uD798\uC73C\uB85C \uD070 \uB3CC\uB9BC\uD798\uC744 \uB9CC\uB4E0\uB2E4\uB294
+    \uAC1C\uB150\uC744 \uBAB8\uC73C\uB85C \uC544\uB294 \uC0AC\uB78C"
+  appearance: "\uAE30\uB984\uB54C \uBB3B\uC740 \uD30C\uB791 \uC791\uC5C5\uBCF5 \uC810\uD504\uC218\uD2B8(\uB274\uD134
+    \uC81C\uAD6D \uD30C\uB791 #2B7FFF \uD3EC\uC778\uD2B8), \uC774\uB9C8 \uC704\uB85C
+    \uC62C\uB9B0 \uACE0\uAE00, \uC885\uB958\uBCC4 \uB80C\uCE58\uB97C \uAF42\uC740
+    \uACF5\uAD6C\uBCA8\uD2B8, \uC9E7\uC740 \uD3EC\uB2C8\uD14C\uC77C"
+  weapon: "\uB80C\uCE58(\uC2A4\uD328\uB108)"
+  loreKo: "\uB80C\uCE58 \uD558\uB098\uB85C \uC81C\uAD6D\uC758 \uAE30\uACC4\uB97C
+    \uACE0\uCE58\uB294 \uD138\uD138\uD558\uACE0 \uC9C1\uC124\uC801\uC778 \uC815\uBE44\uC0AC\uB2E4.
+    \uACE0\uC7A5 \uB09C \uAC83\uC744 \uADF8\uB0E5 \uB450\uC9C0 \uBABB\uD558\uB294
+    \uC131\uACA9\uC774\uB77C \uC791\uC5C5\uBCF5\uC740 \uB298 \uAE30\uB984\uB54C\uD22C\uC131\uC774\uB2E4."
+  synergyKind: 0
+  synergyMarkedBy: []
+  synergyComboName: 
+  gachaObtainable: 1
+  acquireCondition: 

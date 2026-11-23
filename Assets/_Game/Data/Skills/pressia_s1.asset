@@ -1,0 +1,107 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 539fd4fbbaba74c44988317c884b5b12, type: 3}
+  m_Name: pressia_s1
+  m_EditorClassIdentifier: MSRPG::SkillDef
+  slot: 1
+  formReq: 
+  skillType: 0
+  shape: 0
+  lineWidth: 1
+  radius: 3
+  effects:
+  - type: 0
+    target: 0
+    stat: 0
+    value: 1.6
+    duration: 0
+    maxStacks: 0
+    targetCap: 0
+    areaRadius: 0
+    milestoneValue: 0
+    milestoneDuration: 0
+    whenForm: 
+    consumeOnHit: 0
+  factNoteKo: "\uBC00\uD3D0\uB41C \uC720\uCCB4\uC5D0 \uAC00\uD574\uC9C4 \uC555\uB825\uC740
+    \uBAA8\uB4E0 \uC9C0\uC810\uC5D0 \uAC19\uAC8C \uC804\uB2EC\uB418\uBBC0\uB85C,
+    \uC881\uC740 \uBA74\uC801\uC5D0 \uC555\uB825\uC744 \uBAA8\uC73C\uBA74 \uD070
+    \uD798\uC774 \uB098\uC628\uB2E4."
+  gameNoteKo: "\uCC28\uC9C0 3\uB2E8\uACC4(\uC989\uBC1C/1\uCD08/2\uCD08)\uB294 \uCC28\uC9C0
+    \uC785\uB825\uC774 \uC5C6\uC5B4 \uC911\uAC04 \uB2E8\uACC4(1\uCD08 \uCC28\uC9C0:
+    MP 6\xB7\uC0AC\uAC70\uB9AC 3\xB7\uAC01\uB3C4 35\xB7\uD53C\uD574 1.6) \uACE0\uC815\uC73C\uB85C
+    \uADFC\uC0AC"
+  passive:
+    trigger: 0
+    value: 0
+    hitCount: 0
+    internalCooldown: 0
+    stack:
+      stackId: 
+      maxStacks: 0
+      perStackValue: 0
+      decay: 0
+      decaySeconds: 0
+      stat: 0
+      damageRatio: 0
+      cap: 0
+      milestonePerStackValue: 0
+      milestoneMaxStacks: 0
+    effects: []
+    modifiers: []
+    formula: 0
+    milestoneValue: 0
+  formChange:
+    keyIndex: 0
+    mode: 0
+    fromForms: []
+    toForm: 
+    sequence: []
+    stateRules: []
+    revertAfterSeconds: 0
+    revertToForm: 
+    autoRevertForms: []
+    pressAgainReverts: 0
+  strengthTags: []
+  startUnlocked: 0
+  unlockCond: 
+  skillMotion: "\uAE00\uB7EC\uBE0C\uB97C \uC870\uC5EC \uC555\uB825\uC744 \uBAA8\uC558\uB2E4\uAC00
+    \uBC29\uCD9C"
+  id: pressia_s1
+  nameKo: "\uD30C\uC2A4\uCE7C\uC758 \uC6D0\uB9AC"
+  descKo: "\uCC28\uC9C0 \uC2DC\uAC04\uC5D0 \uB530\uB77C \uC0AC\uAC70\uB9AC\xB7\uC704\uB825\xB7\uC18C\uBAA8
+    MP\uAC00 \uB2EC\uB77C\uC9C0\uB294 \uC720\uC555 \uC99D\uD3ED \uACF5\uACA9. \uC624\uB798
+    \uBAA8\uC744\uC218\uB85D \uC881\uACE0 \uAC15\uD574\uC9C4\uB2E4."
+  mpCost: 6
+  cooldown: 8
+  effectKind: 0
+  range: 3
+  halfAngle: 35
+  damageMultiplier: 1.6
+  healPercent: 0.2
+  buffAtkMultiplier: 1.3
+  buffDuration: 5
+  milestoneLevel: 3
+  milestoneDescKo: "\uC644\uC804 \uCC28\uC9C0 \uC2DC\uAC04 \uB2E8\uCD95"
+  milestoneExtraTargets: 0
+  milestoneRangeBonus: 0
+  milestoneHalfAngleBonus: 0
+  milestoneHealPercentBonus: 0
+  milestoneBuffDurationBonus: 0
+  milestoneDamageBonus: 0
+  dashDistance: 0
+  dashTime: 0.15
+  autoSwitchDistance: 0
+  altEffectKind: 0
+  altRange: 0
+  altHalfAngle: 0
+  altDamageMultiplier: 1
+  milestoneCooldownBonus: 0

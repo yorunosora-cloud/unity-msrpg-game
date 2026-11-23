@@ -1,0 +1,106 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 539fd4fbbaba74c44988317c884b5b12, type: 3}
+  m_Name: magneau_s1
+  m_EditorClassIdentifier: MSRPG::SkillDef
+  slot: 1
+  formReq: 
+  skillType: 0
+  shape: 0
+  lineWidth: 1
+  radius: 3
+  effects:
+  - type: 8
+    target: 3
+    stat: 0
+    value: 0.9
+    duration: 6
+    maxStacks: 0
+    targetCap: 0
+    areaRadius: 0
+    milestoneValue: 0
+    milestoneDuration: 8
+    whenForm: 
+    consumeOnHit: 0
+  factNoteKo: 
+  gameNoteKo: "\uC18D\uC131\uBCC4 \uCC28\uB4F1 \uD53C\uD574 \uAC10\uC18C(\uAE08\uC18D
+    50%, \uADF8 \uC678 10%)\uAC00 \uC5C6\uC5B4 \uBAA8\uB4E0 \uC18D\uC131 \u221210%\uB85C
+    \uADFC\uC0AC(\uC790\uC2E0+\uB300\uAE30 \uC544\uAD70, 6\uCD08, Lv.3 8\uCD08)"
+  passive:
+    trigger: 0
+    value: 0
+    hitCount: 0
+    internalCooldown: 0
+    stack:
+      stackId: 
+      maxStacks: 0
+      perStackValue: 0
+      decay: 0
+      decaySeconds: 0
+      stat: 0
+      damageRatio: 0
+      cap: 0
+      milestonePerStackValue: 0
+      milestoneMaxStacks: 0
+    effects: []
+    modifiers: []
+    formula: 0
+    milestoneValue: 0
+  formChange:
+    keyIndex: 0
+    mode: 0
+    fromForms: []
+    toForm: 
+    sequence: []
+    stateRules: []
+    revertAfterSeconds: 0
+    revertToForm: 
+    autoRevertForms: []
+    pressAgainReverts: 0
+  strengthTags: []
+  startUnlocked: 0
+  unlockCond: 
+  skillMotion: "\uB514\uC81C\uC789 \uBD80\uC2A4\uB85C \uC190\uC744 \uBED7\uC5B4 \uD544\uB4DC
+    \uC804\uAC1C"
+  id: magneau_s1
+  nameKo: "\uC790\uAE30\uC7A5"
+  descKo: "\uAE08\uC18D \uBC0F \uC790\uAE30\uC7A5\uC758 \uC601\uD5A5\uC744 \uBC1B\uB294
+    \uBB3C\uC9C8\uC5D0 \uAC15\uD55C \uC9C0\uBC30\uB825\uC744 \uD589\uC0AC\uD574,
+    \uC790\uC2E0\uACFC \uB300\uAE30 \uC911\uC778 \uC544\uAD70\uC5D0\uAC8C \uAE08\uC18D
+    \uC18D\uC131 \uD53C\uD574\uB97C \uAC10\uC18C\uC2DC\uD0A4\uB294 \uC790\uAE30\uC7A5\uC744
+    \uC50C\uC6B4\uB2E4. \uADF8 \uC678 \uC18D\uC131 \uD53C\uD574\uB3C4 \uC18C\uD3ED
+    \uAC10\uC18C\uD55C\uB2E4."
+  mpCost: 4
+  cooldown: 12
+  effectKind: 2
+  range: 3
+  halfAngle: 70
+  damageMultiplier: 1.5
+  healPercent: 0.2
+  buffAtkMultiplier: 1.3
+  buffDuration: 6
+  milestoneLevel: 3
+  milestoneDescKo: "\uC9C0\uC18D\uC2DC\uAC04 \uC99D\uAC00"
+  milestoneExtraTargets: 0
+  milestoneRangeBonus: 0
+  milestoneHalfAngleBonus: 0
+  milestoneHealPercentBonus: 0
+  milestoneBuffDurationBonus: 0
+  milestoneDamageBonus: 0
+  dashDistance: 0
+  dashTime: 0.15
+  autoSwitchDistance: 0
+  altEffectKind: 0
+  altRange: 0
+  altHalfAngle: 0
+  altDamageMultiplier: 1
+  milestoneCooldownBonus: 0

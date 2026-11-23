@@ -1,0 +1,70 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 52b643bc733c46748835910b7c25db77, type: 3}
+  m_Name: magneau_sr
+  m_EditorClassIdentifier: MSRPG::CharacterDef
+  id: magneau_sr
+  nameKo: "\uB9C8\uADF8\uB180"
+  nameEn: Magneau
+  continent: 0
+  country: maxwell-duchy
+  rarity: 1
+  role: 2
+  baseStats:
+    hp: 1700
+    atk: 13
+    def: 13
+    spd: 17
+    mp: 26
+  forms: []
+  autoRules: []
+  attributes:
+    mass: 0
+    velocity: 0
+    temp: 0
+    charge: 0
+  personality: "\uBB34\uB300 \uC704\uC5D0\uC11C\uB294 \uC2E0\uB098\uC9C0\uB9CC \uD3C9\uC18C\uC5D4
+    \uCC28\uBD84\uD558\uACE0 \uAD00\uCC30\uB825\uC774 \uC88B\uB2E4. \uC804\uC790\uAE30
+    \uD750\uB984\uC744 \uC77D\uB4EF \uD300 \uC0C1\uD669\uC744 \uC77D\uB294\uB2E4"
+  basicAttackMotion: "\uB514\uC81C\uC789 \uD328\uB4DC\uB97C \uC870\uC791\uD558\uBA70
+    \uC790\uAE30\uC7A5 \uD30C\uB3D9 \uBC1C\uC0AC"
+  basicExplanation: 
+  advancedExplanation: 
+  realPrinciple: 
+  sourceRef: 
+  conceptQuestions: []
+  affinityQuestions: []
+  portraitColor: {r: 1, g: 1, b: 1, a: 1}
+  skills:
+  - {fileID: 11400000, guid: 0740536f58be9b24e96e74bdd123521f, type: 2}
+  - {fileID: 11400000, guid: 3493ea1772d57c349b1a5532fdda0918, type: 2}
+  - {fileID: 11400000, guid: d7757530836d9a442ab33cc01d59098e, type: 2}
+  dexNumber: 0
+  gender: 0
+  concept: "DJ. \uC815\uBCF4 \uB300\uB959\uC5D0 \uC790\uC8FC \uB2E4\uB140\uC640 \uBB3C\uB9AC
+    \uB300\uB959 \uCD9C\uC2E0\uC784\uC5D0\uB3C4 \uC815\uBCF4 \uB300\uB959\uD48D \uBCF5\uC7A5"
+  appearance: "\uB2E4\uD504\uD2B8 \uD391\uD06C \uC2A4\uD0C0\uC77C \uD22C\uBA85 \uD5EC\uBA67(\uB0B4\uBD80\uC5D0
+    \uC790\uAE30\uC7A5 \uC120\uC774 \uD750\uB984), \uAC80\uC815+\uC77C\uB809\uD2B8\uB9AD
+    \uBE14\uB8E8+\uB9C8\uC820\uD0C0 \uB124\uC628 DJ \uC7AC\uD0B7, \uAC00\uC2B4 \uC911\uC559\uC5D0
+    \uC6D0\uD615 \uC790\uAE30\uC7A5 \uCF54\uC5B4, \uBC14\uB2E5\uC5D0 \uC790\uAE30
+    \uBD80\uC2A4\uD130\uAC00 \uB2EC\uB9B0 \uD14C\uD06C\uC6E8\uC5B4 \uBD80\uCE20"
+  weapon: "\uB514\uC81C\uC789 \uB3C4\uAD6C"
+  loreKo: "\uD22C\uBA85\uD55C \uD5EC\uBA67 \uC18D\uC73C\uB85C \uC790\uAE30\uC7A5
+    \uC120\uC774 \uD750\uB974\uB294 DJ\uB85C, \uBB34\uB300 \uC704\uC5D0\uC11C\uB294
+    \uC2E0\uB098\uC9C0\uB9CC \uD3C9\uC18C\uC5D4 \uCC28\uBD84\uD558\uACE0 \uAD00\uCC30\uB825\uC774
+    \uC88B\uB2E4. \uADF8\uB294 \uC74C\uC545\uC758 \uD750\uB984\uC744 \uC77D\uB4EF
+    \uD300\uC758 \uBD84\uC704\uAE30\uB97C \uC77D\uC5B4 \uB0B8\uB2E4."
+  synergyKind: 0
+  synergyMarkedBy: []
+  synergyComboName: 
+  gachaObtainable: 1
+  acquireCondition: 

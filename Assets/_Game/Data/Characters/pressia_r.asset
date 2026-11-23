@@ -1,0 +1,72 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 52b643bc733c46748835910b7c25db77, type: 3}
+  m_Name: pressia_r
+  m_EditorClassIdentifier: MSRPG::CharacterDef
+  id: pressia_r
+  nameKo: "\uD504\uB808\uC2DC\uC544"
+  nameEn: Pressia
+  continent: 0
+  country: newton-empire
+  rarity: 1
+  role: 0
+  baseStats:
+    hp: 1700
+    atk: 30
+    def: 9
+    spd: 17
+    mp: 13
+  forms: []
+  autoRules: []
+  attributes:
+    mass: 0
+    velocity: 0
+    temp: 0
+    charge: 0
+  personality: "\uAC70\uCE5C \uC785\uB2F4\uC758 \uD604\uC7A5\uC9C1. \uC555\uB825\uACC4
+    \uC218\uCE58\uB97C \uBCF4\uB4EF \uC0C1\uB300\uB97C \uAC00\uB2A0\uD558\uB294 \uB178\uB828\uD55C
+    \uD0DC\uB3C4"
+  basicAttackMotion: "\uC555\uCD95 \uAE00\uB7EC\uBE0C\uB85C \uC9E7\uAC8C \uB0B4\uC9C0\uB974\uB294
+    \uD380\uCE58"
+  basicExplanation: 
+  advancedExplanation: 
+  realPrinciple: 
+  sourceRef: 
+  conceptQuestions: []
+  affinityQuestions: []
+  portraitColor: {r: 1, g: 1, b: 1, a: 1}
+  skills:
+  - {fileID: 11400000, guid: fd98b3e90c9989545b078d07f4aaa56e, type: 2}
+  - {fileID: 11400000, guid: bae6d8ee08e155a40ad1e6eda8b02bb5, type: 2}
+  - {fileID: 11400000, guid: dde4dae8aacff854387bc5229638eeb1, type: 2}
+  - {fileID: 11400000, guid: 0e0a3102b7dea45479a20c2e4067c132, type: 2}
+  dexNumber: 0
+  gender: 1
+  concept: "\uAE30\uC555\xB7\uC218\uC555 \uB4F1 \uC555\uB825\uC744 \uC9C1\uC811 \uB2E4\uB8E8\uB294
+    \uC0B0\uC5C5\uAE30\uACC4\uACF5. \uD30C\uC2A4\uCE7C\uC758 \uC6D0\uB9AC\xB7\uAE30\uC555\xB7\uC218\uC555\uC744
+    \uAC01\uAC01\uC758 \uC2A4\uD0AC\uB85C \uBD84\uB9AC"
+  appearance: "\uAE30\uB984\uC774 \uBB3B\uC740 \uC791\uC5C5\uBCF5, \uC548\uC804\uBAA8,
+    \uC720\uC555 \uBC30\uAD00\uC774 \uC5F0\uACB0\uB41C \uC555\uCD95 \uAE00\uB7EC\uBE0C
+    \uB450 \uAC1C"
+  weapon: "\uC720\uC555 \uD504\uB808\uC2A4 \uAE00\uB7EC\uBE0C, \uAE30\uC555\uACC4
+    \uB808\uBC84"
+  loreKo: "\uB300\uC7A5\uAC04\uACFC \uC911\uC7A5\uBE44\uB97C \uC624\uAC00\uB294 \uD604\uC7A5\uC9C1
+    \uC0B0\uC5C5\uAE30\uACC4\uACF5\uC73C\uB85C, \uAC70\uCE5C \uC785\uB2F4\uACFC \uB2EC\uB9AC
+    \uC555\uB825\uACC4\uC758 \uB208\uAE08 \uD558\uB098\uB3C4 \uD5C8\uD22C\uB8E8 \uC77D\uC9C0
+    \uC54A\uB294\uB2E4. \uADF8\uB140\uC758 \uC720\uC555 \uD504\uB808\uC2A4\uB294
+    \uC81C\uAD6D \uACF5\uBC29\uC5D0\uC11C\uB3C4 \uAC00\uC7A5 \uBBFF\uC744 \uB9CC\uD558\uB2E4\uB294
+    \uD3C9\uC744 \uB4E3\uB294\uB2E4."
+  synergyKind: 0
+  synergyMarkedBy: []
+  synergyComboName: 
+  gachaObtainable: 1
+  acquireCondition: 

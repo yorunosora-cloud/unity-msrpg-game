@@ -55,9 +55,9 @@ public class ShippedCsvTests
     public void ShippedCsv_Counts()
     {
         var r = Load();
-        Assert.AreEqual(9, r.characters.Count, "대표 4 + 물리 1묶음 5(벡토르·벨로시아·액셀·모멘타·임펄사)");
+        Assert.AreEqual(14, r.characters.Count, "대표 4 + 물리 1묶음 5 + 2묶음 5(프레시아·자이라·워르카·스페이시아·마그놀)");
         Assert.AreEqual(5, r.characters.Sum(c => c.conceptQuestions?.Length ?? 0), "개념 문제: 포르테 2 + 대표 나머지 각 1 (이관 캐릭터는 아직 교육 데이터 없음)");
-        Assert.AreEqual(50, r.skills.Count, "대표 29 + 벡토르 4 + 벨로시아 4 + 액셀 4 + 모멘타 5 + 임펄사 4");
+        Assert.AreEqual(70, r.skills.Count, "대표 29 + 1묶음 21 + 프레시아 4 + 자이라 5 + 워르카 4 + 스페이시아 4 + 마그놀 3");
         Assert.AreEqual(8, r.tagRules.Length);
     }
 
@@ -151,6 +151,73 @@ public class ShippedCsvTests
         var st = Skill("impulsa_s3").passive.stack;
         Assert.AreEqual((5, 0.08f, 3f, StatKind.SkillPower), (st.maxStacks, st.perStackValue, st.decaySeconds, st.stat));
         Assert.AreEqual(1f, Skill("impulsa_s0").milestoneRangeBonus);
+    }
+
+    // ════════════════════════════════════════════════════════════════════════
+    // 물리 이관 2묶음: 프레시아·자이라·워르카·스페이시아·마그놀
+    // ════════════════════════════════════════════════════════════════════════
+
+    [Test]
+    public void Batch2_Stats_AndCountries_MatchDocuments()
+    {
+        void Check(string id, int hp, int atk, int def, int spd, int mp, Rarity r, CharacterRole role, string country)
+        {
+            var c = Char(id);
+            Assert.AreEqual((hp, atk, def, spd, mp), (c.baseStats.hp, c.baseStats.atk, c.baseStats.def, c.baseStats.spd, c.baseStats.mp), id);
+            Assert.AreEqual((r, role, country), (c.rarity, c.role, c.country), id);
+        }
+        Check("pressia_r", 1700, 30, 9, 17, 13, Rarity.R, CharacterRole.Dealer, "newton-empire");
+        Check("gyra_sr", 2000, 35, 10, 20, 15, Rarity.SR, CharacterRole.Dealer, "newton-empire");
+        Check("worka_r", 2975, 9, 26, 9, 13, Rarity.R, CharacterRole.Tanker, "newton-empire");
+        Check("spasia_sr", 3500, 10, 30, 10, 15, Rarity.SR, CharacterRole.Tanker, "newton-empire");
+        Check("magneau_sr", 1700, 13, 13, 17, 26, Rarity.R, CharacterRole.Supporter, "maxwell-duchy");
+    }
+
+    [Test]
+    public void Batch2_Pressia_WaterPressure_ReducesDamageByLostHp_Max30()
+    {
+        var m = Skill("pressia_s3").passive.modifiers[0];
+        Assert.AreEqual((ModifierSource.LostHpPercent, StatKind.DamageTaken, 0.005f, 0.3f), (m.source, m.stat, m.value, m.cap));
+        Assert.AreEqual(1.6f, Skill("pressia_s1").effects[0].value);
+        Assert.IsTrue(Skill("pressia_s2").effects.Any(e => e.type == SkillEffectType.Knockback));
+    }
+
+    [Test]
+    public void Batch2_Gyra_AxisMark_UsesAxisDistanceFormula_WithMilestone()
+    {
+        var p = Skill("gyra_s1").passive;
+        Assert.AreEqual((PassiveTriggerType.OnHit, PassiveFormulaId.AxisDistance, 0.3f, 0.4f), (p.trigger, p.formula, p.value, p.milestoneValue));
+        var e = p.effects[0];
+        Assert.AreEqual((SkillEffectType.Mark, TargetScope.HitTarget, 8f), (e.type, e.target, e.duration));
+        var buff = Skill("gyra_s4").effects[0];
+        Assert.AreEqual((StatKind.CooldownRate, 1.2f, 8f), (buff.stat, buff.value, buff.duration));
+    }
+
+    [Test]
+    public void Batch2_Worka_WorkPrinciple_UsesRangeWork_AndInclineKnocksBack5()
+    {
+        Assert.AreEqual(PassiveFormulaId.RangeWork, Skill("worka_s3").passive.formula);
+        var k = Skill("worka_s1").effects.Single(e => e.type == SkillEffectType.Knockback);
+        Assert.AreEqual((5f, 6.5f), (k.value, k.milestoneValue));
+        Assert.IsTrue(Skill("worka_s2").effects.Any(e => e.type == SkillEffectType.Pull));
+    }
+
+    [Test]
+    public void Batch2_Spasia_LengthContraction_IsDamagelessForwardDash_AndPassiveReducesDamage()
+    {
+        var s = Skill("spasia_s2");
+        Assert.AreEqual((8f, 0.1f, 0f), (s.dashDistance, s.dashTime, s.damageMultiplier));
+        Assert.AreEqual(0.92f, Skill("spasia_s3").passive.modifiers[0].value, 0.0001f);
+        Assert.AreEqual(5f, Skill("spasia_s1").radius);
+    }
+
+    [Test]
+    public void Batch2_Magneau_PartyAtkBuff_AndBenchShield()
+    {
+        var m = Skill("magneau_s2").passive.modifiers[0];
+        Assert.AreEqual((ModifierSource.PartyPresence, StatKind.Atk, 1.07f, true), (m.source, m.stat, m.value, m.partyWide));
+        var e = Skill("magneau_s1").effects[0];
+        Assert.AreEqual((SkillEffectType.DamageTakenMult, TargetScope.SelfAndBench, 0.9f, 6f, 8f), (e.type, e.target, e.value, e.duration, e.milestoneDuration));
     }
 
     // ════════════════════════════════════════════════════════════════════════
