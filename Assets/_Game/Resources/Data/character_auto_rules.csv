@@ -5,3 +5,5 @@
 ownerId,order,cond,param,statKey,statCompare,statThreshold,consecutive,toForm,priority
 massio_inersha_r,1,IdleFor,2,,,,,Mass,1
 massio_inersha_r,2,MovingFor,2,,,,,Inertia,1
+thermia_r,1,HitTargetStat,,temp,AtLeast,50,3,Hot,1
+thermia_r,2,HitTargetStat,,temp,Below,50,3,Cold,1

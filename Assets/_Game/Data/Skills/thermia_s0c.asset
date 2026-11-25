@@ -1,0 +1,88 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 539fd4fbbaba74c44988317c884b5b12, type: 3}
+  m_Name: thermia_s0c
+  m_EditorClassIdentifier: MSRPG::SkillDef
+  slot: 0
+  formReq: Cold
+  skillType: 0
+  shape: 1
+  lineWidth: 0.4
+  radius: 3
+  effects: []
+  factNoteKo: "\uD761\uC5F4 \uBC18\uC751\uC740 \uC5F4\uC744 \uD761\uC218\uD558\uB294
+    \uBC18\uC751\uC774\uB2E4."
+  gameNoteKo: 
+  passive:
+    trigger: 0
+    value: 0
+    hitCount: 0
+    internalCooldown: 0
+    stack:
+      stackId: 
+      maxStacks: 0
+      perStackValue: 0
+      decay: 0
+      decaySeconds: 0
+      stat: 0
+      damageRatio: 0
+      cap: 0
+      milestonePerStackValue: 0
+      milestoneMaxStacks: 0
+    effects: []
+    modifiers: []
+    formula: 0
+    milestoneValue: 0
+  formChange:
+    keyIndex: 0
+    mode: 0
+    fromForms: []
+    toForm: 
+    sequence: []
+    stateRules: []
+    revertAfterSeconds: 0
+    revertToForm: 
+    autoRevertForms: []
+    pressAgainReverts: 0
+  strengthTags: []
+  startUnlocked: 1
+  unlockCond: 
+  skillMotion: "\uB04C\uB85C \uAE4E\uC544\uB0B8 \uC5BC\uC74C \uC870\uAC01\uC744 \uB358\uC9D0"
+  id: thermia_s0c
+  nameKo: "\uD761\uC5F4"
+  descKo: "\uC5BC\uC74C \uC870\uAC01\uC744 \uB0A0\uB824 \uC0C1\uB300\uC758 \uC5F4\uC744
+    \uBE7C\uC557\uB294\uB2E4."
+  mpCost: 0
+  cooldown: 1.2
+  effectKind: 0
+  range: 2.5
+  halfAngle: 70
+  damageMultiplier: 0.9
+  healPercent: 0.2
+  buffAtkMultiplier: 1.3
+  buffDuration: 5
+  milestoneLevel: 3
+  milestoneDescKo: "\uC704\uB825 \uC99D\uAC00"
+  milestoneExtraTargets: 0
+  milestoneRangeBonus: 0
+  milestoneHalfAngleBonus: 0
+  milestoneHealPercentBonus: 0
+  milestoneBuffDurationBonus: 0
+  milestoneDamageBonus: 0.2
+  dashDistance: 0
+  dashTime: 0.15
+  autoSwitchDistance: 0
+  altEffectKind: 0
+  altRange: 0
+  altHalfAngle: 0
+  altDamageMultiplier: 1
+  milestoneCooldownBonus: 0

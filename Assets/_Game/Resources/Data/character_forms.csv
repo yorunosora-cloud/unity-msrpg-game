@@ -7,3 +7,5 @@ lumiere_ssr,Particle,입자성,Dealer,Male,true,2000,35,10,20,15,#FFD84A
 lumiere_ssr,Wave,파동성,Supporter,Female,false,2000,15,15,20,30,#00C8FF
 massio_inersha_r,Mass,마시오,Tanker,Female,true,2975,9,26,9,13,#2B7FFF
 massio_inersha_r,Inertia,이네르셔,Dealer,Male,false,1700,30,9,17,13,#D9381E
+thermia_r,Hot,고온,Dealer,Male,true,1700,30,9,17,13,#FF5A1F
+thermia_r,Cold,저온,Supporter,Female,false,1700,13,13,17,26,#7FD6FF

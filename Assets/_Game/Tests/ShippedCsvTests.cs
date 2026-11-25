@@ -55,9 +55,9 @@ public class ShippedCsvTests
     public void ShippedCsv_Counts()
     {
         var r = Load();
-        Assert.AreEqual(14, r.characters.Count, "대표 4 + 물리 1묶음 5 + 2묶음 5(프레시아·자이라·워르카·스페이시아·마그놀)");
+        Assert.AreEqual(16, r.characters.Count, "대표 4 + 물리 1묶음 5 + 2묶음 5 + 3묶음 2(테르미아·일렉트라)");
         Assert.AreEqual(5, r.characters.Sum(c => c.conceptQuestions?.Length ?? 0), "개념 문제: 포르테 2 + 대표 나머지 각 1 (이관 캐릭터는 아직 교육 데이터 없음)");
-        Assert.AreEqual(70, r.skills.Count, "대표 29 + 1묶음 21 + 프레시아 4 + 자이라 5 + 워르카 4 + 스페이시아 4 + 마그놀 3");
+        Assert.AreEqual(84, r.skills.Count, "대표 29 + 1묶음 21 + 2묶음 20 + 테르미아 10 + 일렉트라 4");
         Assert.AreEqual(8, r.tagRules.Length);
     }
 
@@ -218,6 +218,56 @@ public class ShippedCsvTests
         Assert.AreEqual((ModifierSource.PartyPresence, StatKind.Atk, 1.07f, true), (m.source, m.stat, m.value, m.partyWide));
         var e = Skill("magneau_s1").effects[0];
         Assert.AreEqual((SkillEffectType.DamageTakenMult, TargetScope.SelfAndBench, 0.9f, 6f, 8f), (e.type, e.target, e.value, e.duration, e.milestoneDuration));
+    }
+
+    // ════════════════════════════════════════════════════════════════════════
+    // 물리 이관 3묶음: 테르미아·일렉트라
+    // ════════════════════════════════════════════════════════════════════════
+
+    [Test]
+    public void Batch3_Thermia_HasHotColdForms_AndHeatEquilibriumAutoRules()
+    {
+        var c = Char("thermia_r");
+        Assert.AreEqual(2, c.forms.Length);
+        var hot = c.forms.Single(f => f.formId == "Hot"); var cold = c.forms.Single(f => f.formId == "Cold");
+        Assert.IsTrue(hot.isDefault); Assert.AreEqual(CharacterRole.Dealer, hot.role); Assert.AreEqual(30, hot.baseStats.atk);
+        Assert.AreEqual(CharacterRole.Supporter, cold.role); Assert.AreEqual(26, cold.baseStats.mp);
+        Assert.AreEqual(hot.baseStats.hp, cold.baseStats.hp, "hp는 폼 공통");
+        Assert.AreEqual(2, c.autoRules.Length);
+        Assert.IsTrue(c.autoRules.All(r => r.cond == FormAutoCond.HitTargetStat && r.statKey == "temp" && r.statThreshold == 50f && r.consecutive == 3));
+        Assert.AreEqual("Hot", c.autoRules.Single(r => r.statCompare == FormCompare.AtLeast).toForm);
+        Assert.AreEqual("Cold", c.autoRules.Single(r => r.statCompare == FormCompare.Below).toForm);
+    }
+
+    [Test]
+    public void Batch3_Thermia_SharedSkillsSplitByForm_SamePassSlots()
+    {
+        foreach (var slot in new[] { 1, 2, 3 })
+        {
+            var pair = Char("thermia_r").skills.Where(s => s.slot == slot).ToArray();
+            Assert.AreEqual(2, pair.Length, "슬롯 " + slot);
+            CollectionAssert.AreEquivalent(new[] { "Hot", "Cold" }, pair.Select(s => s.formReq));
+        }
+        Assert.AreEqual("Hot", Skill("thermia_s4").formReq); Assert.AreEqual("Cold", Skill("thermia_s5").formReq);
+        Assert.IsTrue(Skill("thermia_s1h").effects.Any(e => e.type == SkillEffectType.Dot && e.value == 0.2f));
+        Assert.IsTrue(Skill("thermia_s1c").effects.Any(e => e.type == SkillEffectType.Slow && e.value == 0.75f));
+        var sh = Skill("thermia_s5").effects[0];
+        Assert.AreEqual((SkillEffectType.Shield, 0.3f, 0.4f), (sh.type, sh.value, sh.milestoneValue));
+    }
+
+    [Test]
+    public void Batch3_Elektra_Stats_Tags_AndAccumulationPassive()
+    {
+        var c = Char("elektra_sr");
+        Assert.AreEqual((1700, 30, 7, 19, 13), (c.baseStats.hp, c.baseStats.atk, c.baseStats.def, c.baseStats.spd, c.baseStats.mp));
+        Assert.AreEqual("maxwell-duchy", c.country);
+        Assert.AreEqual(0, Skill("elektra_s1").slot, "방전이 Q(슬롯 재배치 반영)");
+        Assert.AreEqual(1, Skill("elektra_s0").slot, "축전은 슬롯 1 패시브");
+        CollectionAssert.AreEqual(new[] { "음전하" }, Skill("elektra_s2").strengthTags);
+        CollectionAssert.AreEqual(new[] { "양전하" }, Skill("elektra_s3").strengthTags);
+        var d = Skill("elektra_s2").effects[0];
+        Assert.AreEqual((SkillEffectType.Dot, 0.12f, 5), (d.type, d.value, d.maxStacks));
+        Assert.AreEqual(ModifierSource.MovingRamp, Skill("elektra_s0").passive.modifiers[0].source);
     }
 
     // ════════════════════════════════════════════════════════════════════════

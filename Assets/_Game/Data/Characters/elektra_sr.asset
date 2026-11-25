@@ -1,0 +1,70 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 52b643bc733c46748835910b7c25db77, type: 3}
+  m_Name: elektra_sr
+  m_EditorClassIdentifier: MSRPG::CharacterDef
+  id: elektra_sr
+  nameKo: "\uC77C\uB809\uD2B8\uB77C"
+  nameEn: Elektra
+  continent: 0
+  country: maxwell-duchy
+  rarity: 1
+  role: 0
+  baseStats:
+    hp: 1700
+    atk: 30
+    def: 7
+    spd: 19
+    mp: 13
+  forms: []
+  autoRules: []
+  attributes:
+    mass: 0
+    velocity: 0
+    temp: 0
+    charge: 0
+  personality: "\uC790\uC720\uBD84\uBC29\uD558\uACE0 \uD150\uC158\uC774 \uB192\uC740
+    \uB85C\uCEE4. \uBB34\uB300 \uC704\uC5D0\uC11C\uB9CC\uD07C\uC740 \uB204\uAD6C\uBCF4\uB2E4
+    \uD654\uB824\uD558\uB2E4"
+  basicAttackMotion: "\uAE30\uD0C0 \uC2A4\uD2B8\uB85C\uD06C\uB85C \uC804\uACA9 \uBC1C\uC0AC"
+  basicExplanation: 
+  advancedExplanation: 
+  realPrinciple: 
+  sourceRef: 
+  conceptQuestions: []
+  affinityQuestions: []
+  portraitColor: {r: 1, g: 1, b: 1, a: 1}
+  skills:
+  - {fileID: 11400000, guid: 1821ad085fd033d4bacb420e9e79eaae, type: 2}
+  - {fileID: 11400000, guid: 394431242ba91c144b52873c5753ba28, type: 2}
+  - {fileID: 11400000, guid: 76a8f7176dc61744a9a53e85fa5aa1e0, type: 2}
+  - {fileID: 11400000, guid: ab52fa8e647d3344a9c00eda3a69dcfc, type: 2}
+  dexNumber: 0
+  gender: 1
+  concept: "\uAE30\uD0C0\uB9AC\uC2A4\uD2B8(\uB85C\uCEE4). \uC815\uBCF4 \uB300\uB959\uC5D0
+    \uC790\uC8FC \uB2E4\uB140\uC640 \uBB3C\uB9AC \uB300\uB959 \uCD9C\uC2E0\uC784\uC5D0\uB3C4
+    \uC815\uBCF4 \uB300\uB959\uD48D \uBCF5\uC7A5"
+  appearance: "\uD654\uB824\uD55C \uC77C\uB809\uAE30\uD0C0, \uD734\uB300\uC6A9 \uC2A4\uD53C\uCEE4.
+    \uD558\uC580 \uBA38\uB9AC\uC5D0 \uC591\uB05D \uAC01\uAC01 \uBD89\uC740\uC0C9\xB7\uD478\uB978\uC0C9(\uD560\uB9AC\uD038
+    \uD5E4\uC5B4\uC2A4\uD0C0\uC77C), \uC7A5\uBC1C \uC591\uAC08\uB798. \uC591 \uBCFC\uC5D0
+    +(\uBD89\uC740\uC0C9)/-(\uD478\uB978\uC0C9) \uD0C0\uD22C"
+  weapon: "\uC77C\uB809\uAE30\uD0C0 / \uD734\uB300\uC6A9 \uC2A4\uD53C\uCEE4"
+  loreKo: "\uC815\uBCF4 \uB300\uB959\uC744 \uC790\uC8FC \uC624\uAC00\uBA70 \uADF8\uACF3
+    \uCDE8\uD5A5\uC5D0 \uBB3C\uB4E0 \uC790\uC720\uBD84\uBC29\uD55C \uB85C\uCEE4\uB85C,
+    \uBB34\uB300 \uC704\uC5D0\uC11C\uB9CC\uD07C\uC740 \uB204\uAD6C\uBCF4\uB2E4 \uD654\uB824\uD558\uB2E4.
+    \uC591\uCABD \uBEA8\uC758 +\uC640 \u2212 \uBB38\uC2E0\uC740 \uACF5\uC5F0\uB9C8\uB2E4
+    \uC11C\uB85C \uC790\uB9AC\uB97C \uBC14\uAFBC\uB2E4."
+  synergyKind: 0
+  synergyMarkedBy: []
+  synergyComboName: 
+  gachaObtainable: 1
+  acquireCondition: 
