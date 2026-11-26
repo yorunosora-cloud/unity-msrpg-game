@@ -1,7 +1,0 @@
-{
-  "tool_name": "Bash",
-  "tool_input_preview": "{\"command\":\"cd /c/Users/KKH/msrpg-unity/msrpg-unity-new && f=Assets/_Game/Resources/Data/enemy_catalog.csv && S=/c/Users/KKH/AppData/Local/Temp/claude/329535f8d3b33815/346e1a89-61a8-4df2-89e3-ef2e2fa9...",
-  "error": "Exit code 1\ncp: cannot create regular file '/c/Users/KKH/AppData/Local/Temp/claude/329535f8d3b33815/346e1a89-61a8-4df2-89e3-ef2e2fa93009/scratchpad/enemy_catalog.before.csv': No such file or directory\n25:# 에코스 연맹 — 진화의 도원(바이오스 첫 던전): 던전은 플레이어 레벨에 완전 스케일링 → 아래 levelMin/levelMax·HP·DEF는 '스케일링 기준값'(고정 권장 레벨 아님)\n39:# 에코스 연맹 — 생태계 순환 대원(바이오스 두 번째 던전): 던전은 플레이어 레벨에 완전 스케일링 → 아래 levelMin/levelMax·HP·DEF는 '스케일링 기준값'(고정 권장 레벨 아님, 던전 간 보정 없음이라 진화의 도원과 같은 대역)\n53:# 제네시스 왕국 — 멘델의 유전 도서관(바이오스 세 번째 던전): 던전은 플레...",
-  "timestamp": "2026-11-26T07:36:58.490Z",
-  "retry_count": 1
-}
