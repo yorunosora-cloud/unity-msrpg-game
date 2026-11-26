@@ -268,4 +268,56 @@ public class CounterIntegrationTests
         Assert.Greater(withTwo, 0);
         Assert.AreEqual(2, c.RecentDistinctSkills(5f));
     }
+
+    // ── 적 쪽 상태 스택(교류 → 직류) ──────────────────────────────────────
+
+    static SkillDef DirectCurrent()
+    {
+        var s = Skill("dc", 3);
+        s.shape = SkillShape.Cone; s.range = 6f; s.halfAngle = 60f;
+        s.effects = new[]
+        {
+            new SkillEffectEntry { type = SkillEffectType.Damage, target = TargetScope.EnemyArea, value = 1.8f, counterId = "target:ac", counterMode = CounterMode.Linear, counterCoeff = 0.1f, counterConsume = true },
+            new SkillEffectEntry { type = SkillEffectType.Damage, target = TargetScope.EnemyArea, value = 0.8f, counterId = "target:ac", requireCounterFull = true },
+        };
+        return s;
+    }
+
+    static void StackAc(Enemy e, int n)
+    {
+        for (int i = 0; i < n; i++)
+            e.ApplyStatus(new StatusEffect { Id = "ac", Kind = StatusKind.Dot, Value = 0f, Duration = 30f, MaxStacks = 5 });
+    }
+
+    IEnumerator DcDamage(int stacks, System.Action<int, bool> result)
+    {
+        var skill = DirectCurrent();
+        var c = Make(out _, null, skill);
+        var e = SpawnEnemy(); yield return null;
+        StackAc(e, stacks);
+        var o = new GameObject("Caster"); _spawned.Add(o);
+        int before = e.CurrentHp;
+        SkillExecutor.Execute(skill, 0, c, o.transform);
+        result(before - e.CurrentHp, e.Status.Has("ac"));
+    }
+
+    [UnityTest]
+    public IEnumerator TargetCounter_ReadsEnemyStatusStacks_AddsDamage_AndConsumesThem()
+    {
+        int d0 = 0, d3 = 0; bool has0 = false, has3 = true;
+        yield return DcDamage(0, (d, h) => { d0 = d; has0 = h; });
+        yield return DcDamage(3, (d, h) => { d3 = d; has3 = h; });
+        Assert.Greater(d0, 0);
+        Assert.Greater(d3, d0, "AC 3스택이면 더 아프다(+0.3 배율)");
+        Assert.IsFalse(has3, "직류가 AC 스택을 소모");
+    }
+
+    [UnityTest]
+    public IEnumerator TargetCounter_FullStacksTriggerTheExplosionEffect()
+    {
+        int d4 = 0, d5 = 0;
+        yield return DcDamage(4, (d, h) => d4 = d);
+        yield return DcDamage(5, (d, h) => d5 = d);
+        Assert.Greater(d5 - d4, 50, "가득(5스택)일 때만 추가 폭발 피해");
+    }
 }

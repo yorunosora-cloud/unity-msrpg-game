@@ -45,6 +45,9 @@ public class Enemy : MonoBehaviour, ISkillTarget
     readonly Dictionary<string, float> _marks = new();
 
     public float Spd => spd;
+    public int  StatusStacks(string id)    => Status.Stacks(id);
+    public int  StatusMaxStacks(string id) => Status.MaxStacksOf(id);
+    public void ConsumeStatus(string id)   => Status.Remove(id);
 
     public AttributeProfile Attributes => attributes;
 

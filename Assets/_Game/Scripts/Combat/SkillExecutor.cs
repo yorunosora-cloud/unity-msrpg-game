@@ -108,7 +108,7 @@ public static class SkillExecutor
         Dictionary<string, (int value, bool full)> snap = null;
         foreach (var en in skill.effects)
         {
-            if (string.IsNullOrEmpty(en.counterId)) continue;
+            if (string.IsNullOrEmpty(en.counterId) || IsTargetCounter(en.counterId)) continue;
             snap ??= new Dictionary<string, (int, bool)>();
             if (snap.ContainsKey(en.counterId)) continue;
             if (en.counterId == "@recent") snap[en.counterId] = (caster.RecentDistinctSkills(en.counterWindow > 0f ? en.counterWindow : 5f), false);
@@ -118,9 +118,10 @@ public static class SkillExecutor
 
         foreach (var entry in skill.effects)
         {
-            if (entry.requireCounterFull && (snap == null || !snap.TryGetValue(entry.counterId ?? "", out var fs) || !fs.full)) continue;
+            bool targetCounter = IsTargetCounter(entry.counterId);
+            if (!targetCounter && entry.requireCounterFull && (snap == null || !snap.TryGetValue(entry.counterId ?? "", out var fs) || !fs.full)) continue;
             float v = SkillScaling.ScaleEffectValue(entry, level);
-            if (entry.counterMode != CounterMode.None && snap != null && !string.IsNullOrEmpty(entry.counterId) && snap.TryGetValue(entry.counterId, out var cv))
+            if (!targetCounter && entry.counterMode != CounterMode.None && snap != null && !string.IsNullOrEmpty(entry.counterId) && snap.TryGetValue(entry.counterId, out var cv))
             {
                 float coeff = milestone && entry.milestoneCounterCoeff != 0f ? entry.milestoneCounterCoeff : entry.counterCoeff;
                 v = CounterFormula.Scale(entry.counterMode, v, coeff, cv.value);
@@ -129,7 +130,7 @@ public static class SkillExecutor
             if (entry.target == TargetScope.EnemyArea)
             {
                 area ??= CollectInShape(skill, eff, origin);
-                ApplyToEnemies(entry, v, skill, caster, origin, area, ctx);
+                ApplyToEnemies(entry, v, skill, caster, origin, area, ctx, milestone);
             }
             else
             {
@@ -144,8 +145,14 @@ public static class SkillExecutor
 
         // 행동이 끝난 뒤 카운터 소모("@recent"는 소모하지 않는다)
         foreach (var en in skill.effects)
-            if (en.counterConsume && !string.IsNullOrEmpty(en.counterId) && en.counterId != "@recent")
-                caster.Counter(en.counterId)?.ConsumeAll();
+        {
+            if (!en.counterConsume || string.IsNullOrEmpty(en.counterId) || en.counterId == "@recent") continue;
+            if (IsTargetCounter(en.counterId))
+            {
+                if (area != null) foreach (var (t, _) in area) if (IsAlive(t)) t.ConsumeStatus(TargetCounterId(en.counterId));
+            }
+            else caster.Counter(en.counterId)?.ConsumeAll();
+        }
     }
 
     static List<(ISkillTarget t, float d)> CollectInShape(SkillDef skill, EffectiveSkill eff, Transform origin)
@@ -174,14 +181,33 @@ public static class SkillExecutor
         return !t.IsDead;
     }
 
+    /// <summary>"target:statusId" 형태 — 적 대상의 상태 스택을 카운터로 읽는다.</summary>
+    static bool IsTargetCounter(string id) => !string.IsNullOrEmpty(id) && id.StartsWith("target:");
+    static string TargetCounterId(string id) => id.Substring("target:".Length);
+
     static void ApplyToEnemies(SkillEffectEntry e, float v, SkillDef skill, CombatCharacter caster,
-                               Transform origin, List<(ISkillTarget t, float d)> area, ActionCtx ctx)
+                               Transform origin, List<(ISkillTarget t, float d)> area, ActionCtx ctx, bool milestone = false)
     {
         int n = e.targetCap > 0 ? Mathf.Min(e.targetCap, area.Count) : area.Count;
+        float baseV = v;
         for (int i = 0; i < n; i++)
         {
             var t = area[i].t;
             if (!IsAlive(t)) continue;
+
+            v = baseV;
+            float v0 = baseV;
+            if (IsTargetCounter(e.counterId))
+            {
+                string sid = TargetCounterId(e.counterId);
+                int stacks = t.StatusStacks(sid);
+                if (e.requireCounterFull && (stacks <= 0 || stacks < t.StatusMaxStacks(sid))) continue;
+                if (e.counterMode != CounterMode.None)
+                {
+                    float coeff = milestone && e.milestoneCounterCoeff != 0f ? e.milestoneCounterCoeff : e.counterCoeff;
+                    v = CounterFormula.Scale(e.counterMode, v0, coeff, stacks);
+                }
+            }
 
             switch (e.type)
             {

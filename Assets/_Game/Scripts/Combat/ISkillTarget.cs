@@ -15,6 +15,15 @@ public interface ISkillTarget : IDamageable
     /// <summary>공중으로 띄우는 시각 연출(높이 m, 지속 초). 면역이면 무시. 행동불능은 호출자가 스턴으로 부여한다.</summary>
     void Launch(float height, float duration);
 
+    /// <summary>id 상태 효과의 현재 스택 수(없으면 0).</summary>
+    int StatusStacks(string id);
+
+    /// <summary>id 상태 효과의 최대 스택(없으면 0).</summary>
+    int StatusMaxStacks(string id);
+
+    /// <summary>id 상태 효과를 소모(제거).</summary>
+    void ConsumeStatus(string id);
+
     /// <summary>속성 표식 부여.</summary>
     void SetMark(Continent element);
 

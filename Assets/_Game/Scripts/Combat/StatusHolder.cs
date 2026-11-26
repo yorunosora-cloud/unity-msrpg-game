@@ -153,6 +153,16 @@ public class StatusHolder
         return e == null ? 0 : e.Stacks;
     }
 
+    /// <summary>id 상태의 최대 스택(없으면 0).</summary>
+    public int MaxStacksOf(string id)
+    {
+        var e = _effects.Find(x => x.Id == id);
+        return e == null ? 0 : e.MaxStacks;
+    }
+
+    /// <summary>id 상태를 제거(스택 소모). 제거했으면 true.</summary>
+    public bool Remove(string id) => _effects.RemoveAll(x => x.Id == id) > 0;
+
     public bool Has(string id) => _effects.Exists(x => x.Id == id);
 
     public bool IsStunned
