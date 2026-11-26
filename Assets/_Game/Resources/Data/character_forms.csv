@@ -9,3 +9,7 @@ massio_inersha_r,Mass,마시오,Tanker,Female,true,2975,9,26,9,13,#2B7FFF
 massio_inersha_r,Inertia,이네르셔,Dealer,Male,false,1700,30,9,17,13,#D9381E
 thermia_r,Hot,고온,Dealer,Male,true,1700,30,9,17,13,#FF5A1F
 thermia_r,Cold,저온,Supporter,Female,false,1700,13,13,17,26,#7FD6FF
+semira_sr,N,n형,Dealer,Female,true,2000,35,10,20,15,#00A8E8
+semira_sr,P,p형,Supporter,Female,false,2000,15,15,20,30,#FF8A5C
+energia_sr,Kinetic,운동에너지,Dealer,Female,true,2750,35,10,20,15,#FF7AC8
+energia_sr,Potential,위치에너지,Tanker,Male,false,2750,10,30,10,15,#BFD9FF

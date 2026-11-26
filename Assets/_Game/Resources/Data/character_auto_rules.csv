@@ -7,3 +7,7 @@ massio_inersha_r,1,IdleFor,2,,,,,Mass,1
 massio_inersha_r,2,MovingFor,2,,,,,Inertia,1
 thermia_r,1,HitTargetStat,,temp,AtLeast,50,3,Hot,1
 thermia_r,2,HitTargetStat,,temp,Below,50,3,Cold,1
+energia_sr,1,SpeedRatioAtLeast,0.7,,,,,Kinetic,1
+energia_sr,2,SpeedRatioBelow,0.4,,,,,Potential,1
+energia_sr,3,JumpApex,1.5,,,,,Potential,2
+energia_sr,4,JumpFalling,1.5,,,,,Kinetic,2

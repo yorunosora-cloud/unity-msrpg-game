@@ -26,3 +26,8 @@ worka_s3,None,,,,RangeWork,,,,,,,,,,,
 spasia_s3,None,,,,,,,,,,,,,,,
 magneau_s2,PartyPresence,,,,,,,,,,,,,,,
 elektra_s0,SelfMoving,,,,,,,,,,,,,,,
+conduca_s1,SelfMoving,,,,,,,,,,,,,,,
+insulia_s1,OnHitTaken,,,,,,polarization,5,-0.03,DecayOneEvery,3,DamageTaken,,,-0.04,
+semira_s1,OnHit,,PerAction,,,,heat,5,0.04,ResetAfterIdle,5,SkillPower,,,,7
+energia_s1,OnFormChange,,,,,,,,,,,,,,,
+gluon_s5,None,,,,,,,,,,,,,,,

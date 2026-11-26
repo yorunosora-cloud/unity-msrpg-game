@@ -4,3 +4,4 @@
 
 skillId,keyIndex,mode,fromForms,toForm,sequence,revertAfterSeconds,revertToForm,autoRevertForms,pressAgainReverts
 lumiere_s0,0,Toggle,,,Particle;Wave,,,,
+semira_s_z,0,Toggle,,,N;P,,,,

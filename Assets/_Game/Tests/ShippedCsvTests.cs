@@ -55,9 +55,9 @@ public class ShippedCsvTests
     public void ShippedCsv_Counts()
     {
         var r = Load();
-        Assert.AreEqual(16, r.characters.Count, "대표 4 + 물리 1묶음 5 + 2묶음 5 + 3묶음 2(테르미아·일렉트라)");
+        Assert.AreEqual(21, r.characters.Count, "대표 4 + 물리 1묶음 5 + 2묶음 5 + 3묶음 2 + 4묶음 2 + 5묶음 3(세미라·에네르기아·글루온)");
         Assert.AreEqual(5, r.characters.Sum(c => c.conceptQuestions?.Length ?? 0), "개념 문제: 포르테 2 + 대표 나머지 각 1 (이관 캐릭터는 아직 교육 데이터 없음)");
-        Assert.AreEqual(84, r.skills.Count, "대표 29 + 1묶음 21 + 2묶음 20 + 테르미아 10 + 일렉트라 4");
+        Assert.AreEqual(119, r.skills.Count, "대표 29 + 1묶음 21 + 2묶음 20 + 3묶음 14 + 4묶음 8 + 세미라 14 + 에네르기아 7 + 글루온 7");
         Assert.AreEqual(8, r.tagRules.Length);
     }
 
@@ -268,6 +268,88 @@ public class ShippedCsvTests
         var d = Skill("elektra_s2").effects[0];
         Assert.AreEqual((SkillEffectType.Dot, 0.12f, 5), (d.type, d.value, d.maxStacks));
         Assert.AreEqual(ModifierSource.MovingRamp, Skill("elektra_s0").passive.modifiers[0].source);
+    }
+
+    // ════════════════════════════════════════════════════════════════════════
+    // 물리 이관 4묶음: 콘두카·인술리아 (맥스웰 3자매)
+    // ════════════════════════════════════════════════════════════════════════
+
+    [Test]
+    public void Batch4_Sisters_StatsAndCountry()
+    {
+        var con = Char("conduca_r"); var ins = Char("insulia_r");
+        Assert.AreEqual((1700, 30, 9, 17, 13, CharacterRole.Dealer, "maxwell-duchy"), (con.baseStats.hp, con.baseStats.atk, con.baseStats.def, con.baseStats.spd, con.baseStats.mp, con.role, con.country));
+        Assert.AreEqual((2975, 9, 26, 9, 13, CharacterRole.Tanker, "maxwell-duchy"), (ins.baseStats.hp, ins.baseStats.atk, ins.baseStats.def, ins.baseStats.spd, ins.baseStats.mp, ins.role, ins.country));
+    }
+
+    [Test]
+    public void Batch4_Conduca_FreeElectron_IsMovingRampOnSkillPower()
+    {
+        var m = Skill("conduca_s1").passive.modifiers[0];
+        Assert.AreEqual((ModifierSource.MovingRamp, StatKind.SkillPower, 0.06f, 0.3f, 0.03f, 0.08f, 0.4f), (m.source, m.stat, m.value, m.cap, m.decayPerSecond, m.milestoneValue, m.milestoneCap));
+        var b = Skill("conduca_s3").effects[0];
+        Assert.AreEqual((StatKind.MoveSpeed, 1.3f, 4f, 5f), (b.stat, b.value, b.duration, b.milestoneDuration));
+    }
+
+    [Test]
+    public void Batch4_Insulia_Polarization_StacksReduceDamageTaken()
+    {
+        var p = Skill("insulia_s1").passive;
+        Assert.AreEqual(PassiveTriggerType.OnHitTaken, p.trigger);
+        Assert.AreEqual((5, -0.03f, -0.04f, StatKind.DamageTaken, StackDecay.DecayOneEvery, 3f),
+                        (p.stack.maxStacks, p.stack.perStackValue, p.stack.milestonePerStackValue, p.stack.stat, p.stack.decay, p.stack.decaySeconds));
+        var sh = Skill("insulia_s3").effects[0];
+        Assert.AreEqual((SkillEffectType.DamageTakenMult, 0.65f, 4f, 5f), (sh.type, sh.value, sh.duration, sh.milestoneDuration));
+    }
+
+    // ════════════════════════════════════════════════════════════════════════
+    // 물리 이관 5묶음(마지막): 세미라·에네르기아·글루온
+    // ════════════════════════════════════════════════════════════════════════
+
+    [Test]
+    public void Batch5_Semira_DopingToggle_FormsAndStoryUnlockedBandSkill()
+    {
+        var c = Char("semira_sr");
+        CollectionAssert.AreEqual(new[] { "N", "P" }, c.forms.Select(f => f.formId));
+        Assert.AreEqual((CharacterRole.Dealer, CharacterRole.Supporter), (c.forms[0].role, c.forms[1].role));
+        Assert.AreEqual((15, 30), (c.forms[0].baseStats.mp, c.forms[1].baseStats.mp));
+        var z = Skill("semira_s_z");
+        Assert.AreEqual(SkillKind.FormChange, z.skillType);
+        CollectionAssert.AreEqual(new[] { "N", "P" }, z.formChange.sequence);
+        Assert.AreEqual("StoryFlag:maxwell_sisters_secret_revealed", Skill("semira_s6").unlockCond);
+        Assert.AreEqual(7, c.skills.Select(sk => sk.slot).Distinct().Count(), "슬롯 0~6");
+        Assert.AreEqual(SkillEffectType.DamageTakenMult, Skill("semira_s2p").effects[1].type);
+        Assert.AreEqual(TargetScope.SelfAndBench, Skill("semira_s5p").effects[0].target);
+    }
+
+    [Test]
+    public void Batch5_Energia_HasFourAutoRules_MechanicalEnergy()
+    {
+        var c = Char("energia_sr");
+        Assert.AreEqual(2750, c.baseStats.hp);
+        Assert.AreEqual(4, c.autoRules.Length);
+        Assert.AreEqual(0.7f, c.autoRules.Single(r => r.cond == FormAutoCond.SpeedRatioAtLeast).param);
+        Assert.AreEqual(0.4f, c.autoRules.Single(r => r.cond == FormAutoCond.SpeedRatioBelow).param);
+        Assert.AreEqual("Potential", c.autoRules.Single(r => r.cond == FormAutoCond.JumpApex).toForm);
+        Assert.AreEqual("Kinetic", c.autoRules.Single(r => r.cond == FormAutoCond.JumpFalling).toForm);
+        Assert.IsTrue(c.autoRules.Where(r => r.cond == FormAutoCond.JumpApex || r.cond == FormAutoCond.JumpFalling).All(r => r.priority > 1), "점프 덮어쓰기가 속도 규칙보다 우선");
+        var pas = Skill("energia_s1").passive;
+        Assert.AreEqual(PassiveTriggerType.OnFormChange, pas.trigger);
+        CollectionAssert.AreEquivalent(new[] { "Kinetic", "Potential" }, pas.effects.Select(e => e.whenForm));
+    }
+
+    [Test]
+    public void Batch5_Gluon_UR_SevenSlots_StoryAcquire_AndStunCleanse()
+    {
+        var c = Char("gluon_ur");
+        Assert.AreEqual((Rarity.UR, CharacterRole.AllRounder, "quantum-revolution-army"), (c.rarity, c.role, c.country));
+        Assert.AreEqual((2700, 27, 22, 32, 27), (c.baseStats.hp, c.baseStats.atk, c.baseStats.def, c.baseStats.spd, c.baseStats.mp));
+        Assert.AreEqual("StoryFlag:newtonia_quantum_revolution_appeared", c.acquireCondition);
+        CollectionAssert.AreEqual(new[] { 0, 1, 2, 3, 4, 5, 6 }, c.skills.Select(sk => sk.slot).OrderBy(x => x));
+        Assert.AreEqual(2f, Skill("gluon_s6").buffDuration);
+        Assert.IsTrue(Skill("gluon_s4").effects.Any(e => e.type == SkillEffectType.Stun && e.duration == 2f && e.milestoneDuration == 2.5f));
+        Assert.IsTrue(Skill("gluon_s4").effects.Any(e => e.type == SkillEffectType.Cleanse && e.target == TargetScope.Self));
+        Assert.AreEqual(-5f, Skill("gluon_s3").milestoneHalfAngleBonus);
     }
 
     // ════════════════════════════════════════════════════════════════════════
