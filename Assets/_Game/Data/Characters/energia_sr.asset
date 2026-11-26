@@ -1,0 +1,138 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 52b643bc733c46748835910b7c25db77, type: 3}
+  m_Name: energia_sr
+  m_EditorClassIdentifier: MSRPG::CharacterDef
+  id: energia_sr
+  nameKo: "\uC5D0\uB124\uB974\uAE30\uC544"
+  nameEn: Energia
+  continent: 0
+  country: newton-empire
+  rarity: 2
+  role: 0
+  baseStats:
+    hp: 2750
+    atk: 35
+    def: 10
+    spd: 20
+    mp: 15
+  forms:
+  - formId: Kinetic
+    nameKo: "\uC6B4\uB3D9\uC5D0\uB108\uC9C0"
+    role: 0
+    gender: 1
+    baseStats:
+      hp: 2750
+      atk: 35
+      def: 10
+      spd: 20
+      mp: 15
+    tint: {r: 1, g: 0.47843137, b: 0.78431374, a: 1}
+    isDefault: 1
+  - formId: Potential
+    nameKo: "\uC704\uCE58\uC5D0\uB108\uC9C0"
+    role: 1
+    gender: 0
+    baseStats:
+      hp: 2750
+      atk: 10
+      def: 30
+      spd: 10
+      mp: 15
+    tint: {r: 0.7490196, g: 0.8509804, b: 1, a: 1}
+    isDefault: 0
+  autoRules:
+  - cond: 0
+    param: 0.7
+    statKey: 
+    statCompare: 0
+    statThreshold: 0
+    consecutive: 0
+    toForm: Kinetic
+    priority: 1
+  - cond: 1
+    param: 0.4
+    statKey: 
+    statCompare: 0
+    statThreshold: 0
+    consecutive: 0
+    toForm: Potential
+    priority: 1
+  - cond: 2
+    param: 1.5
+    statKey: 
+    statCompare: 0
+    statThreshold: 0
+    consecutive: 0
+    toForm: Potential
+    priority: 2
+  - cond: 3
+    param: 1.5
+    statKey: 
+    statCompare: 0
+    statThreshold: 0
+    consecutive: 0
+    toForm: Kinetic
+    priority: 2
+  attributes:
+    mass: 0
+    velocity: 0
+    temp: 0
+    charge: 0
+  personality: "\uC6B4\uB3D9\uC5D0\uB108\uC9C0 \u2014 \uD65C\uAE30\uCC28\uACE0 \uD30C\uC6CC\uD480\uD55C
+    \uBB34\uB300 \uCCB4\uC9C8, \uC5D0\uB108\uC9C0\uAC00 \uB118\uCCD0 \uAC00\uB9CC\uD788
+    \uC788\uC9C0 \uBABB\uD568 / \uC704\uCE58\uC5D0\uB108\uC9C0 \u2014 \uC808\uC81C\uB418\uACE0
+    \uC9C4\uC9C0\uD55C \uB4B7\uBC1B\uCE68\uD615, \uB9D0\uC218\uAC00 \uC801\uACE0
+    \uCE68\uCC29\uD568"
+  basicAttackMotion: "\uC6B4\uB3D9\uC5D0\uB108\uC9C0 \u2014 \uB2EC\uB9AC\uB358 \uC18D\uB3C4\uB97C
+    \uC2E4\uC5B4 \uB79C\uBD09\uC73C\uB85C \uBC1B\uC544\uCE58\uB294 \uB304\uC2A4 \uC2A4\uD15D
+    / \uC704\uCE58\uC5D0\uB108\uC9C0 \u2014 \uB3C4\uC57D \uD6C4 \uD1A0\uC288\uC988\uB85C
+    \uB0B4\uB824\uCC0D\uB294 \uCC29\uC9C0"
+  basicExplanation: 
+  advancedExplanation: 
+  realPrinciple: 
+  sourceRef: 
+  conceptQuestions: []
+  affinityQuestions: []
+  portraitColor: {r: 1, g: 1, b: 1, a: 1}
+  skills:
+  - {fileID: 11400000, guid: 70505decc23dd71478dbe7de89a9ab2c, type: 2}
+  - {fileID: 11400000, guid: deb2b9d83a6cb1b479c2632e68f6f725, type: 2}
+  - {fileID: 11400000, guid: a78e432ec2af56c45a7c5f57a506cd56, type: 2}
+  - {fileID: 11400000, guid: cc98b867a63b48c4e9f4bbb3da12d5e6, type: 2}
+  - {fileID: 11400000, guid: 39c1c9b0b510ba046827f272c6e86cdd, type: 2}
+  - {fileID: 11400000, guid: 9023659f6abde0f46a8dee0e8e2c99e9, type: 2}
+  - {fileID: 11400000, guid: 08945bee6e649c34ab502db9897ebb37, type: 2}
+  dexNumber: 0
+  gender: 1
+  concept: "\uB458 \uB2E4 \uBB34\uC6A9\uC218. \uAC19\uC740 \uC874\uC7AC\uAC00 \uC6C0\uC9C1\uC784(\uC6B4\uB3D9\uC5D0\uB108\uC9C0)\uACFC
+    \uC815\uC9C0\xB7\uB3C4\uC57D \uC815\uC810(\uC704\uCE58\uC5D0\uB108\uC9C0)\uC5D0
+    \uB530\uB77C \uC544\uC774\uB3CC \uB304\uC11C\uC640 \uBC1C\uB808\uB9AC\uB178\uB85C
+    \uB098\uD0C0\uB09C\uB2E4\uB294 \uCEE8\uC149"
+  appearance: "\uC6B4\uB3D9\uC5D0\uB108\uC9C0: \uBC1D\uC740 \uBD84\uD64D\uACFC \uD30C\uB791\uC774
+    \uC11E\uC778 \uBB34\uB300\uBCF5, \uBC18\uC9DD\uC774\uB294 \uC774\uC5B4\uD3F0
+    \uB9C8\uC774\uD06C, \uC190\uC5D0\uB294 \uB79C\uBD09, \uD30C\uB780 #2B7FFF \uD3EC\uC778\uD2B8
+    / \uC704\uCE58\uC5D0\uB108\uC9C0: \uD770 \uD0C0\uC774\uCE20\uC5D0 \uD30C\uB780
+    \uB9AC\uBCF8 \uD1A0\uC288\uC988, \uC808\uC81C\uB41C \uBC1C\uB808 \uBCF5\uC7A5,
+    \uD30C\uB780 #2B7FFF \uD3EC\uC778\uD2B8"
+  weapon: "\uC6B4\uB3D9\uC5D0\uB108\uC9C0 \u2014 \uB9C8\uC774\uD06C \uACB8 \uB79C\uBD09
+    / \uC704\uCE58\uC5D0\uB108\uC9C0 \u2014 \uD1A0\uC288\uC988\uC640 \uB9AC\uBCF8"
+  loreKo: "\uB2EC\uB9B4 \uB54C\uB294 \uBB34\uB300\uB97C \uD718\uC5B4\uC7A1\uB294
+    \uC544\uC774\uB3CC \uB304\uC11C, \uBA48\uCDB0 \uC124 \uB54C\uB294 \uC808\uC81C\uB41C
+    \uBC1C\uB808\uB9AC\uB178\uAC00 \uB418\uB294 \uC81C\uAD6D\uC758 \uBB34\uC6A9\uC218\uB2E4.
+    \uC6C0\uC9C1\uC784\uACFC \uC815\uC9C0\uB97C \uC624\uAC00\uB3C4 \uADF8 \uCD1D\uB7C9\uC740
+    \uBCC0\uD558\uC9C0 \uC54A\uB294\uB2E4\uACE0 \uC2A4\uC2A4\uB85C \uB9D0\uD55C\uB2E4."
+  synergyKind: 0
+  synergyMarkedBy: []
+  synergyComboName: 
+  gachaObtainable: 1
+  acquireCondition: 

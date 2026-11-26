@@ -1,0 +1,104 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 539fd4fbbaba74c44988317c884b5b12, type: 3}
+  m_Name: gluon_s3
+  m_EditorClassIdentifier: MSRPG::SkillDef
+  slot: 3
+  formReq: 
+  skillType: 0
+  shape: 0
+  lineWidth: 1
+  radius: 3
+  effects:
+  - type: 0
+    target: 0
+    stat: 0
+    value: 1.5
+    duration: 0
+    maxStacks: 0
+    targetCap: 0
+    areaRadius: 0
+    milestoneValue: 0
+    milestoneDuration: 0
+    whenForm: 
+    consumeOnHit: 0
+  factNoteKo: "\uCC38\uCFFC\uD06C\uB294 \uD45C\uC900\uBAA8\uD615\uC758 \uB450 \uBC88\uC9F8
+    \uC138\uB300 \uCFFC\uD06C\uC774\uB2E4."
+  gameNoteKo: "\uBC29\uC5B4\uB825 \uBB34\uC2DC \uACE0\uC815 \uD53C\uD574\uC640 \uAE09\uC18C
+    \xD72.5\uB294 \uBCC4\uB3C4 \uACC4\uC0B0 \uACBD\uB85C\uAC00 \uC5C6\uC5B4 \uBBF8\uAD6C\uD604
+    \u2014 \uACF5\uACA9\uB825\xD71.5 \uC77C\uBC18 \uD53C\uD574\uB85C \uADFC\uC0AC"
+  passive:
+    trigger: 0
+    value: 0
+    hitCount: 0
+    internalCooldown: 0
+    stack:
+      stackId: 
+      maxStacks: 0
+      perStackValue: 0
+      decay: 0
+      decaySeconds: 0
+      stat: 0
+      damageRatio: 0
+      cap: 0
+      milestonePerStackValue: 0
+      milestoneMaxStacks: 0
+    effects: []
+    modifiers: []
+    formula: 0
+    milestoneValue: 0
+  formChange:
+    keyIndex: 0
+    mode: 0
+    fromForms: []
+    toForm: 
+    sequence: []
+    stateRules: []
+    revertAfterSeconds: 0
+    revertToForm: 
+    autoRevertForms: []
+    pressAgainReverts: 0
+  strengthTags: []
+  startUnlocked: 0
+  unlockCond: 
+  skillMotion: "\uC800\uAE00\uB9C1 \uBCFC\uC744 \uC815\uD655\uD788 \uC870\uC900\uD574
+    \uC9C1\uC120\uC73C\uB85C \uB358\uC9D0"
+  id: gluon_s3
+  nameKo: "\uCC38\uCFFC\uD06C"
+  descKo: "\uC0C1\uB300\uC758 \uBC29\uC5B4\uB825\uACFC \uC18D\uC131\uC744 \uBB34\uC2DC\uD558\uB294
+    \uACE0\uC815 \uB370\uBBF8\uC9C0 \uACF5\uACA9\uC744 \uD55C\uB2E4. \uAE09\uC18C
+    \uBA85\uC911 \uC2DC \uB370\uBBF8\uC9C0\uAC00 \uB300\uD3ED \uC99D\uAC00\uD55C\uB2E4."
+  mpCost: 7
+  cooldown: 7
+  effectKind: 0
+  range: 4
+  halfAngle: 30
+  damageMultiplier: 1.5
+  healPercent: 0.2
+  buffAtkMultiplier: 1.3
+  buffDuration: 5
+  milestoneLevel: 3
+  milestoneDescKo: "\uAE09\uC18C \uD310\uC815 \uBC94\uC704 \uD655\uC7A5"
+  milestoneExtraTargets: 0
+  milestoneRangeBonus: 0
+  milestoneHalfAngleBonus: -5
+  milestoneHealPercentBonus: 0
+  milestoneBuffDurationBonus: 0
+  milestoneDamageBonus: 0
+  dashDistance: 0
+  dashTime: 0.15
+  autoSwitchDistance: 0
+  altEffectKind: 0
+  altRange: 0
+  altHalfAngle: 0
+  altDamageMultiplier: 1
+  milestoneCooldownBonus: 0

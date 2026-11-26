@@ -1,0 +1,103 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 539fd4fbbaba74c44988317c884b5b12, type: 3}
+  m_Name: conduca_s2
+  m_EditorClassIdentifier: MSRPG::SkillDef
+  slot: 2
+  formReq: 
+  skillType: 0
+  shape: 1
+  lineWidth: 0.6
+  radius: 3
+  effects:
+  - type: 0
+    target: 0
+    stat: 0
+    value: 1
+    duration: 0
+    maxStacks: 0
+    targetCap: 0
+    areaRadius: 0
+    milestoneValue: 0
+    milestoneDuration: 0
+    whenForm: 
+    consumeOnHit: 0
+  factNoteKo: "\uBC1C\uC5F4\uB7C9\uC740 \uC804\uB958\uC758 \uC81C\uACF1\uC5D0 \uBE44\uB840\uD55C\uB2E4(Q=I\xB2Rt)."
+  gameNoteKo: "\uC2A4\uD0DD \uC804\uBD80 \uC18C\uBAA8 + \uC2A4\uD0DD\xB2 \uBE44\uB840
+    \uC704\uB825(1.0+0.1\xD7\uC2A4\uD0DD\xB2)\uC740 \uBBF8\uAD6C\uD604 \u2014 \uAE30\uBCF8
+    \uD53C\uD574 1.0\uB9CC \uC801\uC6A9"
+  passive:
+    trigger: 0
+    value: 0
+    hitCount: 0
+    internalCooldown: 0
+    stack:
+      stackId: 
+      maxStacks: 0
+      perStackValue: 0
+      decay: 0
+      decaySeconds: 0
+      stat: 0
+      damageRatio: 0
+      cap: 0
+      milestonePerStackValue: 0
+      milestoneMaxStacks: 0
+    effects: []
+    modifiers: []
+    formula: 0
+    milestoneValue: 0
+  formChange:
+    keyIndex: 0
+    mode: 0
+    fromForms: []
+    toForm: 
+    sequence: []
+    stateRules: []
+    revertAfterSeconds: 0
+    revertToForm: 
+    autoRevertForms: []
+    pressAgainReverts: 0
+  strengthTags: []
+  startUnlocked: 0
+  unlockCond: 
+  skillMotion: "\uCC44\uCC0D \uB05D\uC774 \uBD89\uAC8C \uB2EC\uC544\uC62C\uB77C \uC9C1\uC120\uC73C\uB85C
+    \uD3ED\uBC1C"
+  id: conduca_s2
+  nameKo: "\uC904\uC5F4"
+  descKo: "\uC313\uC778 \uC804\uD558\uB97C \uD55C \uBC88\uC5D0 \uC5F4\uB85C \uBC14\uAFD4
+    \uC3D8\uC544 \uBCF4\uB0B8\uB2E4. \uC2A4\uD0DD\uC774 \uB9CE\uC744\uC218\uB85D
+    \uC704\uB825\uC774 \uC81C\uACF1\uC73C\uB85C \uCEE4\uC9C4\uB2E4."
+  mpCost: 6
+  cooldown: 9
+  effectKind: 0
+  range: 4
+  halfAngle: 70
+  damageMultiplier: 1
+  healPercent: 0.2
+  buffAtkMultiplier: 1.3
+  buffDuration: 5
+  milestoneLevel: 3
+  milestoneDescKo: "\uC2A4\uD0DD \uACC4\uC218 \uC99D\uAC00"
+  milestoneExtraTargets: 0
+  milestoneRangeBonus: 0
+  milestoneHalfAngleBonus: 0
+  milestoneHealPercentBonus: 0
+  milestoneBuffDurationBonus: 0
+  milestoneDamageBonus: 0
+  dashDistance: 0
+  dashTime: 0.15
+  autoSwitchDistance: 0
+  altEffectKind: 0
+  altRange: 0
+  altHalfAngle: 0
+  altDamageMultiplier: 1
+  milestoneCooldownBonus: 0

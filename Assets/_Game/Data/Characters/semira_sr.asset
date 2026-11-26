@@ -1,0 +1,110 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 52b643bc733c46748835910b7c25db77, type: 3}
+  m_Name: semira_sr
+  m_EditorClassIdentifier: MSRPG::CharacterDef
+  id: semira_sr
+  nameKo: "\uC138\uBBF8\uB77C"
+  nameEn: Semira
+  continent: 0
+  country: maxwell-duchy
+  rarity: 2
+  role: 0
+  baseStats:
+    hp: 2000
+    atk: 35
+    def: 10
+    spd: 20
+    mp: 15
+  forms:
+  - formId: N
+    nameKo: "n\uD615"
+    role: 0
+    gender: 1
+    baseStats:
+      hp: 2000
+      atk: 35
+      def: 10
+      spd: 20
+      mp: 15
+    tint: {r: 0, g: 0.65882355, b: 0.9098039, a: 1}
+    isDefault: 1
+  - formId: P
+    nameKo: "p\uD615"
+    role: 2
+    gender: 1
+    baseStats:
+      hp: 2000
+      atk: 15
+      def: 15
+      spd: 20
+      mp: 30
+    tint: {r: 1, g: 0.5411765, b: 0.36078432, a: 1}
+    isDefault: 0
+  autoRules: []
+  attributes:
+    mass: 0
+    velocity: 0
+    temp: 0
+    charge: 0
+  personality: "\uC720\uC5F0\uD558\uACE0 \uC911\uC7AC\uC5D0 \uB2A5\uD55C \uB458\uC9F8.
+    \uC0C1\uD669\uC5D0 \uB530\uB77C \uD0DC\uB3C4\uAC00 \uBC14\uB00C\uBA70 \uB0C9\uC815\uD55C
+    \uC5B8\uB2C8\uC640 \uB2E4\uD608\uC9C8 \uB9C9\uB0B4 \uC0AC\uC774\uB97C \uC624\uAC04\uB2E4.
+    n\uD615\uC77C \uB550 \uC801\uADF9\uC801\xB7\uACF5\uACA9\uC801, p\uD615\uC77C
+    \uB550 \uCC28\uBD84\uD558\uACE0 \uB2E4\uC815\uD558\uB2E4"
+  basicAttackMotion: "n\uD615 \u2014 \uC6E8\uC774\uD37C \uCE74\uB4DC\uB97C \uC3D8\uC544
+    \uC804\uD558\uB97C \uB0A0\uB9BC / p\uD615 \u2014 \uCE74\uB4DC\uB97C \uD3BC\uCCD0
+    \uAC00\uBCCD\uAC8C \uC804\uD558\uB97C \uD758\uB9BC"
+  basicExplanation: 
+  advancedExplanation: 
+  realPrinciple: 
+  sourceRef: 
+  conceptQuestions: []
+  affinityQuestions: []
+  portraitColor: {r: 1, g: 1, b: 1, a: 1}
+  skills:
+  - {fileID: 11400000, guid: 72956b766b4345a4f93a447e34662c7f, type: 2}
+  - {fileID: 11400000, guid: e80a78f5a2acf0747b9c47a70feb2225, type: 2}
+  - {fileID: 11400000, guid: 0c9950b2c67499344b9c8e8c4346b123, type: 2}
+  - {fileID: 11400000, guid: 623c3b28d39d19e49b371919bd7f38b6, type: 2}
+  - {fileID: 11400000, guid: b980693d5e059c240b50bba14440e473, type: 2}
+  - {fileID: 11400000, guid: fa0f63885e9c9b744b463ed30bb37cac, type: 2}
+  - {fileID: 11400000, guid: 4eb9c4f5b74ebc54da5188dbd16d28ff, type: 2}
+  - {fileID: 11400000, guid: 091b348df05abdc4c99c3fd7670f9e89, type: 2}
+  - {fileID: 11400000, guid: ff9f139028e4d3d41954b8b9dc70fbe4, type: 2}
+  - {fileID: 11400000, guid: e76e752a1a65d3a4aa46628a87fff68d, type: 2}
+  - {fileID: 11400000, guid: 8c3b8db501ad44d43b7f0d25a3fe1d07, type: 2}
+  - {fileID: 11400000, guid: bca54045040aeca4f9883d3953cf2a74, type: 2}
+  - {fileID: 11400000, guid: 523572386a1c10f44a33b1f1e0afebd1, type: 2}
+  dexNumber: 0
+  gender: 1
+  concept: "\uB3C4\uD551\uC5D0 \uB530\uB77C \uC804\uB3C4\uC131\uC774 \uC870\uC808\uB418\uB294
+    \uBC18\uB3C4\uCCB4. \uC804\uC790(n\uD615)\uC640 \uC591\uACF5(p\uD615)\uC774 \uB2E4\uC218
+    \uCE90\uB9AC\uC5B4\uAC00 \uB418\uB294 \uB450 \uBAA8\uB4DC\uB97C \uC624\uAC00\uB294
+    \uB458\uC9F8"
+  appearance: "\uC740\uD68C\uC0C9 \uC2E4\uB9AC\uCF58 \uD1A4 \uC815\uC7A5, \uD68C\uB85C
+    \uD328\uD134 \uC7A5\uC2DD, \uB9E5\uC2A4\uC6F0 \uACF5\uAD6D \uC2DC\uC548 #00C8FF
+    \uD3EC\uC778\uD2B8(\uD68C\uB85C\uC120), \uC190\uC5D0\uB294 \uC6E8\uC774\uD37C\uB97C
+    \uB2EE\uC740 \uCE74\uB4DC. n\uD615: \uC804\uC790\uC758 \uD478\uB978 \uAE30\uC6B4,
+    \uD65C\uB3D9\uC801\uC778 \uC790\uC138 / p\uD615: \uC591\uACF5\uC758 \uBD89\uC740
+    \uAE30\uC6B4, \uCC28\uBD84\uD55C \uC790\uC138"
+  weapon: "\uC2E4\uB9AC\uCF58 \uC6E8\uC774\uD37C \uCE74\uB4DC"
+  loreKo: "\uC0C1\uD669\uC5D0 \uB530\uB77C \uD0DC\uB3C4\uAC00 \uBC14\uB00C\uB294
+    \uC720\uC5F0\uD55C \uC911\uC7AC\uC790\uB85C, \uB450 \uC790\uB9E4 \uC0AC\uC774\uC5D0\uC11C
+    \uADE0\uD615\uC744 \uC7A1\uB294\uB2E4. \uAC00\uB054 \uC120\uCE5C\uC758 \uB0A1\uC740
+    \uB178\uD2B8\uB97C \uD3BC\uCCD0 \uB193\uACE0 \"\uB760\uD2C8\"\uC774\uB77C\uB294
+    \uB9D0\uC744 \uD63C\uC790 \uC911\uC5BC\uAC70\uB9B0\uB2E4."
+  synergyKind: 0
+  synergyMarkedBy: []
+  synergyComboName: 
+  gachaObtainable: 1
+  acquireCondition: 

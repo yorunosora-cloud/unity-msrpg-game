@@ -1,0 +1,91 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 539fd4fbbaba74c44988317c884b5b12, type: 3}
+  m_Name: semira_s0n
+  m_EditorClassIdentifier: MSRPG::SkillDef
+  slot: 0
+  formReq: N
+  skillType: 0
+  shape: 1
+  lineWidth: 0.4
+  radius: 3
+  effects: []
+  factNoteKo: "\uC804\uC790 \uC774\uB3D9\uB3C4\uAC00 \uC591\uACF5 \uC774\uB3D9\uB3C4\uBCF4\uB2E4
+    \uD06C\uB2E4(\uC2E4\uB9AC\uCF58\uC5D0\uC11C \uC57D 3\uBC30)."
+  gameNoteKo: "\uBB38\uC11C\uC0C1 \"\uAC19\uC740 \uC2A4\uD0AC, \uD3FC\uBCC4 \uB2E4\uB978
+    \uD6A8\uACFC\"\uB294 \uD3FC \uC804\uC6A9 \uC2A4\uD0AC 2\uAC1C(formReq)\uB85C
+    \uB098\uB220 \uD45C\uD604"
+  passive:
+    trigger: 0
+    value: 0
+    hitCount: 0
+    internalCooldown: 0
+    stack:
+      stackId: 
+      maxStacks: 0
+      perStackValue: 0
+      decay: 0
+      decaySeconds: 0
+      stat: 0
+      damageRatio: 0
+      cap: 0
+      milestonePerStackValue: 0
+      milestoneMaxStacks: 0
+    effects: []
+    modifiers: []
+    formula: 0
+    milestoneValue: 0
+  formChange:
+    keyIndex: 0
+    mode: 0
+    fromForms: []
+    toForm: 
+    sequence: []
+    stateRules: []
+    revertAfterSeconds: 0
+    revertToForm: 
+    autoRevertForms: []
+    pressAgainReverts: 0
+  strengthTags: []
+  startUnlocked: 1
+  unlockCond: 
+  skillMotion: "\uB0A0\uB835\uD558\uAC8C \uC6E8\uC774\uD37C \uCE74\uB4DC\uB97C \uC3D8\uC544
+    \uC9C1\uC120\uC73C\uB85C \uB0A0\uB9BC"
+  id: semira_s0n
+  nameKo: "\uB4DC\uB9AC\uD504\uD2B8"
+  descKo: "\uC804\uAE30\uC7A5\uC744 \uB530\uB77C \uCE90\uB9AC\uC5B4\uAC00 \uC774\uB3D9\uD558\uBA70
+    \uC9C1\uC120\uC73C\uB85C \uD750\uB978\uB2E4. \uC804\uC790\uB294 \uBE60\uB974\uB2E4."
+  mpCost: 0
+  cooldown: 1
+  effectKind: 0
+  range: 3
+  halfAngle: 70
+  damageMultiplier: 1
+  healPercent: 0.2
+  buffAtkMultiplier: 1.3
+  buffDuration: 5
+  milestoneLevel: 3
+  milestoneDescKo: "n\uD615 \uC704\uB825 \uC99D\uAC00"
+  milestoneExtraTargets: 0
+  milestoneRangeBonus: 0
+  milestoneHalfAngleBonus: 0
+  milestoneHealPercentBonus: 0
+  milestoneBuffDurationBonus: 0
+  milestoneDamageBonus: 0.2
+  dashDistance: 0
+  dashTime: 0.15
+  autoSwitchDistance: 0
+  altEffectKind: 0
+  altRange: 0
+  altHalfAngle: 0
+  altDamageMultiplier: 1
+  milestoneCooldownBonus: 0
