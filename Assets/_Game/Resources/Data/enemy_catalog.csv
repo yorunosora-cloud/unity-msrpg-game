@@ -7,7 +7,7 @@
 # skills 열: "이름:타입" 쌍을 세미콜론(;)으로 구분. 타입은 자유 서술(근접/원거리/이동형/장판 등)
 # nation, region, family, habitat 열은 전부 한글 자유 서술 — 코드값 아님
 
-id,nameKo,continent,nation,region,regionKind,tier,family,grouping,habitat,levelMin,levelMax,weakness,maxHp,def,expReward,skills,dropGold,dropMaterialAmt,dropItems,iconPath,modelPath,desc,bossDefId
+id,nameKo,continent,nation,region,regionKind,tier,family,grouping,habitat,weakness,maxHp,def,expReward,skills,dropGold,dropMaterialAmt,dropItems,iconPath,modelPath,desc,bossDefId
 
 # ===== Physics (물리 — 뉴토니아 퀀티카) =====
 # 국가: 뉴턴 제국 / 맥스웰 공국 / 볼츠만 열공화국 / 아인슈타인 연방 / 양자혁명군
@@ -17,171 +17,185 @@ id,nameKo,continent,nation,region,regionKind,tier,family,grouping,habitat,levelM
 # ===== Chemistry (화학 — 알케미아 신성연합) =====
 # 국가: 교황청 인오르가니아 / 황제령 오르가니아 / 피지컬리아 공국 / 아날리티카 연맹 / 오비탈 혁명파
 # 랜드마크: 원소 주기율표 대성당, 벤젠의 육각 신전, 촉매의 영원한 화로, 분광 분석의 등대, 전자구름의 혼돈 지대
-# (아직 입력된 몬스터 없음)
+# 교황청 인오르가니아 — 원소 주기율표 대성당(알케미아 첫 던전): HP·DEF·EXP·골드는 Lv1 기준 역할별 공통표(설계도 21번) 값
+# 공통 잡몹 4종(결정 4종, 전 구역) + 구역 전용 3종(중간보스 작은 버전, 원소→옥타브→주기율표 구역 고정 진행)
+chemistry_periodic-cathedral_normal_molecular-crystal,분자 결정,Chemistry,교황청 인오르가니아,원소 주기율표 대성당,Landmark,Normal,결정,Swarm,전 구역,Chemistry,65,4,40,승화기체:장판,10,1,,,,분자 사이 힘이 약해 잘 부서지고 승화해 기체로 퍼지는 결정.,
+chemistry_periodic-cathedral_normal_ionic-crystal,이온 결정,Chemistry,교황청 인오르가니아,원소 주기율표 대성당,Landmark,Normal,결정,Swarm,전 구역,Chemistry,65,4,40,쪼개진파편:원거리,10,1,,,,단단하지만 충격에 쪼개져 파편을 날리는 결정.,
+chemistry_periodic-cathedral_normal_covalent-crystal,공유 결정,Chemistry,교황청 인오르가니아,원소 주기율표 대성당,Landmark,Normal,결정,Solo,전 구역,Chemistry,70,5,40,경질돌진:근접,10,1,,,,원자가 그물처럼 결합해 매우 단단한 결정. 정면으로 돌진한다.,
+chemistry_periodic-cathedral_normal_metallic-crystal,금속 결정,Chemistry,교황청 인오르가니아,원소 주기율표 대성당,Landmark,Normal,결정,Solo,전 구역,Chemistry,70,5,40,전류방출:근접,10,1,,,,자유 전자로 전류를 흘리고 모양이 눌리며 밀고 들어오는 결정.,
+chemistry_periodic-cathedral_normal_tiny-oxygen-statue,작은 산소 성상,Chemistry,교황청 인오르가니아,원소 주기율표 대성당,Landmark,Normal,원소성상,Solo,지상·원소 구역,Chemistry,75,5,45,불씨:원거리,10,1,,,,산소 성상의 작은 버전. 불씨로 공격한다.,
+chemistry_periodic-cathedral_normal_tiny-sodium-statue,작은 나트륨 성상,Chemistry,교황청 인오르가니아,원소 주기율표 대성당,Landmark,Normal,원소성상,Solo,지상·옥타브 구역,Chemistry,85,6,46,작은물폭발:광역,11,1,,,,나트륨 성상의 작은 버전. 물과 만나 작게 폭발한다.,
+chemistry_periodic-cathedral_normal_tiny-gallium-statue,작은 갈륨 성상,Chemistry,교황청 인오르가니아,원소 주기율표 대성당,Landmark,Normal,원소성상,Solo,지상·주기율표 구역,Chemistry,90,6,48,융해재응고:근접,11,1,,,,갈륨 성상의 작은 버전. 녹아 흐르다 다시 굳는다.,
+chemistry_periodic-cathedral_miniboss_oxygen-statue,산소 성상,Chemistry,교황청 인오르가니아,원소 주기율표 대성당,Landmark,MiniBoss,원소성상,Solo,지상·원소 구역,Chemistry,110,7,70,연소장판:장판; 불길확산:장판,17,2,,,,라부아지에가 이름 붙인 원소의 성상. 연소 장판을 깔고 불길을 퍼뜨린다 — 입문 관문.,
+chemistry_periodic-cathedral_miniboss_sodium-statue,나트륨 성상,Chemistry,교황청 인오르가니아,원소 주기율표 대성당,Landmark,MiniBoss,원소성상,Solo,지상·옥타브 구역,Chemistry,120,7,80,물폭발:광역; 반복박자:장판,19,3,,,,리튬에서 8번째에 성질이 반복되는 알칼리 금속의 성상. 물과 만나 폭발하고 8번째마다 같은 공격이 돌아온다.,
+chemistry_periodic-cathedral_miniboss_gallium-statue,갈륨 성상,Chemistry,교황청 인오르가니아,원소 주기율표 대성당,Landmark,MiniBoss,원소성상,Solo,지상·주기율표 구역,Chemistry,140,8,95,융해:이동형; 재응고:광역,21,3,,,,멘델레예프가 빈칸으로 예언한 에카알루미늄의 성상. 녹아 흘러 이동한 뒤 다시 굳으며 범위 공격 — 최고 난이도.,
+chemistry_periodic-cathedral_boss_lavoisier,라부아지에,Chemistry,교황청 인오르가니아,원소 주기율표 대성당,Landmark,Boss,,Solo,,Chemistry,,,,,,,,,,BossDef(07_보스전.md·라부아지에.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Lavoisier
+chemistry_periodic-cathedral_boss_newlands,뉴랜즈,Chemistry,교황청 인오르가니아,원소 주기율표 대성당,Landmark,Boss,,Solo,,Chemistry,,,,,,,,,,BossDef(07_보스전.md·뉴랜즈.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Newlands
+chemistry_periodic-cathedral_boss_mendeleev,멘델레예프,Chemistry,교황청 인오르가니아,원소 주기율표 대성당,Landmark,Boss,,Solo,,Chemistry,,,,,,,,,,BossDef(07_보스전.md·멘델레예프.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Mendeleev
 
 # ===== Biology (생명과학 — 바이오스) =====
 # 국가: 헬릭스 제국 / 제네시스 왕국 / 에코스 연맹
 # 랜드마크: 이중나선 황궁, CRISPR 편집 연구소, 멘델의 유전 도서관, 해부학의 지하 성역, 진화의 도원, 생태계 순환 대원
-# 에코스 연맹 — 진화의 도원(바이오스 첫 던전): 던전은 플레이어 레벨에 완전 스케일링 → 아래 levelMin/levelMax·HP·DEF는 '스케일링 기준값'(고정 권장 레벨 아님)
+# 에코스 연맹 — 진화의 도원(바이오스 첫 던전): 던전은 플레이어 레벨에 완전 스케일링 → 아래 HP·DEF·EXP·골드는 Lv1 기준 역할별 공통표(설계도 21번) 값
 # 공통 잡몹 2종(전 구역) + 계절 구역별 전용 3종(중간보스 미니어 버전, 가을→여름→봄 고정 진행)
-biology_evolution-garden_normal_symbiotic-slime,공생슬라임,Biology,에코스 연맹,진화의 도원,Landmark,Normal,공생체,Swarm,지상,24,25,Biology,200,13,118,몸통박치기:근접,28,1,,,,여러 생물이 한 몸으로 공생하는 에코스 연맹 고유 슬라임. 전 구역 바닥을 굴러다니며 몸통으로 부딪친다.,
-biology_evolution-garden_normal_peach-blossom-moth,도화나비,Biology,에코스 연맹,진화의 도원,Landmark,Normal,곤충,Swarm,공중,24,25,Biology,190,12,120,꽃가루낙하:원거리,28,1,,,,도화 꽃잎 무늬 날개를 가진 나비. 전 구역 공중을 날며 꽃가루를 떨어뜨려 공격한다.,
-biology_evolution-garden_normal_baby-hoard-beetle,아기저장갑충,Biology,에코스 연맹,진화의 도원,Landmark,Normal,곤충,Solo,지상·가을,25,26,Biology,230,16,130,열매튕기기:원거리,30,1,,,,저장열매갑충의 미니어 버전. 가을 구역에서 작은 열매를 등에 지고 다니며 튕겨 공격한다.,
-biology_evolution-garden_normal_baby-surge-vine,애기덩굴수,Biology,에코스 연맹,진화의 도원,Landmark,Normal,식물형,Solo,지상·여름,26,27,Biology,255,17,140,덩굴채찍:근접,32,1,,,,폭생덩굴수의 미니어 버전. 여름 구역 열대 덩굴이 뭉친 작은 생물로 덩굴을 휘둘러 공격한다.,
-biology_evolution-garden_normal_spore-sproutling,포자새끼,Biology,에코스 연맹,진화의 도원,Landmark,Normal,포자생물,Swarm,지상·봄,27,28,Biology,280,18,150,포자폭발:광역,35,1,,,,개화포자모체가 퍼뜨린 포자 새끼. 봄 구역에서 무리지어 다니다 터지며 범위 피해를 준다.,
-biology_evolution-garden_miniboss_hoard-fruit-beetle,저장열매갑충,Biology,에코스 연맹,진화의 도원,Landmark,MiniBoss,계절변이체,Solo,지상·가을,26,26,Biology,330,20,210,열매던지기:장판; 저장방어:버프,52,2,도원열쇠_린네:1,,,등에 열매를 짊어진 거대 갑충. 가을의 저장 전략으로 열매를 던지고 먹어 회복하며 버틴다 — 3종 중 가장 정직한 입문 관문.,
-biology_evolution-garden_miniboss_surge-vine-beast,폭생덩굴수,Biology,에코스 연맹,진화의 도원,Landmark,MiniBoss,계절변이체,Solo,지상·여름,27,28,Biology,380,23,250,덩굴돌진:장판; 성장폭발:장판,58,3,도원열쇠_월리스:1,,,열대 덩굴이 얽힌 거대 수목형 생물. 여름의 성장 전략으로 덩굴이 길어지고 장판 반경이 커진다 — 중간 난이도.,
-biology_evolution-garden_miniboss_blossom-spore-mother,개화포자모체,Biology,에코스 연맹,진화의 도원,Landmark,MiniBoss,계절변이체,Solo,지상·봄,28,29,Biology,460,26,300,포자살포:소환; 개화폭발:광역,66,3,도원열쇠_다윈:1,,,도화처럼 꽃이 핀 거대 번식체. 봄의 번식 전략으로 포자 새끼를 늘리고 터뜨려 공격한다 — 완전 신규 패턴의 최고 난이도.,
-biology_evolution-garden_boss_linnaeus,린네,Biology,에코스 연맹,진화의 도원,Landmark,Boss,,Solo,,25,27,Biology,,,,,,,,,,BossDef(07_보스전.md·린네.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Linnaeus
-biology_evolution-garden_boss_wallace,월리스,Biology,에코스 연맹,진화의 도원,Landmark,Boss,,Solo,,26,28,Biology,,,,,,,,,,BossDef(07_보스전.md·월리스.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Wallace
-biology_evolution-garden_boss_darwin,다윈,Biology,에코스 연맹,진화의 도원,Landmark,Boss,,Solo,,27,29,Biology,,,,,,,,,,BossDef(07_보스전.md·다윈.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Darwin
+biology_evolution-garden_normal_symbiotic-slime,공생슬라임,Biology,에코스 연맹,진화의 도원,Landmark,Normal,공생체,Swarm,지상,Biology,70,5,40,몸통박치기:근접,10,1,,,,여러 생물이 한 몸으로 공생하는 에코스 연맹 고유 슬라임. 전 구역 바닥을 굴러다니며 몸통으로 부딪친다.,
+biology_evolution-garden_normal_peach-blossom-moth,도화나비,Biology,에코스 연맹,진화의 도원,Landmark,Normal,곤충,Swarm,공중,Biology,65,4,40,꽃가루낙하:원거리,10,1,,,,도화 꽃잎 무늬 날개를 가진 나비. 전 구역 공중을 날며 꽃가루를 떨어뜨려 공격한다.,
+biology_evolution-garden_normal_baby-hoard-beetle,아기저장갑충,Biology,에코스 연맹,진화의 도원,Landmark,Normal,곤충,Solo,지상·가을,Biology,75,5,45,열매튕기기:원거리,10,1,,,,저장열매갑충의 미니어 버전. 가을 구역에서 작은 열매를 등에 지고 다니며 튕겨 공격한다.,
+biology_evolution-garden_normal_baby-surge-vine,애기덩굴수,Biology,에코스 연맹,진화의 도원,Landmark,Normal,식물형,Solo,지상·여름,Biology,85,6,46,덩굴채찍:근접,11,1,,,,폭생덩굴수의 미니어 버전. 여름 구역 열대 덩굴이 뭉친 작은 생물로 덩굴을 휘둘러 공격한다.,
+biology_evolution-garden_normal_spore-sproutling,포자새끼,Biology,에코스 연맹,진화의 도원,Landmark,Normal,포자생물,Swarm,지상·봄,Biology,90,6,48,포자폭발:광역,11,1,,,,개화포자모체가 퍼뜨린 포자 새끼. 봄 구역에서 무리지어 다니다 터지며 범위 피해를 준다.,
+biology_evolution-garden_miniboss_hoard-fruit-beetle,저장열매갑충,Biology,에코스 연맹,진화의 도원,Landmark,MiniBoss,계절변이체,Solo,지상·가을,Biology,110,7,70,열매던지기:장판; 저장방어:버프,17,2,도원열쇠_린네:1,,,등에 열매를 짊어진 거대 갑충. 가을의 저장 전략으로 열매를 던지고 먹어 회복하며 버틴다 — 3종 중 가장 정직한 입문 관문.,
+biology_evolution-garden_miniboss_surge-vine-beast,폭생덩굴수,Biology,에코스 연맹,진화의 도원,Landmark,MiniBoss,계절변이체,Solo,지상·여름,Biology,120,7,80,덩굴돌진:장판; 성장폭발:장판,19,3,도원열쇠_월리스:1,,,열대 덩굴이 얽힌 거대 수목형 생물. 여름의 성장 전략으로 덩굴이 길어지고 장판 반경이 커진다 — 중간 난이도.,
+biology_evolution-garden_miniboss_blossom-spore-mother,개화포자모체,Biology,에코스 연맹,진화의 도원,Landmark,MiniBoss,계절변이체,Solo,지상·봄,Biology,140,8,95,포자살포:소환; 개화폭발:광역,21,3,도원열쇠_다윈:1,,,도화처럼 꽃이 핀 거대 번식체. 봄의 번식 전략으로 포자 새끼를 늘리고 터뜨려 공격한다 — 완전 신규 패턴의 최고 난이도.,
+biology_evolution-garden_boss_linnaeus,린네,Biology,에코스 연맹,진화의 도원,Landmark,Boss,,Solo,,Biology,,,,,,,,,,BossDef(07_보스전.md·린네.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Linnaeus
+biology_evolution-garden_boss_wallace,월리스,Biology,에코스 연맹,진화의 도원,Landmark,Boss,,Solo,,Biology,,,,,,,,,,BossDef(07_보스전.md·월리스.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Wallace
+biology_evolution-garden_boss_darwin,다윈,Biology,에코스 연맹,진화의 도원,Landmark,Boss,,Solo,,Biology,,,,,,,,,,BossDef(07_보스전.md·다윈.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Darwin
 
-# 에코스 연맹 — 생태계 순환 대원(바이오스 두 번째 던전): 던전은 플레이어 레벨에 완전 스케일링 → 아래 levelMin/levelMax·HP·DEF는 '스케일링 기준값'(고정 권장 레벨 아님, 던전 간 보정 없음이라 진화의 도원과 같은 대역)
+# 에코스 연맹 — 생태계 순환 대원(바이오스 두 번째 던전): 던전은 플레이어 레벨에 완전 스케일링 → 아래 HP·DEF·EXP·골드는 Lv1 기준 역할별 공통표(설계도 21번) 값
 # 공통 잡몹 2종(전 링) + 링 전용 3종(중간보스 미니어 버전, 생산자→소비자→분해자 고정 진행)
-biology_ecosystem-arena_normal_grasshopper-swarm,메뚜기떼,Biology,에코스 연맹,생태계 순환 대원,Landmark,Normal,곤충,Swarm,지상,24,25,Biology,200,13,118,떼돌진:근접,28,1,,,,작은 메뚜기가 무리로 몰려다니는 먹이사슬 중간 단계 생물. 전 링 바닥을 휩쓸며 달려든다.,
-biology_ecosystem-arena_normal_seed-bunting,씨앗멧새,Biology,에코스 연맹,생태계 순환 대원,Landmark,Normal,조류,Swarm,공중,24,25,Biology,190,12,120,씨앗낙하:원거리,28,1,,,,씨앗을 물고 날아다니는 멧새. 전 링 공중에서 씨앗을 떨어뜨려 공격한다.,
-biology_ecosystem-arena_normal_baby-trap-vine,아기포식덩굴,Biology,에코스 연맹,생태계 순환 대원,Landmark,Normal,식물형,Solo,지상·생산자 링,25,26,Biology,230,16,130,덩굴채찍:근접,30,1,,,,포식덩굴의 미니어 버전. 생산자 링에서 작은 덩굴을 휘둘러 공격한다.,
-biology_ecosystem-arena_normal_wolf-pup,새끼이리,Biology,에코스 연맹,생태계 순환 대원,Landmark,Normal,야수,Solo,지상·소비자 링,26,27,Biology,255,17,140,물어뜯기:근접,32,1,,,,군집사냥이리의 미니어 버전. 소비자 링에서 빠르게 달려들어 문다.,
-biology_ecosystem-arena_normal_mycelium-shard,균사조각,Biology,에코스 연맹,생태계 순환 대원,Landmark,Normal,균류,Swarm,지상·분해자 링,27,28,Biology,280,18,150,균사점착:광역,35,1,,,,균사분해체에서 떨어져 나온 균사 조각. 분해자 링에서 무리지어 터지며 점착성 범위 피해를 준다.,
-biology_ecosystem-arena_miniboss_trap-vine,포식덩굴,Biology,에코스 연맹,생태계 순환 대원,Landmark,MiniBoss,포식자,Solo,지상·생산자 링,26,26,Biology,330,20,210,덩굴조임:장판; 소화통삼키기:장판,52,2,대원열쇠_훔볼트:1,,,식충식물형 거수. 생산자도 포식자가 될 수 있다는 컨셉으로 이동속도를 줄이고 중심으로 끌어당긴다 — 3종 중 가장 정직한 입문 관문.,
-biology_ecosystem-arena_miniboss_pack-hunter-wolf,군집사냥이리,Biology,에코스 연맹,생태계 순환 대원,Landmark,MiniBoss,포식자,Solo,지상·소비자 링,27,28,Biology,380,23,250,추격돌진:이동형; 포효소환:소환,58,3,대원열쇠_헤켈:1,,,무리 사냥하는 대형 이리. 돌진과 새끼 소환으로 몰아붙인다 — 중간 난이도.,
-biology_ecosystem-arena_miniboss_mycelium-decomposer,균사분해체,Biology,에코스 연맹,생태계 순환 대원,Landmark,MiniBoss,포식자,Solo,지상·분해자 링,28,29,Biology,460,26,300,균사점령:장판; 부패확산:디버프,66,3,대원열쇠_오덤:1,,,살아있는 균사 군체. 바닥을 균사로 덮고 분해 디버프를 걸어 피해를 누적시킨다 — 완전 신규 패턴의 최고 난이도.,
-biology_ecosystem-arena_boss_humboldt,훔볼트,Biology,에코스 연맹,생태계 순환 대원,Landmark,Boss,,Solo,,25,27,Biology,,,,,,,,,,BossDef(07_보스전.md·훔볼트.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Humboldt
-biology_ecosystem-arena_boss_haeckel,헤켈,Biology,에코스 연맹,생태계 순환 대원,Landmark,Boss,,Solo,,26,28,Biology,,,,,,,,,,BossDef(07_보스전.md·헤켈.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Haeckel
-biology_ecosystem-arena_boss_odum,오덤,Biology,에코스 연맹,생태계 순환 대원,Landmark,Boss,,Solo,,27,29,Biology,,,,,,,,,,BossDef(07_보스전.md·오덤.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Odum
+biology_ecosystem-arena_normal_grasshopper-swarm,메뚜기떼,Biology,에코스 연맹,생태계 순환 대원,Landmark,Normal,곤충,Swarm,지상,Biology,70,5,40,떼돌진:근접,10,1,,,,작은 메뚜기가 무리로 몰려다니는 먹이사슬 중간 단계 생물. 전 링 바닥을 휩쓸며 달려든다.,
+biology_ecosystem-arena_normal_seed-bunting,씨앗멧새,Biology,에코스 연맹,생태계 순환 대원,Landmark,Normal,조류,Swarm,공중,Biology,65,4,40,씨앗낙하:원거리,10,1,,,,씨앗을 물고 날아다니는 멧새. 전 링 공중에서 씨앗을 떨어뜨려 공격한다.,
+biology_ecosystem-arena_normal_baby-trap-vine,아기포식덩굴,Biology,에코스 연맹,생태계 순환 대원,Landmark,Normal,식물형,Solo,지상·생산자 링,Biology,75,5,45,덩굴채찍:근접,10,1,,,,포식덩굴의 미니어 버전. 생산자 링에서 작은 덩굴을 휘둘러 공격한다.,
+biology_ecosystem-arena_normal_wolf-pup,새끼이리,Biology,에코스 연맹,생태계 순환 대원,Landmark,Normal,야수,Solo,지상·소비자 링,Biology,85,6,46,물어뜯기:근접,11,1,,,,군집사냥이리의 미니어 버전. 소비자 링에서 빠르게 달려들어 문다.,
+biology_ecosystem-arena_normal_mycelium-shard,균사조각,Biology,에코스 연맹,생태계 순환 대원,Landmark,Normal,균류,Swarm,지상·분해자 링,Biology,90,6,48,균사점착:광역,11,1,,,,균사분해체에서 떨어져 나온 균사 조각. 분해자 링에서 무리지어 터지며 점착성 범위 피해를 준다.,
+biology_ecosystem-arena_miniboss_trap-vine,포식덩굴,Biology,에코스 연맹,생태계 순환 대원,Landmark,MiniBoss,포식자,Solo,지상·생산자 링,Biology,110,7,70,덩굴조임:장판; 소화통삼키기:장판,17,2,대원열쇠_훔볼트:1,,,식충식물형 거수. 생산자도 포식자가 될 수 있다는 컨셉으로 이동속도를 줄이고 중심으로 끌어당긴다 — 3종 중 가장 정직한 입문 관문.,
+biology_ecosystem-arena_miniboss_pack-hunter-wolf,군집사냥이리,Biology,에코스 연맹,생태계 순환 대원,Landmark,MiniBoss,포식자,Solo,지상·소비자 링,Biology,120,7,80,추격돌진:이동형; 포효소환:소환,19,3,대원열쇠_헤켈:1,,,무리 사냥하는 대형 이리. 돌진과 새끼 소환으로 몰아붙인다 — 중간 난이도.,
+biology_ecosystem-arena_miniboss_mycelium-decomposer,균사분해체,Biology,에코스 연맹,생태계 순환 대원,Landmark,MiniBoss,포식자,Solo,지상·분해자 링,Biology,140,8,95,균사점령:장판; 부패확산:디버프,21,3,대원열쇠_오덤:1,,,살아있는 균사 군체. 바닥을 균사로 덮고 분해 디버프를 걸어 피해를 누적시킨다 — 완전 신규 패턴의 최고 난이도.,
+biology_ecosystem-arena_boss_humboldt,훔볼트,Biology,에코스 연맹,생태계 순환 대원,Landmark,Boss,,Solo,,Biology,,,,,,,,,,BossDef(07_보스전.md·훔볼트.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Humboldt
+biology_ecosystem-arena_boss_haeckel,헤켈,Biology,에코스 연맹,생태계 순환 대원,Landmark,Boss,,Solo,,Biology,,,,,,,,,,BossDef(07_보스전.md·헤켈.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Haeckel
+biology_ecosystem-arena_boss_odum,오덤,Biology,에코스 연맹,생태계 순환 대원,Landmark,Boss,,Solo,,Biology,,,,,,,,,,BossDef(07_보스전.md·오덤.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Odum
 
-# 제네시스 왕국 — 멘델의 유전 도서관(바이오스 세 번째 던전): 던전은 플레이어 레벨에 완전 스케일링 → 아래 levelMin/levelMax·HP·DEF는 '스케일링 기준값'(고정 권장 레벨 아님, 던전 간 보정 없음이라 다른 바이오스 던전과 같은 대역)
+# 제네시스 왕국 — 멘델의 유전 도서관(바이오스 세 번째 던전): 던전은 플레이어 레벨에 완전 스케일링 → 아래 HP·DEF·EXP·골드는 Lv1 기준 역할별 공통표(설계도 21번) 값
 # 공통 잡몹 2종(전 방군) + 방군 전용 3종(중간보스 미니어 버전, 노랑·주름→둥근·초록→주름·초록 고정 진행)
-biology_mendel-library_normal_pea-weevil,완두바구미,Biology,제네시스 왕국,멘델의 유전 도서관,Landmark,Normal,곤충,Swarm,지상,24,25,Biology,200,13,118,떼돌진:근접,28,1,,,,완두를 갉아먹는 해충. 전 방군 정원과 서가 사이를 무리로 달려든다.,
-biology_mendel-library_normal_pollen-moth,꽃가루나방,Biology,제네시스 왕국,멘델의 유전 도서관,Landmark,Normal,곤충,Swarm,공중,24,25,Biology,190,12,120,꽃가루낙하:원거리,28,1,,,,완두꽃을 수분시키는 나방. 전 방군 공중에서 꽃가루를 떨어뜨려 공격한다.,
-biology_mendel-library_normal_baby-wrinkled-pea,아기주름완두,Biology,제네시스 왕국,멘델의 유전 도서관,Landmark,Normal,식물형,Solo,지상·노랑주름 방군,25,26,Biology,230,16,130,완두탄:원거리,30,1,,,,주름완두거수의 미니어 버전. 노랑·주름 방군에서 작은 완두를 튕겨 공격한다.,
-biology_mendel-library_normal_baby-white-eye-fly,새끼흰눈초파리,Biology,제네시스 왕국,멘델의 유전 도서관,Landmark,Normal,곤충,Solo,지상·둥근초록 방군,26,27,Biology,255,17,140,섬광박치기:근접,32,1,,,,흰눈초파리의 미니어 버전. 둥근·초록 방군에서 빠르게 날아들며 박치기한다.,
-biology_mendel-library_normal_crumpled-kernel,쭈글낟알,Biology,제네시스 왕국,멘델의 유전 도서관,Landmark,Normal,식물형,Swarm,지상·주름초록 방군,27,28,Biology,280,18,150,낟알튕기기:광역,35,1,,,,쭈글초록변이체의 미니어 버전. 주름·초록 방군에서 무리지어 튀어 오르며 범위 피해를 준다.,
-biology_mendel-library_miniboss_wrinkled-pea-giant,주름완두거수,Biology,제네시스 왕국,멘델의 유전 도서관,Landmark,MiniBoss,형질발현체,Solo,지상·노랑주름 방군,26,26,Biology,330,20,210,주름접기:장판; 완두탄:원거리,52,2,도서관열쇠_멘델:1,,,주름진 열성 형질이 뭉친 거수. 바닥을 구겨 장판을 만들고 완두를 쏜다 — 3종 중 가장 정직한 입문 관문.,
-biology_mendel-library_miniboss_white-eye-fly,흰눈초파리,Biology,제네시스 왕국,멘델의 유전 도서관,Landmark,MiniBoss,형질발현체,Solo,지상·둥근초록 방군,27,28,Biology,380,23,250,흰눈섬광:광역; 연관돌진:이동형,58,3,도서관열쇠_모건:1,,,흰 눈 돌연변이 초파리 변이체. 시야를 방해하는 섬광과 두 개체가 연결되어 함께 돌진한다 — 중간 난이도.,
-biology_mendel-library_miniboss_crumpled-green-mutant,쭈글초록변이체,Biology,제네시스 왕국,멘델의 유전 도서관,Landmark,MiniBoss,형질발현체,Solo,지상·주름초록 방군,28,29,Biology,460,26,300,형질전이:장판; 변이증식:소환,66,3,도서관열쇠_매클린톡:1,,,이중 열성 변이체. 장판 위치가 순간이동하듯 옮겨지고 작은 변이 개체를 늘린다 — 완전 신규 패턴의 최고 난이도.,
-biology_mendel-library_boss_mendel,멘델,Biology,제네시스 왕국,멘델의 유전 도서관,Landmark,Boss,,Solo,,25,27,Biology,,,,,,,,,,BossDef(07_보스전.md·멘델.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Mendel
-biology_mendel-library_boss_morgan,모건,Biology,제네시스 왕국,멘델의 유전 도서관,Landmark,Boss,,Solo,,26,28,Biology,,,,,,,,,,BossDef(07_보스전.md·모건.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Morgan
-biology_mendel-library_boss_mcclintock,매클린톡,Biology,제네시스 왕국,멘델의 유전 도서관,Landmark,Boss,,Solo,,27,29,Biology,,,,,,,,,,BossDef(07_보스전.md·매클린톡.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,McClintock
+biology_mendel-library_normal_pea-weevil,완두바구미,Biology,제네시스 왕국,멘델의 유전 도서관,Landmark,Normal,곤충,Swarm,지상,Biology,70,5,40,떼돌진:근접,10,1,,,,완두를 갉아먹는 해충. 전 방군 정원과 서가 사이를 무리로 달려든다.,
+biology_mendel-library_normal_pollen-moth,꽃가루나방,Biology,제네시스 왕국,멘델의 유전 도서관,Landmark,Normal,곤충,Swarm,공중,Biology,65,4,40,꽃가루낙하:원거리,10,1,,,,완두꽃을 수분시키는 나방. 전 방군 공중에서 꽃가루를 떨어뜨려 공격한다.,
+biology_mendel-library_normal_baby-wrinkled-pea,아기주름완두,Biology,제네시스 왕국,멘델의 유전 도서관,Landmark,Normal,식물형,Solo,지상·노랑주름 방군,Biology,75,5,45,완두탄:원거리,10,1,,,,주름완두거수의 미니어 버전. 노랑·주름 방군에서 작은 완두를 튕겨 공격한다.,
+biology_mendel-library_normal_baby-white-eye-fly,새끼흰눈초파리,Biology,제네시스 왕국,멘델의 유전 도서관,Landmark,Normal,곤충,Solo,지상·둥근초록 방군,Biology,85,6,46,섬광박치기:근접,11,1,,,,흰눈초파리의 미니어 버전. 둥근·초록 방군에서 빠르게 날아들며 박치기한다.,
+biology_mendel-library_normal_crumpled-kernel,쭈글낟알,Biology,제네시스 왕국,멘델의 유전 도서관,Landmark,Normal,식물형,Swarm,지상·주름초록 방군,Biology,90,6,48,낟알튕기기:광역,11,1,,,,쭈글초록변이체의 미니어 버전. 주름·초록 방군에서 무리지어 튀어 오르며 범위 피해를 준다.,
+biology_mendel-library_miniboss_wrinkled-pea-giant,주름완두거수,Biology,제네시스 왕국,멘델의 유전 도서관,Landmark,MiniBoss,형질발현체,Solo,지상·노랑주름 방군,Biology,110,7,70,주름접기:장판; 완두탄:원거리,17,2,도서관열쇠_멘델:1,,,주름진 열성 형질이 뭉친 거수. 바닥을 구겨 장판을 만들고 완두를 쏜다 — 3종 중 가장 정직한 입문 관문.,
+biology_mendel-library_miniboss_white-eye-fly,흰눈초파리,Biology,제네시스 왕국,멘델의 유전 도서관,Landmark,MiniBoss,형질발현체,Solo,지상·둥근초록 방군,Biology,120,7,80,흰눈섬광:광역; 연관돌진:이동형,19,3,도서관열쇠_모건:1,,,흰 눈 돌연변이 초파리 변이체. 시야를 방해하는 섬광과 두 개체가 연결되어 함께 돌진한다 — 중간 난이도.,
+biology_mendel-library_miniboss_crumpled-green-mutant,쭈글초록변이체,Biology,제네시스 왕국,멘델의 유전 도서관,Landmark,MiniBoss,형질발현체,Solo,지상·주름초록 방군,Biology,140,8,95,형질전이:장판; 변이증식:소환,21,3,도서관열쇠_매클린톡:1,,,이중 열성 변이체. 장판 위치가 순간이동하듯 옮겨지고 작은 변이 개체를 늘린다 — 완전 신규 패턴의 최고 난이도.,
+biology_mendel-library_boss_mendel,멘델,Biology,제네시스 왕국,멘델의 유전 도서관,Landmark,Boss,,Solo,,Biology,,,,,,,,,,BossDef(07_보스전.md·멘델.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Mendel
+biology_mendel-library_boss_morgan,모건,Biology,제네시스 왕국,멘델의 유전 도서관,Landmark,Boss,,Solo,,Biology,,,,,,,,,,BossDef(07_보스전.md·모건.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Morgan
+biology_mendel-library_boss_mcclintock,매클린톡,Biology,제네시스 왕국,멘델의 유전 도서관,Landmark,Boss,,Solo,,Biology,,,,,,,,,,BossDef(07_보스전.md·매클린톡.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,McClintock
 
-# 제네시스 왕국 — 해부학의 지하 성역(바이오스 네 번째 던전): 던전은 플레이어 레벨에 완전 스케일링 → 아래 levelMin/levelMax·HP·DEF는 '스케일링 기준값'(고정 권장 레벨 아님, 던전 간 보정 없음이라 다른 바이오스 던전과 같은 대역)
+# 제네시스 왕국 — 해부학의 지하 성역(바이오스 네 번째 던전): 던전은 플레이어 레벨에 완전 스케일링 → 아래 HP·DEF·EXP·골드는 Lv1 기준 역할별 공통표(설계도 21번) 값
 # 공통 잡몹 2종(전 단계) + 단계 전용 3종(중간보스 미니어 버전, 장기→조직→세포 수준 확대 하강 고정 진행)
-biology_anatomy-sanctum_normal_anatomy-doll,해부인형,Biology,제네시스 왕국,해부학의 지하 성역,Landmark,Normal,해부모형,Swarm,지상,24,25,Biology,200,13,118,달려들기:근접,28,1,,,,작은 해부학 인형이 무리로 달려든다. 전 단계 바닥을 휩쓴다.,
-biology_anatomy-sanctum_normal_microscope-ghost,현미경유령,Biology,제네시스 왕국,해부학의 지하 성역,Landmark,Normal,광학물,Swarm,공중,24,25,Biology,190,12,120,광선발사:원거리,28,1,,,,떠다니는 현미경 렌즈가 광선을 쏜다. 전 단계 공중에서 공격한다.,
-biology_anatomy-sanctum_normal_baby-plant-model,아기식물모형,Biology,제네시스 왕국,해부학의 지하 성역,Landmark,Normal,해부모형,Solo,지상·장기 수준,25,26,Biology,230,16,130,뿌리찌르기:근접,30,1,,,,식물해부모형의 미니어 버전. 장기 수준 구역에서 작은 뿌리로 찌른다.,
-biology_anatomy-sanctum_normal_baby-animal-model,아기동물모형,Biology,제네시스 왕국,해부학의 지하 성역,Landmark,Normal,해부모형,Solo,지상·조직 수준,26,27,Biology,255,17,140,근육박치기:근접,32,1,,,,동물해부모형의 미니어 버전. 조직 수준 구역에서 근육을 수축해 박치기한다.,
-biology_anatomy-sanctum_normal_tiny-dividing-cell,작은분열세포,Biology,제네시스 왕국,해부학의 지하 성역,Landmark,Normal,세포모형,Swarm,지상·세포 수준,27,28,Biology,280,18,150,세포분열:광역,35,1,,,,분열세포모형의 미니어 버전. 세포 수준 구역에서 무리지어 분열하며 범위 피해를 준다.,
-biology_anatomy-sanctum_miniboss_plant-anatomy-model,식물해부모형,Biology,제네시스 왕국,해부학의 지하 성역,Landmark,MiniBoss,해부모형,Solo,지상·장기 수준,26,26,Biology,330,20,210,뿌리뻗기:장판; 잎부채질:광역,52,2,성역열쇠_슐라이덴:1,,,뿌리·줄기·잎 단면이 드러난 거대 식물 모형. 뿌리를 뻗고 잎으로 밀쳐 낸다 — 3종 중 가장 정직한 입문 관문.,
-biology_anatomy-sanctum_miniboss_animal-anatomy-model,동물해부모형,Biology,제네시스 왕국,해부학의 지하 성역,Landmark,MiniBoss,해부모형,Solo,지상·조직 수준,27,28,Biology,380,23,250,근육수축돌진:이동형; 신경충격:장판,58,3,성역열쇠_슈반:1,,,근육·신경 조직이 드러난 동물 모형. 수축해 돌진하고 신경 충격이 선을 따라 이동한다 — 중간 난이도.,
-biology_anatomy-sanctum_miniboss_dividing-cell-model,분열세포모형,Biology,제네시스 왕국,해부학의 지하 성역,Landmark,MiniBoss,세포모형,Solo,지상·세포 수준,28,29,Biology,460,26,300,세포분열:장판; 핵막붕괴:광역,66,3,성역열쇠_피르호:1,,,분열하는 세포 모형. 둘로 갈라져 동시 공격하고 핵막이 터지며 확산한다 — 완전 신규 패턴의 최고 난이도.,
-biology_anatomy-sanctum_boss_schleiden,슐라이덴,Biology,제네시스 왕국,해부학의 지하 성역,Landmark,Boss,,Solo,,25,27,Biology,,,,,,,,,,BossDef(07_보스전.md·슐라이덴.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Schleiden
-biology_anatomy-sanctum_boss_schwann,슈반,Biology,제네시스 왕국,해부학의 지하 성역,Landmark,Boss,,Solo,,26,28,Biology,,,,,,,,,,BossDef(07_보스전.md·슈반.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Schwann
-biology_anatomy-sanctum_boss_virchow,피르호,Biology,제네시스 왕국,해부학의 지하 성역,Landmark,Boss,,Solo,,27,29,Biology,,,,,,,,,,BossDef(07_보스전.md·피르호.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Virchow
+biology_anatomy-sanctum_normal_anatomy-doll,해부인형,Biology,제네시스 왕국,해부학의 지하 성역,Landmark,Normal,해부모형,Swarm,지상,Biology,70,5,40,달려들기:근접,10,1,,,,작은 해부학 인형이 무리로 달려든다. 전 단계 바닥을 휩쓴다.,
+biology_anatomy-sanctum_normal_microscope-ghost,현미경유령,Biology,제네시스 왕국,해부학의 지하 성역,Landmark,Normal,광학물,Swarm,공중,Biology,65,4,40,광선발사:원거리,10,1,,,,떠다니는 현미경 렌즈가 광선을 쏜다. 전 단계 공중에서 공격한다.,
+biology_anatomy-sanctum_normal_baby-plant-model,아기식물모형,Biology,제네시스 왕국,해부학의 지하 성역,Landmark,Normal,해부모형,Solo,지상·장기 수준,Biology,75,5,45,뿌리찌르기:근접,10,1,,,,식물해부모형의 미니어 버전. 장기 수준 구역에서 작은 뿌리로 찌른다.,
+biology_anatomy-sanctum_normal_baby-animal-model,아기동물모형,Biology,제네시스 왕국,해부학의 지하 성역,Landmark,Normal,해부모형,Solo,지상·조직 수준,Biology,85,6,46,근육박치기:근접,11,1,,,,동물해부모형의 미니어 버전. 조직 수준 구역에서 근육을 수축해 박치기한다.,
+biology_anatomy-sanctum_normal_tiny-dividing-cell,작은분열세포,Biology,제네시스 왕국,해부학의 지하 성역,Landmark,Normal,세포모형,Swarm,지상·세포 수준,Biology,90,6,48,세포분열:광역,11,1,,,,분열세포모형의 미니어 버전. 세포 수준 구역에서 무리지어 분열하며 범위 피해를 준다.,
+biology_anatomy-sanctum_miniboss_plant-anatomy-model,식물해부모형,Biology,제네시스 왕국,해부학의 지하 성역,Landmark,MiniBoss,해부모형,Solo,지상·장기 수준,Biology,110,7,70,뿌리뻗기:장판; 잎부채질:광역,17,2,성역열쇠_슐라이덴:1,,,뿌리·줄기·잎 단면이 드러난 거대 식물 모형. 뿌리를 뻗고 잎으로 밀쳐 낸다 — 3종 중 가장 정직한 입문 관문.,
+biology_anatomy-sanctum_miniboss_animal-anatomy-model,동물해부모형,Biology,제네시스 왕국,해부학의 지하 성역,Landmark,MiniBoss,해부모형,Solo,지상·조직 수준,Biology,120,7,80,근육수축돌진:이동형; 신경충격:장판,19,3,성역열쇠_슈반:1,,,근육·신경 조직이 드러난 동물 모형. 수축해 돌진하고 신경 충격이 선을 따라 이동한다 — 중간 난이도.,
+biology_anatomy-sanctum_miniboss_dividing-cell-model,분열세포모형,Biology,제네시스 왕국,해부학의 지하 성역,Landmark,MiniBoss,세포모형,Solo,지상·세포 수준,Biology,140,8,95,세포분열:장판; 핵막붕괴:광역,21,3,성역열쇠_피르호:1,,,분열하는 세포 모형. 둘로 갈라져 동시 공격하고 핵막이 터지며 확산한다 — 완전 신규 패턴의 최고 난이도.,
+biology_anatomy-sanctum_boss_schleiden,슐라이덴,Biology,제네시스 왕국,해부학의 지하 성역,Landmark,Boss,,Solo,,Biology,,,,,,,,,,BossDef(07_보스전.md·슐라이덴.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Schleiden
+biology_anatomy-sanctum_boss_schwann,슈반,Biology,제네시스 왕국,해부학의 지하 성역,Landmark,Boss,,Solo,,Biology,,,,,,,,,,BossDef(07_보스전.md·슈반.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Schwann
+biology_anatomy-sanctum_boss_virchow,피르호,Biology,제네시스 왕국,해부학의 지하 성역,Landmark,Boss,,Solo,,Biology,,,,,,,,,,BossDef(07_보스전.md·피르호.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Virchow
 
-# 헬릭스 제국 — 이중나선 황궁(바이오스 다섯 번째 던전): 던전은 플레이어 레벨에 완전 스케일링 → 아래 levelMin/levelMax·HP·DEF는 '스케일링 기준값'(고정 권장 레벨 아님, 던전 간 보정 없음이라 다른 바이오스 던전과 같은 대역)
+# 헬릭스 제국 — 이중나선 황궁(바이오스 다섯 번째 던전): 던전은 플레이어 레벨에 완전 스케일링 → 아래 HP·DEF·EXP·골드는 Lv1 기준 역할별 공통표(설계도 21번) 값
 # 공통 잡몹 2종(전 구역) + 구역 전용 3종(중간보스 미니어 버전: 왓슨 탑·크릭 탑 순서 자유, 정상 합류부는 두 탑 정복 후)
 # 왓슨 탑·크릭 탑 수호자와 보스는 순서 자유라 난이도를 동일하게 둠(나선독수리병기=전사번역병기, 왓슨=크릭)
-biology_double-helix-palace_normal_transgenic-mouse,형질전환쥐,Biology,헬릭스 제국,이중나선 황궁,Landmark,Normal,실험생물,Swarm,지상,24,25,Biology,200,13,118,갉아물기:근접,28,1,,,,헬릭스 제국의 실험 생물. 전 구역 바닥을 무리로 달려들며 문다.,
-biology_double-helix-palace_normal_helix-bat,나선박쥐,Biology,헬릭스 제국,이중나선 황궁,Landmark,Normal,실험생물,Swarm,공중,24,25,Biology,190,12,120,초음파발사:원거리,28,1,,,,DNA 나선 문양 날개의 박쥐. 전 구역 공중에서 초음파를 발사한다.,
-biology_double-helix-palace_normal_baby-helix-eagle,아기나선독수리,Biology,헬릭스 제국,이중나선 황궁,Landmark,Normal,병기,Solo,지상·왓슨 탑,25,26,Biology,230,16,130,나선돌진:근접,30,1,,,,나선독수리병기의 미니어 버전. 왓슨 탑에서 나선 궤적으로 돌진한다.,
-biology_double-helix-palace_normal_tiny-transcriptor,작은전사체,Biology,헬릭스 제국,이중나선 황궁,Landmark,Normal,병기,Solo,지상·크릭 탑,26,27,Biology,255,17,140,전사탄:원거리,32,1,,,,전사번역병기의 미니어 버전. 크릭 탑에서 RNA 복사본 탄을 쏜다.,
-biology_double-helix-palace_normal_twin-helix-fragment,쌍나선조각,Biology,헬릭스 제국,이중나선 황궁,Landmark,Normal,병기,Swarm,지상·정상 합류부,27,28,Biology,280,18,150,나선회전:광역,35,1,,,,쌍나선수호병기에서 떨어져 나온 조각. 정상 합류부에서 무리지어 회전하며 범위 피해를 준다.,
-biology_double-helix-palace_miniboss_helix-eagle-weapon,나선독수리병기,Biology,헬릭스 제국,이중나선 황궁,Landmark,MiniBoss,생체공학병기,Solo,지상·왓슨 탑,26,27,Biology,330,20,210,나선급강하:이동형; 깃털나선탄:원거리,52,2,황궁열쇠_왓슨:1,,,이중나선 독수리를 개조한 생체공학 병기. 나선 궤적으로 급강하하고 깃털을 쏜다 — 왓슨 탑 수호자(전사번역병기와 동급).,
-biology_double-helix-palace_miniboss_transcription-weapon,전사번역병기,Biology,헬릭스 제국,이중나선 황궁,Landmark,MiniBoss,생체공학병기,Solo,지상·크릭 탑,26,27,Biology,330,20,210,전사빔:장판; 단백질탄:원거리,52,2,황궁열쇠_크릭:1,,,중심원리를 형상화한 생체공학 병기. 지연된 빔이 장판으로 번역되고 단백질탄을 쏜다 — 크릭 탑 수호자(나선독수리병기와 동급).,
-biology_double-helix-palace_miniboss_twin-helix-guardian,쌍나선수호병기,Biology,헬릭스 제국,이중나선 황궁,Landmark,MiniBoss,생체공학병기,Solo,지상·정상 합류부,28,29,Biology,460,26,300,쌍나선회전:장판; 염기쌍폭발:광역,66,3,황궁열쇠_프랭클린:1,,,두 나선이 감긴 거대 병기. 두 나선 장판이 감기며 회전하고 염기쌍 연결선이 폭발한다 — 완전 신규 패턴의 최고 난이도.,
-biology_double-helix-palace_boss_watson,왓슨,Biology,헬릭스 제국,이중나선 황궁,Landmark,Boss,,Solo,,25,27,Biology,,,,,,,,,,BossDef(07_보스전.md·왓슨.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Watson
-biology_double-helix-palace_boss_crick,크릭,Biology,헬릭스 제국,이중나선 황궁,Landmark,Boss,,Solo,,25,27,Biology,,,,,,,,,,BossDef(07_보스전.md·크릭.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Crick
-biology_double-helix-palace_boss_franklin,프랭클린,Biology,헬릭스 제국,이중나선 황궁,Landmark,Boss,,Solo,,27,29,Biology,,,,,,,,,,BossDef(07_보스전.md·프랭클린.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Franklin
+biology_double-helix-palace_normal_transgenic-mouse,형질전환쥐,Biology,헬릭스 제국,이중나선 황궁,Landmark,Normal,실험생물,Swarm,지상,Biology,70,5,40,갉아물기:근접,10,1,,,,헬릭스 제국의 실험 생물. 전 구역 바닥을 무리로 달려들며 문다.,
+biology_double-helix-palace_normal_helix-bat,나선박쥐,Biology,헬릭스 제국,이중나선 황궁,Landmark,Normal,실험생물,Swarm,공중,Biology,65,4,40,초음파발사:원거리,10,1,,,,DNA 나선 문양 날개의 박쥐. 전 구역 공중에서 초음파를 발사한다.,
+biology_double-helix-palace_normal_baby-helix-eagle,아기나선독수리,Biology,헬릭스 제국,이중나선 황궁,Landmark,Normal,병기,Solo,지상·왓슨 탑,Biology,75,5,45,나선돌진:근접,10,1,,,,나선독수리병기의 미니어 버전. 왓슨 탑에서 나선 궤적으로 돌진한다.,
+biology_double-helix-palace_normal_tiny-transcriptor,작은전사체,Biology,헬릭스 제국,이중나선 황궁,Landmark,Normal,병기,Solo,지상·크릭 탑,Biology,85,6,46,전사탄:원거리,11,1,,,,전사번역병기의 미니어 버전. 크릭 탑에서 RNA 복사본 탄을 쏜다.,
+biology_double-helix-palace_normal_twin-helix-fragment,쌍나선조각,Biology,헬릭스 제국,이중나선 황궁,Landmark,Normal,병기,Swarm,지상·정상 합류부,Biology,90,6,48,나선회전:광역,11,1,,,,쌍나선수호병기에서 떨어져 나온 조각. 정상 합류부에서 무리지어 회전하며 범위 피해를 준다.,
+biology_double-helix-palace_miniboss_helix-eagle-weapon,나선독수리병기,Biology,헬릭스 제국,이중나선 황궁,Landmark,MiniBoss,생체공학병기,Solo,지상·왓슨 탑,Biology,110,7,70,나선급강하:이동형; 깃털나선탄:원거리,17,2,황궁열쇠_왓슨:1,,,이중나선 독수리를 개조한 생체공학 병기. 나선 궤적으로 급강하하고 깃털을 쏜다 — 왓슨 탑 수호자(전사번역병기와 동급).,
+biology_double-helix-palace_miniboss_transcription-weapon,전사번역병기,Biology,헬릭스 제국,이중나선 황궁,Landmark,MiniBoss,생체공학병기,Solo,지상·크릭 탑,Biology,110,7,70,전사빔:장판; 단백질탄:원거리,17,2,황궁열쇠_크릭:1,,,중심원리를 형상화한 생체공학 병기. 지연된 빔이 장판으로 번역되고 단백질탄을 쏜다 — 크릭 탑 수호자(나선독수리병기와 동급).,
+biology_double-helix-palace_miniboss_twin-helix-guardian,쌍나선수호병기,Biology,헬릭스 제국,이중나선 황궁,Landmark,MiniBoss,생체공학병기,Solo,지상·정상 합류부,Biology,140,8,95,쌍나선회전:장판; 염기쌍폭발:광역,21,3,황궁열쇠_프랭클린:1,,,두 나선이 감긴 거대 병기. 두 나선 장판이 감기며 회전하고 염기쌍 연결선이 폭발한다 — 완전 신규 패턴의 최고 난이도.,
+biology_double-helix-palace_boss_watson,왓슨,Biology,헬릭스 제국,이중나선 황궁,Landmark,Boss,,Solo,,Biology,,,,,,,,,,BossDef(07_보스전.md·왓슨.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Watson
+biology_double-helix-palace_boss_crick,크릭,Biology,헬릭스 제국,이중나선 황궁,Landmark,Boss,,Solo,,Biology,,,,,,,,,,BossDef(07_보스전.md·크릭.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Crick
+biology_double-helix-palace_boss_franklin,프랭클린,Biology,헬릭스 제국,이중나선 황궁,Landmark,Boss,,Solo,,Biology,,,,,,,,,,BossDef(07_보스전.md·프랭클린.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Franklin
 
-# 헬릭스 제국 — CRISPR 편집 연구소(바이오스 여섯 번째·마지막 던전): 던전은 플레이어 레벨에 완전 스케일링 → 아래 levelMin/levelMax·HP·DEF는 '스케일링 기준값'(고정 권장 레벨 아님, 던전 간 보정 없음이라 다른 바이오스 던전과 같은 대역)
+# 헬릭스 제국 — CRISPR 편집 연구소(바이오스 여섯 번째·마지막 던전): 던전은 플레이어 레벨에 완전 스케일링 → 아래 HP·DEF·EXP·골드는 Lv1 기준 역할별 공통표(설계도 21번) 값
 # 공통 잡몹 2종(전 구역, 형질전환쥐는 이중나선 황궁 공통이라 제외) + 구역 전용 3종(중간보스 미니어 버전, 절단→삽입→다중 편집 구역 고정 진행)
-biology_crispr-lab_normal_crispr-rose,CRISPR 장미,Biology,헬릭스 제국,CRISPR 편집 연구소,Landmark,Normal,식물형,Swarm,지상,24,25,Biology,200,13,118,가시찌르기:근접,28,1,,,,유전자를 자유롭게 편집할 수 있는 가시 장미. 전 구역 바닥에서 무리지어 가시로 찌른다.,
-biology_crispr-lab_normal_editing-drone,편집드론,Biology,헬릭스 제국,CRISPR 편집 연구소,Landmark,Normal,기계,Swarm,공중,24,25,Biology,190,12,120,편집빔:원거리,28,1,,,,홀로그램 편집 빔을 쏘는 연구소 드론. 전 구역 공중에서 공격한다.,
-biology_crispr-lab_normal_tiny-cut-fragment,작은절단파편,Biology,헬릭스 제국,CRISPR 편집 연구소,Landmark,Normal,변이체,Solo,지상·절단 구역,25,26,Biology,230,16,130,파편박치기:근접,30,1,,,,절단파편체의 미니어 버전. 절단 구역에서 잘린 조각으로 박치기한다.,
-biology_crispr-lab_normal_tiny-misinsert-piece,작은오삽입조각,Biology,헬릭스 제국,CRISPR 편집 연구소,Landmark,Normal,변이체,Solo,지상·삽입 구역,26,27,Biology,255,17,140,조각튕기기:원거리,32,1,,,,오삽입합성체의 미니어 버전. 삽입 구역에서 잘못 끼워진 조각을 튕겨 쏜다.,
-biology_crispr-lab_normal_tiny-mutant-editor,작은변이편집체,Biology,헬릭스 제국,CRISPR 편집 연구소,Landmark,Normal,변이체,Swarm,지상·다중 편집 구역,27,28,Biology,280,18,150,돌발폭발:광역,35,1,,,,다중편집변이체의 미니어 버전. 다중 편집 구역에서 무리지어 예고 없이 터지며 범위 피해를 준다.,
-biology_crispr-lab_miniboss_cut-fragment,절단파편체,Biology,헬릭스 제국,CRISPR 편집 연구소,Landmark,MiniBoss,편집오류변이체,Solo,지상·절단 구역,26,26,Biology,330,20,210,파편투척:원거리; 절단선:장판,52,2,연구소열쇠_샤르팡티에:1,,,편집으로 잘려 나온 DNA 조각이 뭉친 존재. 조각을 부채꼴로 던지고 직선 절단선을 긋는다 — 3종 중 가장 정직한 입문 관문.,
-biology_crispr-lab_miniboss_misinsert-composite,오삽입합성체,Biology,헬릭스 제국,CRISPR 편집 연구소,Landmark,MiniBoss,편집오류변이체,Solo,지상·삽입 구역,27,28,Biology,380,23,250,불규칙융합:장판; 삽입돌출:장판,58,3,연구소열쇠_다우드나:1,,,잘못 끼워진 조각들이 붙은 합성 변이체. 불규칙한 위치에 장판을 만들고 바닥에서 조각이 솟는다 — 중간 난이도.,
-biology_crispr-lab_miniboss_multi-edit-mutant,다중편집변이체,Biology,헬릭스 제국,CRISPR 편집 연구소,Landmark,MiniBoss,편집오류변이체,Solo,지상·다중 편집 구역,28,29,Biology,460,26,300,다점절단:장판; 오프타겟폭발:광역,66,3,연구소열쇠_장펑:1,,,여러 지점이 동시에 어긋난 변이체. 여러 곳을 동시에 절단하고 예고 없는 위치에서 돌발 폭발한다 — 완전 신규 패턴의 최고 난이도.,
-biology_crispr-lab_boss_charpentier,샤르팡티에,Biology,헬릭스 제국,CRISPR 편집 연구소,Landmark,Boss,,Solo,,25,27,Biology,,,,,,,,,,BossDef(07_보스전.md·샤르팡티에.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Charpentier
-biology_crispr-lab_boss_doudna,다우드나,Biology,헬릭스 제국,CRISPR 편집 연구소,Landmark,Boss,,Solo,,26,28,Biology,,,,,,,,,,BossDef(07_보스전.md·다우드나.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Doudna
-biology_crispr-lab_boss_zhang,장펑,Biology,헬릭스 제국,CRISPR 편집 연구소,Landmark,Boss,,Solo,,27,29,Biology,,,,,,,,,,BossDef(07_보스전.md·장펑.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Zhang
+biology_crispr-lab_normal_crispr-rose,CRISPR 장미,Biology,헬릭스 제국,CRISPR 편집 연구소,Landmark,Normal,식물형,Swarm,지상,Biology,70,5,40,가시찌르기:근접,10,1,,,,유전자를 자유롭게 편집할 수 있는 가시 장미. 전 구역 바닥에서 무리지어 가시로 찌른다.,
+biology_crispr-lab_normal_editing-drone,편집드론,Biology,헬릭스 제국,CRISPR 편집 연구소,Landmark,Normal,기계,Swarm,공중,Biology,65,4,40,편집빔:원거리,10,1,,,,홀로그램 편집 빔을 쏘는 연구소 드론. 전 구역 공중에서 공격한다.,
+biology_crispr-lab_normal_tiny-cut-fragment,작은절단파편,Biology,헬릭스 제국,CRISPR 편집 연구소,Landmark,Normal,변이체,Solo,지상·절단 구역,Biology,75,5,45,파편박치기:근접,10,1,,,,절단파편체의 미니어 버전. 절단 구역에서 잘린 조각으로 박치기한다.,
+biology_crispr-lab_normal_tiny-misinsert-piece,작은오삽입조각,Biology,헬릭스 제국,CRISPR 편집 연구소,Landmark,Normal,변이체,Solo,지상·삽입 구역,Biology,85,6,46,조각튕기기:원거리,11,1,,,,오삽입합성체의 미니어 버전. 삽입 구역에서 잘못 끼워진 조각을 튕겨 쏜다.,
+biology_crispr-lab_normal_tiny-mutant-editor,작은변이편집체,Biology,헬릭스 제국,CRISPR 편집 연구소,Landmark,Normal,변이체,Swarm,지상·다중 편집 구역,Biology,90,6,48,돌발폭발:광역,11,1,,,,다중편집변이체의 미니어 버전. 다중 편집 구역에서 무리지어 예고 없이 터지며 범위 피해를 준다.,
+biology_crispr-lab_miniboss_cut-fragment,절단파편체,Biology,헬릭스 제국,CRISPR 편집 연구소,Landmark,MiniBoss,편집오류변이체,Solo,지상·절단 구역,Biology,110,7,70,파편투척:원거리; 절단선:장판,17,2,연구소열쇠_샤르팡티에:1,,,편집으로 잘려 나온 DNA 조각이 뭉친 존재. 조각을 부채꼴로 던지고 직선 절단선을 긋는다 — 3종 중 가장 정직한 입문 관문.,
+biology_crispr-lab_miniboss_misinsert-composite,오삽입합성체,Biology,헬릭스 제국,CRISPR 편집 연구소,Landmark,MiniBoss,편집오류변이체,Solo,지상·삽입 구역,Biology,120,7,80,불규칙융합:장판; 삽입돌출:장판,19,3,연구소열쇠_다우드나:1,,,잘못 끼워진 조각들이 붙은 합성 변이체. 불규칙한 위치에 장판을 만들고 바닥에서 조각이 솟는다 — 중간 난이도.,
+biology_crispr-lab_miniboss_multi-edit-mutant,다중편집변이체,Biology,헬릭스 제국,CRISPR 편집 연구소,Landmark,MiniBoss,편집오류변이체,Solo,지상·다중 편집 구역,Biology,140,8,95,다점절단:장판; 오프타겟폭발:광역,21,3,연구소열쇠_장펑:1,,,여러 지점이 동시에 어긋난 변이체. 여러 곳을 동시에 절단하고 예고 없는 위치에서 돌발 폭발한다 — 완전 신규 패턴의 최고 난이도.,
+biology_crispr-lab_boss_charpentier,샤르팡티에,Biology,헬릭스 제국,CRISPR 편집 연구소,Landmark,Boss,,Solo,,Biology,,,,,,,,,,BossDef(07_보스전.md·샤르팡티에.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Charpentier
+biology_crispr-lab_boss_doudna,다우드나,Biology,헬릭스 제국,CRISPR 편집 연구소,Landmark,Boss,,Solo,,Biology,,,,,,,,,,BossDef(07_보스전.md·다우드나.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Doudna
+biology_crispr-lab_boss_zhang,장펑,Biology,헬릭스 제국,CRISPR 편집 연구소,Landmark,Boss,,Solo,,Biology,,,,,,,,,,BossDef(07_보스전.md·장펑.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Zhang
 
 # ===== EarthSci (지구과학 — 테라 노바) =====
 # 국가: 천문 부족 / 해양 부족 / 대기 부족 / 지질 부족
 # 랜드마크: 거대 천문대 피라미드, 세계 해류 신전, 토네이도 정령의 영혼 평원, 판구조 산맥 신전, 판게아 유적
-# ※ 레벨 스케일링 주석(2026-11): 아래 지구과학 섹션의 '권장 lvX-Y'와 levelMin/levelMax·HP·DEF는 모두 '스케일링 기준값'이다(고정 권장 레벨 아님, 설계도 21번 참조).
-# 대기 부족 — 토네이도 정령의 영혼 평원(진입 던전, 권장 lv5-10): 협곡 공통 잡몹 2종(유물형) + 협곡별 전용 3종(중간보스 미니어 버전)
-earthsci_tornado-plains_normal_anemometer-tripod,풍속계 삼발이,EarthSci,대기 부족,토네이도 정령의 영혼 평원,Landmark,Normal,유물형,Solo,지상·협곡,5,8,EarthSci,70,5,40,회전베기:근접,8,1,,,,폭주한 풍속계(아네모미터)가 다리 셋 달린 유물형 몬스터로 변이했다. 협곡 전역에 출몰.,
-earthsci_tornado-plains_normal_radiosonde-balloon,라디오존데 풍선,EarthSci,대기 부족,토네이도 정령의 영혼 평원,Landmark,Normal,유물형,Solo,공중,5,8,EarthSci,55,3,40,바람구슬투척:원거리,8,1,,,,폭주한 라디오존데 풍선이 압력계를 흡수해 바람구슬을 쏘아내는 유물형 몬스터. 협곡 전역 공중에 부유한다.,
-earthsci_tornado-plains_normal_gale-sprite,바람정령 새끼,EarthSci,대기 부족,토네이도 정령의 영혼 평원,Landmark,Normal,정령,Swarm,공중·협곡,5,6,EarthSci,55,3,32,상승돌풍:이동형,6,1,,,,해들리의 파수꾼을 따르는 작은 바람 정령 새끼들. 해들리 협곡에서 무리지어 떠다닌다.,
-earthsci_tornado-plains_normal_mist-fox-kit,짧은다리 안개여우,EarthSci,대기 부족,토네이도 정령의 영혼 평원,Landmark,Normal,야수,Swarm,지상·협곡,6,7,EarthSci,65,4,38,안개도약:이동형,7,1,,,,페렐의 방랑자를 닮아 짧게 순간이동하듯 뛰어다니는 안개 여우 무리. 페렐 협곡에 서식한다.,
-earthsci_tornado-plains_normal_wind-wyrmling,바람무녀기,EarthSci,대기 부족,토네이도 정령의 영혼 평원,Landmark,Normal,용족,Swarm,지상·협곡,7,8,EarthSci,80,5,45,S자돌진:근접,9,1,,,,로스비의 이무기를 닮은 새끼 무녀기. S자로 구불거리며 로스비 협곡을 누빈다.,
-earthsci_tornado-plains_miniboss_hadley-guardian,해들리의 파수꾼,EarthSci,대기 부족,토네이도 정령의 영혼 평원,Landmark,MiniBoss,정령,Solo,공중,8,8,EarthSci,110,6,70,상승기류:장판; 하강기류:장판,20,2,협곡열쇠_해들리:1,,,해들리 순환의 상승·하강 기류를 다스리는 정령. 수직축 중심 전투 — 텔레그래프가 가장 정직해 진입 관문 역할을 한다.,
-earthsci_tornado-plains_miniboss_ferrel-wanderer,페렐의 방랑자,EarthSci,대기 부족,토네이도 정령의 영혼 평원,Landmark,MiniBoss,안개령,Solo,지상·협곡,9,9,EarthSci,130,7,85,순간이동일격:이동형; 안개장판:장판,25,2,협곡열쇠_페렐:1,,,페렐 순환의 불안정함을 닮아 짧은 거리를 무작위로 순간이동하는 안개 형체. 위치는 예측 불가하지만 공격 텔레그래프는 명확하다.,
-earthsci_tornado-plains_miniboss_rossby-wyrm,로스비의 이무기,EarthSci,대기 부족,토네이도 정령의 영혼 평원,Landmark,MiniBoss,용족,Solo,지상·협곡,9,10,EarthSci,160,8,100,S자돌진:이동형; 무녀기소환:소환,30,3,협곡열쇠_로스비:1,,,로스비파의 기상도 파동선을 형상화한 이무기. S자로 구불거리며 지나간 자리에 새끼 무녀기(바람무녀기)를 소환한다.,
-earthsci_tornado-plains_boss_hadley,해들리,EarthSci,대기 부족,토네이도 정령의 영혼 평원,Landmark,Boss,,Solo,,10,12,EarthSci,,,,,,,,,,BossDef(07_보스전.md·해들리.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Hadley
-earthsci_tornado-plains_boss_ferrel,페렐,EarthSci,대기 부족,토네이도 정령의 영혼 평원,Landmark,Boss,,Solo,,10,12,EarthSci,,,,,,,,,,BossDef(07_보스전.md·페렐.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Ferrel
-earthsci_tornado-plains_boss_rossby,로스비,EarthSci,대기 부족,토네이도 정령의 영혼 평원,Landmark,Boss,,Solo,,10,12,EarthSci,,,,,,,,,,BossDef(07_보스전.md·로스비.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Rossby
+# ※ 레벨 스케일링: 던전별 기준 레벨 대역 없음. 모든 몬스터의 HP·DEF·EXP·골드는 Lv1 기준 역할별 공통표(설계도 21번) 값이다.
+# 대기 부족 — 토네이도 정령의 영혼 평원(진입 던전): 협곡 공통 잡몹 2종(유물형) + 협곡별 전용 3종(중간보스 미니어 버전)
+earthsci_tornado-plains_normal_anemometer-tripod,풍속계 삼발이,EarthSci,대기 부족,토네이도 정령의 영혼 평원,Landmark,Normal,유물형,Solo,지상·협곡,EarthSci,70,5,40,회전베기:근접,10,1,,,,폭주한 풍속계(아네모미터)가 다리 셋 달린 유물형 몬스터로 변이했다. 협곡 전역에 출몰.,
+earthsci_tornado-plains_normal_radiosonde-balloon,라디오존데 풍선,EarthSci,대기 부족,토네이도 정령의 영혼 평원,Landmark,Normal,유물형,Solo,공중,EarthSci,65,4,40,바람구슬투척:원거리,10,1,,,,폭주한 라디오존데 풍선이 압력계를 흡수해 바람구슬을 쏘아내는 유물형 몬스터. 협곡 전역 공중에 부유한다.,
+earthsci_tornado-plains_normal_gale-sprite,바람정령 새끼,EarthSci,대기 부족,토네이도 정령의 영혼 평원,Landmark,Normal,정령,Swarm,공중·협곡,EarthSci,75,5,45,상승돌풍:이동형,10,1,,,,해들리의 파수꾼을 따르는 작은 바람 정령 새끼들. 해들리 협곡에서 무리지어 떠다닌다.,
+earthsci_tornado-plains_normal_mist-fox-kit,짧은다리 안개여우,EarthSci,대기 부족,토네이도 정령의 영혼 평원,Landmark,Normal,야수,Swarm,지상·협곡,EarthSci,85,6,46,안개도약:이동형,11,1,,,,페렐의 방랑자를 닮아 짧게 순간이동하듯 뛰어다니는 안개 여우 무리. 페렐 협곡에 서식한다.,
+earthsci_tornado-plains_normal_wind-wyrmling,바람무녀기,EarthSci,대기 부족,토네이도 정령의 영혼 평원,Landmark,Normal,용족,Swarm,지상·협곡,EarthSci,90,6,48,S자돌진:근접,11,1,,,,로스비의 이무기를 닮은 새끼 무녀기. S자로 구불거리며 로스비 협곡을 누빈다.,
+earthsci_tornado-plains_miniboss_hadley-guardian,해들리의 파수꾼,EarthSci,대기 부족,토네이도 정령의 영혼 평원,Landmark,MiniBoss,정령,Solo,공중,EarthSci,110,7,70,상승기류:장판; 하강기류:장판,17,2,협곡열쇠_해들리:1,,,해들리 순환의 상승·하강 기류를 다스리는 정령. 수직축 중심 전투 — 텔레그래프가 가장 정직해 진입 관문 역할을 한다.,
+earthsci_tornado-plains_miniboss_ferrel-wanderer,페렐의 방랑자,EarthSci,대기 부족,토네이도 정령의 영혼 평원,Landmark,MiniBoss,안개령,Solo,지상·협곡,EarthSci,120,7,80,순간이동일격:이동형; 안개장판:장판,19,2,협곡열쇠_페렐:1,,,페렐 순환의 불안정함을 닮아 짧은 거리를 무작위로 순간이동하는 안개 형체. 위치는 예측 불가하지만 공격 텔레그래프는 명확하다.,
+earthsci_tornado-plains_miniboss_rossby-wyrm,로스비의 이무기,EarthSci,대기 부족,토네이도 정령의 영혼 평원,Landmark,MiniBoss,용족,Solo,지상·협곡,EarthSci,140,8,95,S자돌진:이동형; 무녀기소환:소환,21,3,협곡열쇠_로스비:1,,,로스비파의 기상도 파동선을 형상화한 이무기. S자로 구불거리며 지나간 자리에 새끼 무녀기(바람무녀기)를 소환한다.,
+earthsci_tornado-plains_boss_hadley,해들리,EarthSci,대기 부족,토네이도 정령의 영혼 평원,Landmark,Boss,,Solo,,EarthSci,,,,,,,,,,BossDef(07_보스전.md·해들리.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Hadley
+earthsci_tornado-plains_boss_ferrel,페렐,EarthSci,대기 부족,토네이도 정령의 영혼 평원,Landmark,Boss,,Solo,,EarthSci,,,,,,,,,,BossDef(07_보스전.md·페렐.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Ferrel
+earthsci_tornado-plains_boss_rossby,로스비,EarthSci,대기 부족,토네이도 정령의 영혼 평원,Landmark,Boss,,Solo,,EarthSci,,,,,,,,,,BossDef(07_보스전.md·로스비.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Rossby
 
-# 판게아 유적(4부족 중앙 허브, 권장 lv10-15): 구역 공통 잡몹 2종(살아있는 지질/광물) + 구역별 전용 3종(중간보스 미니어 버전)
-earthsci_pangea-ruins_normal_rock-shard,암석파편,EarthSci,판게아 유적,판게아 유적,Landmark,Normal,광물형,Swarm,지상·균열,10,11,EarthSci,85,6,50,암석돌진:근접,9,1,,,,균열암석거인이 떨굴 때 함께 떨어진 파편이 생명력을 얻어 기어다니는 작은 암석 생명체. 판게아 유적 전역에 출몰.,
-earthsci_pangea-ruins_normal_salt-crystal,염분결정,EarthSci,판게아 유적,판게아 유적,Landmark,Normal,광물형,Swarm,해저·균열,10,11,EarthSci,75,5,48,결정파열:원거리,9,1,,,,대서양 염분 성분이 결정화된 덩어리. 물살 속에 느리게 떠다니다가 응결을 터뜨려 공격한다.,
-earthsci_pangea-ruins_normal_rock-giant-cub,새끼암석거인,EarthSci,판게아 유적,판게아 유적,Landmark,Normal,광물형,Solo,지상·열곡대,11,12,EarthSci,100,7,58,암석주먹:근접,11,1,,,,균열암석거인의 미니어 버전. 동아프리카 열곡대 구역에서 서식한다.,
-earthsci_pangea-ruins_normal_mini-chimney-crystal,미니굴뚝결정,EarthSci,판게아 유적,판게아 유적,Landmark,Normal,광물형,Solo,해저·해령,12,13,EarthSci,115,8,65,열수분사:원거리,13,1,,,,열수구 굴뚝괴물의 미니어 버전. 대서양 중앙해령 구역에서 서식한다.,
-earthsci_pangea-ruins_normal_lone-magnetite,홀자철석,EarthSci,판게아 유적,판게아 유적,Landmark,Normal,광물형,Solo,해저·해팽,13,14,EarthSci,130,9,72,자기충격:근접,15,1,,,,쌍둥자철석이 아직 하나이던 어린 상태. 동태평양 해팽 구역에서 서식한다.,
-earthsci_pangea-ruins_miniboss_rift-rock-giant,균열암석거인,EarthSci,판게아 유적,판게아 유적,Landmark,MiniBoss,광물형,Solo,지상·열곡대,12,12,EarthSci,150,9,95,암석강타:근접; 균열장판:범위형,28,2,판게아증거_베게너:1,,,동아프리카 열곡대의 갈라지는 대지를 형상화한 암석 거인. 판 조각 위에서 싸우며 몸이 점점 갈라진다 — 3종 중 가장 느리고 정직함(진입 관문 역할).,
-earthsci_pangea-ruins_miniboss_vent-chimney,열수구굴뚝괴물,EarthSci,판게아 유적,판게아 유적,Landmark,MiniBoss,광물형,Solo,해저·해령,13,13,EarthSci,180,10,110,광물분출:원거리; 압력파폭발:광역,32,2,판게아증거_홈스:1,,,대서양 중앙해령의 열수 분출구가 응결되어 생명을 얻은 광물 덩어리. 대류 메커니즘을 광물분출과 압력파로 형상화한다.,
-earthsci_pangea-ruins_miniboss_twin-magnetite,쌍둥자철석,EarthSci,판게아 유적,판게아 유적,Landmark,MiniBoss,광물형,Solo,해저·해팽,14,15,EarthSci,220,12,135,대칭공격:광역,36,3,판게아증거_헤스:1,,,동태평양 해팽의 대칭 자기줄무늬 증거를 형상화한 쌍둥이 자철석 결정체. 두 개체가 항상 대칭 위치에서 동시 공격 — 3종 중 가장 빠르고 복잡함(최고 난이도).,
-earthsci_pangea-ruins_boss_wegener,베게너,EarthSci,판게아 유적,판게아 유적,Landmark,Boss,,Solo,,12,14,EarthSci,,,,,,,,,,BossDef(07_보스전.md·베게너.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Wegener
-earthsci_pangea-ruins_boss_holmes,홈스,EarthSci,판게아 유적,판게아 유적,Landmark,Boss,,Solo,,12,14,EarthSci,,,,,,,,,,BossDef(07_보스전.md·홈스.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Holmes
-earthsci_pangea-ruins_boss_hess,헤스,EarthSci,판게아 유적,판게아 유적,Landmark,Boss,,Solo,,12,15,EarthSci,,,,,,,,,,BossDef(07_보스전.md·헤스.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Hess
+# 판게아 유적(4부족 중앙 허브): 구역 공통 잡몹 2종(살아있는 지질/광물) + 구역별 전용 3종(중간보스 미니어 버전)
+earthsci_pangea-ruins_normal_rock-shard,암석파편,EarthSci,판게아 유적,판게아 유적,Landmark,Normal,광물형,Swarm,지상·균열,EarthSci,70,5,40,암석돌진:근접,10,1,,,,균열암석거인이 떨굴 때 함께 떨어진 파편이 생명력을 얻어 기어다니는 작은 암석 생명체. 판게아 유적 전역에 출몰.,
+earthsci_pangea-ruins_normal_salt-crystal,염분결정,EarthSci,판게아 유적,판게아 유적,Landmark,Normal,광물형,Swarm,해저·균열,EarthSci,65,4,40,결정파열:원거리,10,1,,,,대서양 염분 성분이 결정화된 덩어리. 물살 속에 느리게 떠다니다가 응결을 터뜨려 공격한다.,
+earthsci_pangea-ruins_normal_rock-giant-cub,새끼암석거인,EarthSci,판게아 유적,판게아 유적,Landmark,Normal,광물형,Solo,지상·열곡대,EarthSci,75,5,45,암석주먹:근접,10,1,,,,균열암석거인의 미니어 버전. 동아프리카 열곡대 구역에서 서식한다.,
+earthsci_pangea-ruins_normal_mini-chimney-crystal,미니굴뚝결정,EarthSci,판게아 유적,판게아 유적,Landmark,Normal,광물형,Solo,해저·해령,EarthSci,85,6,46,열수분사:원거리,11,1,,,,열수구 굴뚝괴물의 미니어 버전. 대서양 중앙해령 구역에서 서식한다.,
+earthsci_pangea-ruins_normal_lone-magnetite,홀자철석,EarthSci,판게아 유적,판게아 유적,Landmark,Normal,광물형,Solo,해저·해팽,EarthSci,90,6,48,자기충격:근접,11,1,,,,쌍둥자철석이 아직 하나이던 어린 상태. 동태평양 해팽 구역에서 서식한다.,
+earthsci_pangea-ruins_miniboss_rift-rock-giant,균열암석거인,EarthSci,판게아 유적,판게아 유적,Landmark,MiniBoss,광물형,Solo,지상·열곡대,EarthSci,110,7,70,암석강타:근접; 균열장판:범위형,17,2,판게아증거_베게너:1,,,동아프리카 열곡대의 갈라지는 대지를 형상화한 암석 거인. 판 조각 위에서 싸우며 몸이 점점 갈라진다 — 3종 중 가장 느리고 정직함(진입 관문 역할).,
+earthsci_pangea-ruins_miniboss_vent-chimney,열수구굴뚝괴물,EarthSci,판게아 유적,판게아 유적,Landmark,MiniBoss,광물형,Solo,해저·해령,EarthSci,120,7,80,광물분출:원거리; 압력파폭발:광역,19,2,판게아증거_홈스:1,,,대서양 중앙해령의 열수 분출구가 응결되어 생명을 얻은 광물 덩어리. 대류 메커니즘을 광물분출과 압력파로 형상화한다.,
+earthsci_pangea-ruins_miniboss_twin-magnetite,쌍둥자철석,EarthSci,판게아 유적,판게아 유적,Landmark,MiniBoss,광물형,Solo,해저·해팽,EarthSci,140,8,95,대칭공격:광역,21,3,판게아증거_헤스:1,,,동태평양 해팽의 대칭 자기줄무늬 증거를 형상화한 쌍둥이 자철석 결정체. 두 개체가 항상 대칭 위치에서 동시 공격 — 3종 중 가장 빠르고 복잡함(최고 난이도).,
+earthsci_pangea-ruins_boss_wegener,베게너,EarthSci,판게아 유적,판게아 유적,Landmark,Boss,,Solo,,EarthSci,,,,,,,,,,BossDef(07_보스전.md·베게너.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Wegener
+earthsci_pangea-ruins_boss_holmes,홈스,EarthSci,판게아 유적,판게아 유적,Landmark,Boss,,Solo,,EarthSci,,,,,,,,,,BossDef(07_보스전.md·홈스.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Holmes
+earthsci_pangea-ruins_boss_hess,헤스,EarthSci,판게아 유적,판게아 유적,Landmark,Boss,,Solo,,EarthSci,,,,,,,,,,BossDef(07_보스전.md·헤스.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Hess
 
-# 거대 천문대 피라미드(천문 부족, 권장 lv14-19): 등반부 공통 잡몹 2종(별자리 수호자 정령 계열) + 계단별 전용 3종(중간보스 미니어 버전)
-earthsci_pyramid-observatory_normal_star-swarm-spirit,별무리정령,EarthSci,천문 부족,거대 천문대 피라미드,Landmark,Normal,정령,Swarm,공중,14,15,EarthSci,110,7,65,빛산탄:원거리,14,1,,,,밤하늘을 떠도는 작은 빛 입자들이 모여 이룬 정령. 반투명한 별무리 형태로 공중을 떠다니다가 빛을 협사해 공격한다.,
-earthsci_pyramid-observatory_normal_relief-guardian,부조수호상,EarthSci,천문 부족,거대 천문대 피라미드,Landmark,Normal,정령,Solo,지상,14,15,EarthSci,125,9,68,근접타격:근접,14,1,,,,피라미드 계단을 장식하던 석상 부조가 생명을 얻어 걸어다니는 수호상. 몸에 새겨진 별자리 문양이 움직일 때마다 희미하게 빛난다.,
-earthsci_pyramid-observatory_normal_baby-sun,새끼태양,EarthSci,천문 부족,거대 천문대 피라미드,Landmark,Normal,천체,Solo,공중,15,16,EarthSci,140,9,75,공전충돌:이동형,17,1,,,,떠도는 소형태양의 미니어 버전. 공전하는 행성 없이 홀로 반짝이며 코페르니쿠스 계단을 떠돈다.,
-earthsci_pyramid-observatory_normal_lone-moon,홀로위성,EarthSci,천문 부족,거대 천문대 피라미드,Landmark,Normal,천체,Solo,공중,16,17,EarthSci,160,10,85,위성돌진:이동형,19,1,,,,목성위성무리에서 떨어져나온 작은 위성 하나. 무리를 이루지 못한 채 갈릴레이 계단을 홀로 떠돈다.,
-earthsci_pyramid-observatory_normal_short-tail-comet,짧은꼬리혜성,EarthSci,천문 부족,거대 천문대 피라미드,Landmark,Normal,천체,Solo,공중,17,18,EarthSci,180,12,95,타원돌진:이동형,22,1,,,,타원궤도혜성의 미니어 버전. 꼬리가 짧아 궤도가 불안정하며 케플러 계단을 빠르게 가로지른다.,
-earthsci_pyramid-observatory_miniboss_drifting-sun,떠도는소형태양,EarthSci,천문 부족,거대 천문대 피라미드,Landmark,MiniBoss,천체,Solo,공중,16,16,EarthSci,170,10,110,공전장판조임:장판,25,2,천문열쇠_코페르니쿠스:1,,,자신을 중심으로 작은 행성들이 공전하는 미니어처 태양계 그 자체. 중심은 거의 정지한 채 공전 장판이 점점 조여들며 접근 — 지동설을 전투 구도로 직역한 3종 중 가장 정직한 관문.,
-earthsci_pyramid-observatory_miniboss_jovian-moons,목성위성무리,EarthSci,천문 부족,거대 천문대 피라미드,Landmark,MiniBoss,천체,Solo,공중,17,17,EarthSci,200,12,125,시차위성돌진:이동형,28,2,천문열쇠_갈릴레이:1,,,갈릴레이가 발견한 목성의 4대 위성(이오·유로파·가니메드·칼리스토)이 살아 움직이는 무리. 각기 다른 거리에서 공전하다 안쪽부터 순차적으로 근접 돌진한다.,
-earthsci_pyramid-observatory_miniboss_elliptical-comet,타원궤도혜성,EarthSci,천문 부족,거대 천문대 피라미드,Landmark,MiniBoss,천체,Solo,공중,18,19,EarthSci,240,14,150,근일점돌진:이동형,32,3,천문열쇠_케플러:1,,,길게 늘어진 타원 궤도를 실제로 그리며 이동하는 혜성체. 원일점에서는 느리게 접근하다 근일점 진입 순간 급가속해 돌진한다(케플러 제2법칙 직역) — 3종 중 가장 복잡한 최고 난이도.,
-earthsci_pyramid-observatory_boss_copernicus,코페르니쿠스,EarthSci,천문 부족,거대 천문대 피라미드,Landmark,Boss,,Solo,,16,18,EarthSci,,,,,,,,,,BossDef(07_보스전.md·코페르니쿠스.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Copernicus
-earthsci_pyramid-observatory_boss_galileo,갈릴레이,EarthSci,천문 부족,거대 천문대 피라미드,Landmark,Boss,,Solo,,16,18,EarthSci,,,,,,,,,,BossDef(07_보스전.md·갈릴레이.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Galileo
-earthsci_pyramid-observatory_boss_kepler,케플러,EarthSci,천문 부족,거대 천문대 피라미드,Landmark,Boss,,Solo,,16,19,EarthSci,,,,,,,,,,BossDef(07_보스전.md·케플러.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Kepler
+# 거대 천문대 피라미드(천문 부족): 등반부 공통 잡몹 2종(별자리 수호자 정령 계열) + 계단별 전용 3종(중간보스 미니어 버전)
+earthsci_pyramid-observatory_normal_star-swarm-spirit,별무리정령,EarthSci,천문 부족,거대 천문대 피라미드,Landmark,Normal,정령,Swarm,공중,EarthSci,70,5,40,빛산탄:원거리,10,1,,,,밤하늘을 떠도는 작은 빛 입자들이 모여 이룬 정령. 반투명한 별무리 형태로 공중을 떠다니다가 빛을 협사해 공격한다.,
+earthsci_pyramid-observatory_normal_relief-guardian,부조수호상,EarthSci,천문 부족,거대 천문대 피라미드,Landmark,Normal,정령,Solo,지상,EarthSci,65,4,40,근접타격:근접,10,1,,,,피라미드 계단을 장식하던 석상 부조가 생명을 얻어 걸어다니는 수호상. 몸에 새겨진 별자리 문양이 움직일 때마다 희미하게 빛난다.,
+earthsci_pyramid-observatory_normal_baby-sun,새끼태양,EarthSci,천문 부족,거대 천문대 피라미드,Landmark,Normal,천체,Solo,공중,EarthSci,75,5,45,공전충돌:이동형,10,1,,,,떠도는 소형태양의 미니어 버전. 공전하는 행성 없이 홀로 반짝이며 코페르니쿠스 계단을 떠돈다.,
+earthsci_pyramid-observatory_normal_lone-moon,홀로위성,EarthSci,천문 부족,거대 천문대 피라미드,Landmark,Normal,천체,Solo,공중,EarthSci,85,6,46,위성돌진:이동형,11,1,,,,목성위성무리에서 떨어져나온 작은 위성 하나. 무리를 이루지 못한 채 갈릴레이 계단을 홀로 떠돈다.,
+earthsci_pyramid-observatory_normal_short-tail-comet,짧은꼬리혜성,EarthSci,천문 부족,거대 천문대 피라미드,Landmark,Normal,천체,Solo,공중,EarthSci,90,6,48,타원돌진:이동형,11,1,,,,타원궤도혜성의 미니어 버전. 꼬리가 짧아 궤도가 불안정하며 케플러 계단을 빠르게 가로지른다.,
+earthsci_pyramid-observatory_miniboss_drifting-sun,떠도는소형태양,EarthSci,천문 부족,거대 천문대 피라미드,Landmark,MiniBoss,천체,Solo,공중,EarthSci,110,7,70,공전장판조임:장판,17,2,천문열쇠_코페르니쿠스:1,,,자신을 중심으로 작은 행성들이 공전하는 미니어처 태양계 그 자체. 중심은 거의 정지한 채 공전 장판이 점점 조여들며 접근 — 지동설을 전투 구도로 직역한 3종 중 가장 정직한 관문.,
+earthsci_pyramid-observatory_miniboss_jovian-moons,목성위성무리,EarthSci,천문 부족,거대 천문대 피라미드,Landmark,MiniBoss,천체,Solo,공중,EarthSci,120,7,80,시차위성돌진:이동형,19,2,천문열쇠_갈릴레이:1,,,갈릴레이가 발견한 목성의 4대 위성(이오·유로파·가니메드·칼리스토)이 살아 움직이는 무리. 각기 다른 거리에서 공전하다 안쪽부터 순차적으로 근접 돌진한다.,
+earthsci_pyramid-observatory_miniboss_elliptical-comet,타원궤도혜성,EarthSci,천문 부족,거대 천문대 피라미드,Landmark,MiniBoss,천체,Solo,공중,EarthSci,140,8,95,근일점돌진:이동형,21,3,천문열쇠_케플러:1,,,길게 늘어진 타원 궤도를 실제로 그리며 이동하는 혜성체. 원일점에서는 느리게 접근하다 근일점 진입 순간 급가속해 돌진한다(케플러 제2법칙 직역) — 3종 중 가장 복잡한 최고 난이도.,
+earthsci_pyramid-observatory_boss_copernicus,코페르니쿠스,EarthSci,천문 부족,거대 천문대 피라미드,Landmark,Boss,,Solo,,EarthSci,,,,,,,,,,BossDef(07_보스전.md·코페르니쿠스.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Copernicus
+earthsci_pyramid-observatory_boss_galileo,갈릴레이,EarthSci,천문 부족,거대 천문대 피라미드,Landmark,Boss,,Solo,,EarthSci,,,,,,,,,,BossDef(07_보스전.md·갈릴레이.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Galileo
+earthsci_pyramid-observatory_boss_kepler,케플러,EarthSci,천문 부족,거대 천문대 피라미드,Landmark,Boss,,Solo,,EarthSci,,,,,,,,,,BossDef(07_보스전.md·케플러.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Kepler
 
-# 세계 해류 신전(해양 부족, 권장 lv18-23): 갈래 공통 잡몹 2종(해류 기운을 받은 해양 생물) + 갈래별 전용 3종(중간보스 미니어 버전)
-earthsci_ocean-current-temple_normal_current-anchovy-swarm,조류멸치떼,EarthSci,해양 부족,세계 해류 신전,Landmark,Normal,해양생물,Swarm,수중,18,19,EarthSci,140,9,85,멸치돌진:원거리,18,1,,,,해류에 떠밀려 다니며 무리 지어 돌진하는 멸치 떼. 해류의 기운을 받아 대열째로 방향을 바꾸며 공격한다.,
-earthsci_ocean-current-temple_normal_coral-crab,산호갑각류,EarthSci,해양 부족,세계 해류 신전,Landmark,Normal,해양생물,Swarm,지상·해저,18,19,EarthSci,150,11,88,집게치기:근접,18,1,,,,해류의 기운이 석회화되어 갑각류의 몸에 산호처럼 스며든 형태. 신전 바닥을 기어다니며 집게로 공격한다.,
-earthsci_ocean-current-temple_normal_baby-drift-turtle,새끼표류거북,EarthSci,해양 부족,세계 해류 신전,Landmark,Normal,해양생물,Solo,수중,19,20,EarthSci,170,12,98,얼음갑각돌진:근접,21,1,,,,표류얼음거북의 미니어 버전. 난센 갈래에서 서식한다.,
-earthsci_ocean-current-temple_normal_baby-spiral-eel,애기나선장어,EarthSci,해양 부족,세계 해류 신전,Landmark,Normal,해양생물,Solo,수중,20,21,EarthSci,195,13,108,나선돌진:이동형,24,1,,,,나선조류장어의 미니어 버전. 에크만 갈래에서 서식한다.,
-earthsci_ocean-current-temple_normal_baby-circulation-whale,새끼순환고래,EarthSci,해양 부족,세계 해류 신전,Landmark,Normal,해양생물,Solo,수중,21,22,EarthSci,220,15,118,순환파동:광역,27,1,,,,심해순환고래의 미니어 버전. 스토멜 갈래에서 서식한다.,
-earthsci_ocean-current-temple_miniboss_drift-ice-turtle,표류얼음거북,EarthSci,해양 부족,세계 해류 신전,Landmark,MiniBoss,해양생물,Solo,수중,20,20,EarthSci,195,11,125,직선돌진:근접; 얼음파편산탄:원거리,38,2,해류열쇠_난센:1,,,북극 표류얼음을 등껍질처럼 뒤집어쓴 거대 거북. 난센이 북극 표류 중 에크만 수송 현상을 관찰했다는 업적을 느리고 정직한 2패턴으로 형상화 — 3종 중 가장 정직함(진입 관문 역할).,
-earthsci_ocean-current-temple_miniboss_spiral-current-eel,나선조류장어,EarthSci,해양 부족,세계 해류 신전,Landmark,MiniBoss,해양생물,Solo,수중,21,21,EarthSci,230,13,145,나선투사:원거리,42,2,해류열쇠_에크만:1,,,몸이 나선형으로 흐르는 장어형 생물. 에크만 나선(바람과 다른 각도로 흐르는 현상)을 투사체의 나선 궤적으로 직역한다.,
-earthsci_ocean-current-temple_miniboss_deep-circulation-whale,심해순환고래,EarthSci,해양 부족,세계 해류 신전,Landmark,MiniBoss,해양생물,Solo,수중,22,23,EarthSci,275,16,175,다중순환장판:광역,48,3,해류열쇠_스토멜:1,,,전 지구 심해 순환(컨베이어벨트) 무늬가 발광 문양으로 새겨진 거대한 고래. 스토멜의 종합 모델을 반영해 여러 순환 흐름이 동시에 발생하는 광역 장판을 사용 — 3종 중 가장 복잡하고 강력함(최고 난이도).,
-earthsci_ocean-current-temple_boss_nansen,난센,EarthSci,해양 부족,세계 해류 신전,Landmark,Boss,,Solo,,20,22,EarthSci,,,,,,,,,,BossDef(07_보스전.md·난센.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Nansen
-earthsci_ocean-current-temple_boss_ekman,에크만,EarthSci,해양 부족,세계 해류 신전,Landmark,Boss,,Solo,,20,22,EarthSci,,,,,,,,,,BossDef(07_보스전.md·에크만.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Ekman
-earthsci_ocean-current-temple_boss_stommel,스토멜,EarthSci,해양 부족,세계 해류 신전,Landmark,Boss,,Solo,,20,23,EarthSci,,,,,,,,,,BossDef(07_보스전.md·스토멜.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Stommel
+# 세계 해류 신전(해양 부족): 갈래 공통 잡몹 2종(해류 기운을 받은 해양 생물) + 갈래별 전용 3종(중간보스 미니어 버전)
+earthsci_ocean-current-temple_normal_current-anchovy-swarm,조류멸치떼,EarthSci,해양 부족,세계 해류 신전,Landmark,Normal,해양생물,Swarm,수중,EarthSci,70,5,40,멸치돌진:원거리,10,1,,,,해류에 떠밀려 다니며 무리 지어 돌진하는 멸치 떼. 해류의 기운을 받아 대열째로 방향을 바꾸며 공격한다.,
+earthsci_ocean-current-temple_normal_coral-crab,산호갑각류,EarthSci,해양 부족,세계 해류 신전,Landmark,Normal,해양생물,Swarm,지상·해저,EarthSci,65,4,40,집게치기:근접,10,1,,,,해류의 기운이 석회화되어 갑각류의 몸에 산호처럼 스며든 형태. 신전 바닥을 기어다니며 집게로 공격한다.,
+earthsci_ocean-current-temple_normal_baby-drift-turtle,새끼표류거북,EarthSci,해양 부족,세계 해류 신전,Landmark,Normal,해양생물,Solo,수중,EarthSci,75,5,45,얼음갑각돌진:근접,10,1,,,,표류얼음거북의 미니어 버전. 난센 갈래에서 서식한다.,
+earthsci_ocean-current-temple_normal_baby-spiral-eel,애기나선장어,EarthSci,해양 부족,세계 해류 신전,Landmark,Normal,해양생물,Solo,수중,EarthSci,85,6,46,나선돌진:이동형,11,1,,,,나선조류장어의 미니어 버전. 에크만 갈래에서 서식한다.,
+earthsci_ocean-current-temple_normal_baby-circulation-whale,새끼순환고래,EarthSci,해양 부족,세계 해류 신전,Landmark,Normal,해양생물,Solo,수중,EarthSci,90,6,48,순환파동:광역,11,1,,,,심해순환고래의 미니어 버전. 스토멜 갈래에서 서식한다.,
+earthsci_ocean-current-temple_miniboss_drift-ice-turtle,표류얼음거북,EarthSci,해양 부족,세계 해류 신전,Landmark,MiniBoss,해양생물,Solo,수중,EarthSci,110,7,70,직선돌진:근접; 얼음파편산탄:원거리,17,2,해류열쇠_난센:1,,,북극 표류얼음을 등껍질처럼 뒤집어쓴 거대 거북. 난센이 북극 표류 중 에크만 수송 현상을 관찰했다는 업적을 느리고 정직한 2패턴으로 형상화 — 3종 중 가장 정직함(진입 관문 역할).,
+earthsci_ocean-current-temple_miniboss_spiral-current-eel,나선조류장어,EarthSci,해양 부족,세계 해류 신전,Landmark,MiniBoss,해양생물,Solo,수중,EarthSci,120,7,80,나선투사:원거리,19,2,해류열쇠_에크만:1,,,몸이 나선형으로 흐르는 장어형 생물. 에크만 나선(바람과 다른 각도로 흐르는 현상)을 투사체의 나선 궤적으로 직역한다.,
+earthsci_ocean-current-temple_miniboss_deep-circulation-whale,심해순환고래,EarthSci,해양 부족,세계 해류 신전,Landmark,MiniBoss,해양생물,Solo,수중,EarthSci,140,8,95,다중순환장판:광역,21,3,해류열쇠_스토멜:1,,,전 지구 심해 순환(컨베이어벨트) 무늬가 발광 문양으로 새겨진 거대한 고래. 스토멜의 종합 모델을 반영해 여러 순환 흐름이 동시에 발생하는 광역 장판을 사용 — 3종 중 가장 복잡하고 강력함(최고 난이도).,
+earthsci_ocean-current-temple_boss_nansen,난센,EarthSci,해양 부족,세계 해류 신전,Landmark,Boss,,Solo,,EarthSci,,,,,,,,,,BossDef(07_보스전.md·난센.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Nansen
+earthsci_ocean-current-temple_boss_ekman,에크만,EarthSci,해양 부족,세계 해류 신전,Landmark,Boss,,Solo,,EarthSci,,,,,,,,,,BossDef(07_보스전.md·에크만.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Ekman
+earthsci_ocean-current-temple_boss_stommel,스토멜,EarthSci,해양 부족,세계 해류 신전,Landmark,Boss,,Solo,,EarthSci,,,,,,,,,,BossDef(07_보스전.md·스토멜.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Stommel
 
-# 판구조 산맥 신전(지질 부족, 권장 lv22-27): 갱도 공통 잡몹 2종(되살아난 화석) + 갱도별 전용 3종(중간보스 미니어 버전)
-earthsci_tectonic-mountain-temple_normal_fossil-trilobite,화석삼엽류,EarthSci,지질 부족,판구조 산맥 신전,Landmark,Normal,화석생물,Swarm,지상,22,23,EarthSci,170,11,100,집게협공:근접,24,1,,,,옛적에 갇힌 삼엽류가 지진의 기운으로 다시 움직이기 시작한 화석 생물. 갱도 바닥을 기어다니며 집게로 공격한다.,
-earthsci_tectonic-mountain-temple_normal_fossil-pterosaur,화석익룡류,EarthSci,지질 부족,판구조 산맥 신전,Landmark,Normal,화석생물,Swarm,공중,22,23,EarthSci,180,12,103,빛가루낙하:원거리,24,1,,,,화석화된 익룡이 되살아나 갱도 천장을 날아다니는 화석 생물. 날갯짓으로 발광 광물 가루를 떨어뜨려 공격한다.,
-earthsci_tectonic-mountain-temple_normal_baby-fossil-amphibian,새끼화석양서류,EarthSci,지질 부족,판구조 산맥 신전,Landmark,Normal,화석생물,Solo,지상,23,24,EarthSci,195,13,112,느린돌진:근접,27,1,,,,화석양서류의 미니어 버전. 허턴 갱도에서 서식한다.,
-earthsci_tectonic-mountain-temple_normal_baby-tremor-fossil,애기진동화석룡,EarthSci,지질 부족,판구조 산맥 신전,Landmark,Normal,화석생물,Solo,지상,24,25,EarthSci,220,15,122,진동파:광역,30,1,,,,진동화석룡의 미니어 버전. 리히터 갱도에서 서식한다.,
-earthsci_tectonic-mountain-temple_normal_fossil-sprout,화석새순,EarthSci,지질 부족,판구조 산맥 신전,Landmark,Normal,화석생물,Solo,지상,25,26,EarthSci,245,17,132,체감진동:광역,33,1,,,,체감화석초의 미니어 버전. 메르칼리 갱도에서 서식한다.,
-earthsci_tectonic-mountain-temple_miniboss_fossil-amphibian,화석양서류,EarthSci,지질 부족,판구조 산맥 신전,Landmark,MiniBoss,화석생물,Solo,지상,24,24,EarthSci,220,13,145,근접돌진:근접; 물웅덩이장판:지속,40,2,산맥열쇠_허턴:1,,,되살아난 고대 양서류. 허턴의 동일과정설("현재는 과거를 해석하는 열쇠")을 느리고 정직한 2패턴으로 형상화 — 3종 중 가장 정직함(진입 관문 역할).,
-earthsci_tectonic-mountain-temple_miniboss_tremor-fossil-dragon,진동화석룡,EarthSci,지질 부족,판구조 산맥 신전,Landmark,MiniBoss,화석생물,Solo,지상,25,25,EarthSci,260,16,170,단계별진동파:광역,44,2,산맥열쇠_리히터:1,,,되살아난 진동 장치 같은 화석룡. 리히터의 지진 규모(객관적 수치 측정)를 약·중·강 3단계 순차 발동 진동파로 직역한다.,
-earthsci_tectonic-mountain-temple_miniboss_impact-fossil-plant,체감화석초,EarthSci,지질 부족,판구조 산맥 신전,Landmark,MiniBoss,화석생물,Solo,지상,26,27,EarthSci,310,19,200,체감디버프:근접,50,3,산맥열쇠_메르칼리:1,,,되살아난 피해 식물. 메르칼리의 지진 진도(주관적 체감 피해)를 화면 흔들림·조작 반전 등 체감형 디버프로 직역 — 3종 중 가장 위협적인 최고 난이도.,
-earthsci_tectonic-mountain-temple_boss_hutton,허턴,EarthSci,지질 부족,판구조 산맥 신전,Landmark,Boss,,Solo,,24,26,EarthSci,,,,,,,,,,BossDef(07_보스전.md·허턴.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Hutton
-earthsci_tectonic-mountain-temple_boss_richter,리히터,EarthSci,지질 부족,판구조 산맥 신전,Landmark,Boss,,Solo,,24,26,EarthSci,,,,,,,,,,BossDef(07_보스전.md·리히터.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Richter
-earthsci_tectonic-mountain-temple_boss_mercalli,메르칼리,EarthSci,지질 부족,판구조 산맥 신전,Landmark,Boss,,Solo,,24,27,EarthSci,,,,,,,,,,BossDef(07_보스전.md·메르칼리.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Mercalli
+# 판구조 산맥 신전(지질 부족): 갱도 공통 잡몹 2종(되살아난 화석) + 갱도별 전용 3종(중간보스 미니어 버전)
+earthsci_tectonic-mountain-temple_normal_fossil-trilobite,화석삼엽류,EarthSci,지질 부족,판구조 산맥 신전,Landmark,Normal,화석생물,Swarm,지상,EarthSci,70,5,40,집게협공:근접,10,1,,,,옛적에 갇힌 삼엽류가 지진의 기운으로 다시 움직이기 시작한 화석 생물. 갱도 바닥을 기어다니며 집게로 공격한다.,
+earthsci_tectonic-mountain-temple_normal_fossil-pterosaur,화석익룡류,EarthSci,지질 부족,판구조 산맥 신전,Landmark,Normal,화석생물,Swarm,공중,EarthSci,65,4,40,빛가루낙하:원거리,10,1,,,,화석화된 익룡이 되살아나 갱도 천장을 날아다니는 화석 생물. 날갯짓으로 발광 광물 가루를 떨어뜨려 공격한다.,
+earthsci_tectonic-mountain-temple_normal_baby-fossil-amphibian,새끼화석양서류,EarthSci,지질 부족,판구조 산맥 신전,Landmark,Normal,화석생물,Solo,지상,EarthSci,75,5,45,느린돌진:근접,10,1,,,,화석양서류의 미니어 버전. 허턴 갱도에서 서식한다.,
+earthsci_tectonic-mountain-temple_normal_baby-tremor-fossil,애기진동화석룡,EarthSci,지질 부족,판구조 산맥 신전,Landmark,Normal,화석생물,Solo,지상,EarthSci,85,6,46,진동파:광역,11,1,,,,진동화석룡의 미니어 버전. 리히터 갱도에서 서식한다.,
+earthsci_tectonic-mountain-temple_normal_fossil-sprout,화석새순,EarthSci,지질 부족,판구조 산맥 신전,Landmark,Normal,화석생물,Solo,지상,EarthSci,90,6,48,체감진동:광역,11,1,,,,체감화석초의 미니어 버전. 메르칼리 갱도에서 서식한다.,
+earthsci_tectonic-mountain-temple_miniboss_fossil-amphibian,화석양서류,EarthSci,지질 부족,판구조 산맥 신전,Landmark,MiniBoss,화석생물,Solo,지상,EarthSci,110,7,70,근접돌진:근접; 물웅덩이장판:지속,17,2,산맥열쇠_허턴:1,,,되살아난 고대 양서류. 허턴의 동일과정설("현재는 과거를 해석하는 열쇠")을 느리고 정직한 2패턴으로 형상화 — 3종 중 가장 정직함(진입 관문 역할).,
+earthsci_tectonic-mountain-temple_miniboss_tremor-fossil-dragon,진동화석룡,EarthSci,지질 부족,판구조 산맥 신전,Landmark,MiniBoss,화석생물,Solo,지상,EarthSci,120,7,80,단계별진동파:광역,19,2,산맥열쇠_리히터:1,,,되살아난 진동 장치 같은 화석룡. 리히터의 지진 규모(객관적 수치 측정)를 약·중·강 3단계 순차 발동 진동파로 직역한다.,
+earthsci_tectonic-mountain-temple_miniboss_impact-fossil-plant,체감화석초,EarthSci,지질 부족,판구조 산맥 신전,Landmark,MiniBoss,화석생물,Solo,지상,EarthSci,140,8,95,체감디버프:근접,21,3,산맥열쇠_메르칼리:1,,,되살아난 피해 식물. 메르칼리의 지진 진도(주관적 체감 피해)를 화면 흔들림·조작 반전 등 체감형 디버프로 직역 — 3종 중 가장 위협적인 최고 난이도.,
+earthsci_tectonic-mountain-temple_boss_hutton,허턴,EarthSci,지질 부족,판구조 산맥 신전,Landmark,Boss,,Solo,,EarthSci,,,,,,,,,,BossDef(07_보스전.md·허턴.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Hutton
+earthsci_tectonic-mountain-temple_boss_richter,리히터,EarthSci,지질 부족,판구조 산맥 신전,Landmark,Boss,,Solo,,EarthSci,,,,,,,,,,BossDef(07_보스전.md·리히터.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Richter
+earthsci_tectonic-mountain-temple_boss_mercalli,메르칼리,EarthSci,지질 부족,판구조 산맥 신전,Landmark,Boss,,Solo,,EarthSci,,,,,,,,,,BossDef(07_보스전.md·메르칼리.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Mercalli
 
 # ===== Math (수학 — 아틀란티스) =====
 # 국가: 유클리드 평원 / 산술의 탑 / 해석의 바다 / 대수의 숲 / 논리·집합의 고원 / 아크시움
 # 랜드마크: 유클리드 대성당, 힐베르트의 무한 호텔, 뉴턴-라이프니츠 폭포, 페르마의 마지막 서재, 러셀의 역설 탑, 세계수 아크시움
-math_forest-algebra_normal_unknown-vine,미지수 덩굴,Math,대수의 숲,대수의 숲,MidZone,Normal,식물형,Swarm,지상·밀림,3,5,Math,50,3,30,채찍질:근접,5,1,,,,대수의 숲에서 스스로도 미지수처럼 형태가 불명확한 덩굴형 몬스터. 여러 마리가 함께 자란다.,
-math_logic-highlands_miniboss_cantor-dragon,칸토르의 용,Math,논리·집합의 고원,러셀의 역설 탑,Landmark,MiniBoss,용족,Solo,공중,15,18,Math,220,10,150,무한도약:이동형; 모순의숨결:원거리,40,3,증명조각:1,,,무한대를 오가는 드래곤형 생물. 논리·집합의 고원에서 목격된다.,
-math_euclid-plains_boss_euclid,유클리드,Math,유클리드 평원,유클리드 대성당,Landmark,Boss,,Solo,,20,25,Math,,,,,,,,,,,BossDef(07_보스전.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Euclid
+math_forest-algebra_normal_unknown-vine,미지수 덩굴,Math,대수의 숲,대수의 숲,MidZone,Normal,식물형,Swarm,지상·밀림,Math,70,5,40,채찍질:근접,10,1,,,,대수의 숲에서 스스로도 미지수처럼 형태가 불명확한 덩굴형 몬스터. 여러 마리가 함께 자란다.,
+math_logic-highlands_miniboss_cantor-dragon,칸토르의 용,Math,논리·집합의 고원,러셀의 역설 탑,Landmark,MiniBoss,용족,Solo,공중,Math,120,7,80,무한도약:이동형; 모순의숨결:원거리,19,3,증명조각:1,,,무한대를 오가는 드래곤형 생물. 논리·집합의 고원에서 목격된다.,
+math_euclid-plains_boss_euclid,유클리드,Math,유클리드 평원,유클리드 대성당,Landmark,Boss,,Solo,,Math,,,,,,,,,,BossDef(07_보스전.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Euclid
 
 # ===== Info (정보 — 사이버네시아) =====
 # 국가: 튜링 중앙집권국 / 오픈소스 연합 / 암호화 제국 / 데이터 마이닝 공화국 / 해커 길드
