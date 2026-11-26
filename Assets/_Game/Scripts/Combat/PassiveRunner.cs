@@ -252,7 +252,7 @@ public class PassiveRunner
             if (!_isActive) continue;
             foreach (var mod in n.mods)
                 if (mod.Stat == k && !mod.IsPartyWide && mod.EnemyAuraRadius <= 0f)
-                    m *= mod.Multiplier(lostHpPercent);
+                    m *= mod.Multiplier(lostHpPercent, string.IsNullOrEmpty(mod.CounterId) ? 0 : _o.CounterValue(mod.CounterId));
         }
         return m;
     }

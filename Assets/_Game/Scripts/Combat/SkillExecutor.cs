@@ -104,9 +104,27 @@ public static class SkillExecutor
         // 적 대상은 형태 판정으로 한 번만 수집(거리순). 마일스톤 범위 보너스 반영.
         List<(ISkillTarget t, float d)> area = null;
 
+        // 카운터는 행동 시작 시점 값으로 읽고(스냅샷), 행동이 끝난 뒤 소모한다.
+        Dictionary<string, (int value, bool full)> snap = null;
+        foreach (var en in skill.effects)
+        {
+            if (string.IsNullOrEmpty(en.counterId)) continue;
+            snap ??= new Dictionary<string, (int, bool)>();
+            if (snap.ContainsKey(en.counterId)) continue;
+            if (en.counterId == "@recent") snap[en.counterId] = (caster.RecentDistinctSkills(en.counterWindow > 0f ? en.counterWindow : 5f), false);
+            else { var cn = caster.Counter(en.counterId); snap[en.counterId] = (cn?.Value ?? 0, cn != null && cn.IsFull); }
+        }
+        bool milestone = skill.milestoneLevel > 0 && level >= skill.milestoneLevel;
+
         foreach (var entry in skill.effects)
         {
+            if (entry.requireCounterFull && (snap == null || !snap.TryGetValue(entry.counterId ?? "", out var fs) || !fs.full)) continue;
             float v = SkillScaling.ScaleEffectValue(entry, level);
+            if (entry.counterMode != CounterMode.None && snap != null && !string.IsNullOrEmpty(entry.counterId) && snap.TryGetValue(entry.counterId, out var cv))
+            {
+                float coeff = milestone && entry.milestoneCounterCoeff != 0f ? entry.milestoneCounterCoeff : entry.counterCoeff;
+                v = CounterFormula.Scale(entry.counterMode, v, coeff, cv.value);
+            }
 
             if (entry.target == TargetScope.EnemyArea)
             {
@@ -123,6 +141,11 @@ public static class SkillExecutor
                 }
             }
         }
+
+        // 행동이 끝난 뒤 카운터 소모("@recent"는 소모하지 않는다)
+        foreach (var en in skill.effects)
+            if (en.counterConsume && !string.IsNullOrEmpty(en.counterId) && en.counterId != "@recent")
+                caster.Counter(en.counterId)?.ConsumeAll();
     }
 
     static List<(ISkillTarget t, float d)> CollectInShape(SkillDef skill, EffectiveSkill eff, Transform origin)

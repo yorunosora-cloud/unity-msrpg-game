@@ -42,4 +42,13 @@ public struct SkillEffectEntry
     public float           milestoneDuration;
     public string          whenForm;     // OnFormChange 패시브: 새 폼이 이 id일 때만 적용(비면 항상)
     public bool            consumeOnHit; // 버프가 다음 공격 행동에서 소모됨(가속도·양자화)
+
+    // 카운터 연동(23-A). counterId "@recent" = 최근 counterWindow초 안에 쓴 서로 다른 스킬 수
+    public string          counterId;
+    public CounterMode     counterMode;           // Damage: None=무시 / Linear=base+coeff×n / Quadratic=base+coeff×n²
+    public float           counterCoeff;
+    public float           milestoneCounterCoeff; // Lv.3 교체 계수(0=교체 없음)
+    public bool            counterConsume;        // 행동 후 카운터 전부 소모
+    public bool            requireCounterFull;    // 카운터가 가득일 때만 이 효과 적용
+    public float           counterWindow;         // "@recent" 전용 창(초, 0이면 5)
 }

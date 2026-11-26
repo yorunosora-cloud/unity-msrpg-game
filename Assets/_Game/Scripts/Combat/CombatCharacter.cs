@@ -45,6 +45,9 @@ public class CombatCharacter
             foreach (var sk in _def.skills) if (sk != null && sk.startUnlocked) { _hasStartUnlocked = true; break; }
         _passives = new PassiveRunner(this, _def.skills);
         _passives.OnFire += f => PassiveFired?.Invoke(f);
+        if (_def.counters != null)
+            foreach (var cs in _def.counters)
+                if (!string.IsNullOrEmpty(cs.id)) { _counterSpecs.Add(cs); _counters[cs.id] = new SkillCounter(cs); }
 
         // 세션 시작 시 HP/MP 풀
         var s = Stats();
@@ -53,6 +56,53 @@ public class CombatCharacter
 
         // 스킬 쿨다운 배열 초기화 (skills가 null이면 빈 배열)
         _cooldowns = new float[_def.skills?.Length ?? 0];
+    }
+
+    // ── 스킬 카운터 (23-A) ──
+
+    readonly Dictionary<string, SkillCounter> _counters = new();
+    readonly List<CounterSpec> _counterSpecs = new();
+    readonly DistinctSkillWindow _recent = new DistinctSkillWindow(60f);
+
+    /// <summary>테스트용 시계 주입. null이면 Time.time.</summary>
+    public static Func<float> Clock;
+    static float Now => Clock != null ? Clock() : Time.time;
+
+    public SkillCounter Counter(string id) => id != null && _counters.TryGetValue(id, out var c) ? c : null;
+    public int CounterValue(string id) => Counter(id)?.Value ?? 0;
+
+    /// <summary>최근 windowSeconds초 안에 시전한 서로 다른 스킬 수.</summary>
+    public int RecentDistinctSkills(float windowSeconds) => _recent.Count(Now, windowSeconds);
+
+    void FireCounters(CounterTrigger ev)
+    {
+        foreach (var s in _counterSpecs)
+        {
+            var c = _counters[s.id];
+            if ((s.resetOn & ev) != 0) c.Clear();
+            if ((s.gainOn & ev) != 0) c.Add(1);
+        }
+    }
+
+    void SyncCounterMilestones()
+    {
+        foreach (var s in _counterSpecs)
+        {
+            if (string.IsNullOrEmpty(s.milestoneSkillId) || _def.skills == null) continue;
+            for (int i = 0; i < _def.skills.Length; i++)
+            {
+                var sk = _def.skills[i];
+                if (sk == null || sk.id != s.milestoneSkillId) continue;
+                _counters[s.id].SetMilestone(sk.milestoneLevel > 0 && SkillLevel(i) >= sk.milestoneLevel);
+                break;
+            }
+        }
+    }
+
+    void ClearCounters()
+    {
+        foreach (var c in _counters.Values) c.Clear();
+        _recent.Clear();
     }
 
     // ── 식별 정보 ──────────────────────────────────────────────────────────
@@ -141,6 +191,7 @@ public class CombatCharacter
         if (hits == null || hits.Count == 0) return;
         OnCombatActivity?.Invoke();
         _passives.NotifyHits(hits, isBasic);
+        FireCounters(CounterTrigger.OnHit | CounterTrigger.OnAction | (isBasic ? CounterTrigger.OnBasicAttack : CounterTrigger.None));
     }
 
     /// <summary>적중·피격 등 전투 활동 발생(전투 시작 위치 기록용).</summary>
@@ -298,6 +349,8 @@ public class CombatCharacter
     {
         _sinceHit += dt;
         _passives.Tick(dt, isActive);
+        foreach (var c in _counters.Values) c.Tick(dt, isActive);
+        SyncCounterMilestones();
         int before = Status.Count;
         Status.Tick(dt, isActive, d => Damage(d));
         if (Status.Count != before) OnChanged?.Invoke("buff");
@@ -396,6 +449,8 @@ public class CombatCharacter
         UseMp(skill.mpCost);
         StartCooldown(i, SkillScaling.EffectiveCooldown(skill, SkillLevel(i)));
         AddProficiency(i);   // 시전 성공 시 숙련도 +1
+        _recent.Record(skill.id, Now);
+        FireCounters(CounterTrigger.OnSkillCast);
         return skill;
     }
 
@@ -520,6 +575,7 @@ public class CombatCharacter
         int dealt = before - _hp;
         OnCombatActivity?.Invoke();
         _passives.NotifyHitTaken(new HitInfo { attacker = attacker, damage = taken });
+        FireCounters(CounterTrigger.OnHitTaken);
         return dealt;
     }
 
@@ -553,6 +609,7 @@ public class CombatCharacter
         for (int i = 0; i < _cooldowns.Length; i++) _cooldowns[i] = 0f;
         Status.Clear();
         _passives.Clear();
+        ClearCounters();
 
         if (prevForm != _formId) OnFormChanged?.Invoke(prevForm, _formId, FormChangeCause.Revert);
         OnChanged?.Invoke("restore");
@@ -637,6 +694,13 @@ public class CombatCharacter
     {
         if (IsDowned) return;
         _passives.TickMotion(dt, motion);   // 이동 램프 등 활성 캐릭터 전용 틱
+        if (_counterSpecs.Count > 0)
+        {
+            float gain = StatMult(StatKind.CounterGain);
+            foreach (var s in _counterSpecs)
+                if ((s.gainOn & CounterTrigger.MovingSecond) != 0)
+                    _counters[s.id].AccumulateMoving(dt, motion.isMoving, gain);
+        }
         if (!HasForms) return;
 
         if (_revertTimer > 0f)
@@ -666,6 +730,7 @@ public class CombatCharacter
     {
         Status.Clear();
         _passives.Clear();
+        ClearCounters();
         _auto.OnSwitchIn();
         _revertTimer = -1f;
         if (HasForms && _formId != DefaultFormId) ChangeForm(DefaultFormId, FormChangeCause.Revert);

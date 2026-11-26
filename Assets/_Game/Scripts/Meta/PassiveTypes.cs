@@ -18,7 +18,7 @@ public enum PassiveTriggerType
 public enum HitCountMode { PerAction, PerTarget }                          // 공격 행동당 1회 / 적중 대상마다 1회
 public enum StackDecay   { None, ResetAfterIdle, DecayOneEvery, ConsumeAtCap }
 public enum PassiveFormulaId { None, Lorentz, Doppler, RangeWork, AxisDistance }
-public enum ModifierSource   { Constant, LostHpPercent, MovingRamp, PartyPresence }
+public enum ModifierSource   { Constant, LostHpPercent, MovingRamp, PartyPresence, Counter }   // Counter: 1 + value × 카운터 값
 
 /// <summary>스택 규칙. 스택당 수치·최대·감소 방식을 가진다. 0인 milestone 값은 교체 없음.</summary>
 [Serializable]
@@ -51,6 +51,7 @@ public struct StackSpec
 public struct PassiveModifierSpec
 {
     public ModifierSource source;
+    public string         counterId;        // source=Counter: 읽을 카운터 id
     public StatKind       stat;
     public float          value;            // Constant/PartyPresence=배율 / LostHpPercent=잃은 HP% 1당 감소 비율 / MovingRamp=초당 증분
     public float          cap;              // 상한(LostHpPercent 감소 상한, MovingRamp 증분 상한)

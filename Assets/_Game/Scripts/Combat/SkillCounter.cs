@@ -8,6 +8,19 @@ public enum CounterDecay { None, ResetAfterIdle, DecayOneEvery }
 /// <summary>스킬이 카운터 값을 위력에 반영하는 방식.</summary>
 public enum CounterMode { None, Linear, Quadratic }
 
+/// <summary>카운터가 쌓이거나 초기화되는 사건(복수 조합 가능).</summary>
+[Flags]
+public enum CounterTrigger
+{
+    None = 0,
+    OnHit = 1,          // 내가 적중(공격 행동당 1회)
+    OnHitTaken = 2,     // 내가 피격
+    OnSkillCast = 4,    // 스킬 시전 성공
+    OnBasicAttack = 8,  // 기본기 적중
+    OnAction = 16,      // 기본기·스킬 구분 없이 공격 행동 적중
+    MovingSecond = 32,  // 이동 중 1초마다(획득 배율 적용)
+}
+
 /// <summary>카운터 정의(CSV skill_counters 1행). 0인 milestoneMaxStacks는 교체 없음.</summary>
 [Serializable]
 public struct CounterSpec
@@ -17,6 +30,9 @@ public struct CounterSpec
     public int          milestoneMaxStacks;
     public CounterDecay decay;
     public float        decaySeconds;
+    public CounterTrigger gainOn;          // 이 사건마다 +1(MovingSecond는 틱에서 누적)
+    public CounterTrigger resetOn;         // 이 사건에서 0으로 초기화
+    public string       milestoneSkillId;  // 이 스킬이 마일스톤 레벨이면 milestoneMaxStacks 적용
 }
 
 /// <summary>
@@ -146,11 +162,14 @@ public class DistinctSkillWindow
     }
 
     /// <summary>now 기준 창(now−window ≤ t) 안에 기록된 서로 다른 스킬 수(경계 포함).</summary>
-    public int Count(float now)
+    public int Count(float now) => Count(now, _window);
+
+    /// <summary>창 길이를 지정해 센다(스킬마다 창이 다를 때).</summary>
+    public int Count(float now, float window)
     {
         int n = 0;
         foreach (var t in _last.Values)
-            if (now - t <= _window + 1e-5f) n++;
+            if (now - t <= window + 1e-5f) n++;
         return n;
     }
 

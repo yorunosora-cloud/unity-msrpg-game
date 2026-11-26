@@ -141,10 +141,14 @@ public class ModifierState
     }
 
     /// <summary>이 수정자가 능력치에 곱할 배율. lostHpPercent = 잃은 HP 0~100.</summary>
-    public float Multiplier(float lostHpPercent)
+    public string CounterId => _spec.counterId;
+
+    public float Multiplier(float lostHpPercent, int counterValue = 0)
     {
         switch (_spec.source)
         {
+            case ModifierSource.Counter:
+                return Mathf.Max(0f, 1f + _value * counterValue);
             case ModifierSource.LostHpPercent:
             {
                 float red = Mathf.Max(0f, lostHpPercent) * _value;
