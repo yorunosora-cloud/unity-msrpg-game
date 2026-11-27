@@ -46,6 +46,19 @@ public class Enemy : MonoBehaviour, ISkillTarget
 
     public float Spd => spd;
     public int   AttackPower => contactDamage;
+
+    [SerializeField] AttackElement attackElement = AttackElement.None;
+    public AttackElement AttackElement => attackElement;
+    public void SetAttackElement(AttackElement e) => attackElement = e;
+    public void RandomizeAttackElement(System.Func<float> roll)
+    {
+        var list = AttackElements.Randomizable;
+        attackElement = list[Mathf.Clamp(Mathf.FloorToInt(roll() * list.Length), 0, list.Length - 1)];
+    }
+    public void Dispel() => Status.Dispel();
+
+    /// <summary>추적 방향. 이동방향 반전 상태이면 반대로 간다.</summary>
+    public static Vector3 ChaseDirection(Vector3 dir, bool reversed) => reversed ? -dir : dir;
     public void  ReceiveFixedHit(int damage)
     {
         if (_unit == null || _unit.IsDead || damage <= 0) return;
@@ -173,7 +186,7 @@ public class Enemy : MonoBehaviour, ISkillTarget
         // 탐지 범위 내 → 추적
         if (dist <= detectRange)
         {
-            Vector3 dir = (_player.position - transform.position).normalized;
+            Vector3 dir = ChaseDirection((_player.position - transform.position).normalized, Status.IsReversed);
             dir.y = 0f;
 
             // 공격 범위 밖이면 이동

@@ -318,6 +318,15 @@ public static class SkillExecutor
                 case SkillEffectType.DamageTakenMult:
                     t.ApplyStatus(Harmful(skill, e, StatusKind.StatMod, StatKind.DamageTaken, v));
                     break;
+                case SkillEffectType.ReverseMove:
+                    t.ApplyStatus(Harmful(skill, e, StatusKind.Reverse, StatKind.Atk, 0f));
+                    break;
+                case SkillEffectType.Dispel:
+                    t.Dispel();
+                    break;
+                case SkillEffectType.RandomizeElement:
+                    t.RandomizeAttackElement(Roll);
+                    break;
                 case SkillEffectType.Mark:
                     t.SetMark(caster.Element);
                     if (!string.IsNullOrEmpty(e.markId))

@@ -123,7 +123,7 @@ public static class CharacterCsvBuilder
         if (!t.RequireColumns(res.report, "id", "nameKo", "continent", "rarity")) return chars;
         t.WarnUnknownColumns(res.report, "id", "nameKo", "nameEn", "continent", "country", "rarity", "role", "gender", "dexNumber",
             "hp", "atk", "def", "spd", "mp", "mass", "velocity", "temp", "charge", "personality", "weapon", "concept",
-            "basicAttackMotion", "appearance", "loreKo", "portraitColor", "gachaObtainable", "acquireCondition");
+            "basicAttackMotion", "appearance", "loreKo", "portraitColor", "gachaObtainable", "acquireCondition", "attackElement");
 
         foreach (var row in t.Rows)
         {
@@ -158,6 +158,7 @@ public static class CharacterCsvBuilder
             d.loreKo      = row.Str("loreKo");
             d.portraitColor = row.Color("portraitColor", Color.white);
             d.gachaObtainable = row.Bool("gachaObtainable", true);
+            d.attackElement = ParseElements(row, "attackElement");
             d.acquireCondition = row.Str("acquireCondition");
             d.skills = new SkillDef[0];
 
@@ -356,6 +357,19 @@ public static class CharacterCsvBuilder
     // skill_counters (스킬 카운터, 구현계획 23-A)
     // ════════════════════════════════════════════════════════════════════════
 
+    static AttackElement ParseElements(CsvRow row, string col)
+    {
+        var f = AttackElement.None;
+        foreach (var name in row.List(col))
+        {
+            bool ok = false;
+            foreach (AttackElement v in System.Enum.GetValues(typeof(AttackElement)))
+                if (v != AttackElement.None && v.ToString() == name) { f |= v; ok = true; break; }
+            if (!ok) row.Error($"{col} '{name}'는 알 수 없는 값입니다 (허용: {string.Join(", ", System.Enum.GetNames(typeof(AttackElement)).Where(n => n != "None"))})");
+        }
+        return f;
+    }
+
     static CounterTrigger ParseTriggers(CsvRow row, string col)
     {
         var f = CounterTrigger.None;
@@ -433,7 +447,8 @@ public static class CharacterCsvBuilder
         t.WarnUnknownColumns(res.report, "skillId", "order", "type", "target", "stat", "value", "duration", "maxStacks", "targetCap",
             "areaRadius", "milestoneValue", "milestoneDuration", "whenForm", "consumeOnHit",
             "counterId", "counterMode", "counterCoeff", "milestoneCounterCoeff", "counterConsume", "requireCounterFull", "counterWindow", "markId",
-            "damageBasis", "ignoreDefense", "scaleBy", "scaleCoeff", "scaleCap", "milestoneScaleCap", "critMult", "critHalfAngle", "branchGroup", "branchId");
+            "damageBasis", "ignoreDefense", "scaleBy", "scaleCoeff", "scaleCap", "milestoneScaleCap", "critMult", "critHalfAngle", "branchGroup", "branchId",
+            "elementMask", "elementInvert");
 
         var by = new Dictionary<string, List<(int order, int idx, SkillEffectEntry e)>>();
         int idx = 0;
@@ -459,7 +474,10 @@ public static class CharacterCsvBuilder
                 scaleBy = row.Enum("scaleBy", ScaleBy.None), scaleCoeff = row.Float("scaleCoeff"), scaleCap = row.Float("scaleCap"),
                 milestoneScaleCap = row.Float("milestoneScaleCap"), critMult = row.Float("critMult"), critHalfAngle = row.Float("critHalfAngle"),
                 branchGroup = row.Str("branchGroup"), branchId = row.Str("branchId"),
+                elementMask = ParseElements(row, "elementMask"), elementInvert = row.Bool("elementInvert"),
             };
+            if ((e.elementMask != AttackElement.None || e.elementInvert) && e.type != SkillEffectType.DamageTakenMult) { row.Error("elementMask·elementInvert는 type=DamageTakenMult 효과에서만 쓸 수 있습니다"); continue; }
+            if (e.elementInvert && e.elementMask == AttackElement.None) { row.Error("elementInvert를 쓰려면 elementMask가 필요합니다"); continue; }
             bool usesDamageColumns = e.damageBasis != DamageBasis.CasterAtk || e.ignoreDefense || e.scaleBy != ScaleBy.None || e.critMult > 0f;
             if (usesDamageColumns && e.type != SkillEffectType.Damage) { row.Error("damageBasis·ignoreDefense·scaleBy·critMult는 type=Damage 효과에서만 쓸 수 있습니다"); continue; }
             if (e.critMult > 0f && e.critHalfAngle <= 0f) { row.Error("critMult를 쓰려면 critHalfAngle(>0)이 필요합니다"); continue; }
@@ -624,7 +642,7 @@ public static class CharacterCsvBuilder
         if (mods.Rows.Count > 0 && mods.RequireColumns(res.report, "skillId", "source", "stat"))
         {
             mods.WarnUnknownColumns(res.report, "skillId", "order", "source", "stat", "value", "cap", "decayPerSecond", "partyWide",
-                "enemyAuraRadius", "milestoneValue", "milestoneCap", "immuneToSlow", "counterId");
+                "enemyAuraRadius", "milestoneValue", "milestoneCap", "immuneToSlow", "counterId", "requireElement", "requireElementInvert");
             var by = new Dictionary<string, List<(int order, int idx, PassiveModifierSpec m)>>();
             int idx = 0;
             foreach (var row in mods.Rows)
@@ -638,7 +656,9 @@ public static class CharacterCsvBuilder
                     partyWide = row.Bool("partyWide"), enemyAuraRadius = row.Float("enemyAuraRadius"),
                     milestoneValue = row.Float("milestoneValue"), milestoneCap = row.Float("milestoneCap"),
                     immuneToSlow = row.Bool("immuneToSlow"), counterId = row.Str("counterId"),
+                    requireElement = ParseElements(row, "requireElement"), requireElementInvert = row.Bool("requireElementInvert"),
                 };
+                if (m.requireElementInvert && m.requireElement == AttackElement.None) { row.Error("requireElementInvert를 쓰려면 requireElement가 필요합니다"); continue; }
                 if (sid.Length == 0) continue;
                 if (!skills.TryGetValue(sid, out var entry)) { row.Error($"skillId '{sid}'가 character_skills.csv에 없습니다"); continue; }
                 if (m.source == ModifierSource.Counter)

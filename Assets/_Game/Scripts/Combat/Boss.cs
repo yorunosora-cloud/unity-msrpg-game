@@ -67,6 +67,9 @@ public class Boss : MonoBehaviour, ISkillTarget
     // 패시브 공식 입력: 보스는 속도 스탯·접근 판정·마크를 아직 지원하지 않는다(보스 설계 단계에서 확장)
     public float Spd => 0f;
     public int   AttackPower => 0;
+    public AttackElement AttackElement => AttackElement.None;
+    public void  RandomizeAttackElement(System.Func<float> roll) { }   // 보스는 속성 변경 면역
+    public void  Dispel() { }                                          // 보스는 해제 면역
     public void  ReceiveFixedHit(int damage)
     {
         if (_unit == null || _unit.IsDead || _defeated || damage <= 0) return;

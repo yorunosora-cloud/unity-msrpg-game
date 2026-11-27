@@ -46,6 +46,8 @@ MonoBehaviour:
     modifiers:
     - source: 4
       counterId: polarization
+      requireElement: 0
+      requireElementInvert: 0
       stat: 3
       value: -0.03
       cap: 0

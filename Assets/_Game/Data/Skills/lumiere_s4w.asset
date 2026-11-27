@@ -41,6 +41,8 @@ MonoBehaviour:
     modifiers:
     - source: 0
       counterId: 
+      requireElement: 0
+      requireElementInvert: 0
       stat: 3
       value: 0.5
       cap: 0
@@ -52,6 +54,8 @@ MonoBehaviour:
       milestoneCap: 0
     - source: 0
       counterId: 
+      requireElement: 0
+      requireElementInvert: 0
       stat: 5
       value: 2
       cap: 0

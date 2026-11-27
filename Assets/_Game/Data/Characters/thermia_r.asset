@@ -67,6 +67,7 @@ MonoBehaviour:
     consecutive: 3
     toForm: Cold
     priority: 1
+  attackElement: 0
   counters: []
   attributes:
     mass: 0

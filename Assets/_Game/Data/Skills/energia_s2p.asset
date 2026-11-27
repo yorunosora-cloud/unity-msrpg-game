@@ -19,7 +19,7 @@ MonoBehaviour:
   lineWidth: 1
   radius: 3
   effects:
-  - type: 18
+  - type: 21
     target: 1
     stat: 0
     value: 1.5
@@ -41,6 +41,8 @@ MonoBehaviour:
     critHalfAngle: 0
     branchGroup: 
     branchId: 
+    elementMask: 0
+    elementInvert: 0
     markId: 
     counterId: 
     counterMode: 0

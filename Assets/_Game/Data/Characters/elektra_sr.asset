@@ -27,6 +27,7 @@ MonoBehaviour:
     mp: 13
   forms: []
   autoRules: []
+  attackElement: 2
   counters:
   - id: charge
     maxStacks: 10

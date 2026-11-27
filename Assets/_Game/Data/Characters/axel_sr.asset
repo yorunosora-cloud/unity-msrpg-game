@@ -27,6 +27,7 @@ MonoBehaviour:
     mp: 15
   forms: []
   autoRules: []
+  attackElement: 0
   counters:
   - id: accel_run
     maxStacks: 5

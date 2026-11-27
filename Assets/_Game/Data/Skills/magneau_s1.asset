@@ -22,6 +22,38 @@ MonoBehaviour:
   - type: 8
     target: 3
     stat: 0
+    value: 0.5
+    duration: 6
+    maxStacks: 0
+    targetCap: 0
+    areaRadius: 0
+    milestoneValue: 0
+    milestoneDuration: 8
+    whenForm: 
+    consumeOnHit: 0
+    damageBasis: 0
+    ignoreDefense: 0
+    scaleBy: 0
+    scaleCoeff: 0
+    scaleCap: 0
+    milestoneScaleCap: 0
+    critMult: 0
+    critHalfAngle: 0
+    branchGroup: 
+    branchId: 
+    elementMask: 1
+    elementInvert: 0
+    markId: 
+    counterId: 
+    counterMode: 0
+    counterCoeff: 0
+    milestoneCounterCoeff: 0
+    counterConsume: 0
+    requireCounterFull: 0
+    counterWindow: 0
+  - type: 8
+    target: 3
+    stat: 0
     value: 0.9
     duration: 6
     maxStacks: 0
@@ -41,6 +73,8 @@ MonoBehaviour:
     critHalfAngle: 0
     branchGroup: 
     branchId: 
+    elementMask: 1
+    elementInvert: 1
     markId: 
     counterId: 
     counterMode: 0
@@ -50,9 +84,9 @@ MonoBehaviour:
     requireCounterFull: 0
     counterWindow: 0
   factNoteKo: 
-  gameNoteKo: "\uC18D\uC131\uBCC4 \uCC28\uB4F1 \uD53C\uD574 \uAC10\uC18C(\uAE08\uC18D
-    50%, \uADF8 \uC678 10%)\uAC00 \uC5C6\uC5B4 \uBAA8\uB4E0 \uC18D\uC131 \u221210%\uB85C
-    \uADFC\uC0AC(\uC790\uC2E0+\uB300\uAE30 \uC544\uAD70, 6\uCD08, Lv.3 8\uCD08)"
+  gameNoteKo: "\uAE08\uC18D \uC18D\uC131 \uD53C\uD574 \u221250%, \uADF8 \uC678 \u221210%(\uC790\uC2E0+\uB300\uAE30
+    \uC544\uAD70, 6\uCD08, Lv.3 8\uCD08). \uC801\uC758 \uACF5\uACA9 \uC18D\uC131
+    \uAC12\uC740 17\uBC88 \uC801 \uB3C4\uAC10 \uB2E8\uACC4\uC5D0\uC11C \uCC44\uC6B4\uB2E4"
   passive:
     trigger: 0
     value: 0

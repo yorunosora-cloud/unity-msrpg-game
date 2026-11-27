@@ -83,6 +83,7 @@ MonoBehaviour:
     consecutive: 0
     toForm: Kinetic
     priority: 2
+  attackElement: 0
   counters: []
   attributes:
     mass: 0

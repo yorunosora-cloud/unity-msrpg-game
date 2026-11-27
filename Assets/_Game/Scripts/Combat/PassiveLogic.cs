@@ -142,6 +142,12 @@ public class ModifierState
 
     /// <summary>이 수정자가 능력치에 곱할 배율. lostHpPercent = 잃은 HP 0~100.</summary>
     public string CounterId => _spec.counterId;
+    /// <summary>파티 존재 수정자 중복 제거용 키(같은 패시브의 서로 다른 수정자는 구분).</summary>
+    public string DedupKey => $"{(int)_spec.stat}|{_value}|{(int)_spec.requireElement}|{_spec.requireElementInvert}";
+
+    /// <summary>이 수정자가 속성 attack을 가진 아군에게 적용되는가(조건 없으면 항상).</summary>
+    public bool AppliesToElement(AttackElement allyElement)
+        => AttackElements.Matches(_spec.requireElement, _spec.requireElementInvert, allyElement);
 
     public float Multiplier(float lostHpPercent, int counterValue = 0)
     {

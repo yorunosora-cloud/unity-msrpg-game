@@ -30,6 +30,9 @@ public enum SkillEffectType
     Teleport,        // 전투 시작 위치로 이동(영벡터, 패시브)
     Reflect,         // value = 받은 피해의 비율을 공격자에게 반환(패시브 OnHitTaken, target=Attacker)
     Launch,          // value = 띄우는 높이(m), duration = 행동불능 시간(초). 스턴 + 공중에 띄우는 연출(적 대상)
+    ReverseMove,     // duration = 반전 시간(초). 적 이동방향 반전(적 대상)
+    Dispel,          // 대상의 이로운 상태 효과 해제(적 대상)
+    RandomizeElement, // 대상의 공격 속성을 무작위 속성으로 바꾼다(적 대상)
     StoreDamage,     // value = 방출 배율, duration = 저장 시간(초), areaRadius = 방출 반경(m). 받은 피해를 모았다가 끝나면 주변에 방출(자신 대상)
 }
 
@@ -61,6 +64,9 @@ public struct SkillEffectEntry
     public float           critHalfAngle;        // 조준 중앙 ±각도 안이면 급소
     public string          branchGroup;          // 같은 그룹에서 행동마다 branchId 하나만 균등 확률로 적용
     public string          branchId;
+
+    public AttackElement   elementMask;          // DamageTakenMult: 이 공격 속성에만 적용(없으면 전체)
+    public bool            elementInvert;        // true면 그 속성이 아닌 공격에만 적용
 
     public string          markId;       // Mark 효과: 이 이름의 표식을 duration초(milestoneDuration, 난이도 배율) 동안 건다. 비면 속성 표식
 

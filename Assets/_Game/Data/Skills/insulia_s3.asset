@@ -41,6 +41,40 @@ MonoBehaviour:
     critHalfAngle: 0
     branchGroup: 
     branchId: 
+    elementMask: 0
+    elementInvert: 0
+    markId: 
+    counterId: 
+    counterMode: 0
+    counterCoeff: 0
+    milestoneCounterCoeff: 0
+    counterConsume: 0
+    requireCounterFull: 0
+    counterWindow: 0
+  - type: 8
+    target: 1
+    stat: 0
+    value: 0
+    duration: 4
+    maxStacks: 0
+    targetCap: 0
+    areaRadius: 0
+    milestoneValue: 0
+    milestoneDuration: 5
+    whenForm: 
+    consumeOnHit: 0
+    damageBasis: 0
+    ignoreDefense: 0
+    scaleBy: 0
+    scaleCoeff: 0
+    scaleCap: 0
+    milestoneScaleCap: 0
+    critMult: 0
+    critHalfAngle: 0
+    branchGroup: 
+    branchId: 
+    elementMask: 2
+    elementInvert: 0
     markId: 
     counterId: 
     counterMode: 0
@@ -53,9 +87,10 @@ MonoBehaviour:
     \uC2E4\uC81C\uB85C\uB294 \uB3C4\uCCB4\uC758 \uC131\uC9C8\uC774\uB2E4."
   gameNoteKo: "\uBD80\uB3C4\uCCB4\uC778 \uC778\uC220\uB9AC\uC544\uC758 \uC2A4\uD0AC\uB85C
     \uB450\uB294 \uAC83\uC740 \uAC8C\uC784\uC6A9 \uD574\uC11D. \uBC1B\uB294 \uD53C\uD574
-    \u221235%(4\uCD08, Lv.3 5\uCD08)\uB9CC \uAD6C\uD604, \uC804\uAE30 \uC18D\uC131
-    \uD53C\uD574 \uBA74\uC5ED\uC740 \uC18D\uC131 \uC2DC\uC2A4\uD15C\uC774 \uC5C6\uC5B4
-    \uBBF8\uAD6C\uD604"
+    \u221235%\uC640 \uC804\uAE30 \uC18D\uC131 \uD53C\uD574 \uBA74\uC5ED(4\uCD08,
+    Lv.3 5\uCD08). \uC801\uC758 \uACF5\uACA9 \uC18D\uC131 \uAC12\uC740 17\uBC88 \uC801
+    \uB3C4\uAC10\uC5D0\uC11C \uCC44\uC6CC\uC9C8 \uB54C\uAE4C\uC9C0 \uC804\uBD80 \uC5C6\uC74C\uC774\uB77C
+    \uBA74\uC5ED\uC740 \uB370\uC774\uD130\uAC00 \uC0DD\uAE30\uBA74 \uC791\uB3D9"
   passive:
     trigger: 0
     value: 0

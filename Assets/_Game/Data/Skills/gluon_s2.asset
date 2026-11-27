@@ -41,6 +41,8 @@ MonoBehaviour:
     critHalfAngle: 0
     branchGroup: strange
     branchId: a
+    elementMask: 0
+    elementInvert: 0
     markId: 
     counterId: 
     counterMode: 0
@@ -71,6 +73,8 @@ MonoBehaviour:
     critHalfAngle: 0
     branchGroup: strange
     branchId: b
+    elementMask: 0
+    elementInvert: 0
     markId: 
     counterId: 
     counterMode: 0
@@ -101,6 +105,40 @@ MonoBehaviour:
     critHalfAngle: 0
     branchGroup: strange
     branchId: b
+    elementMask: 0
+    elementInvert: 0
+    markId: 
+    counterId: 
+    counterMode: 0
+    counterCoeff: 0
+    milestoneCounterCoeff: 0
+    counterConsume: 0
+    requireCounterFull: 0
+    counterWindow: 0
+  - type: 20
+    target: 0
+    stat: 0
+    value: 0
+    duration: 0
+    maxStacks: 0
+    targetCap: 0
+    areaRadius: 0
+    milestoneValue: 0
+    milestoneDuration: 0
+    whenForm: 
+    consumeOnHit: 0
+    damageBasis: 0
+    ignoreDefense: 0
+    scaleBy: 0
+    scaleCoeff: 0
+    scaleCap: 0
+    milestoneScaleCap: 0
+    critMult: 0
+    critHalfAngle: 0
+    branchGroup: strange
+    branchId: a
+    elementMask: 0
+    elementInvert: 0
     markId: 
     counterId: 
     counterMode: 0
@@ -111,10 +149,10 @@ MonoBehaviour:
     counterWindow: 0
   factNoteKo: "\uC2A4\uD2B8\uB808\uC778\uC9C0 \uCFFC\uD06C\uB294 \uAE30\uBB18\uB3C4(strangeness)\uB77C\uB294
     \uC591\uC790\uC218\uB97C \uAC00\uC9C4\uB2E4."
-  gameNoteKo: "1/2 \uD655\uB960\uB85C \u2460 \uC9C1\uC811 \uD53C\uD574 \u2461 \uB3C4\uD2B8+\uB454\uD654
-    \uC911 \uD558\uB098\uAC00 \uBC1C\uB3D9. \u2460\uC758 \uC0C1\uB300 \uACF5\uACA9
-    \uC18D\uC131 \uBB34\uC791\uC704 \uBCC0\uACBD\uC740 \uC18D\uC131 \uC2DC\uC2A4\uD15C
-    \uBBF8\uAD6C\uD604"
+  gameNoteKo: "1/2 \uD655\uB960\uB85C \u2460 \uC9C1\uC811 \uD53C\uD574 + \uC0C1\uB300
+    \uACF5\uACA9 \uC18D\uC131 \uBB34\uC791\uC704 \uBCC0\uACBD \u2461 \uB3C4\uD2B8+\uB454\uD654
+    \uC911 \uD558\uB098\uAC00 \uBC1C\uB3D9. \uBCF4\uC2A4\uB294 \uC18D\uC131 \uBCC0\uACBD
+    \uBA74\uC5ED"
   passive:
     trigger: 0
     value: 0

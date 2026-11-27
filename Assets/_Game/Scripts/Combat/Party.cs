@@ -27,7 +27,7 @@ public class Party
     /// <summary>
     /// 파티 존재 수정자(고유 시간·전자기력)의 능력치 k 배율. 활성·대기 무관, 같은 패시브 id는 1회만(설계도 §4-7 규칙 9).
     /// </summary>
-    public float PresenceMult(StatKind k)
+    public float PresenceMult(StatKind k, CombatCharacter forMember = null)
     {
         float m = 1f; HashSet<string> seen = null;
         foreach (var mem in _members)
@@ -36,8 +36,9 @@ public class Party
             foreach (var (id, mod) in mem.PartyWideModifiers())
             {
                 if (mod.Stat != k) continue;
+                if (forMember != null && !mod.AppliesToElement(forMember.AttackElement)) continue;
                 seen ??= new HashSet<string>();
-                if (!seen.Add(id)) continue;
+                if (!seen.Add(id + "#" + mod.DedupKey)) continue;   // 같은 패시브 id의 같은 수정자는 1회, 조건이 다른 수정자는 각각
                 m *= mod.Multiplier(0f);
             }
         }

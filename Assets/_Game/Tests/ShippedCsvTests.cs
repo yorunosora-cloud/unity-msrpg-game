@@ -1,9 +1,11 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.TestTools;
 
 /// <summary>
 /// 설계도 18-B — Stage D: 저장소에 실제로 들어 있는 CSV(Resources/Data)를 빌더로 돌려
@@ -214,10 +216,16 @@ public class ShippedCsvTests
     [Test]
     public void Batch2_Magneau_PartyAtkBuff_AndBenchShield()
     {
-        var m = Skill("magneau_s2").passive.modifiers[0];
-        Assert.AreEqual((ModifierSource.PartyPresence, StatKind.Atk, 1.07f, true), (m.source, m.stat, m.value, m.partyWide));
-        var e = Skill("magneau_s1").effects[0];
-        Assert.AreEqual((SkillEffectType.DamageTakenMult, TargetScope.SelfAndBench, 0.9f, 6f, 8f), (e.type, e.target, e.value, e.duration, e.milestoneDuration));
+        var mods = Skill("magneau_s2").passive.modifiers;
+        var electric = mods.Single(x => x.requireElement == AttackElement.Electric && !x.requireElementInvert);
+        var others = mods.Single(x => x.requireElementInvert);
+        Assert.AreEqual((ModifierSource.PartyPresence, StatKind.Atk, 1.2f, true), (electric.source, electric.stat, electric.value, electric.partyWide), "전기 속성 아군 +20%");
+        Assert.AreEqual(1.07f, others.value, 0.0001f, "그 외 +7%");
+        var res = Skill("magneau_s1").effects;
+        var metal = res.Single(x => x.elementMask == AttackElement.Metal && !x.elementInvert);
+        var rest = res.Single(x => x.elementInvert);
+        Assert.AreEqual((SkillEffectType.DamageTakenMult, TargetScope.SelfAndBench, 0.5f, 6f, 8f), (metal.type, metal.target, metal.value, metal.duration, metal.milestoneDuration), "금속 −50%");
+        Assert.AreEqual(0.9f, rest.value, 0.0001f, "그 외 −10%");
     }
 
     // ════════════════════════════════════════════════════════════════════════
@@ -331,6 +339,47 @@ public class ShippedCsvTests
     }
 
     // ════════════════════════════════════════════════════════════════════════
+    // 상태·속성 데이터(23-F)
+    // ════════════════════════════════════════════════════════════════════════
+
+    [Test]
+    public void Element_ElectricAllies_AreTheFiveElectromagnetismCharacters()
+    {
+        foreach (var id in new[] { "elektra_sr", "conduca_r", "semira_sr", "insulia_r", "magneau_sr" })
+            Assert.AreEqual(AttackElement.Electric, Char(id).attackElement, id);
+        foreach (var id in new[] { "forte_r", "lumiere_ssr", "gluon_ur", "vektor_sr" })
+            Assert.AreEqual(AttackElement.None, Char(id).attackElement, id);
+    }
+
+    [Test]
+    public void StatusEffects_ShippedSkills_ReverseDispelAndElectricImmunity()
+    {
+        var rev = Skill("gyra_s2").effects.Single(e => e.type == SkillEffectType.ReverseMove);
+        Assert.AreEqual((2f, 3f), (rev.duration, rev.milestoneDuration), "우력: 이동방향 반전 2초(Lv.3 3초)");
+        Assert.IsTrue(Skill("gluon_s4").effects.Any(e => e.type == SkillEffectType.Dispel), "탑쿼크: 대상 버프 해제");
+        var imm = Skill("insulia_s3").effects.Single(e => e.elementMask == AttackElement.Electric);
+        Assert.AreEqual((SkillEffectType.DamageTakenMult, 0f, 4f, 5f), (imm.type, imm.value, imm.duration, imm.milestoneDuration), "정전기 차폐: 전기 속성 면역");
+    }
+
+    [UnityTest]
+    public IEnumerator Element_ShippedMagneticShield_E2E_MetalHalved_OthersTenPercent()
+    {
+        var def = Char("magneau_sr");
+        var c = new CombatCharacter(def, new OwnedCharacter { id = def.id, level = 1 });
+        for (int i = 0; i < def.skills.Length; i++) c.Unlock(i);
+        c.TickStatus(0f, true);
+        var go = new GameObject("E"); var metal = go.AddComponent<Enemy>(); metal.SetAttackElement(AttackElement.Metal);
+        var go2 = new GameObject("E2"); var elec = go2.AddComponent<Enemy>(); elec.SetAttackElement(AttackElement.Electric);
+        var origin = new GameObject("O");
+        yield return null;
+        int idx = System.Array.FindIndex(def.skills, sk => sk.id == "magneau_s1");
+        SkillExecutor.Execute(def.skills[idx], idx, c, origin.transform);
+        int hp = c.Hp; c.TakeHit(100, metal); Assert.AreEqual(50, hp - c.Hp);
+        hp = c.Hp; c.TakeHit(100, elec); Assert.AreEqual(90, hp - c.Hp);
+        Object.DestroyImmediate(go); Object.DestroyImmediate(go2); Object.DestroyImmediate(origin);
+    }
+
+    // ════════════════════════════════════════════════════════════════════════
     // 생존 데이터(23-H)
     // ════════════════════════════════════════════════════════════════════════
 
@@ -389,7 +438,7 @@ public class ShippedCsvTests
         var e = Skill("gluon_s2").effects;
         Assert.IsTrue(e.All(x => x.branchGroup == "strange"));
         CollectionAssert.AreEquivalent(new[] { "a", "b" }, e.Select(x => x.branchId).Distinct());
-        Assert.AreEqual(SkillEffectType.Damage, e.Single(x => x.branchId == "a").type);
+        CollectionAssert.AreEquivalent(new[] { SkillEffectType.Damage, SkillEffectType.RandomizeElement }, e.Where(x => x.branchId == "a").Select(x => x.type), "① 직접 피해 + 속성 무작위 변경");
         CollectionAssert.AreEquivalent(new[] { SkillEffectType.Dot, SkillEffectType.Slow }, e.Where(x => x.branchId == "b").Select(x => x.type));
     }
 

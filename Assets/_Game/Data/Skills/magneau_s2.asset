@@ -20,9 +20,9 @@ MonoBehaviour:
   radius: 3
   effects: []
   factNoteKo: 
-  gameNoteKo: "\"\uC804\uAE30 \uC18D\uC131 \uC544\uAD70\" \uD310\uC815\uC774 \uC5C6\uC5B4
-    \uD30C\uD2F0 \uC804\uC6D0 \uACF5\uACA9\uB825 +7%\uB85C \uADFC\uC0AC(\uC804\uAE30
-    \uC18D\uC131 +20%\uB294 \uBBF8\uAD6C\uD604)"
+  gameNoteKo: "\uC804\uAE30 \uC18D\uC131 \uC544\uAD70(\uC77C\uB809\uD2B8\uB77C\xB7\uCF58\uB450\uCE74\xB7\uC138\uBBF8\uB77C\xB7\uC778\uC220\uB9AC\uC544\xB7\uB9C8\uADF8\uB180)
+    \uACF5\uACA9\uB825 +20%, \uADF8 \uC678 +7%(\uD30C\uD2F0\uC5D0 \uC788\uB294 \uB3D9\uC548
+    \uC0C1\uC2DC)"
   passive:
     trigger: 8
     value: 0
@@ -43,6 +43,21 @@ MonoBehaviour:
     modifiers:
     - source: 3
       counterId: 
+      requireElement: 2
+      requireElementInvert: 0
+      stat: 0
+      value: 1.2
+      cap: 0
+      decayPerSecond: 0
+      partyWide: 1
+      enemyAuraRadius: 0
+      immuneToSlow: 0
+      milestoneValue: 0
+      milestoneCap: 0
+    - source: 3
+      counterId: 
+      requireElement: 2
+      requireElementInvert: 1
       stat: 0
       value: 1.07
       cap: 0

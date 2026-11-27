@@ -45,6 +45,8 @@ MonoBehaviour:
     modifiers:
     - source: 4
       counterId: heat
+      requireElement: 0
+      requireElementInvert: 0
       stat: 5
       value: 0.04
       cap: 0

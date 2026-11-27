@@ -53,6 +53,8 @@ public struct PassiveModifierSpec
 {
     public ModifierSource source;
     public string         counterId;        // source=Counter: 읽을 카운터 id
+    public AttackElement  requireElement;   // 파티 존재 수정자: 받는 아군이 이 속성일 때만(비면 전원)
+    public bool           requireElementInvert;   // true면 이 속성이 아닌 아군에게만
     public StatKind       stat;
     public float          value;            // Constant/PartyPresence=배율 / LostHpPercent=잃은 HP% 1당 감소 비율 / MovingRamp=초당 증분
     public float          cap;              // 상한(LostHpPercent 감소 상한, MovingRamp 증분 상한)

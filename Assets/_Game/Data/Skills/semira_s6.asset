@@ -41,6 +41,8 @@ MonoBehaviour:
     critHalfAngle: 0
     branchGroup: 
     branchId: 
+    elementMask: 0
+    elementInvert: 0
     markId: 
     counterId: 
     counterMode: 0
@@ -71,6 +73,8 @@ MonoBehaviour:
     critHalfAngle: 0
     branchGroup: 
     branchId: 
+    elementMask: 0
+    elementInvert: 0
     markId: 
     counterId: 
     counterMode: 0

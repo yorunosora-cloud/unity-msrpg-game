@@ -2,21 +2,22 @@
 # source: Constant(value=배율) / LostHpPercent(value=잃은 HP% 1당 감소율, cap=상한) / MovingRamp(value=이동 시 초당 증가, cap=상한, decayPerSecond=정지 시 초당 감소) / PartyPresence(value=배율, partyWide=true)
 # enemyAuraRadius>0이면 활성인 동안 이 반경 안의 모든 적에게 적용(본인에게는 적용되지 않음).  stat: skill_effects의 stat과 같은 코드 / immuneToSlow: true면 활성인 동안 이동속도 감소(둔화) 디버프를 받지 않는다
 
-skillId,order,source,stat,value,cap,decayPerSecond,partyWide,enemyAuraRadius,milestoneValue,milestoneCap,immuneToSlow,counterId
-lumiere_s4w,1,Constant,DamageTaken,0.5,,,,,,,,
-lumiere_s4w,2,Constant,SkillPower,2,,,,,,,,
-lumiere_s5p,1,Constant,MoveSpeed,1.1,,,,,,,true,
-massio_inersha_s1,1,Constant,MoveSpeed,0.85,,,,6,,,,
-massio_inersha_s1,2,Constant,MoveSpeed,0.9,,,,,,,,
-massio_inersha_s1,3,Constant,Def,1.2,,,,,,,,
-massio_inersha_s4,1,Constant,MoveSpeed,1.15,,,,,,,,
-massio_inersha_s4,2,Constant,CooldownRate,1.25,,,,,,,,
-chrono_s4,1,PartyPresence,CooldownRate,1.1765,,,true,,,,,
-velocia_s3,1,MovingRamp,MoveSpeed,0.03,0.3,0.05,,,,,,
-velocia_s3,2,MovingRamp,CooldownRate,0.03,0.3,0.05,,,,,,
-pressia_s3,1,LostHpPercent,DamageTaken,0.005,0.3,,,,,,,
-spasia_s3,1,Constant,DamageTaken,0.92,,,,,,,,
-magneau_s2,1,PartyPresence,Atk,1.07,,,true,,,,,
-conduca_s1,1,Counter,BasicPower,0.06,,,,,0.08,,,free_electron
-insulia_s1,1,Counter,DamageTaken,-0.03,,,,,-0.04,,,polarization
-semira_s1,1,Counter,SkillPower,0.04,,,,,,,,heat
+skillId,order,source,stat,value,cap,decayPerSecond,partyWide,enemyAuraRadius,milestoneValue,milestoneCap,immuneToSlow,counterId,requireElement,requireElementInvert
+lumiere_s4w,1,Constant,DamageTaken,0.5,,,,,,,,,,
+lumiere_s4w,2,Constant,SkillPower,2,,,,,,,,,,
+lumiere_s5p,1,Constant,MoveSpeed,1.1,,,,,,,true,,,
+massio_inersha_s1,1,Constant,MoveSpeed,0.85,,,,6,,,,,,
+massio_inersha_s1,2,Constant,MoveSpeed,0.9,,,,,,,,,,
+massio_inersha_s1,3,Constant,Def,1.2,,,,,,,,,,
+massio_inersha_s4,1,Constant,MoveSpeed,1.15,,,,,,,,,,
+massio_inersha_s4,2,Constant,CooldownRate,1.25,,,,,,,,,,
+chrono_s4,1,PartyPresence,CooldownRate,1.1765,,,true,,,,,,,
+velocia_s3,1,MovingRamp,MoveSpeed,0.03,0.3,0.05,,,,,,,,
+velocia_s3,2,MovingRamp,CooldownRate,0.03,0.3,0.05,,,,,,,,
+pressia_s3,1,LostHpPercent,DamageTaken,0.005,0.3,,,,,,,,,
+spasia_s3,1,Constant,DamageTaken,0.92,,,,,,,,,,
+magneau_s2,1,PartyPresence,Atk,1.2,,,true,,,,,,Electric,
+conduca_s1,1,Counter,BasicPower,0.06,,,,,0.08,,,free_electron,,
+insulia_s1,1,Counter,DamageTaken,-0.03,,,,,-0.04,,,polarization,,
+semira_s1,1,Counter,SkillPower,0.04,,,,,,,,heat,,
+magneau_s2,2,PartyPresence,Atk,1.07,,,true,,,,,,Electric,true

@@ -42,6 +42,8 @@ MonoBehaviour:
     modifiers:
     - source: 3
       counterId: 
+      requireElement: 0
+      requireElementInvert: 0
       stat: 4
       value: 1.1765
       cap: 0

@@ -51,7 +51,7 @@ public static class AllyEffectApplier
                 {
                     Id = Key(sourceId, e), Kind = StatusKind.StatMod, Stat = StatKind.DamageTaken,
                     Value = value, Duration = e.duration, IsBeneficial = value <= 1f,
-                    MaxStacks = Math.Max(1, e.maxStacks),
+                    MaxStacks = Math.Max(1, e.maxStacks), ElementMask = e.elementMask, ElementInvert = e.elementInvert,
                 }, targetIsActive);
                 return 0;
 
@@ -79,5 +79,6 @@ public static class AllyEffectApplier
         return 0;   // 적 전용 효과(피해·도트 등)는 무시
     }
 
-    static string Key(string sourceId, SkillEffectEntry e) => $"{sourceId}:{e.type}:{e.stat}";
+    static string Key(string sourceId, SkillEffectEntry e)
+        => e.elementMask == AttackElement.None ? $"{sourceId}:{e.type}:{e.stat}" : $"{sourceId}:{e.type}:{e.stat}:{(int)e.elementMask}{(e.elementInvert ? "!" : "")}";
 }

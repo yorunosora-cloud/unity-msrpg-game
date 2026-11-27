@@ -183,11 +183,14 @@ public class CombatCharacter
     public int BaseAtk => Stats().atk;
 
     /// <summary>능력치 배율 = 상태 효과 × 패시브(스택·상시 수정자) × 파티 존재 수정자.</summary>
-    public float StatMult(StatKind k)
+    public float StatMult(StatKind k) => StatMultVs(k, AttackElement.None);
+
+    /// <summary>공격 속성을 고려한 능력치 배율(피해 감소·면역 등 속성 한정 효과 포함).</summary>
+    public float StatMultVs(StatKind k, AttackElement attack)
     {
         float lost = MaxHp > 0 ? (1f - (float)_hp / MaxHp) * 100f : 0f;
-        float m = Status.Mult(k) * _passives.StatMult(k, lost);
-        if (Party != null) m *= Party.PresenceMult(k);
+        float m = Status.Mult(k, attack) * _passives.StatMult(k, lost);
+        if (Party != null) m *= Party.PresenceMult(k, this);
         return m;
     }
 
@@ -335,6 +338,8 @@ public class CombatCharacter
     /// <summary>현재 레벨 공격력 × 상태 효과 배율 (없으면 1.0).</summary>
     public int Atk   => (int)(Stats().atk * StatMult(StatKind.Atk));
     public int Def   => (int)(Stats().def * StatMult(StatKind.Def));
+    /// <summary>이 캐릭터의 속성(전기 속성 아군 판정 등).</summary>
+    public AttackElement AttackElement => _def.attackElement;
     /// <summary>레벨·폼 반영 기본 속도 스탯(상대속도 스킬의 속도 차 기준).</summary>
     public int BaseSpd => Stats().spd;
 
@@ -598,7 +603,8 @@ public class CombatCharacter
     public int TakeHit(int rawDamage, ISkillTarget attacker = null)
     {
         _sinceHit = 0f;
-        int dmg = (int)Math.Round(rawDamage * StatMult(StatKind.DamageTaken));
+        var attackEl = attacker != null ? attacker.AttackElement : AttackElement.None;
+        int dmg = (int)Math.Round(rawDamage * StatMultVs(StatKind.DamageTaken, attackEl));
         if (dmg < 0) dmg = 0;
         int taken = dmg;                  // 보호막 흡수 전 피해(패시브 반사 등의 기준)
         _store.Add(taken);                // 피해 저장(탄성 퍼텐셜 에너지)

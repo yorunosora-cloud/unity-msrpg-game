@@ -41,6 +41,8 @@ MonoBehaviour:
     critHalfAngle: 0
     branchGroup: 
     branchId: 
+    elementMask: 0
+    elementInvert: 0
     markId: 
     counterId: target:elektra_s2:Dot:Atk
     counterMode: 1
@@ -71,6 +73,8 @@ MonoBehaviour:
     critHalfAngle: 0
     branchGroup: 
     branchId: 
+    elementMask: 0
+    elementInvert: 0
     markId: 
     counterId: target:elektra_s2:Dot:Atk
     counterMode: 0

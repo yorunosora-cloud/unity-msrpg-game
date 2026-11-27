@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 /// <summary>
@@ -23,6 +24,15 @@ public interface ISkillTarget : IDamageable
 
     /// <summary>id 상태 효과를 소모(제거).</summary>
     void ConsumeStatus(string id);
+
+    /// <summary>공격 속성(속성별 피해 감소·면역이 읽는다). 없으면 None.</summary>
+    AttackElement AttackElement { get; }
+
+    /// <summary>공격 속성을 무작위 속성으로 바꾼다.</summary>
+    void RandomizeAttackElement(Func<float> roll);
+
+    /// <summary>이로운 상태 효과를 모두 해제한다.</summary>
+    void Dispel();
 
     /// <summary>공격력(상대 공격력 비례 피해의 기준). 보스 등 미정이면 0.</summary>
     int AttackPower { get; }

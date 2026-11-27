@@ -45,6 +45,8 @@ MonoBehaviour:
     modifiers:
     - source: 4
       counterId: free_electron
+      requireElement: 0
+      requireElementInvert: 0
       stat: 7
       value: 0.06
       cap: 0

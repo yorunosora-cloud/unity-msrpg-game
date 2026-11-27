@@ -5,7 +5,7 @@ using System.Collections.Generic;
 public enum StatKind { Atk, Def, MoveSpeed, DamageTaken, CooldownRate, SkillPower, HitDamage, BasicPower, Accuracy, CounterGain }   // SkillPower: 모든 공격 위력 / HitDamage: 다음 타격 배율(소모형) / BasicPower: 기본기 위력   // CooldownRate: 쿨타임 진행 배율(>1이 빠름) / Accuracy: 적 공격 명중률 배율(1=100%, 0.8=80%)
 
 /// <summary>상태 효과의 동작 종류.</summary>
-public enum StatusKind { StatMod, Dot, Stun, Shield }
+public enum StatusKind { StatMod, Dot, Stun, Shield, Reverse }   // Reverse: 이동방향 반전(적 전용)
 
 /// <summary>
 /// 시간이 있는 상태 효과 1건 (설계도 22 §4-4).
@@ -21,6 +21,8 @@ public class StatusEffect
     public bool       IsBeneficial;        // 이로운 효과: 활성일 때만 시간이 흐른다
     public int        MaxStacks = 1;
     public bool       ConsumeOnHit;        // 다음 공격 행동에서 소모(가속도·양자화)
+    public AttackElement ElementMask;      // 비어 있지 않으면 이 공격 속성에만 적용(23-F)
+    public bool       ElementInvert;       // true면 이 속성이 아닌 공격에만 적용
 
     // ── 런타임 상태 (Apply/Tick이 관리) ──
     public int   Stacks = 1;
@@ -55,7 +57,8 @@ public class StatusHolder
     {
         if (e == null) return;
 
-        var existing = _effects.Find(x => x.Id == e.Id && x.Kind == e.Kind && x.Stat == e.Stat);
+        var existing = _effects.Find(x => x.Id == e.Id && x.Kind == e.Kind && x.Stat == e.Stat
+                                        && x.ElementMask == e.ElementMask && x.ElementInvert == e.ElementInvert);
         if (existing != null)
         {
             if (Stronger(e, existing)) existing.Value = e.Value;
@@ -136,16 +139,26 @@ public class StatusHolder
     }
 
     /// <summary>능력치 k에 대한 배율 합성(곱). 예약 상태 효과는 제외. 스택 배율 = 1 + (value−1) × stacks.</summary>
-    public float Mult(StatKind k)
+    public float Mult(StatKind k) => Mult(k, AttackElement.None);
+
+    /// <summary>공격 속성을 고려한 배율. 속성 한정 효과는 attack이 맞을 때만(반전이면 맞지 않을 때만) 적용된다.</summary>
+    public float Mult(StatKind k, AttackElement attack)
     {
         float m = 1f;
         foreach (var e in _effects)
         {
             if (e.Pending || e.Kind != StatusKind.StatMod || e.Stat != k) continue;
+            if (!AttackElements.Matches(e.ElementMask, e.ElementInvert, attack)) continue;
             m *= Math.Max(0f, 1f + (e.Value - 1f) * e.Stacks);
         }
         return m;
     }
+
+    /// <summary>이동방향 반전 중인가(적 전용).</summary>
+    public bool IsReversed => _effects.Exists(e => !e.Pending && e.Kind == StatusKind.Reverse);
+
+    /// <summary>이로운 상태 효과를 모두 제거한다(버프 해제).</summary>
+    public void Dispel() => _effects.RemoveAll(e => e.IsBeneficial);
 
     public int Stacks(string id)
     {

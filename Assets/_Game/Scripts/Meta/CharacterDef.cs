@@ -25,6 +25,7 @@ public class CharacterDef : ScriptableObject
     public CharacterForm[] forms;
     [Tooltip("자동 폼 전환 규칙 (에네르기아·마시오&이네르셔·테르미아 등)")]
     public FormAutoRule[]  autoRules;
+    public AttackElement   attackElement;  // 이 캐릭터의 속성(전기 속성 아군 판정, 23-F)
     public CounterSpec[]   counters;       // 스킬 카운터 정의(23-A)
 
     [Header("속성·성격·모션 (설계도 18)")]
