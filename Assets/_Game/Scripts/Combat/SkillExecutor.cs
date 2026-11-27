@@ -151,12 +151,20 @@ public static class SkillExecutor
             chosenBranch[en.branchGroup] = ids[Mathf.Clamp(Mathf.FloorToInt(Roll() * ids.Count), 0, ids.Count - 1)];
         }
 
-        foreach (var entry in skill.effects)
+        foreach (var rawEntry in skill.effects)
         {
+            var entry = rawEntry;
+            // 마일스톤 교체값(Lv.3~): value·duration을 교체한다. 교체한 값은 마일스톤 레벨부터 레벨 곡선을 다시 시작한다.
+            int effLevel = level;
+            if (milestone)
+            {
+                if (entry.milestoneValue > 0f) { entry.value = entry.milestoneValue; effLevel = level - skill.milestoneLevel + 1; }
+                if (entry.milestoneDuration > 0f) entry.duration = entry.milestoneDuration;
+            }
             if (!string.IsNullOrEmpty(entry.branchGroup) && chosenBranch[entry.branchGroup] != (entry.branchId ?? "")) continue;
             bool targetCounter = IsTargetCounter(entry.counterId);
             if (!targetCounter && entry.requireCounterFull && (snap == null || !snap.TryGetValue(entry.counterId ?? "", out var fs) || !fs.full)) continue;
-            float v = SkillScaling.ScaleEffectValue(entry, level);
+            float v = SkillScaling.ScaleEffectValue(entry, Mathf.Max(1, effLevel));
             if (!targetCounter && entry.counterMode != CounterMode.None && snap != null && !string.IsNullOrEmpty(entry.counterId) && snap.TryGetValue(entry.counterId, out var cv))
             {
                 float coeff = milestone && entry.milestoneCounterCoeff != 0f ? entry.milestoneCounterCoeff : entry.counterCoeff;
