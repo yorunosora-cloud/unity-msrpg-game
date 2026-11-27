@@ -24,6 +24,12 @@ public interface ISkillTarget : IDamageable
     /// <summary>id 상태 효과를 소모(제거).</summary>
     void ConsumeStatus(string id);
 
+    /// <summary>공격력(상대 공격력 비례 피해의 기준). 보스 등 미정이면 0.</summary>
+    int AttackPower { get; }
+
+    /// <summary>방어력·약점 배율을 무시한 고정 피해(받는 피해 배율만 적용).</summary>
+    void ReceiveFixedHit(int damage);
+
     /// <summary>속성 표식 부여.</summary>
     void SetMark(Continent element);
 

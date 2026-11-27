@@ -322,6 +322,8 @@ public class CombatCharacter
     /// <summary>현재 레벨 공격력 × 상태 효과 배율 (없으면 1.0).</summary>
     public int Atk   => (int)(Stats().atk * StatMult(StatKind.Atk));
     public int Def   => (int)(Stats().def * StatMult(StatKind.Def));
+    /// <summary>레벨·폼 반영 기본 속도 스탯(상대속도 스킬의 속도 차 기준).</summary>
+    public int BaseSpd => Stats().spd;
 
     // ── HP/MP 상태 ─────────────────────────────────────────────────────────
 

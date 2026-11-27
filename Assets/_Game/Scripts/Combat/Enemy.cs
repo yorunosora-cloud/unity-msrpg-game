@@ -45,6 +45,12 @@ public class Enemy : MonoBehaviour, ISkillTarget
     readonly Dictionary<string, float> _marks = new();
 
     public float Spd => spd;
+    public int   AttackPower => contactDamage;
+    public void  ReceiveFixedHit(int damage)
+    {
+        if (_unit == null || _unit.IsDead || damage <= 0) return;
+        ApplyDamage(Mathf.Max(1, Mathf.RoundToInt(damage * Status.Mult(StatKind.DamageTaken))), false);
+    }
     public int  StatusStacks(string id)    => Status.Stacks(id);
     public int  StatusMaxStacks(string id) => Status.MaxStacksOf(id);
     public void ConsumeStatus(string id)   => Status.Remove(id);

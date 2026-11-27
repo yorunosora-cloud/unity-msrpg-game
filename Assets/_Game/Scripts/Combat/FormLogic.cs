@@ -8,6 +8,7 @@ public struct CombatMotionState
     public bool  isMoving;
     public bool  isAirborne;
     public float verticalSpeed;
+    public float height;          // 공중일 때 지면 대비 높이(m), 지상 0
 }
 
 /// <summary>적 속성 조회 (P5의 AttributeProfile이 구현). HitTargetStat 조건용.</summary>

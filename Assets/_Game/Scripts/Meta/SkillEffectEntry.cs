@@ -1,6 +1,12 @@
 using System;
 
 /// <summary>스킬 종류 (설계도 22 §4-2). Passive/FormChange는 P3~P4에서 사용.</summary>
+/// <summary>Damage 효과의 기준 공격력(23-G).</summary>
+public enum DamageBasis { CasterAtk, TargetAtk }
+
+/// <summary>Damage 효과 위력을 상황에 비례해 키우는 방식(23-G).</summary>
+public enum ScaleBy { None, SpeedDiff, MoveSpeedRatio, Height }
+
 public enum SkillKind { Active, Passive, FormChange, Combo }   // Combo: 표식 연계기 — 슬롯 키로 발동하지 않고 SynergyResolver가 실행
 
 /// <summary>조합 가능한 스킬 효과 종류 (설계도 22 §4-3).</summary>
@@ -42,6 +48,18 @@ public struct SkillEffectEntry
     public float           milestoneDuration;
     public string          whenForm;     // OnFormChange 패시브: 새 폼이 이 id일 때만 적용(비면 항상)
     public bool            consumeOnHit; // 버프가 다음 공격 행동에서 소모됨(가속도·양자화)
+
+    // 계산 경로(23-G) — Damage 효과 전용
+    public DamageBasis     damageBasis;          // CasterAtk(기본) / TargetAtk(상대 공격력 기반)
+    public bool            ignoreDefense;        // 방어력·약점 무시 고정 피해
+    public ScaleBy         scaleBy;              // 상황 비례 위력: 위력 ×(1+bonus)
+    public float           scaleCoeff;           // SpeedDiff: 속도 1당 증분
+    public float           scaleCap;             // 최대 증분(+100% = 1)
+    public float           milestoneScaleCap;    // Lv.3 교체 상한(0=교체 없음)
+    public float           critMult;             // 급소 배율(0=급소 없음)
+    public float           critHalfAngle;        // 조준 중앙 ±각도 안이면 급소
+    public string          branchGroup;          // 같은 그룹에서 행동마다 branchId 하나만 균등 확률로 적용
+    public string          branchId;
 
     public string          markId;       // Mark 효과: 이 이름의 표식을 duration초(milestoneDuration, 난이도 배율) 동안 건다. 비면 속성 표식
 

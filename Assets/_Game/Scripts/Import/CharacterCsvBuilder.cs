@@ -432,7 +432,8 @@ public static class CharacterCsvBuilder
         if (!t.RequireColumns(res.report, "skillId", "type")) return;
         t.WarnUnknownColumns(res.report, "skillId", "order", "type", "target", "stat", "value", "duration", "maxStacks", "targetCap",
             "areaRadius", "milestoneValue", "milestoneDuration", "whenForm", "consumeOnHit",
-            "counterId", "counterMode", "counterCoeff", "milestoneCounterCoeff", "counterConsume", "requireCounterFull", "counterWindow", "markId");
+            "counterId", "counterMode", "counterCoeff", "milestoneCounterCoeff", "counterConsume", "requireCounterFull", "counterWindow", "markId",
+            "damageBasis", "ignoreDefense", "scaleBy", "scaleCoeff", "scaleCap", "milestoneScaleCap", "critMult", "critHalfAngle", "branchGroup", "branchId");
 
         var by = new Dictionary<string, List<(int order, int idx, SkillEffectEntry e)>>();
         int idx = 0;
@@ -454,7 +455,16 @@ public static class CharacterCsvBuilder
                 counterCoeff = row.Float("counterCoeff"), milestoneCounterCoeff = row.Float("milestoneCounterCoeff"),
                 counterConsume = row.Bool("counterConsume"), requireCounterFull = row.Bool("requireCounterFull"),
                 counterWindow = row.Float("counterWindow"), markId = row.Str("markId"),
+                damageBasis = row.Enum("damageBasis", DamageBasis.CasterAtk), ignoreDefense = row.Bool("ignoreDefense"),
+                scaleBy = row.Enum("scaleBy", ScaleBy.None), scaleCoeff = row.Float("scaleCoeff"), scaleCap = row.Float("scaleCap"),
+                milestoneScaleCap = row.Float("milestoneScaleCap"), critMult = row.Float("critMult"), critHalfAngle = row.Float("critHalfAngle"),
+                branchGroup = row.Str("branchGroup"), branchId = row.Str("branchId"),
             };
+            bool usesDamageColumns = e.damageBasis != DamageBasis.CasterAtk || e.ignoreDefense || e.scaleBy != ScaleBy.None || e.critMult > 0f;
+            if (usesDamageColumns && e.type != SkillEffectType.Damage) { row.Error("damageBasis·ignoreDefense·scaleBy·critMult는 type=Damage 효과에서만 쓸 수 있습니다"); continue; }
+            if (e.critMult > 0f && e.critHalfAngle <= 0f) { row.Error("critMult를 쓰려면 critHalfAngle(>0)이 필요합니다"); continue; }
+            if (e.scaleBy != ScaleBy.None && e.scaleCap <= 0f) { row.Error("scaleBy를 쓰려면 scaleCap(>0)이 필요합니다"); continue; }
+            if (string.IsNullOrEmpty(e.branchGroup) != string.IsNullOrEmpty(e.branchId)) { row.Error("branchGroup과 branchId는 함께 써야 합니다"); continue; }
             if (sid.Length == 0) continue;
             if (!skills.ContainsKey(sid)) { row.Error($"skillId '{sid}'가 character_skills.csv에 없습니다"); continue; }
             if (!string.IsNullOrEmpty(e.markId) && e.type != SkillEffectType.Mark) { row.Error("markId는 type=Mark 효과에서만 쓸 수 있습니다"); continue; }
@@ -471,6 +481,9 @@ public static class CharacterCsvBuilder
         foreach (var kv in by)
         {
             var arr = kv.Value.OrderBy(x => x.order).ThenBy(x => x.idx).Select(x => x.e).ToArray();
+            foreach (var g in arr.Where(x => !string.IsNullOrEmpty(x.branchGroup)).GroupBy(x => x.branchGroup))
+                if (g.Select(x => x.branchId).Distinct().Count() < 2)
+                    res.report.Error(Effects, 0, $"skillId={kv.Key}", $"확률 분기 그룹 '{g.Key}'에는 서로 다른 branchId가 2개 이상 필요합니다");
             var def = skills[kv.Key].def;
             if (def.skillType == SkillKind.Passive)
             {

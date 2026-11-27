@@ -10,7 +10,7 @@ public static class HitPipeline
 {
     public static void Apply(ISkillTarget target, int baseAtk, CombatCharacter caster, float hitMult,
                              float skillRange, Vector3 playerPos, string skillId, bool isBasic,
-                             int actionId, List<HitInfo> hits, string[] strengthTags = null)
+                             int actionId, List<HitInfo> hits, string[] strengthTags = null, bool ignoreDefense = false)
     {
         if (target == null) return;
         if (target is Object o && o == null) return;     // 이미 파괴된 대상
@@ -24,7 +24,8 @@ public static class HitPipeline
         int   before = enemy != null && enemy.Unit != null ? enemy.Unit.Hp : -1;
         Vector3 point = target.Transform.position;       // ReceiveHit 후 파괴될 수 있어 미리 저장
 
-        target.ReceiveHit(caster.Element, atk);
+        if (ignoreDefense) target.ReceiveFixedHit(atk);   // 방어력·약점 무시(23-G)
+        else target.ReceiveHit(caster.Element, atk);
 
         int dealt = before >= 0 ? before - enemy.Unit.Hp : atk;   // 보스 등은 공격값으로 근사
         hits.Add(new HitInfo

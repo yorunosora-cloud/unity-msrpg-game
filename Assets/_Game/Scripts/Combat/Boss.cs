@@ -66,6 +66,12 @@ public class Boss : MonoBehaviour, ISkillTarget
 
     // 패시브 공식 입력: 보스는 속도 스탯·접근 판정·마크를 아직 지원하지 않는다(보스 설계 단계에서 확장)
     public float Spd => 0f;
+    public int   AttackPower => 0;
+    public void  ReceiveFixedHit(int damage)
+    {
+        if (_unit == null || _unit.IsDead || _defeated || damage <= 0) return;
+        ApplyDamage(Mathf.Max(1, Mathf.RoundToInt(damage * Status.Mult(StatKind.DamageTaken))), false);
+    }
     public int   StatusStacks(string id)    => 0;     // 보스는 상태 스택 카운터 미지원
     public int   StatusMaxStacks(string id) => 0;
     public void  ConsumeStatus(string id)   { }

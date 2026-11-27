@@ -331,6 +331,39 @@ public class ShippedCsvTests
     }
 
     // ════════════════════════════════════════════════════════════════════════
+    // 계산 경로 데이터(23-G)
+    // ════════════════════════════════════════════════════════════════════════
+
+    [Test]
+    public void ComputationPaths_ShippedSkills_UseTheOriginalRules()
+    {
+        var rel = Skill("velocia_s2").effects[0];
+        Assert.AreEqual((ScaleBy.SpeedDiff, 0.01f, 1f, 1.3f), (rel.scaleBy, rel.scaleCoeff, rel.scaleCap, rel.milestoneScaleCap), "상대속도: +1%/속도차, 최대 +100%(Lv.3 +130%)");
+
+        var kin = Skill("energia_s0k").effects[0];
+        Assert.AreEqual((ScaleBy.MoveSpeedRatio, 0.5f, 0.7f), (kin.scaleBy, kin.scaleCap, kin.milestoneScaleCap), "운동에너지: +50%(Lv.3 +70%)");
+        var pot = Skill("energia_s0p").effects[0];
+        Assert.AreEqual((ScaleBy.Height, 1f, 1.3f), (pot.scaleBy, pot.scaleCap, pot.milestoneScaleCap), "중력 퍼텐셜: +100%(Lv.3 +130%)");
+
+        var down = Skill("gluon_s1").effects[0];
+        Assert.AreEqual(DamageBasis.TargetAtk, down.damageBasis);
+        Assert.AreEqual(1f / 3f, down.value, 0.001f, "다운쿼크: 상대 공격력의 1/3");
+
+        var charm = Skill("gluon_s3").effects[0];
+        Assert.AreEqual((true, 1.5f, 2.5f, 10f), (charm.ignoreDefense, charm.value, charm.critMult, charm.critHalfAngle), "참쿼크: 방어 무시 ×1.5, 급소 ×2.5");
+    }
+
+    [Test]
+    public void StrangeQuark_HasTwoExclusiveBranches_DirectHitVersusDotAndSlow()
+    {
+        var e = Skill("gluon_s2").effects;
+        Assert.IsTrue(e.All(x => x.branchGroup == "strange"));
+        CollectionAssert.AreEquivalent(new[] { "a", "b" }, e.Select(x => x.branchId).Distinct());
+        Assert.AreEqual(SkillEffectType.Damage, e.Single(x => x.branchId == "a").type);
+        CollectionAssert.AreEquivalent(new[] { SkillEffectType.Dot, SkillEffectType.Slow }, e.Where(x => x.branchId == "b").Select(x => x.type));
+    }
+
+    // ════════════════════════════════════════════════════════════════════════
     // 스킬 카운터 데이터(skill_counters.csv, 23-A)
     // ════════════════════════════════════════════════════════════════════════
 

@@ -16,4 +16,7 @@ public static class PlayerRuntime
 
     /// <summary>플레이어 이동·점프 상태 스냅샷. PlayerController가 매 프레임 갱신 (폼 자동 전환 등이 읽는다).</summary>
     public static CombatMotionState Motion { get; set; }
+
+    /// <summary>최대 점프 높이(m) — 높이 비례 위력의 기준. 컨트롤러가 jumpSpeed²/2|g|로 갱신한다.</summary>
+    public static float MaxJumpHeight { get; set; } = 1.5f;
 }

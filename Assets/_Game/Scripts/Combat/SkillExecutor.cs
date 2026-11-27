@@ -138,8 +138,22 @@ public static class SkillExecutor
         }
         bool milestone = skill.milestoneLevel > 0 && level >= skill.milestoneLevel;
 
+        // 확률 분기: 같은 그룹에서 행동마다 branchId 하나만 균등 확률로 고른다(예: 스트레인지 쿼크 1/2)
+        Dictionary<string, string> chosenBranch = null;
+        foreach (var en in skill.effects)
+        {
+            if (string.IsNullOrEmpty(en.branchGroup)) continue;
+            chosenBranch ??= new Dictionary<string, string>();
+            if (chosenBranch.ContainsKey(en.branchGroup)) continue;
+            var ids = new List<string>();
+            foreach (var x in skill.effects)
+                if (x.branchGroup == en.branchGroup && !ids.Contains(x.branchId ?? "")) ids.Add(x.branchId ?? "");
+            chosenBranch[en.branchGroup] = ids[Mathf.Clamp(Mathf.FloorToInt(Roll() * ids.Count), 0, ids.Count - 1)];
+        }
+
         foreach (var entry in skill.effects)
         {
+            if (!string.IsNullOrEmpty(entry.branchGroup) && chosenBranch[entry.branchGroup] != (entry.branchId ?? "")) continue;
             bool targetCounter = IsTargetCounter(entry.counterId);
             if (!targetCounter && entry.requireCounterFull && (snap == null || !snap.TryGetValue(entry.counterId ?? "", out var fs) || !fs.full)) continue;
             float v = SkillScaling.ScaleEffectValue(entry, level);
@@ -208,6 +222,36 @@ public static class SkillExecutor
         return !t.IsDead;
     }
 
+    /// <summary>확률 분기·난수 주입(테스트). null이면 UnityEngine.Random.</summary>
+    public static System.Func<float> Random01;
+    static float Roll() => Random01 != null ? Random01() : Random.value;
+
+    /// <summary>Damage 효과의 상황 비례 증분(0 이상). 대상별(SpeedDiff) 또는 시전 시점 공통.</summary>
+    static float ScaleBonus(SkillEffectEntry e, ISkillTarget t, CombatCharacter caster, bool milestone)
+    {
+        if (e.scaleBy == ScaleBy.None) return 0f;
+        float cap = milestone && e.milestoneScaleCap > 0f ? e.milestoneScaleCap : e.scaleCap;
+        switch (e.scaleBy)
+        {
+            case ScaleBy.SpeedDiff:
+                return Mathf.Min(cap, Mathf.Max(0f, caster.BaseSpd - t.Spd) * e.scaleCoeff);
+            case ScaleBy.MoveSpeedRatio:
+                return Mathf.Clamp01(PlayerRuntime.Motion.speedRatio) * cap;
+            case ScaleBy.Height:
+                float max = Mathf.Max(0.01f, PlayerRuntime.MaxJumpHeight);
+                return Mathf.Clamp01(PlayerRuntime.Motion.height / max) * cap;
+        }
+        return 0f;
+    }
+
+    /// <summary>급소: 대상이 조준(정면) 방향 ±halfAngle 안인가.</summary>
+    static bool IsCrit(Transform origin, ISkillTarget t, float halfAngle)
+    {
+        Vector3 to = t.Transform.position - origin.position; to.y = 0f;
+        if (to.sqrMagnitude < 1e-6f) return true;
+        return Vector3.Angle(origin.forward, to) <= halfAngle;
+    }
+
     /// <summary>"target:statusId" 형태 — 적 대상의 상태 스택을 카운터로 읽는다.</summary>
     static bool IsTargetCounter(string id) => !string.IsNullOrEmpty(id) && id.StartsWith("target:");
     static string TargetCounterId(string id) => id.Substring("target:".Length);
@@ -239,9 +283,14 @@ public static class SkillExecutor
             switch (e.type)
             {
                 case SkillEffectType.Damage:
-                    HitPipeline.Apply(t, Mathf.RoundToInt(caster.Atk * v), caster, ctx.hitMult, ctx.range,
-                                      ctx.origin.position, ctx.skillId, ctx.isBasic, ctx.actionId, ctx.hits, ctx.tags);
+                {
+                    float dv = v * (1f + ScaleBonus(e, t, caster, milestone));
+                    if (e.critMult > 0f && IsCrit(origin, t, e.critHalfAngle)) dv *= e.critMult;
+                    int baseAtk = e.damageBasis == DamageBasis.TargetAtk ? Mathf.Max(1, t.AttackPower) : caster.Atk;
+                    HitPipeline.Apply(t, Mathf.RoundToInt(baseAtk * dv), caster, ctx.hitMult, ctx.range,
+                                      ctx.origin.position, ctx.skillId, ctx.isBasic, ctx.actionId, ctx.hits, ctx.tags, e.ignoreDefense);
                     break;
+                }
                 case SkillEffectType.Dot:
                     t.ApplyStatus(Harmful(skill, e, StatusKind.Dot, StatKind.Atk, caster.Atk * v));
                     break;

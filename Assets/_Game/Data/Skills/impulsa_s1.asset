@@ -31,6 +31,16 @@ MonoBehaviour:
     milestoneDuration: 0
     whenForm: 
     consumeOnHit: 0
+    damageBasis: 0
+    ignoreDefense: 0
+    scaleBy: 0
+    scaleCoeff: 0
+    scaleCap: 0
+    milestoneScaleCap: 0
+    critMult: 0
+    critHalfAngle: 0
+    branchGroup: 
+    branchId: 
     markId: 
     counterId: 
     counterMode: 0

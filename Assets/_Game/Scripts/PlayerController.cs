@@ -22,6 +22,7 @@ public class PlayerController : MonoBehaviour
 
     CharacterController _cc;
     DashMotion          _dash;
+    float               _groundY;
 
     /// <summary>전방 돌진 시작(설계도 18 §8-5 #1). 돌진 중에는 이동 입력으로 인한 수평 이동이 무시된다.</summary>
     public void StartDash(Vector3 direction, float distance, float time)
@@ -169,8 +170,11 @@ public class PlayerController : MonoBehaviour
 
         // 폼 자동 전환·패시브가 읽는 이동 상태 스냅샷
         float hSpeed = _horizVel.magnitude;
+        if (_cc.isGrounded) _groundY = transform.position.y;
+        PlayerRuntime.MaxJumpHeight = jumpSpeed * jumpSpeed / (2f * Mathf.Abs(gravity));
         PlayerRuntime.Motion = new CombatMotionState
         {
+            height        = _cc.isGrounded ? 0f : Mathf.Max(0f, transform.position.y - _groundY),
             speedRatio    = runSpeed > 0f ? hSpeed / runSpeed : 0f,
             isMoving      = hSpeed > 0.1f,
             isAirborne    = _jumpPhase == JumpPhase.Airborne,

@@ -31,6 +31,16 @@ MonoBehaviour:
     milestoneDuration: 0
     whenForm: 
     consumeOnHit: 0
+    damageBasis: 0
+    ignoreDefense: 0
+    scaleBy: 1
+    scaleCoeff: 0.01
+    scaleCap: 1
+    milestoneScaleCap: 1.3
+    critMult: 0
+    critHalfAngle: 0
+    branchGroup: 
+    branchId: 
     markId: 
     counterId: 
     counterMode: 0
@@ -41,9 +51,11 @@ MonoBehaviour:
     counterWindow: 0
   factNoteKo: "\uC0C1\uB300\uC18D\uB3C4\uB294 \uAD00\uCC30\uC790 \uAE30\uC900\uC5D0
     \uB530\uB77C \uB2EC\uB77C\uC9C0\uB294 \uC18D\uB3C4\uC774\uB2E4."
-  gameNoteKo: "\uC18D\uB3C4\uCC28(\uBCF8\uC778 spd\u2212\uC801 spd) \uBE44\uB840
-    \uCD94\uAC00 \uD53C\uD574(\uCD5C\uB300 +100%, Lv.3 +130%)\uB294 \uBBF8\uAD6C\uD604
-    \u2014 \uAE30\uBCF8 \uD53C\uD574\uB9CC \uC801\uC6A9"
+  gameNoteKo: "\uC18D\uB3C4\uCC28\uB294 \uBCF8\uC778 \uAE30\uBCF8 \uC18D\uB3C4 \uC2A4\uD0EF
+    \u2212 \uC801 \uC18D\uB3C4(Spd). \uC801 Spd \uAC12\uC740 17\uBC88 \uC801 \uB3C4\uAC10
+    \uB2E8\uACC4\uC5D0\uC11C \uCC44\uC6B0\uBBC0\uB85C, \uADF8 \uC804\uC5D0\uB294
+    \uBAA8\uB4E0 \uC801\uC758 \uC18D\uB3C4\uAC00 0\uC73C\uB85C \uACC4\uC0B0\uB418\uC5B4
+    \uBCF8\uC778 \uC18D\uB3C4\uB9CC\uD07C \uBCF4\uB108\uC2A4\uAC00 \uBD99\uB294\uB2E4"
   passive:
     trigger: 0
     value: 0

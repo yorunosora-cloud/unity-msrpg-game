@@ -31,6 +31,16 @@ MonoBehaviour:
     milestoneDuration: 0
     whenForm: 
     consumeOnHit: 0
+    damageBasis: 0
+    ignoreDefense: 1
+    scaleBy: 0
+    scaleCoeff: 0
+    scaleCap: 0
+    milestoneScaleCap: 0
+    critMult: 2.5
+    critHalfAngle: 10
+    branchGroup: 
+    branchId: 
     markId: 
     counterId: 
     counterMode: 0
@@ -41,9 +51,10 @@ MonoBehaviour:
     counterWindow: 0
   factNoteKo: "\uCC38\uCFFC\uD06C\uB294 \uD45C\uC900\uBAA8\uD615\uC758 \uB450 \uBC88\uC9F8
     \uC138\uB300 \uCFFC\uD06C\uC774\uB2E4."
-  gameNoteKo: "\uBC29\uC5B4\uB825 \uBB34\uC2DC \uACE0\uC815 \uD53C\uD574\uC640 \uAE09\uC18C
-    \xD72.5\uB294 \uBCC4\uB3C4 \uACC4\uC0B0 \uACBD\uB85C\uAC00 \uC5C6\uC5B4 \uBBF8\uAD6C\uD604
-    \u2014 \uACF5\uACA9\uB825\xD71.5 \uC77C\uBC18 \uD53C\uD574\uB85C \uADFC\uC0AC"
+  gameNoteKo: "\uBC29\uC5B4\uB825\xB7\uC57D\uC810 \uBB34\uC2DC \uACE0\uC815 \uD53C\uD574(\uACF5\uACA9\uB825\xD71.5).
+    \uC815\uBA74 \uC911\uC559(\xB110\xB0)\uC744 \uB9DE\uD788\uBA74 \uAE09\uC18C \xD72.5.
+    \uAE09\uC18C \uBC94\uC704 \uD655\uC7A5(Lv.3)\uC740 \uBD80\uCC44\uAF34 \uAC01\uB3C4
+    30\u219225\uB85C \uD45C\uD604(\uC870\uC900 \uC815\uBC00\uB3C4 \uCEE8\uC149)"
   passive:
     trigger: 0
     value: 0
