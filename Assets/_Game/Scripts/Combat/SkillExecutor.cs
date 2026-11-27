@@ -55,6 +55,20 @@ public static class SkillExecutor
 
         // 공격 행동의 적중을 한 번에 알림 → OnHit 패시브(스택·효과)
         if (ctx.hits.Count > 0) caster.NotifyHits(ctx.hits, false);
+        ctx.RunAfterNotify();
+    }
+
+    /// <summary>
+    /// 기본기(Q)를 효과 목록으로 실행한다(23-C). 기본기 위력 배율·OnBasicAttack 카운터·기본기 패시브 경로를 따른다.
+    /// 아군 대상 효과는 적중했을 때만 적용된다. 약점 코어 타격은 포함하지 않는다.
+    /// </summary>
+    public static void ExecuteBasic(SkillDef skill, int skillIndex, CombatCharacter caster, Transform origin)
+    {
+        var ctx = new ActionCtx { origin = origin, skillId = skill.id, actionId = CombatCharacter.NewActionId(),
+                                  tags = skill.strengthTags, isBasic = true };
+        ExecuteEffects(skill, skillIndex, caster, origin, ctx);
+        if (ctx.hits.Count > 0) caster.NotifyHits(ctx.hits, true);
+        ctx.RunAfterNotify();
     }
 
     /// <summary>거리 기반 자동 전환 판정: 설정이 있고 가장 가까운 적이 경계 이내(포함)면 대체 발동.</summary>
@@ -86,6 +100,10 @@ public static class SkillExecutor
         public float          range;
         public List<HitInfo>  hits = new();
         public string[]       tags;     // 스킬의 강점 태그
+        public bool           isBasic;  // 기본기(Q) 행동 — 기본기 위력 배율·OnBasicAttack 카운터
+        public List<System.Action> afterNotify = new();   // 적중 집계(카운터 증가) 뒤에 실행할 작업(카운터 소모)
+
+        public void RunAfterNotify() { foreach (var a in afterNotify) a(); afterNotify.Clear(); }
     }
 
     // ── 효과 목록 경로 (설계도 22 §4-3) ───────────────────────────────────
@@ -99,7 +117,7 @@ public static class SkillExecutor
 
         // 적에게 피해를 주는 행동이면 위력 배율을 1회 계산(소모형 보너스 소모)
         foreach (var en in skill.effects)
-            if (en.type == SkillEffectType.Damage && en.target == TargetScope.EnemyArea) { ctx.hitMult = caster.HitMultiplier(false); break; }
+            if (en.type == SkillEffectType.Damage && en.target == TargetScope.EnemyArea) { ctx.hitMult = caster.HitMultiplier(ctx.isBasic); break; }
 
         // 적 대상은 형태 판정으로 한 번만 수집(거리순). 마일스톤 범위 보너스 반영.
         List<(ISkillTarget t, float d)> area = null;
@@ -134,6 +152,7 @@ public static class SkillExecutor
             }
             else
             {
+                if (ctx.isBasic && ctx.hits.Count == 0) continue;   // 기본기의 아군 효과는 적중했을 때만
                 foreach (var ally in TargetResolver.Resolve(party, caster, entry.target, entry.targetCap))
                 {
                     int healed = AllyEffectApplier.Apply(entry, v, skill.id, caster, ally);
@@ -143,15 +162,19 @@ public static class SkillExecutor
             }
         }
 
-        // 행동이 끝난 뒤 카운터 소모("@recent"는 소모하지 않는다)
+        // 카운터 소모는 적중 집계(증가) 뒤로 미룬다 — 가득 → 소모 → 이번 적중분 +1 이 아니라, 증가 후 소모로 주기가 정확해진다("@recent"는 소모 안 함)
         foreach (var en in skill.effects)
         {
             if (!en.counterConsume || string.IsNullOrEmpty(en.counterId) || en.counterId == "@recent") continue;
-            if (IsTargetCounter(en.counterId))
+            var cid = en.counterId;
+            // "가득일 때만" 효과는 조건을 통과했을 때만 소모한다(대상 카운터는 대상별로 이미 판정됨)
+            if (en.requireCounterFull && !IsTargetCounter(cid) && (snap == null || !snap.TryGetValue(cid, out var sf) || !sf.full)) continue;
+            if (IsTargetCounter(cid))
             {
-                if (area != null) foreach (var (t, _) in area) if (IsAlive(t)) t.ConsumeStatus(TargetCounterId(en.counterId));
+                var hitArea = area;
+                ctx.afterNotify.Add(() => { if (hitArea != null) foreach (var (t, _) in hitArea) if (IsAlive(t)) t.ConsumeStatus(TargetCounterId(cid)); });
             }
-            else caster.Counter(en.counterId)?.ConsumeAll();
+            else ctx.afterNotify.Add(() => caster.Counter(cid)?.ConsumeAll());
         }
     }
 
@@ -213,7 +236,7 @@ public static class SkillExecutor
             {
                 case SkillEffectType.Damage:
                     HitPipeline.Apply(t, Mathf.RoundToInt(caster.Atk * v), caster, ctx.hitMult, ctx.range,
-                                      ctx.origin.position, ctx.skillId, false, ctx.actionId, ctx.hits, ctx.tags);
+                                      ctx.origin.position, ctx.skillId, ctx.isBasic, ctx.actionId, ctx.hits, ctx.tags);
                     break;
                 case SkillEffectType.Dot:
                     t.ApplyStatus(Harmful(skill, e, StatusKind.Dot, StatKind.Atk, caster.Atk * v));

@@ -27,7 +27,16 @@ MonoBehaviour:
     mp: 13
   forms: []
   autoRules: []
-  counters: []
+  counters:
+  - id: charge
+    maxStacks: 10
+    milestoneMaxStacks: 12
+    decay: 0
+    decaySeconds: 0
+    gainOn: 32
+    resetOn: 0
+    milestoneSkillId: elektra_s1
+    gainSkillId: 
   attributes:
     mass: 0
     velocity: 0

@@ -27,7 +27,16 @@ MonoBehaviour:
     mp: 27
   forms: []
   autoRules: []
-  counters: []
+  counters:
+  - id: up
+    maxStacks: 2
+    milestoneMaxStacks: 1
+    decay: 0
+    decaySeconds: 0
+    gainOn: 1
+    resetOn: 0
+    milestoneSkillId: gluon_s0
+    gainSkillId: 
   attributes:
     mass: 0
     velocity: 0

@@ -18,11 +18,51 @@ MonoBehaviour:
   shape: 0
   lineWidth: 1
   radius: 3
-  effects: []
+  effects:
+  - type: 0
+    target: 0
+    stat: 0
+    value: 1
+    duration: 0
+    maxStacks: 0
+    targetCap: 0
+    areaRadius: 0
+    milestoneValue: 0
+    milestoneDuration: 0
+    whenForm: 
+    consumeOnHit: 0
+    counterId: 
+    counterMode: 0
+    counterCoeff: 0
+    milestoneCounterCoeff: 0
+    counterConsume: 0
+    requireCounterFull: 0
+    counterWindow: 0
+  - type: 0
+    target: 0
+    stat: 0
+    value: 1
+    duration: 0
+    maxStacks: 0
+    targetCap: 0
+    areaRadius: 0
+    milestoneValue: 0
+    milestoneDuration: 0
+    whenForm: 
+    consumeOnHit: 0
+    counterId: up
+    counterMode: 0
+    counterCoeff: 0
+    milestoneCounterCoeff: 0
+    counterConsume: 1
+    requireCounterFull: 1
+    counterWindow: 0
   factNoteKo: "\uC5C5\uCFFC\uD06C\uC758 \uC804\uD558\uB294 +2/3 e\uC774\uB2E4."
-  gameNoteKo: "2/3 \uC2A4\uD0DD\xB73\uD68C\uC9F8 \uD06C\uB9AC\uD2F0\uCEEC(\xD72.0)\uACFC
-    \uB2E4\uC6B4\uCFFC\uD06C \uD45C\uC2DD \uD3ED\uBC1C\uC740 \uBBF8\uAD6C\uD604 \u2014
-    \uAE30\uBCF8 \uD53C\uD574\uB9CC \uC801\uC6A9"
+  gameNoteKo: "2/3 \uC2A4\uD0DD\uC740 \"\uC801\uC911 2\uBC88\uC73C\uB85C \uAC00\uB4DD(\uD06C\uB9AC\uD2F0\uCEEC
+    \uB300\uAE30)\" \uCE74\uC6B4\uD130\uB85C \uD45C\uD604: \uC138 \uBC88\uC9F8 \uD0C0\uACA9\uC5D0
+    \uCD94\uAC00 \uD53C\uD574(=\uD06C\uB9AC\uD2F0\uCEEC \xD72.0, Lv.3 \uB450 \uBC88\uC9F8
+    \uD0C0\uACA9). \uB2E4\uC6B4\uCFFC\uD06C \uD45C\uC2DD \uD3ED\uBC1C\uC740 \uC2DC\uB108\uC9C0
+    \uC2DC\uC2A4\uD15C \uBBF8\uAD6C\uD604"
   passive:
     trigger: 0
     value: 0

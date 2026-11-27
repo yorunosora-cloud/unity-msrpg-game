@@ -21,13 +21,11 @@ MonoBehaviour:
   effects: []
   factNoteKo: "\uCD95\uC804\uC740 \uCD95\uC804\uAE30(\uCEE4\uD328\uC2DC\uD130)\uC5D0
     \uC804\uD558\uB97C \uC800\uC7A5\uD558\uB294 \uAC83\uC774\uB2E4."
-  gameNoteKo: "\uC2A4\uD0DD \uB300\uC2E0 \uC774\uB3D9 \uC911 \uCD08\uB2F9 \uC704\uB825
-    +5%(\uCD5C\uB300 +50%), \uC815\uC9C0 \uC2DC \uCD08\uB2F9 \u22125%\uB85C \uADFC\uC0AC.
-    \uC870\uC900 \uC2DC \uCD95\uC801\uACFC \uACF5\uACA9 \uC2DC \uC18C\uBAA8\uB294
-    \uBBF8\uAD6C\uD604, \uC815\uC9C0 \uC2DC \uAC10\uC18C\uC728\uC740 \uC784\uC2DC
-    \uAC12"
+  gameNoteKo: "\uC870\uC900 \uC2DC \uB204\uC801\uC740 \uC870\uC900 \uC2DC\uC2A4\uD15C\uC774
+    \uC5C6\uC5B4 \uC774\uB3D9 \uC911 1\uCD08\uB9C8\uB2E4 +1(\uCD5C\uB300 10, Lv.3
+    12)\uB9CC \uAD6C\uD604. \uBC29\uC804\uC774 \uC18C\uBAA8\uD55C\uB2E4"
   passive:
-    trigger: 6
+    trigger: 0
     value: 0
     hitCount: 0
     internalCooldown: 0
@@ -43,18 +41,7 @@ MonoBehaviour:
       milestonePerStackValue: 0
       milestoneMaxStacks: 0
     effects: []
-    modifiers:
-    - source: 2
-      counterId: 
-      stat: 5
-      value: 0.05
-      cap: 0.5
-      decayPerSecond: 0.05
-      partyWide: 0
-      enemyAuraRadius: 0
-      immuneToSlow: 0
-      milestoneValue: 0
-      milestoneCap: 0
+    modifiers: []
     formula: 0
     milestoneValue: 0
   formChange:

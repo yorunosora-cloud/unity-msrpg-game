@@ -8,3 +8,5 @@ free_electron,conduca_r,5,,DecayOneEvery,2,MovingSecond,,,
 polarization,insulia_r,5,,DecayOneEvery,3,OnHitTaken,,,
 heat,semira_sr,5,7,ResetAfterIdle,5,OnHitTaken;OnSkillCast,,semira_s1,
 accel_run,axel_sr,5,6,None,0,OnHit,OnHitTaken,axel_s2,axel_s2
+charge,elektra_sr,10,12,None,0,MovingSecond,,elektra_s1,
+up,gluon_ur,2,1,None,0,OnHit,,gluon_s0,

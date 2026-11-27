@@ -18,11 +18,31 @@ MonoBehaviour:
   shape: 0
   lineWidth: 1
   radius: 3
-  effects: []
+  effects:
+  - type: 0
+    target: 0
+    stat: 0
+    value: 1.2
+    duration: 0
+    maxStacks: 0
+    targetCap: 0
+    areaRadius: 0
+    milestoneValue: 0
+    milestoneDuration: 0
+    whenForm: 
+    consumeOnHit: 0
+    counterId: charge
+    counterMode: 1
+    counterCoeff: 0.06
+    milestoneCounterCoeff: 0
+    counterConsume: 1
+    requireCounterFull: 0
+    counterWindow: 0
   factNoteKo: "\uBC29\uC804\uC740 \uCD95\uC801\uB41C \uC804\uD558\uAC00 \uBC29\uCD9C\uB418\uB294
     \uD604\uC0C1\uC774\uB2E4."
-  gameNoteKo: "\uC18C\uBAA8 \uC2A4\uD0DD \uC0C1\uD55C \uC99D\uAC00(Lv.3)\uB294 \uC2A4\uD0DD
-    \uC18C\uBAA8 \uAD6C\uC870\uAC00 \uB2EC\uB77C \uBBF8\uAD6C\uD604"
+  gameNoteKo: "\uC2A4\uD0DD\uB2F9 \uC704\uB825 +5%(\uAE30\uBCF8 1.2\uC758 5%=0.06)\uB97C
+    \uBC29\uCD9C\uD558\uBA70 \uC2A4\uD0DD \uC804\uBD80 \uC18C\uBAA8. Lv.3 \uC0C1\uD55C
+    12\uB294 \uCD95\uC804 \uCE74\uC6B4\uD130\uC758 \uB9C8\uC77C\uC2A4\uD1A4 \uC0C1\uD55C"
   passive:
     trigger: 0
     value: 0

@@ -56,6 +56,17 @@ public class PlayerCombat : MonoBehaviour
         var spec = BasicAttack.Resolve(active, attackRange, attackHalfAngle, attackCooldown);
         _cooldownTimer = spec.cooldown;
 
+        // 기본기가 효과 목록을 가지면(출혈·카운터 소모 등) 효과 실행기로 처리한다(설계도 구현계획 23-C)
+        int qIndex = active.IndexForSlot(SkillSlots.Basic);
+        var qSkill = qIndex >= 0 ? active.SkillAt(qIndex) : null;
+        if (qSkill != null && qSkill.effects != null && qSkill.effects.Length > 0)
+        {
+            SkillExecutor.ExecuteBasic(qSkill, qIndex, active, transform);
+            _builder?.PlayAttack();
+            active.RecoverMp(mpRecoverPerHit);
+            return;
+        }
+
         int       atk     = Mathf.RoundToInt(active.Atk * spec.damageMultiplier);
         float     hitMult = active.HitMultiplier(true);          // 공격 행동당 1회(소모형 보너스 소모)
         int       actionId = CombatCharacter.NewActionId();

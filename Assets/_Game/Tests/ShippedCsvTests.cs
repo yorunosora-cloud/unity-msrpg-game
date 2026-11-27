@@ -267,7 +267,7 @@ public class ShippedCsvTests
         CollectionAssert.AreEqual(new[] { "양전하" }, Skill("elektra_s3").strengthTags);
         var d = Skill("elektra_s2").effects[0];
         Assert.AreEqual((SkillEffectType.Dot, 0.12f, 5), (d.type, d.value, d.maxStacks));
-        Assert.AreEqual(ModifierSource.MovingRamp, Skill("elektra_s0").passive.modifiers[0].source);
+        Assert.IsTrue(Skill("elektra_s0").passive.modifiers == null || Skill("elektra_s0").passive.modifiers.Length == 0, "축전은 카운터 charge가 대체(이동 램프 근사 제거)");
     }
 
     // ════════════════════════════════════════════════════════════════════════
@@ -303,6 +303,31 @@ public class ShippedCsvTests
         Assert.IsTrue(e[1].type == SkillEffectType.Stun && e[1].requireCounterFull && e[1].duration == 2f, "5스택일 때만 스턴 2초");
         var sh = Skill("insulia_s3").effects[0];
         Assert.AreEqual((SkillEffectType.DamageTakenMult, 0.65f, 4f, 5f), (sh.type, sh.value, sh.duration, sh.milestoneDuration));
+    }
+
+    // ════════════════════════════════════════════════════════════════════════
+    // 기본기(Q) 효과 목록(23-C)
+    // ════════════════════════════════════════════════════════════════════════
+
+    [Test]
+    public void BasicEffects_ShippedQSkills_UseEffectLists()
+    {
+        var sp = Skill("spasia_s0").effects;
+        Assert.AreEqual((SkillEffectType.Damage, 0.8f), (sp[0].type, sp[0].value));
+        Assert.AreEqual((SkillEffectType.Dot, 0.15f, 3f, 5f), (sp[1].type, sp[1].value, sp[1].duration, sp[1].milestoneDuration), "출혈 3초, Lv.3 5초");
+
+        var el = Skill("elektra_s1").effects[0];
+        Assert.AreEqual(("charge", CounterMode.Linear, 0.06f, true), (el.counterId, el.counterMode, el.counterCoeff, el.counterConsume));
+        var ch = Char("elektra_sr").counters.Single(c => c.id == "charge");
+        Assert.AreEqual((10, 12, "elektra_s1", CounterTrigger.MovingSecond), (ch.maxStacks, ch.milestoneMaxStacks, ch.milestoneSkillId, ch.gainOn));
+
+        var gl = Skill("gluon_s0").effects;
+        Assert.IsTrue(gl[1].requireCounterFull && gl[1].counterConsume && gl[1].counterId == "up", "가득이면 추가 피해(크리티컬) 후 소모");
+        var up = Char("gluon_ur").counters.Single();
+        Assert.AreEqual((2, 1, "gluon_s0"), (up.maxStacks, up.milestoneMaxStacks, up.milestoneSkillId), "Lv.3: 3타→2타");
+
+        var dr = Skill("semira_s0p").effects;
+        Assert.AreEqual((SkillEffectType.RestoreMp, TargetScope.SelfAndBench), (dr[1].type, dr[1].target));
     }
 
     // ════════════════════════════════════════════════════════════════════════

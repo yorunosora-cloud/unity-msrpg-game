@@ -18,14 +18,51 @@ MonoBehaviour:
   shape: 1
   lineWidth: 0.4
   radius: 3
-  effects: []
+  effects:
+  - type: 0
+    target: 0
+    stat: 0
+    value: 0.7
+    duration: 0
+    maxStacks: 0
+    targetCap: 0
+    areaRadius: 0
+    milestoneValue: 0
+    milestoneDuration: 0
+    whenForm: 
+    consumeOnHit: 0
+    counterId: 
+    counterMode: 0
+    counterCoeff: 0
+    milestoneCounterCoeff: 0
+    counterConsume: 0
+    requireCounterFull: 0
+    counterWindow: 0
+  - type: 13
+    target: 3
+    stat: 0
+    value: 0.0167
+    duration: 0
+    maxStacks: 0
+    targetCap: 0
+    areaRadius: 0
+    milestoneValue: 0
+    milestoneDuration: 0
+    whenForm: 
+    consumeOnHit: 0
+    counterId: 
+    counterMode: 0
+    counterCoeff: 0
+    milestoneCounterCoeff: 0
+    counterConsume: 0
+    requireCounterFull: 0
+    counterWindow: 0
   factNoteKo: "\uC804\uC790 \uC774\uB3D9\uB3C4\uAC00 \uC591\uACF5 \uC774\uB3D9\uB3C4\uBCF4\uB2E4
     \uD06C\uB2E4(\uC2E4\uB9AC\uCF58\uC5D0\uC11C \uC57D 3\uBC30)."
   gameNoteKo: "\uBB38\uC11C\uC0C1 \"\uAC19\uC740 \uC2A4\uD0AC, \uD3FC\uBCC4 \uB2E4\uB978
     \uD6A8\uACFC\"\uB294 \uD3FC \uC804\uC6A9 \uC2A4\uD0AC 2\uAC1C(formReq)\uB85C
-    \uB098\uB220 \uD45C\uD604. \uC801\uC911 \uC2DC \uC790\uC2E0+\uB300\uAE30 \uC544\uAD70
-    MP +0.5\uB294 \uAE30\uBCF8\uAE30\uAC00 \uD6A8\uACFC \uBAA9\uB85D\uC744 \uC4F0\uC9C0
-    \uC54A\uC544 \uBBF8\uAD6C\uD604"
+    \uB098\uB220 \uD45C\uD604. MP +0.5\uB294 \uCD5C\uB300 MP(30) \uB300\uBE44 0.0167\uB85C
+    \uD45C\uD604"
   passive:
     trigger: 0
     value: 0
