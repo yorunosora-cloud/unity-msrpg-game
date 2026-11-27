@@ -49,6 +49,22 @@ chemistry_benzene-temple_boss_wohler,뵐러,Chemistry,황제령 오르가니아,
 chemistry_benzene-temple_boss_kekule,케쿨레,Chemistry,황제령 오르가니아,벤젠의 육각 신전,Landmark,Boss,,Solo,,Chemistry,,,,,,,,,,BossDef(07_보스전.md·케쿨레.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Kekule
 chemistry_benzene-temple_boss_pauling,폴링,Chemistry,황제령 오르가니아,벤젠의 육각 신전,Landmark,Boss,,Solo,,Chemistry,,,,,,,,,,BossDef(07_보스전.md·폴링.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Pauling
 
+# 피지컬리아 공국 — 촉매의 영원한 화로(알케미아 세 번째 던전): HP·DEF·EXP·골드는 Lv1 기준 역할별 공통표(설계도 21번) 값
+# 공통 잡몹 4종(반응 유형, 전 구역) + 구역 전용 3종(중간보스 작은 버전, 속도→활성화→표면 구역 고정 진행)
+chemistry_catalyst-furnace_normal_synthesizer,합성체,Chemistry,피지컬리아 공국,촉매의 영원한 화로,Landmark,Normal,반응체,Swarm,전 구역,Chemistry,70,5,40,합체돌진:근접,10,1,,,,둘이 만나면 합쳐져 더 크고 단단해지는 반응체.,
+chemistry_catalyst-furnace_normal_decomposer,분해체,Chemistry,피지컬리아 공국,촉매의 영원한 화로,Landmark,Normal,반응체,Solo,전 구역,Chemistry,70,5,40,분해박치기:근접,10,1,,,,쓰러지면 작은 둘로 나뉘는 반응체.,
+chemistry_catalyst-furnace_normal_displacer,치환체,Chemistry,피지컬리아 공국,촉매의 영원한 화로,Landmark,Normal,반응체,Solo,전 구역,Chemistry,65,4,40,조각투척:원거리,10,1,,,,다른 몬스터의 조각을 빼앗아 갈아 끼우고 던지는 반응체.,
+chemistry_catalyst-furnace_normal_exchanger,복분해체,Chemistry,피지컬리아 공국,촉매의 영원한 화로,Landmark,Normal,반응체,Swarm,전 구역,Chemistry,70,5,40,자리교환:이동형,10,1,,,,두 마리가 조각을 맞바꾸며 자리를 바꿔 공격하는 반응체.,
+chemistry_catalyst-furnace_normal_tiny-concentration-doll,작은 농도 인형,Chemistry,피지컬리아 공국,촉매의 영원한 화로,Landmark,Normal,자동인형,Solo,지상·속도 구역,Chemistry,75,5,45,구슬발사:원거리,10,1,,,,농도 인형의 작은 버전. 구슬 몇 개를 모아 발사한다.,
+chemistry_catalyst-furnace_normal_tiny-temperature-doll,작은 온도 인형,Chemistry,피지컬리아 공국,촉매의 영원한 화로,Landmark,Normal,자동인형,Solo,지상·활성화 구역,Chemistry,85,6,46,과열돌진:근접,11,1,,,,온도 인형의 작은 버전. 짧게 과열해 돌진한다.,
+chemistry_catalyst-furnace_normal_tiny-surface-doll,작은 표면적 인형,Chemistry,피지컬리아 공국,촉매의 영원한 화로,Landmark,Normal,자동인형,Swarm,지상·표면 구역,Chemistry,90,6,48,분열협공:근접,11,1,,,,표면적 인형의 작은 버전. 둘로 쪼개져 협공한다.,
+chemistry_catalyst-furnace_miniboss_concentration-doll,농도 인형,Chemistry,피지컬리아 공국,촉매의 영원한 화로,Landmark,MiniBoss,자동인형,Solo,지상·속도 구역,Chemistry,110,7,70,분자응집:강화; 연속충돌탄:원거리,17,2,,,,분자를 빽빽하게 모을수록 더 많이 쏘는 자동인형 — 입문 관문.,
+chemistry_catalyst-furnace_miniboss_temperature-doll,온도 인형,Chemistry,피지컬리아 공국,촉매의 영원한 화로,Landmark,MiniBoss,자동인형,Solo,지상·활성화 구역,Chemistry,120,7,80,과열:강화; 열장판:장판,19,3,,,,과열할수록 빨라지고 열 장판을 까는 자동인형.,
+chemistry_catalyst-furnace_miniboss_surface-doll,표면적 인형,Chemistry,피지컬리아 공국,촉매의 영원한 화로,Landmark,MiniBoss,자동인형,Solo,지상·표면 구역,Chemistry,140,8,95,분열:소환; 동시접촉:광역,21,3,,,,잘게 나뉘어 여러 면으로 동시에 공격하는 자동인형 — 최고 난이도.,
+chemistry_catalyst-furnace_boss_vant-hoff,반트호프,Chemistry,피지컬리아 공국,촉매의 영원한 화로,Landmark,Boss,,Solo,,Chemistry,,,,,,,,,,BossDef(07_보스전.md·반트호프.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,VantHoff
+chemistry_catalyst-furnace_boss_arrhenius,아레니우스,Chemistry,피지컬리아 공국,촉매의 영원한 화로,Landmark,Boss,,Solo,,Chemistry,,,,,,,,,,BossDef(07_보스전.md·아레니우스.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Arrhenius
+chemistry_catalyst-furnace_boss_langmuir,랭뮤어,Chemistry,피지컬리아 공국,촉매의 영원한 화로,Landmark,Boss,,Solo,,Chemistry,,,,,,,,,,BossDef(07_보스전.md·랭뮤어.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Langmuir
+
 # ===== Biology (생명과학 — 바이오스) =====
 # 국가: 헬릭스 제국 / 제네시스 왕국 / 에코스 연맹
 # 랜드마크: 이중나선 황궁, CRISPR 편집 연구소, 멘델의 유전 도서관, 해부학의 지하 성역, 진화의 도원, 생태계 순환 대원
