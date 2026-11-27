@@ -33,6 +33,22 @@ chemistry_periodic-cathedral_boss_lavoisier,라부아지에,Chemistry,교황청 
 chemistry_periodic-cathedral_boss_newlands,뉴랜즈,Chemistry,교황청 인오르가니아,원소 주기율표 대성당,Landmark,Boss,,Solo,,Chemistry,,,,,,,,,,BossDef(07_보스전.md·뉴랜즈.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Newlands
 chemistry_periodic-cathedral_boss_mendeleev,멘델레예프,Chemistry,교황청 인오르가니아,원소 주기율표 대성당,Landmark,Boss,,Solo,,Chemistry,,,,,,,,,,BossDef(07_보스전.md·멘델레예프.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Mendeleev
 
+# 황제령 오르가니아 — 벤젠의 육각 신전(알케미아 두 번째 던전): HP·DEF·EXP·골드는 Lv1 기준 역할별 공통표(설계도 21번) 값
+# 공통 잡몹 4종(탄화수소 4종, 전 구역) + 구역 전용 3종(중간보스 작은 버전, 합성→구조→결합 구역 고정 진행)
+chemistry_benzene-temple_normal_alkane,알케인,Chemistry,황제령 오르가니아,벤젠의 육각 신전,Landmark,Normal,탄화수소,Swarm,전 구역,Chemistry,70,5,40,연소박치기:근접,10,1,,,,단일 결합의 안정한 탄화수소. 몸에 불을 붙여 부딪힌다.,
+chemistry_benzene-temple_normal_alkene,알켄,Chemistry,황제령 오르가니아,벤젠의 육각 신전,Landmark,Normal,탄화수소,Swarm,전 구역,Chemistry,70,5,40,첨가연타:근접,10,1,,,,이중 결합의 탄화수소. 두 갈래 팔로 달라붙어 두 번 때린다.,
+chemistry_benzene-temple_normal_alkyne,알카인,Chemistry,황제령 오르가니아,벤젠의 육각 신전,Landmark,Normal,탄화수소,Swarm,전 구역,Chemistry,65,4,40,삼중화염:원거리,10,1,,,,삼중 결합의 탄화수소. 뜨거운 불꽃을 세 번 연달아 쏜다.,
+chemistry_benzene-temple_normal_aromatic,방향족,Chemistry,황제령 오르가니아,벤젠의 육각 신전,Landmark,Normal,탄화수소,Solo,전 구역,Chemistry,70,5,40,고리돌진:근접,10,1,,,,안정한 벤젠 고리를 두른 탄화수소. 고리를 돌려 몸을 지키며 돌진한다.,
+chemistry_benzene-temple_normal_tiny-graphite-golem,작은 흑연 골렘,Chemistry,황제령 오르가니아,벤젠의 육각 신전,Landmark,Normal,탄소골렘,Solo,지상·합성 구역,Chemistry,75,5,45,미끄럼돌진:근접,10,1,,,,흑연 골렘의 작은 버전. 층이 미끄러지듯 짧게 돌진한다.,
+chemistry_benzene-temple_normal_tiny-fullerene-golem,작은 풀러렌 골렘,Chemistry,황제령 오르가니아,벤젠의 육각 신전,Landmark,Normal,탄소골렘,Solo,지상·구조 구역,Chemistry,85,6,46,구르기:이동형,11,1,,,,풀러렌 골렘의 작은 버전. 공처럼 굴러 부딪힌다.,
+chemistry_benzene-temple_normal_tiny-diamond-golem,작은 다이아몬드 골렘,Chemistry,황제령 오르가니아,벤젠의 육각 신전,Landmark,Normal,탄소골렘,Solo,지상·결합 구역,Chemistry,90,6,48,결정가시:원거리,11,1,,,,다이아몬드 골렘의 작은 버전. 작은 결정 가시를 날린다.,
+chemistry_benzene-temple_miniboss_graphite-golem,흑연 골렘,Chemistry,황제령 오르가니아,벤젠의 육각 신전,Landmark,MiniBoss,탄소골렘,Solo,지상·합성 구역,Chemistry,110,7,70,층미끄럼돌진:이동형; 전류방출:장판,17,2,,,,층 사이 힘이 약해 미끄러지고 전기가 통하는 흑연 골렘 — 입문 관문.,
+chemistry_benzene-temple_miniboss_fullerene-golem,풀러렌 골렘,Chemistry,황제령 오르가니아,벤젠의 육각 신전,Landmark,MiniBoss,탄소골렘,Solo,지상·구조 구역,Chemistry,120,7,80,구르기돌진:이동형; 튕겨오르기:광역,19,3,,,,오각형과 육각형으로 이뤄진 공 모양 분자의 골렘. 구르다 튕겨 올라 착지 범위를 때린다.,
+chemistry_benzene-temple_miniboss_diamond-golem,다이아몬드 골렘,Chemistry,황제령 오르가니아,벤젠의 육각 신전,Landmark,MiniBoss,탄소골렘,Solo,지상·결합 구역,Chemistry,140,8,95,사면체가시:장판; 경질방벽:강화,21,3,,,,네 방향 결합으로 가장 단단한 골렘. 사면체 가시를 펼치고 방벽으로 방어를 높인다 — 최고 난이도.,
+chemistry_benzene-temple_boss_wohler,뵐러,Chemistry,황제령 오르가니아,벤젠의 육각 신전,Landmark,Boss,,Solo,,Chemistry,,,,,,,,,,BossDef(07_보스전.md·뵐러.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Wohler
+chemistry_benzene-temple_boss_kekule,케쿨레,Chemistry,황제령 오르가니아,벤젠의 육각 신전,Landmark,Boss,,Solo,,Chemistry,,,,,,,,,,BossDef(07_보스전.md·케쿨레.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Kekule
+chemistry_benzene-temple_boss_pauling,폴링,Chemistry,황제령 오르가니아,벤젠의 육각 신전,Landmark,Boss,,Solo,,Chemistry,,,,,,,,,,BossDef(07_보스전.md·폴링.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Pauling
+
 # ===== Biology (생명과학 — 바이오스) =====
 # 국가: 헬릭스 제국 / 제네시스 왕국 / 에코스 연맹
 # 랜드마크: 이중나선 황궁, CRISPR 편집 연구소, 멘델의 유전 도서관, 해부학의 지하 성역, 진화의 도원, 생태계 순환 대원
