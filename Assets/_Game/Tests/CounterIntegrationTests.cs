@@ -58,6 +58,20 @@ public class CounterIntegrationTests
     }
 
     [Test]
+    public void GainSkillId_CountsOnlyHitsFromThatSkill_ResetStillWorks()
+    {
+        var spec = C("run", CounterTrigger.OnHit, 5, resetOn: CounterTrigger.OnHitTaken); spec.gainSkillId = "axel_s2";
+        var c = Make(out _, new[] { spec });
+        c.NotifyHits(new List<HitInfo> { new HitInfo { actionId = 1, sourceSkillId = "other" } }, false);
+        Assert.AreEqual(0, c.CounterValue("run"), "다른 스킬 적중은 세지 않는다");
+        c.NotifyHits(new List<HitInfo> { new HitInfo { actionId = 2, sourceSkillId = "axel_s2" } }, false);
+        c.NotifyHits(new List<HitInfo> { new HitInfo { actionId = 3, sourceSkillId = "axel_s2" } }, false);
+        Assert.AreEqual(2, c.CounterValue("run"));
+        c.TakeHit(1);
+        Assert.AreEqual(0, c.CounterValue("run"));
+    }
+
+    [Test]
     public void OnBasicAttack_OnlyForBasic_OnAction_ForBoth()
     {
         var c = Make(out _, new[] { C("b", CounterTrigger.OnBasicAttack), C("x", CounterTrigger.OnAction) });

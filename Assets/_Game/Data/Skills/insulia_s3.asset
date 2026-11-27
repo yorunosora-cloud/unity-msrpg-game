@@ -31,6 +31,13 @@ MonoBehaviour:
     milestoneDuration: 5
     whenForm: 
     consumeOnHit: 0
+    counterId: 
+    counterMode: 0
+    counterCoeff: 0
+    milestoneCounterCoeff: 0
+    counterConsume: 0
+    requireCounterFull: 0
+    counterWindow: 0
   factNoteKo: "\uC815\uC804\uAE30 \uCC28\uD3D0(\uD328\uB7EC\uB370\uC774 \uC0C8\uC7A5)\uB294
     \uC2E4\uC81C\uB85C\uB294 \uB3C4\uCCB4\uC758 \uC131\uC9C8\uC774\uB2E4."
   gameNoteKo: "\uBD80\uB3C4\uCCB4\uC778 \uC778\uC220\uB9AC\uC544\uC758 \uC2A4\uD0AC\uB85C

@@ -31,6 +31,13 @@ MonoBehaviour:
     milestoneDuration: 0
     whenForm: 
     consumeOnHit: 0
+    counterId: 
+    counterMode: 0
+    counterCoeff: 0
+    milestoneCounterCoeff: 0
+    counterConsume: 0
+    requireCounterFull: 0
+    counterWindow: 0
   - type: 1
     target: 3
     stat: 0
@@ -43,6 +50,13 @@ MonoBehaviour:
     milestoneDuration: 0
     whenForm: 
     consumeOnHit: 0
+    counterId: 
+    counterMode: 0
+    counterCoeff: 0
+    milestoneCounterCoeff: 0
+    counterConsume: 0
+    requireCounterFull: 0
+    counterWindow: 0
   factNoteKo: "LED\uB294 \uC804\uC790-\uC591\uACF5 \uC7AC\uACB0\uD569 \uC5D0\uB108\uC9C0\uAC00
     \uBE5B\uC73C\uB85C \uBC29\uCD9C\uB418\uB294 \uC18C\uC790\uC774\uB2E4."
   gameNoteKo: "\uBB38\uC11C\uC0C1 \"\uAC19\uC740 \uC2A4\uD0AC, \uD3FC\uBCC4 \uB2E4\uB978

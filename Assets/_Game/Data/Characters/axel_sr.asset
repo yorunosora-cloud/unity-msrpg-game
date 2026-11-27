@@ -27,6 +27,16 @@ MonoBehaviour:
     mp: 15
   forms: []
   autoRules: []
+  counters:
+  - id: accel_run
+    maxStacks: 5
+    milestoneMaxStacks: 6
+    decay: 0
+    decaySeconds: 0
+    gainOn: 1
+    resetOn: 2
+    milestoneSkillId: axel_s2
+    gainSkillId: axel_s2
   attributes:
     mass: 0
     velocity: 0

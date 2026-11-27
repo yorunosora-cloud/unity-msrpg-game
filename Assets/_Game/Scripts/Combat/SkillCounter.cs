@@ -33,6 +33,7 @@ public struct CounterSpec
     public CounterTrigger gainOn;          // 이 사건마다 +1(MovingSecond는 틱에서 누적)
     public CounterTrigger resetOn;         // 이 사건에서 0으로 초기화
     public string       milestoneSkillId;  // 이 스킬이 마일스톤 레벨이면 milestoneMaxStacks 적용
+    public string       gainSkillId;       // 비어 있지 않으면 OnHit·OnAction 증가는 이 스킬의 적중일 때만
 }
 
 /// <summary>

@@ -31,12 +31,18 @@ MonoBehaviour:
     milestoneDuration: 0
     whenForm: 
     consumeOnHit: 0
+    counterId: 
+    counterMode: 0
+    counterCoeff: 0
+    milestoneCounterCoeff: 0
+    counterConsume: 0
+    requireCounterFull: 0
+    counterWindow: 0
   factNoteKo: "\uAD50\uB958\uB294 \uBC29\uD5A5\uACFC \uD06C\uAE30\uAC00 \uC8FC\uAE30\uC801\uC73C\uB85C
     \uBC14\uB00C\uB294 \uC804\uB958\uC774\uB2E4."
-  gameNoteKo: "\uCD08\uB2F9 \uACF5\uACA9\uB825\xD70.12 \uB3C4\uD2B8\uB97C \uCD5C\uB300
-    5\uC2A4\uD0DD\uAE4C\uC9C0 \uC911\uCCA9(\uC9C0\uC18D 6\uCD08\uB294 \uBB38\uC11C\uC5D0
-    \uC5C6\uB294 \uC784\uC2DC \uAC12). \uC9C1\uB958\uAC00 \uC2A4\uD0DD\uC744 \uC18C\uBAA8\uD558\uB294
-    \uC5F0\uB3D9\uACFC Lv.3 \uC2A4\uD0DD \uC0C1\uD55C \uC99D\uAC00\uB294 \uBBF8\uAD6C\uD604"
+  gameNoteKo: "\uC9C0\uC18D 6\uCD08\uB294 \uBB38\uC11C\uC5D0 \uC5C6\uB294 \uC784\uC2DC
+    \uAC12. Lv.3 \uC2A4\uD0DD \uC0C1\uD55C \uC99D\uAC00(5\u21927)\uB294 \uD6A8\uACFC\uBCC4
+    \uB9C8\uC77C\uC2A4\uD1A4 \uC0C1\uD55C\uC774 \uC5C6\uC5B4 \uBBF8\uAD6C\uD604"
   passive:
     trigger: 0
     value: 0

@@ -29,11 +29,12 @@ public static class CharacterCsvBuilder
     public const string Passives         = "skill_passives.csv";
     public const string Modifiers        = "skill_modifiers.csv";
     public const string Codex            = "character_codex.csv";
+    public const string Counters         = "skill_counters.csv";
 
     public static readonly string[] AllSheets =
-        { TagRules, Catalog, Forms, AutoRules, Skills, Effects, FormChange, FormChangeStates, Passives, Modifiers, Codex };
+        { TagRules, Catalog, Forms, AutoRules, Skills, Effects, FormChange, FormChangeStates, Passives, Modifiers, Codex, Counters };
 
-    sealed class SkillEntry { public SkillDef def; public int line; public int order; public string[] forms; }
+    sealed class SkillEntry { public SkillDef def; public int line; public int order; public string[] forms; public string owner; }
 
     /// <summary>빌드 중 시트 간에 공유하는 상태(캐릭터별 스킬 목록).</summary>
     sealed class BuildCtx { public readonly Dictionary<string, List<SkillEntry>> owned = new(); }
@@ -57,9 +58,12 @@ public static class CharacterCsvBuilder
         BuildAutoRules(Sheet(AutoRules), chars, forms, res);
 
         var skills = BuildSkills(Sheet(Skills), chars, forms, ctx, res);
-        BuildEffects(Sheet(Effects), skills, res);
+        var skillOwner = new Dictionary<string, string>();
+        foreach (var kv in ctx.owned) foreach (var se in kv.Value) skillOwner[se.def.id] = kv.Key;
+        var counterIds = BuildCounters(Sheet(Counters), chars, skills, res);
+        BuildEffects(Sheet(Effects), skills, skillOwner, counterIds, res);
         BuildFormChange(Sheet(FormChange), Sheet(FormChangeStates), skills, forms, ctx, res);
-        BuildPassives(Sheet(Passives), Sheet(Modifiers), skills, res);
+        BuildPassives(Sheet(Passives), Sheet(Modifiers), skills, skillOwner, counterIds, res);
         BuildCodex(Sheet(Codex), chars, res);
 
         CheckSlotConflicts(ctx, res);
@@ -329,7 +333,7 @@ public static class CharacterCsvBuilder
                 s.formReq = string.Join(",", formList);
             }
 
-            var entry = new SkillEntry { def = s, line = row.Line, order = order++, forms = formList };
+            var entry = new SkillEntry { def = s, line = row.Line, order = order++, forms = formList, owner = owner };
             skills[id] = entry;
             if (!owned.TryGetValue(owner, out var list)) owned[owner] = list = new();
             list.Add(entry);
@@ -345,12 +349,87 @@ public static class CharacterCsvBuilder
     // skill_effects
     // ════════════════════════════════════════════════════════════════════════
 
-    static void BuildEffects(CsvTable t, Dictionary<string, SkillEntry> skills, ImportResult res)
+    // ════════════════════════════════════════════════════════════════════════
+    // skill_counters (스킬 카운터, 구현계획 23-A)
+    // ════════════════════════════════════════════════════════════════════════
+
+    static CounterTrigger ParseTriggers(CsvRow row, string col)
+    {
+        var f = CounterTrigger.None;
+        foreach (var name in row.List(col))
+        {
+            bool ok = false;
+            foreach (CounterTrigger v in System.Enum.GetValues(typeof(CounterTrigger)))
+                if (v != CounterTrigger.None && v.ToString() == name) { f |= v; ok = true; break; }
+            if (!ok) row.Error($"{col} '{name}'는 알 수 없는 값입니다 (허용: {string.Join(", ", System.Enum.GetNames(typeof(CounterTrigger)).Where(n => n != "None"))})");
+        }
+        return f;
+    }
+
+    /// <summary>카운터 id 참조 검증: "@recent" / "target:상태id" / 해당 캐릭터가 정의한 카운터.</summary>
+    static bool CounterRefOk(string counterId, string sid, Dictionary<string, string> skillOwner,
+                             Dictionary<string, HashSet<string>> counterIds, CsvRow row)
+    {
+        if (counterId == "@recent") return true;
+        if (counterId.StartsWith("target:"))
+        {
+            if (counterId.Length == "target:".Length) { row.Error("counterId 'target:' 뒤에 상태 id가 필요합니다"); return false; }
+            return true;
+        }
+        if (skillOwner.TryGetValue(sid, out var owner) && counterIds.TryGetValue(owner, out var set) && set.Contains(counterId)) return true;
+        row.Error($"counterId '{counterId}'가 {(skillOwner.TryGetValue(sid, out var o2) ? o2 : "이 스킬의 소유자")}의 skill_counters.csv에 없습니다");
+        return false;
+    }
+
+    static Dictionary<string, HashSet<string>> BuildCounters(CsvTable t, Dictionary<string, CharacterDef> chars,
+                                                             Dictionary<string, SkillEntry> skills, ImportResult res)
+    {
+        var ids = new Dictionary<string, HashSet<string>>();
+        if (t.Rows.Count == 0) return ids;
+        if (!t.RequireColumns(res.report, "counterId", "ownerId")) return ids;
+        t.WarnUnknownColumns(res.report, "counterId", "ownerId", "maxStacks", "milestoneMaxStacks", "decay", "decaySeconds",
+            "gainOn", "resetOn", "milestoneSkillId", "gainSkillId");
+
+        var by = new Dictionary<string, List<CounterSpec>>();
+        foreach (var row in t.Rows)
+        {
+            string id = row.Str("counterId", "", required: true);
+            string owner = row.Str("ownerId", "", required: true);
+            row.Context = $"counterId={id}";
+            var spec = new CounterSpec
+            {
+                id = id, maxStacks = row.Int("maxStacks"), milestoneMaxStacks = row.Int("milestoneMaxStacks"),
+                decay = row.Enum("decay", CounterDecay.None), decaySeconds = row.Float("decaySeconds"),
+                gainOn = ParseTriggers(row, "gainOn"), resetOn = ParseTriggers(row, "resetOn"),
+                milestoneSkillId = row.Str("milestoneSkillId"), gainSkillId = row.Str("gainSkillId"),
+            };
+            if (id.Length == 0 || owner.Length == 0) continue;
+            if (id == "@recent" || id.StartsWith("target:")) { row.Error($"counterId '{id}'는 예약된 형식입니다(@recent, target:…)"); continue; }
+            if (!chars.ContainsKey(owner)) { row.Error($"ownerId '{owner}'가 character_catalog.csv에 없습니다"); continue; }
+            if (spec.maxStacks <= 0) { row.Error("maxStacks는 1 이상이어야 합니다"); continue; }
+            if (spec.milestoneMaxStacks > 0 && string.IsNullOrEmpty(spec.milestoneSkillId)) { row.Error("milestoneMaxStacks를 쓰려면 milestoneSkillId가 필요합니다"); continue; }
+            if (!string.IsNullOrEmpty(spec.milestoneSkillId) &&
+                !(skills.TryGetValue(spec.milestoneSkillId, out var ms) && ms.owner == owner))
+            { row.Error($"milestoneSkillId '{spec.milestoneSkillId}'가 {owner}의 스킬이 아닙니다"); continue; }
+            if (!string.IsNullOrEmpty(spec.gainSkillId) && !(skills.TryGetValue(spec.gainSkillId, out var gs) && gs.owner == owner))
+            { row.Error($"gainSkillId '{spec.gainSkillId}'가 {owner}의 스킬이 아닙니다"); continue; }
+            if (!ids.TryGetValue(owner, out var set)) ids[owner] = set = new HashSet<string>();
+            if (!set.Add(id)) { row.Error($"counterId '{id}'가 {owner}에 중복되었습니다"); continue; }
+            if (!by.TryGetValue(owner, out var list)) by[owner] = list = new();
+            list.Add(spec);
+        }
+        foreach (var kv in by) chars[kv.Key].counters = kv.Value.ToArray();
+        return ids;
+    }
+
+    static void BuildEffects(CsvTable t, Dictionary<string, SkillEntry> skills, Dictionary<string, string> skillOwner,
+                             Dictionary<string, HashSet<string>> counterIds, ImportResult res)
     {
         if (t.Rows.Count == 0) return;
         if (!t.RequireColumns(res.report, "skillId", "type")) return;
         t.WarnUnknownColumns(res.report, "skillId", "order", "type", "target", "stat", "value", "duration", "maxStacks", "targetCap",
-            "areaRadius", "milestoneValue", "milestoneDuration", "whenForm", "consumeOnHit");
+            "areaRadius", "milestoneValue", "milestoneDuration", "whenForm", "consumeOnHit",
+            "counterId", "counterMode", "counterCoeff", "milestoneCounterCoeff", "counterConsume", "requireCounterFull", "counterWindow");
 
         var by = new Dictionary<string, List<(int order, int idx, SkillEffectEntry e)>>();
         int idx = 0;
@@ -368,9 +447,19 @@ public static class CharacterCsvBuilder
                 areaRadius = row.Float("areaRadius"),
                 milestoneValue = row.Float("milestoneValue"), milestoneDuration = row.Float("milestoneDuration"),
                 whenForm = row.Str("whenForm"), consumeOnHit = row.Bool("consumeOnHit"),
+                counterId = row.Str("counterId"), counterMode = row.Enum("counterMode", CounterMode.None),
+                counterCoeff = row.Float("counterCoeff"), milestoneCounterCoeff = row.Float("milestoneCounterCoeff"),
+                counterConsume = row.Bool("counterConsume"), requireCounterFull = row.Bool("requireCounterFull"),
+                counterWindow = row.Float("counterWindow"),
             };
             if (sid.Length == 0) continue;
             if (!skills.ContainsKey(sid)) { row.Error($"skillId '{sid}'가 character_skills.csv에 없습니다"); continue; }
+            if (string.IsNullOrEmpty(e.counterId))
+            {
+                if (e.counterMode != CounterMode.None || e.counterConsume || e.requireCounterFull)
+                { row.Error("counterMode·counterConsume·requireCounterFull을 쓰려면 counterId가 필요합니다"); continue; }
+            }
+            else if (!CounterRefOk(e.counterId, sid, skillOwner, counterIds, row)) continue;
             if (!by.TryGetValue(sid, out var list)) by[sid] = list = new();
             list.Add((row.Int("order"), idx++, e));
         }
@@ -478,7 +567,8 @@ public static class CharacterCsvBuilder
     // skill_passives / skill_modifiers
     // ════════════════════════════════════════════════════════════════════════
 
-    static void BuildPassives(CsvTable t, CsvTable mods, Dictionary<string, SkillEntry> skills, ImportResult res)
+    static void BuildPassives(CsvTable t, CsvTable mods, Dictionary<string, SkillEntry> skills, Dictionary<string, string> skillOwner,
+                              Dictionary<string, HashSet<string>> counterIds, ImportResult res)
     {
         var seen = new HashSet<string>();
 
@@ -517,7 +607,7 @@ public static class CharacterCsvBuilder
         if (mods.Rows.Count > 0 && mods.RequireColumns(res.report, "skillId", "source", "stat"))
         {
             mods.WarnUnknownColumns(res.report, "skillId", "order", "source", "stat", "value", "cap", "decayPerSecond", "partyWide",
-                "enemyAuraRadius", "milestoneValue", "milestoneCap", "immuneToSlow");
+                "enemyAuraRadius", "milestoneValue", "milestoneCap", "immuneToSlow", "counterId");
             var by = new Dictionary<string, List<(int order, int idx, PassiveModifierSpec m)>>();
             int idx = 0;
             foreach (var row in mods.Rows)
@@ -530,10 +620,15 @@ public static class CharacterCsvBuilder
                     value = row.Float("value"), cap = row.Float("cap"), decayPerSecond = row.Float("decayPerSecond"),
                     partyWide = row.Bool("partyWide"), enemyAuraRadius = row.Float("enemyAuraRadius"),
                     milestoneValue = row.Float("milestoneValue"), milestoneCap = row.Float("milestoneCap"),
-                    immuneToSlow = row.Bool("immuneToSlow"),
+                    immuneToSlow = row.Bool("immuneToSlow"), counterId = row.Str("counterId"),
                 };
                 if (sid.Length == 0) continue;
                 if (!skills.TryGetValue(sid, out var entry)) { row.Error($"skillId '{sid}'가 character_skills.csv에 없습니다"); continue; }
+                if (m.source == ModifierSource.Counter)
+                {
+                    if (string.IsNullOrEmpty(m.counterId)) { row.Error("source=Counter에는 counterId가 필요합니다"); continue; }
+                    if (!CounterRefOk(m.counterId, sid, skillOwner, counterIds, row)) continue;
+                }
                 if (entry.def.skillType != SkillKind.Passive) { row.Error("skillType이 Passive인 스킬만 상시 수정자를 가질 수 있습니다"); continue; }
                 if (!by.TryGetValue(sid, out var list)) by[sid] = list = new();
                 list.Add((row.Int("order"), idx++, m));

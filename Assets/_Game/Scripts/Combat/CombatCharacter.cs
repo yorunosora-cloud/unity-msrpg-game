@@ -74,13 +74,15 @@ public class CombatCharacter
     /// <summary>최근 windowSeconds초 안에 시전한 서로 다른 스킬 수.</summary>
     public int RecentDistinctSkills(float windowSeconds) => _recent.Count(Now, windowSeconds);
 
-    void FireCounters(CounterTrigger ev)
+    void FireCounters(CounterTrigger ev, string hitSkillId = null)
     {
         foreach (var s in _counterSpecs)
         {
             var c = _counters[s.id];
             if ((s.resetOn & ev) != 0) c.Clear();
-            if ((s.gainOn & ev) != 0) c.Add(1);
+            if ((s.gainOn & ev) == 0) continue;
+            if (!string.IsNullOrEmpty(s.gainSkillId) && s.gainSkillId != hitSkillId) continue;
+            c.Add(1);
         }
     }
 
@@ -191,7 +193,7 @@ public class CombatCharacter
         if (hits == null || hits.Count == 0) return;
         OnCombatActivity?.Invoke();
         _passives.NotifyHits(hits, isBasic);
-        FireCounters(CounterTrigger.OnHit | CounterTrigger.OnAction | (isBasic ? CounterTrigger.OnBasicAttack : CounterTrigger.None));
+        FireCounters(CounterTrigger.OnHit | CounterTrigger.OnAction | (isBasic ? CounterTrigger.OnBasicAttack : CounterTrigger.None), hits[0].sourceSkillId);
     }
 
     /// <summary>적중·피격 등 전투 활동 발생(전투 시작 위치 기록용).</summary>

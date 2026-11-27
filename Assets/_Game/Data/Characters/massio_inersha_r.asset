@@ -67,6 +67,7 @@ MonoBehaviour:
     consecutive: 0
     toForm: Inertia
     priority: 1
+  counters: []
   attributes:
     mass: 0
     velocity: 0

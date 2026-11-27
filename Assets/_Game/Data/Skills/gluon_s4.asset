@@ -31,6 +31,13 @@ MonoBehaviour:
     milestoneDuration: 0
     whenForm: 
     consumeOnHit: 0
+    counterId: 
+    counterMode: 0
+    counterCoeff: 0
+    milestoneCounterCoeff: 0
+    counterConsume: 0
+    requireCounterFull: 0
+    counterWindow: 0
   - type: 7
     target: 0
     stat: 0
@@ -43,6 +50,13 @@ MonoBehaviour:
     milestoneDuration: 2.5
     whenForm: 
     consumeOnHit: 0
+    counterId: 
+    counterMode: 0
+    counterCoeff: 0
+    milestoneCounterCoeff: 0
+    counterConsume: 0
+    requireCounterFull: 0
+    counterWindow: 0
   - type: 14
     target: 1
     stat: 0
@@ -55,6 +69,13 @@ MonoBehaviour:
     milestoneDuration: 0
     whenForm: 
     consumeOnHit: 0
+    counterId: 
+    counterMode: 0
+    counterCoeff: 0
+    milestoneCounterCoeff: 0
+    counterConsume: 0
+    requireCounterFull: 0
+    counterWindow: 0
   factNoteKo: "\uD0D1\uCFFC\uD06C\uB294 \uC54C\uB824\uC9C4 \uAE30\uBCF8\uC785\uC790
     \uC911 \uAC00\uC7A5 \uBB34\uAC81\uB2E4."
   gameNoteKo: "\uC790\uC2E0 \uB514\uBC84\uD504 \uD574\uC81C\uC640 \uAE30\uC808 2\uCD08(Lv.3

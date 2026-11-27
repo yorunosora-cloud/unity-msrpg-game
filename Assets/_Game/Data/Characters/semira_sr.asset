@@ -51,6 +51,16 @@ MonoBehaviour:
     tint: {r: 1, g: 0.5411765, b: 0.36078432, a: 1}
     isDefault: 0
   autoRules: []
+  counters:
+  - id: heat
+    maxStacks: 5
+    milestoneMaxStacks: 7
+    decay: 1
+    decaySeconds: 5
+    gainOn: 6
+    resetOn: 0
+    milestoneSkillId: semira_s1
+    gainSkillId: 
   attributes:
     mass: 0
     velocity: 0

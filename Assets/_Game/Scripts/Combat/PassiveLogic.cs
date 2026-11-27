@@ -123,7 +123,7 @@ public class ModifierState
     public ModifierState(PassiveModifierSpec spec, bool milestoneActive = false)
     {
         _spec  = spec;
-        _value = milestoneActive && spec.milestoneValue > 0f ? spec.milestoneValue : spec.value;
+        _value = milestoneActive && spec.milestoneValue != 0f ? spec.milestoneValue : spec.value;   // 0=교체 없음(음수 허용)
         _cap   = milestoneActive && spec.milestoneCap   > 0f ? spec.milestoneCap   : spec.cap;
     }
 

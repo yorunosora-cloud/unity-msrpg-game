@@ -23,28 +23,38 @@ MonoBehaviour:
     \uC804\uD558\uAC00 \uC815\uB82C\uB41C\uB2E4(\uC720\uC804 \uBD84\uADF9)."
   gameNoteKo: "\"\uBD84\uADF9\uC774 \uC2A4\uD0DD\uC73C\uB85C \uC313\uC5EC \uBC1B\uB294
     \uD53C\uD574\uAC00 \uC904\uC5B4\uB4E0\uB2E4\"\uB294 \uAC8C\uC784\uC6A9 \uD574\uC11D.
-    \uD53C\uACA9 \uC2DC +1\uC2A4\uD0DD(\uCD5C\uB300 5), \uC2A4\uD0DD\uB2F9 \uBC1B\uB294
-    \uD53C\uD574 \u22123%(Lv.3 \u22124%), 3\uCD08\uAC04 \uD53C\uACA9\uC774 \uC5C6\uC73C\uBA74
-    \u22121\uC2A4\uD0DD. \uC808\uC5F0 \uD30C\uAD34\uC758 \uC2A4\uD0DD \uC18C\uBAA8\uB294
-    \uBBF8\uAD6C\uD604"
+    \uD53C\uACA9 +1\uC2A4\uD0DD(\uCD5C\uB300 5), \uC2A4\uD0DD\uB2F9 \uBC1B\uB294
+    \uD53C\uD574 \u22123%(Lv.3 \u22124%), 3\uCD08 \uBB34\uD53C\uACA9\uB9C8\uB2E4
+    \u22121"
   passive:
-    trigger: 2
+    trigger: 0
     value: 0
     hitCount: 0
     internalCooldown: 0
     stack:
-      stackId: polarization
-      maxStacks: 5
-      perStackValue: -0.03
-      decay: 2
-      decaySeconds: 3
-      stat: 3
+      stackId: 
+      maxStacks: 0
+      perStackValue: 0
+      decay: 0
+      decaySeconds: 0
+      stat: 0
       damageRatio: 0
       cap: 0
-      milestonePerStackValue: -0.04
+      milestonePerStackValue: 0
       milestoneMaxStacks: 0
     effects: []
-    modifiers: []
+    modifiers:
+    - source: 4
+      counterId: polarization
+      stat: 3
+      value: -0.03
+      cap: 0
+      decayPerSecond: 0
+      partyWide: 0
+      enemyAuraRadius: 0
+      immuneToSlow: 0
+      milestoneValue: -0.04
+      milestoneCap: 0
     formula: 0
     milestoneValue: 0
   formChange:

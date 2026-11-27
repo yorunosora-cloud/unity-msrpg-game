@@ -53,6 +53,13 @@ MonoBehaviour:
       milestoneDuration: 3
       whenForm: Potential
       consumeOnHit: 0
+      counterId: 
+      counterMode: 0
+      counterCoeff: 0
+      milestoneCounterCoeff: 0
+      counterConsume: 0
+      requireCounterFull: 0
+      counterWindow: 0
     - type: 3
       target: 1
       stat: 0
@@ -65,6 +72,13 @@ MonoBehaviour:
       milestoneDuration: 3
       whenForm: Kinetic
       consumeOnHit: 0
+      counterId: 
+      counterMode: 0
+      counterCoeff: 0
+      milestoneCounterCoeff: 0
+      counterConsume: 0
+      requireCounterFull: 0
+      counterWindow: 0
     modifiers: []
     formula: 0
     milestoneValue: 0

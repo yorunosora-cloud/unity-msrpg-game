@@ -27,6 +27,16 @@ MonoBehaviour:
     mp: 13
   forms: []
   autoRules: []
+  counters:
+  - id: free_electron
+    maxStacks: 5
+    milestoneMaxStacks: 0
+    decay: 2
+    decaySeconds: 2
+    gainOn: 32
+    resetOn: 0
+    milestoneSkillId: 
+    gainSkillId: 
   attributes:
     mass: 0
     velocity: 0

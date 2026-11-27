@@ -27,6 +27,16 @@ MonoBehaviour:
     mp: 13
   forms: []
   autoRules: []
+  counters:
+  - id: polarization
+    maxStacks: 5
+    milestoneMaxStacks: 0
+    decay: 2
+    decaySeconds: 3
+    gainOn: 2
+    resetOn: 0
+    milestoneSkillId: 
+    gainSkillId: 
   attributes:
     mass: 0
     velocity: 0

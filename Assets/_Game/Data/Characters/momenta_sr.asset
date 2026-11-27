@@ -27,6 +27,7 @@ MonoBehaviour:
     mp: 20
   forms: []
   autoRules: []
+  counters: []
   attributes:
     mass: 0
     velocity: 0

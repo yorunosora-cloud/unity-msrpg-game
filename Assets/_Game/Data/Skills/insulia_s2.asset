@@ -31,12 +31,36 @@ MonoBehaviour:
     milestoneDuration: 0
     whenForm: 
     consumeOnHit: 0
+    counterId: polarization
+    counterMode: 1
+    counterCoeff: 0.25
+    milestoneCounterCoeff: 0.3
+    counterConsume: 1
+    requireCounterFull: 0
+    counterWindow: 0
+  - type: 7
+    target: 0
+    stat: 0
+    value: 0
+    duration: 2
+    maxStacks: 0
+    targetCap: 0
+    areaRadius: 0
+    milestoneValue: 0
+    milestoneDuration: 0
+    whenForm: 
+    consumeOnHit: 0
+    counterId: polarization
+    counterMode: 0
+    counterCoeff: 0
+    milestoneCounterCoeff: 0
+    counterConsume: 0
+    requireCounterFull: 1
+    counterWindow: 0
   factNoteKo: "\uC804\uAE30\uC7A5\uC774 \uD55C\uACC4(\uC808\uC5F0 \uB0B4\uB825)\uB97C
     \uB118\uC73C\uBA74 \uC808\uC5F0\uCCB4\uAC00 \uB3C4\uCCB4\uCC98\uB7FC \uC804\uB958\uB97C
     \uD758\uB824\uBCF4\uB0B8\uB2E4."
-  gameNoteKo: "\uBD84\uADF9 \uC2A4\uD0DD \uC18C\uBAA8\uC5D0 \uB530\uB978 \uC704\uB825(0.7+0.25\xD7\uC2A4\uD0DD)\uACFC
-    5\uC2A4\uD0DD \uC2A4\uD134 2\uCD08\uB294 \uBBF8\uAD6C\uD604 \u2014 \uAE30\uBCF8
-    \uD53C\uD574 0.7\uB9CC \uC801\uC6A9"
+  gameNoteKo: 
   passive:
     trigger: 0
     value: 0

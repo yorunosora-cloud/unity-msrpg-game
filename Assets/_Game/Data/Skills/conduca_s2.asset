@@ -31,10 +31,15 @@ MonoBehaviour:
     milestoneDuration: 0
     whenForm: 
     consumeOnHit: 0
+    counterId: free_electron
+    counterMode: 2
+    counterCoeff: 0.1
+    milestoneCounterCoeff: 0.12
+    counterConsume: 1
+    requireCounterFull: 0
+    counterWindow: 0
   factNoteKo: "\uBC1C\uC5F4\uB7C9\uC740 \uC804\uB958\uC758 \uC81C\uACF1\uC5D0 \uBE44\uB840\uD55C\uB2E4(Q=I\xB2Rt)."
-  gameNoteKo: "\uC2A4\uD0DD \uC804\uBD80 \uC18C\uBAA8 + \uC2A4\uD0DD\xB2 \uBE44\uB840
-    \uC704\uB825(1.0+0.1\xD7\uC2A4\uD0DD\xB2)\uC740 \uBBF8\uAD6C\uD604 \u2014 \uAE30\uBCF8
-    \uD53C\uD574 1.0\uB9CC \uC801\uC6A9"
+  gameNoteKo: 
   passive:
     trigger: 0
     value: 0

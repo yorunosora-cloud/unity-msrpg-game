@@ -31,12 +31,18 @@ MonoBehaviour:
     milestoneDuration: 0
     whenForm: 
     consumeOnHit: 0
+    counterId: '@recent'
+    counterMode: 1
+    counterCoeff: 0.15
+    milestoneCounterCoeff: 0.2
+    counterConsume: 0
+    requireCounterFull: 0
+    counterWindow: 5
   factNoteKo: "\uC54C\uC9DC \uB3CC\uB9BC\uD798\uC740 \uC791\uC6A9\uD558\uB294 \uC5EC\uB7EC
     \uB3CC\uB9BC\uD798\uC758 \uD569\uC774\uB2E4(\u03A3\u03C4)."
-  gameNoteKo: "\uC9C1\uC804 5\uCD08\uAC04 \uC11C\uB85C \uB2E4\uB978 \uC2A4\uD0AC
-    \uC218(N)\uC5D0 \uB530\uB978 +0.15N \uBC30\uC728(\uCD5C\uB300 1.75\uBC30)\uC740
-    \uC0AC\uC6A9 \uC774\uB825 \uC9D1\uACC4\uAC00 \uC5C6\uC5B4 \uBBF8\uAD6C\uD604
-    \u2014 \uAE30\uBCF8 \uD53C\uD574 1.0\uB9CC"
+  gameNoteKo: "\"\uC11C\uB85C \uB2E4\uB978 \uC2A4\uD0AC \uC218\"\uB294 \uC2DC\uC804\uD55C
+    \uC561\uD2F0\uBE0C \uC2A4\uD0AC\uB9CC \uC13C\uB2E4(\uAE30\uBCF8\uAE30 \uC81C\uC678).
+    \uC774 \uC2A4\uD0AC \uC790\uC2E0\uB3C4 \uD3EC\uD568"
   passive:
     trigger: 0
     value: 0

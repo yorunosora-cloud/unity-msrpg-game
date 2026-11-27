@@ -31,6 +31,13 @@ MonoBehaviour:
     milestoneDuration: 0
     whenForm: 
     consumeOnHit: 0
+    counterId: 
+    counterMode: 0
+    counterCoeff: 0
+    milestoneCounterCoeff: 0
+    counterConsume: 0
+    requireCounterFull: 0
+    counterWindow: 0
   - type: 9
     target: 0
     stat: 0
@@ -43,6 +50,13 @@ MonoBehaviour:
     milestoneDuration: 0
     whenForm: 
     consumeOnHit: 0
+    counterId: 
+    counterMode: 0
+    counterCoeff: 0
+    milestoneCounterCoeff: 0
+    counterConsume: 0
+    requireCounterFull: 0
+    counterWindow: 0
   factNoteKo: "\uAE30\uC555\uC740 \uB300\uAE30\uAC00 \uB204\uB974\uB294 \uC555\uB825\uC774\uBA70,
     \uAE30\uC555\uC774 \uB192\uC740 \uACF3\uC5D0\uC11C \uB0AE\uC740 \uACF3\uC73C\uB85C
     \uACF5\uAE30\uAC00 \uC6C0\uC9C1\uC778\uB2E4."

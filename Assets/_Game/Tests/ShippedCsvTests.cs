@@ -283,23 +283,58 @@ public class ShippedCsvTests
     }
 
     [Test]
-    public void Batch4_Conduca_FreeElectron_IsMovingRampOnSkillPower()
+    public void Batch4_Conduca_FreeElectron_IsCounterBoostingBasicPower_JouleReadsAndConsumesIt()
     {
-        var m = Skill("conduca_s1").passive.modifiers[0];
-        Assert.AreEqual((ModifierSource.MovingRamp, StatKind.SkillPower, 0.06f, 0.3f, 0.03f, 0.08f, 0.4f), (m.source, m.stat, m.value, m.cap, m.decayPerSecond, m.milestoneValue, m.milestoneCap));
-        var b = Skill("conduca_s3").effects[0];
-        Assert.AreEqual((StatKind.MoveSpeed, 1.3f, 4f, 5f), (b.stat, b.value, b.duration, b.milestoneDuration));
+        var m = Skill("conduca_s1").passive.modifiers.Single();
+        Assert.AreEqual((ModifierSource.Counter, StatKind.BasicPower, 0.06f, 0.08f, "free_electron"), (m.source, m.stat, m.value, m.milestoneValue, m.counterId));
+        var j = Skill("conduca_s2").effects[0];
+        Assert.AreEqual(("free_electron", CounterMode.Quadratic, 0.1f, 0.12f, true), (j.counterId, j.counterMode, j.counterCoeff, j.milestoneCounterCoeff, j.counterConsume));
+        var sc = Skill("conduca_s3").effects.Single(e => e.stat == StatKind.CounterGain);
+        Assert.AreEqual((2f, 4f, 5f), (sc.value, sc.duration, sc.milestoneDuration), "초전도: 획득 속도 2배");
     }
 
     [Test]
-    public void Batch4_Insulia_Polarization_StacksReduceDamageTaken()
+    public void Batch4_Insulia_Polarization_IsCounterReducingDamageTaken_BreakdownConsumesAndStunsAtFull()
     {
-        var p = Skill("insulia_s1").passive;
-        Assert.AreEqual(PassiveTriggerType.OnHitTaken, p.trigger);
-        Assert.AreEqual((5, -0.03f, -0.04f, StatKind.DamageTaken, StackDecay.DecayOneEvery, 3f),
-                        (p.stack.maxStacks, p.stack.perStackValue, p.stack.milestonePerStackValue, p.stack.stat, p.stack.decay, p.stack.decaySeconds));
+        var m = Skill("insulia_s1").passive.modifiers.Single();
+        Assert.AreEqual((ModifierSource.Counter, StatKind.DamageTaken, -0.03f, -0.04f, "polarization"), (m.source, m.stat, m.value, m.milestoneValue, m.counterId));
+        var e = Skill("insulia_s2").effects;
+        Assert.AreEqual((CounterMode.Linear, 0.25f, 0.3f, true), (e[0].counterMode, e[0].counterCoeff, e[0].milestoneCounterCoeff, e[0].counterConsume));
+        Assert.IsTrue(e[1].type == SkillEffectType.Stun && e[1].requireCounterFull && e[1].duration == 2f, "5스택일 때만 스턴 2초");
         var sh = Skill("insulia_s3").effects[0];
         Assert.AreEqual((SkillEffectType.DamageTakenMult, 0.65f, 4f, 5f), (sh.type, sh.value, sh.duration, sh.milestoneDuration));
+    }
+
+    // ════════════════════════════════════════════════════════════════════════
+    // 스킬 카운터 데이터(skill_counters.csv, 23-A)
+    // ════════════════════════════════════════════════════════════════════════
+
+    [Test]
+    public void Counters_ShippedDefinitions_AreWiredToTheirSkills()
+    {
+        var con = Char("conduca_r").counters.Single();
+        Assert.AreEqual(("free_electron", 5, CounterDecay.DecayOneEvery, 2f, CounterTrigger.MovingSecond), (con.id, con.maxStacks, con.decay, con.decaySeconds, con.gainOn));
+        var heat = Char("semira_sr").counters.Single();
+        Assert.AreEqual((5, 7, "semira_s1", CounterTrigger.OnHitTaken | CounterTrigger.OnSkillCast), (heat.maxStacks, heat.milestoneMaxStacks, heat.milestoneSkillId, heat.gainOn));
+        Assert.AreEqual((CounterDecay.ResetAfterIdle, 5f), (heat.decay, heat.decaySeconds));
+        var run = Char("axel_sr").counters.Single();
+        Assert.AreEqual(("axel_s2", "axel_s2", CounterTrigger.OnHitTaken), (run.gainSkillId, run.milestoneSkillId, run.resetOn));
+        var accel = Skill("axel_s2").effects[0];
+        Assert.AreEqual(("accel_run", CounterMode.Linear, 0.06f), (accel.counterId, accel.counterMode, accel.counterCoeff));
+        var m = Skill("semira_s1").passive.modifiers.Single();
+        Assert.AreEqual((ModifierSource.Counter, StatKind.SkillPower, 0.04f, "heat"), (m.source, m.stat, m.value, m.counterId));
+    }
+
+    [Test]
+    public void Counters_Gyra_NetTorque_ReadsRecentDistinctSkills_AndElektraDirectCurrentReadsAcStacks()
+    {
+        var g = Skill("gyra_s3").effects[0];
+        Assert.AreEqual(("@recent", CounterMode.Linear, 0.15f, 0.2f, 5f), (g.counterId, g.counterMode, g.counterCoeff, g.milestoneCounterCoeff, g.counterWindow));
+        var dc = Skill("elektra_s3").effects;
+        Assert.AreEqual("target:elektra_s2:Dot:Atk", dc[0].counterId);
+        Assert.IsTrue(dc[0].counterConsume);
+        Assert.IsTrue(dc[1].requireCounterFull && dc[1].value == 0.8f, "최대 스택 폭발(공격력×0.8)");
+        Assert.AreEqual(5, Skill("elektra_s2").effects[0].maxStacks);
     }
 
     // ════════════════════════════════════════════════════════════════════════

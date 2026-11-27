@@ -42,6 +42,7 @@ MonoBehaviour:
     effects: []
     modifiers:
     - source: 3
+      counterId: 
       stat: 0
       value: 1.07
       cap: 0

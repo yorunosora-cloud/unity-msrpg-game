@@ -31,6 +31,13 @@ MonoBehaviour:
     milestoneDuration: 0
     whenForm: 
     consumeOnHit: 0
+    counterId: 
+    counterMode: 0
+    counterCoeff: 0
+    milestoneCounterCoeff: 0
+    counterConsume: 0
+    requireCounterFull: 0
+    counterWindow: 0
   factNoteKo: "F=ma \u2014 \uAC19\uC740 \uAC00\uC18D\uB3C4\uB77C\uB3C4 \uC9C8\uB7C9\uC774
     \uD074\uC218\uB85D \uB354 \uD070 \uD798\uC774 \uD544\uC694\uD558\uB2E4."
   gameNoteKo: 

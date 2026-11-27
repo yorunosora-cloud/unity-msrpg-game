@@ -1,0 +1,10 @@
+﻿# 스킬 카운터 정의 (1행 = 카운터 1개). 구현계획 23-A. 스킬이 효과 행의 counterId로 읽고 소모하거나, skill_modifiers의 source=Counter로 능력치에 반영한다.
+# gainOn / resetOn: OnHit(공격 행동당 1회) / OnHitTaken / OnSkillCast / OnBasicAttack / OnAction / MovingSecond(이동 중 1초마다) 를 ; 로 구분.  decay: None / ResetAfterIdle(decaySeconds 무증가 시 초기화) / DecayOneEvery(decaySeconds마다 -1).
+# milestoneMaxStacks: milestoneSkillId 스킬이 마일스톤 레벨일 때의 상한.  gainSkillId: 비우지 않으면 OnHit·OnAction 증가가 그 스킬의 적중일 때만.
+# 예약 id: @recent(최근 N초 안에 쓴 서로 다른 스킬 수, 스킬 효과에서만 읽음) / target:<상태id>(적의 상태 스택을 읽음)
+
+counterId,ownerId,maxStacks,milestoneMaxStacks,decay,decaySeconds,gainOn,resetOn,milestoneSkillId,gainSkillId
+free_electron,conduca_r,5,,DecayOneEvery,2,MovingSecond,,,
+polarization,insulia_r,5,,DecayOneEvery,3,OnHitTaken,,,
+heat,semira_sr,5,7,ResetAfterIdle,5,OnHitTaken;OnSkillCast,,semira_s1,
+accel_run,axel_sr,5,6,None,0,OnHit,OnHitTaken,axel_s2,axel_s2

@@ -42,6 +42,7 @@ MonoBehaviour:
     effects: []
     modifiers:
     - source: 0
+      counterId: 
       stat: 2
       value: 1.15
       cap: 0
@@ -52,6 +53,7 @@ MonoBehaviour:
       milestoneValue: 0
       milestoneCap: 0
     - source: 0
+      counterId: 
       stat: 4
       value: 1.25
       cap: 0

@@ -31,6 +31,13 @@ MonoBehaviour:
     milestoneDuration: 0
     whenForm: 
     consumeOnHit: 0
+    counterId: 
+    counterMode: 0
+    counterCoeff: 0
+    milestoneCounterCoeff: 0
+    counterConsume: 0
+    requireCounterFull: 0
+    counterWindow: 0
   factNoteKo: "\uC720\uB3C4\uBC29\uCD9C(stimulated emission)\uC740 \uB808\uC774\uC800\uC758
     \uBC1C\uAD11 \uC6D0\uB9AC\uB2E4."
   gameNoteKo: 

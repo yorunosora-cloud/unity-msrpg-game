@@ -31,10 +31,36 @@ MonoBehaviour:
     milestoneDuration: 0
     whenForm: 
     consumeOnHit: 0
+    counterId: target:elektra_s2:Dot:Atk
+    counterMode: 1
+    counterCoeff: 0.1
+    milestoneCounterCoeff: 0
+    counterConsume: 1
+    requireCounterFull: 0
+    counterWindow: 0
+  - type: 0
+    target: 0
+    stat: 0
+    value: 0.8
+    duration: 0
+    maxStacks: 0
+    targetCap: 0
+    areaRadius: 0
+    milestoneValue: 0
+    milestoneDuration: 0
+    whenForm: 
+    consumeOnHit: 0
+    counterId: target:elektra_s2:Dot:Atk
+    counterMode: 0
+    counterCoeff: 0
+    milestoneCounterCoeff: 0
+    counterConsume: 0
+    requireCounterFull: 1
+    counterWindow: 0
   factNoteKo: "\uC9C1\uB958\uB294 \uBC29\uD5A5\uC774 \uC77C\uC815\uD55C \uC804\uB958\uC774\uB2E4."
-  gameNoteKo: "AC \uC2A4\uD0DD \uC18C\uBAA8\uC5D0 \uB530\uB978 \uCD94\uAC00 \uBC30\uC728(+10%/\uC2A4\uD0DD)\uACFC
-    \uCD5C\uB300 \uC2A4\uD0DD \uC2DC \uBC18\uACBD 0.5 \uD3ED\uBC1C\uC740 \uBBF8\uAD6C\uD604
-    \u2014 \uAE30\uBCF8 \uD53C\uD574\uB9CC \uC801\uC6A9"
+  gameNoteKo: "\uCD5C\uB300 \uC2A4\uD0DD \uD3ED\uBC1C\uC740 \uBC18\uACBD 0.5 \uBC94\uC704
+    \uB300\uC2E0 \uB300\uC0C1 1\uCCB4\uC5D0\uAC8C\uB9CC \uC801\uC6A9(\uBC94\uC704
+    \uD6A8\uACFC\uB294 \uBBF8\uAD6C\uD604)"
   passive:
     trigger: 0
     value: 0

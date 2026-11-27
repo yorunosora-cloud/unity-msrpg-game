@@ -51,6 +51,7 @@ MonoBehaviour:
     tint: {r: 0, g: 0.78431374, b: 1, a: 1}
     isDefault: 0
   autoRules: []
+  counters: []
   attributes:
     mass: 0
     velocity: 0
