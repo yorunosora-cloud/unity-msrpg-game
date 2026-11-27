@@ -65,6 +65,22 @@ chemistry_catalyst-furnace_boss_vant-hoff,반트호프,Chemistry,피지컬리아
 chemistry_catalyst-furnace_boss_arrhenius,아레니우스,Chemistry,피지컬리아 공국,촉매의 영원한 화로,Landmark,Boss,,Solo,,Chemistry,,,,,,,,,,BossDef(07_보스전.md·아레니우스.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Arrhenius
 chemistry_catalyst-furnace_boss_langmuir,랭뮤어,Chemistry,피지컬리아 공국,촉매의 영원한 화로,Landmark,Boss,,Solo,,Chemistry,,,,,,,,,,BossDef(07_보스전.md·랭뮤어.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Langmuir
 
+# 아날리티카 연맹 — 분광 분석의 등대(알케미아 네 번째 던전): HP·DEF·EXP·골드는 Lv1 기준 역할별 공통표(설계도 21번) 값
+# 공통 잡몹 4종(불꽃반응색, 전 구역) + 구역 전용 3종. 불꽃 구역·선 구역은 순서 자유라 같은 수치(①), X선 구역은 ③
+chemistry_spectrum-lighthouse_normal_lithium-flame,리튬 불꽃정령,Chemistry,아날리티카 연맹,분광 분석의 등대,Landmark,Normal,불꽃정령,Swarm,전 구역,Chemistry,65,4,40,붉은불씨:원거리,10,1,,,,빨간 불꽃의 정령. 붉은 불씨를 던진다.,
+chemistry_spectrum-lighthouse_normal_sodium-flame,나트륨 불꽃정령,Chemistry,아날리티카 연맹,분광 분석의 등대,Landmark,Normal,불꽃정령,Swarm,전 구역,Chemistry,65,4,40,노란섬광:광역,10,1,,,,노란 불꽃의 정령. 강한 섬광으로 시야를 방해한다.,
+chemistry_spectrum-lighthouse_normal_potassium-flame,칼륨 불꽃정령,Chemistry,아날리티카 연맹,분광 분석의 등대,Landmark,Normal,불꽃정령,Swarm,전 구역,Chemistry,70,5,40,튀어박치기:근접,10,1,,,,보라 불꽃의 정령. 튀어 오르며 부딪힌다.,
+chemistry_spectrum-lighthouse_normal_copper-flame,구리 불꽃정령,Chemistry,아날리티카 연맹,분광 분석의 등대,Landmark,Normal,불꽃정령,Solo,전 구역,Chemistry,65,4,40,불꽃고리:장판,10,1,,,,청록 불꽃의 정령. 불꽃 고리를 퍼뜨린다.,
+chemistry_spectrum-lighthouse_normal_tiny-cesium-beast,작은 세슘 환영수,Chemistry,아날리티카 연맹,분광 분석의 등대,Landmark,Normal,환영수,Solo,지상·불꽃 구역,Chemistry,75,5,45,푸른이중선:원거리,10,1,,,,세슘 환영수의 작은 버전. 푸른 선 두 줄을 쏜다.,
+chemistry_spectrum-lighthouse_normal_tiny-rubidium-beast,작은 루비듐 환영수,Chemistry,아날리티카 연맹,분광 분석의 등대,Landmark,Normal,환영수,Solo,지상·선 구역,Chemistry,75,5,45,붉은선돌진:근접,10,1,,,,루비듐 환영수의 작은 버전. 붉은 선을 그으며 돌진한다.,
+chemistry_spectrum-lighthouse_normal_tiny-vacant-beast,작은 빈자리 환영수,Chemistry,아날리티카 연맹,분광 분석의 등대,Landmark,Normal,환영수,Solo,지상·X선 구역,Chemistry,90,6,48,흐릿한습격:근접,11,1,,,,43번 빈자리 환영수의 작은 버전. 나타났다 흐려지며 덮친다.,
+chemistry_spectrum-lighthouse_miniboss_cesium-beast,세슘 환영수,Chemistry,아날리티카 연맹,분광 분석의 등대,Landmark,MiniBoss,환영수,Solo,지상·불꽃 구역,Chemistry,110,7,70,푸른이중선:장판; 불꽃도약:이동형,17,2,,,,분광법으로 발견된 세슘의 환영. 하늘빛 이중선을 긋고 불꽃처럼 도약한다 — 자유 구역.,
+chemistry_spectrum-lighthouse_miniboss_rubidium-beast,루비듐 환영수,Chemistry,아날리티카 연맹,분광 분석의 등대,Landmark,MiniBoss,환영수,Solo,지상·선 구역,Chemistry,110,7,70,붉은선돌진:이동형; 흡수선장막:장판,17,2,,,,분광법으로 발견된 루비듐의 환영. 붉은 선으로 돌진하고 어두운 띠를 깐다 — 자유 구역.,
+chemistry_spectrum-lighthouse_miniboss_vacant-beast,43번 빈자리 환영수,Chemistry,아날리티카 연맹,분광 분석의 등대,Landmark,MiniBoss,환영수,Solo,지상·X선 구역,Chemistry,140,8,95,흐릿한실체:강화; 빈자리흡인:광역,21,3,,,,비어 있다고 예측된 원자번호 43의 환영. X선에 비춰야 드러나고 빈자리로 끌어당긴다 — 최고 난이도.,
+chemistry_spectrum-lighthouse_boss_bunsen,분젠,Chemistry,아날리티카 연맹,분광 분석의 등대,Landmark,Boss,,Solo,,Chemistry,,,,,,,,,,BossDef(07_보스전.md·분젠.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Bunsen
+chemistry_spectrum-lighthouse_boss_kirchhoff,키르히호프,Chemistry,아날리티카 연맹,분광 분석의 등대,Landmark,Boss,,Solo,,Chemistry,,,,,,,,,,BossDef(07_보스전.md·키르히호프.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Kirchhoff
+chemistry_spectrum-lighthouse_boss_moseley,모즐리,Chemistry,아날리티카 연맹,분광 분석의 등대,Landmark,Boss,,Solo,,Chemistry,,,,,,,,,,BossDef(07_보스전.md·모즐리.md) 참조 — 이 행은 도감 인덱스일 뿐 전투 스탯을 소유하지 않음,Moseley
+
 # ===== Biology (생명과학 — 바이오스) =====
 # 국가: 헬릭스 제국 / 제네시스 왕국 / 에코스 연맹
 # 랜드마크: 이중나선 황궁, CRISPR 편집 연구소, 멘델의 유전 도서관, 해부학의 지하 성역, 진화의 도원, 생태계 순환 대원
