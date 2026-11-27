@@ -15,6 +15,7 @@ public class PassiveHost : MonoBehaviour
 
     Party _party;
     readonly List<(CombatCharacter m, Action<PassiveFire> fire, Action act)> _subs = new();
+    readonly List<(CombatCharacter m, Action<int, float> rel)> _storeSubs = new();
 
     void Update()
     {
@@ -34,6 +35,8 @@ public class PassiveHost : MonoBehaviour
             s.m.OnCombatActivity -= s.act;
         }
         _subs.Clear();
+        foreach (var s in _storeSubs) s.m.StoredDamageReleased -= s.rel;
+        _storeSubs.Clear();
 
         _party = party;
         if (party == null) return;
@@ -46,6 +49,28 @@ public class PassiveHost : MonoBehaviour
             m.PassiveFired     += fire;
             m.OnCombatActivity += act;
             _subs.Add((m, fire, act));
+            Action<int, float> rel = (dmg, radius) => ReleaseStored(dmg, radius);
+            m.StoredDamageReleased += rel;
+            _storeSubs.Add((m, rel));
+        }
+    }
+
+    // ── 피해 저장 방출(탄성 퍼텐셜 에너지) ──
+
+    void ReleaseStored(int damage, float radius)
+    {
+        if (damage <= 0) return;
+        foreach (var enemy in Enemy.All.ToArray())
+        {
+            if (enemy == null || !enemy.gameObject.activeInHierarchy) continue;
+            Vector3 d = enemy.transform.position - transform.position; d.y = 0f;
+            if (d.magnitude <= radius) ((ISkillTarget)enemy).ReceiveFixedHit(damage);
+        }
+        var boss = Boss.Active;
+        if (boss != null && !boss.IsDead)
+        {
+            Vector3 d = boss.transform.position - transform.position; d.y = 0f;
+            if (d.magnitude <= radius) ((ISkillTarget)boss).ReceiveFixedHit(damage);
         }
     }
 

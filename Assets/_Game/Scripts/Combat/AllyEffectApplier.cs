@@ -55,6 +55,10 @@ public static class AllyEffectApplier
                 }, targetIsActive);
                 return 0;
 
+            case SkillEffectType.StoreDamage:
+                if (!target.IsDowned) target.BeginDamageStore(value, e.duration, e.areaRadius > 0f ? e.areaRadius : 3f);
+                return 0;
+
             case SkillEffectType.RestoreMp:
                 if (!target.IsDowned)
                     target.RecoverMp(Math.Max(1, (int)Math.Round(target.MaxMp * value)));

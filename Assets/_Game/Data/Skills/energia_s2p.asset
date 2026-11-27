@@ -19,44 +19,14 @@ MonoBehaviour:
   lineWidth: 1
   radius: 3
   effects:
-  - type: 2
+  - type: 18
     target: 1
     stat: 0
-    value: 0.2
+    value: 1.5
     duration: 3
     maxStacks: 0
     targetCap: 0
-    areaRadius: 0
-    milestoneValue: 0
-    milestoneDuration: 0
-    whenForm: 
-    consumeOnHit: 0
-    damageBasis: 0
-    ignoreDefense: 0
-    scaleBy: 0
-    scaleCoeff: 0
-    scaleCap: 0
-    milestoneScaleCap: 0
-    critMult: 0
-    critHalfAngle: 0
-    branchGroup: 
-    branchId: 
-    markId: 
-    counterId: 
-    counterMode: 0
-    counterCoeff: 0
-    milestoneCounterCoeff: 0
-    counterConsume: 0
-    requireCounterFull: 0
-    counterWindow: 0
-  - type: 0
-    target: 0
-    stat: 0
-    value: 1.5
-    duration: 0
-    maxStacks: 0
-    targetCap: 0
-    areaRadius: 0
+    areaRadius: 3
     milestoneValue: 1.8
     milestoneDuration: 0
     whenForm: 
@@ -81,10 +51,10 @@ MonoBehaviour:
     counterWindow: 0
   factNoteKo: "\uD0C4\uC131 \uD37C\uD150\uC15C \uC5D0\uB108\uC9C0\uB294 E=\xBDkx\xB2\uB85C,
     \uC555\uCD95\xB7\uB298\uC5B4\uB09C \uC815\uB3C4\uC5D0 \uB530\uB77C \uC800\uC7A5\uB41C\uB2E4."
-  gameNoteKo: "\uBC1B\uC740 \uD53C\uD574 \uC800\uC7A5\u2192150% \uBC29\uCD9C\uC740
-    \uD53C\uD574 \uB204\uC801\uC774 \uC5C6\uC5B4 \uADFC\uC0AC: \uC790\uC2E0 \uBC29\uC5B4\uB9C9(\uCD5C\uB300
-    HP 20%, 3\uCD08)\uC744 \uB450\uB974\uACE0 \uC989\uC2DC \uC8FC\uBCC0\uC5D0 \uD53C\uD574
-    1.5(\uBC29\uCD9C \uBC30\uC728 \uAC12\uC744 \uADF8\uB300\uB85C \uC0AC\uC6A9)"
+  gameNoteKo: "3\uCD08 \uB3D9\uC548 \uBC1B\uC740 \uD53C\uD574\uB97C \uC800\uC7A5(\uD53C\uD574\uB294
+    \uC815\uC0C1 \uC801\uC6A9)\uD558\uACE0, \uB05D\uB098\uBA74 \uC800\uC7A5\uB7C9\uC758
+    150%(Lv.3 180%)\uB97C \uC790\uC2E0 \uC8FC\uBCC0 \uBC18\uACBD 3m\uC758 \uC801\uC5D0\uAC8C
+    \uBC29\uC5B4\uB825 \uBB34\uC2DC \uD53C\uD574\uB85C \uBC29\uCD9C\uD55C\uB2E4"
   passive:
     trigger: 0
     value: 0

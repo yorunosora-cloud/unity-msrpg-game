@@ -13,6 +13,7 @@ public enum PassiveTriggerType
     SelfMoving,     // 본인이 계속 이동 중일 때(경로 B)
     TargetMoving,   // 대상이 움직일 때(경로 C 공식)
     PartyPresence,  // 파티에 포함되어 있는 동안(경로 B, 활성·대기 무관)
+    OnLethal,       // 치명 피해를 받는 순간(전투당 1회 부활, value=부활 시 HP 비율)
 }
 
 public enum HitCountMode { PerAction, PerTarget }                          // 공격 행동당 1회 / 적중 대상마다 1회

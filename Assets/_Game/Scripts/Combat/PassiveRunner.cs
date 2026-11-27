@@ -28,6 +28,7 @@ public class PassiveRunner
         public ModifierState[] mods;
         public float           icd;         // 내부 쿨타임 남은 시간
         public float           prevHp = 1f; // HpBelowPercent 에지 판정용 직전 HP 비율
+        public bool            used;        // OnLethal(부활): 이번 전투에서 이미 썼는지
     }
 
     readonly CombatCharacter _o;
@@ -344,6 +345,26 @@ public class PassiveRunner
             Build(n, n.ms);
             n.icd = 0f;
             n.prevHp = 1f;
+            n.used = false;
         }
+    }
+
+    /// <summary>
+    /// 치명 피해 직전에 호출. 쓰지 않은 OnLethal 패시브가 있으면 소모하고(전투당 1회) 효과를 발동한 뒤
+    /// 부활 시 HP 비율을 돌려준다.
+    /// </summary>
+    public bool TryRevive(out float hpRatio)
+    {
+        hpRatio = 0f;
+        foreach (var n in Live())
+        {
+            var spec = n.skill.passive;
+            if (spec.trigger != PassiveTriggerType.OnLethal || n.used) continue;
+            n.used = true;
+            hpRatio = spec.value > 0f ? Mathf.Min(1f, spec.value) : 0.3f;
+            Fire(n, default, PassiveTriggerType.OnLethal, null);
+            return true;
+        }
+        return false;
     }
 }

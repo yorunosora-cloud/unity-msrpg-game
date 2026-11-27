@@ -1,5 +1,5 @@
 ﻿# 패시브 규칙 (skillType=Passive인 스킬마다 1행). 발동 효과는 skill_effects.csv, 상시 수정자는 skill_modifiers.csv. 설계도 22 §4-7.
-# trigger: None / OnHit / OnHitTaken / OnFormChange / HpBelowPercent / SelfDebuffed / SelfMoving / TargetMoving / PartyPresence
+# trigger: None / OnHit / OnHitTaken / OnFormChange / HpBelowPercent / SelfDebuffed / SelfMoving / TargetMoving / PartyPresence / OnLethal(치명 피해 시 전투당 1회 부활, value=부활 HP 비율)
 # hitCount: PerAction(공격 행동당 1회) / PerTarget(적중 대상마다)     formula: None / Lorentz / Doppler / RangeWork / AxisDistance (value=c 등 공식 파라미터)
 # decay: None / ResetAfterIdle / DecayOneEvery / ConsumeAtCap     stackStat: 스택이 올리는 능력치 (skill_effects의 stat과 같은 코드)
 
@@ -30,4 +30,4 @@ conduca_s1,None,,,,,,,,,,,,,,,
 insulia_s1,None,,,,,,,,,,,,,,,
 semira_s1,None,,,,,,,,,,,,,,,
 energia_s1,OnFormChange,,,,,,,,,,,,,,,
-gluon_s5,None,,,,,,,,,,,,,,,
+gluon_s5,OnLethal,0.3,,,,,,,,,,,,,,

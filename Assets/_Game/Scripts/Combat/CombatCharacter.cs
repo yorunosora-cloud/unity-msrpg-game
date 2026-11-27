@@ -109,8 +109,21 @@ public class CombatCharacter
         }
     }
 
+    // ── 피해 저장→방출 · 부활 (23-H) ──
+
+    readonly DamageStore _store = new DamageStore();
+
+    /// <summary>저장한 피해를 방출한다(방출량, 반경). 월드 효과는 PassiveHost가 실행한다.</summary>
+    public event Action<int, float> StoredDamageReleased;
+
+    /// <summary>치명 피해에서 부활했다(전투당 1회 패시브).</summary>
+    public event Action Revived;
+
+    public void BeginDamageStore(float ratio, float seconds, float radius) => _store.Begin(ratio, seconds, radius);
+
     void ClearCounters()
     {
+        _store.Clear();
         foreach (var c in _counters.Values) c.Clear();
         _recent.Clear();
     }
@@ -362,6 +375,7 @@ public class CombatCharacter
         _sinceHit += dt;
         _passives.Tick(dt, isActive);
         foreach (var c in _counters.Values) c.Tick(dt, isActive);
+        if (isActive && _store.Tick(dt, out int released) && released > 0) StoredDamageReleased?.Invoke(released, _store.Radius);
         SyncCounterMilestones();
         int before = Status.Count;
         Status.Tick(dt, isActive, d => Damage(d));
@@ -560,6 +574,13 @@ public class CombatCharacter
 
     public void Damage(int amount)
     {
+        if (_hp > 0 && _hp - amount <= 0 && _passives.TryRevive(out float reviveRatio))
+        {
+            _hp = Math.Max(1, (int)Math.Round(MaxHp * reviveRatio));   // 전투당 1회 부활 — 무적 등 효과는 패시브가 부여
+            OnChanged?.Invoke("hp"); OnChanged?.Invoke("buff");
+            Revived?.Invoke();
+            return;
+        }
         _hp = Math.Max(0, _hp - amount);
         if (_hp <= 0)
         {
@@ -580,6 +601,7 @@ public class CombatCharacter
         int dmg = (int)Math.Round(rawDamage * StatMult(StatKind.DamageTaken));
         if (dmg < 0) dmg = 0;
         int taken = dmg;                  // 보호막 흡수 전 피해(패시브 반사 등의 기준)
+        _store.Add(taken);                // 피해 저장(탄성 퍼텐셜 에너지)
         dmg = Status.Absorb(dmg);
         int before = _hp;
         if (dmg > 0) Damage(dmg);

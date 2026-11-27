@@ -30,6 +30,7 @@ public enum SkillEffectType
     Teleport,        // 전투 시작 위치로 이동(영벡터, 패시브)
     Reflect,         // value = 받은 피해의 비율을 공격자에게 반환(패시브 OnHitTaken, target=Attacker)
     Launch,          // value = 띄우는 높이(m), duration = 행동불능 시간(초). 스턴 + 공중에 띄우는 연출(적 대상)
+    StoreDamage,     // value = 방출 배율, duration = 저장 시간(초), areaRadius = 방출 반경(m). 받은 피해를 모았다가 끝나면 주변에 방출(자신 대상)
 }
 
 /// <summary>스킬 효과 1건. 한 스킬이 여러 효과(피해 + 둔화 + 아군 버프)를 낸다.</summary>

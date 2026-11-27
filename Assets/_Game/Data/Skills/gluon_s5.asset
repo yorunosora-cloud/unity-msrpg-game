@@ -21,12 +21,15 @@ MonoBehaviour:
   effects: []
   factNoteKo: "\uBC14\uD140\uCFFC\uD06C\uB294 \uD45C\uC900\uBAA8\uD615\uC758 \uC138
     \uBC88\uC9F8 \uC138\uB300 \uCFFC\uD06C\uC774\uB2E4."
-  gameNoteKo: "\uBD80\uD65C \uC2DC\uC2A4\uD15C(HP 30% \uD68C\uBCF5, \uBB34\uC801
-    3\uCD08, \uC804\uD22C\uB2F9 1\uD68C)\uC774 \uC5C6\uC5B4 \uD6A8\uACFC \uC5C6\uB294
-    \uC790\uB9AC\uD45C\uC2DC \uD328\uC2DC\uBE0C"
+  gameNoteKo: "\uCE58\uBA85 \uD53C\uD574\uB97C \uBC1B\uB294 \uC21C\uAC04 1\uD68C
+    \uBD80\uD65C: \uCD5C\uB300 HP 30%\uB85C \uD68C\uBCF5\uD558\uACE0 3\uCD08\uAC04
+    \uBB34\uC801(\uBC1B\uB294 \uD53C\uD574 0\uBC30). \uC804\uD22C \uAD6C\uC5ED\uC744
+    \uBC97\uC5B4\uB098\uAC70\uB098 \uC644\uC804 \uD68C\uBCF5\uD558\uBA74 \uB2E4\uC2DC
+    \uC4F8 \uC218 \uC788\uB2E4. \"\uADFC\uCC98 \uC784\uC758 \uC704\uCE58\uB85C \uB098\uD0C0\uB0A8\"\uC740
+    \uBBF8\uAD6C\uD604(\uC81C\uC790\uB9AC \uBD80\uD65C)"
   passive:
-    trigger: 0
-    value: 0
+    trigger: 9
+    value: 0.3
     hitCount: 0
     internalCooldown: 0
     stack:
@@ -40,7 +43,37 @@ MonoBehaviour:
       cap: 0
       milestonePerStackValue: 0
       milestoneMaxStacks: 0
-    effects: []
+    effects:
+    - type: 8
+      target: 1
+      stat: 0
+      value: 0
+      duration: 3
+      maxStacks: 0
+      targetCap: 0
+      areaRadius: 0
+      milestoneValue: 0
+      milestoneDuration: 0
+      whenForm: 
+      consumeOnHit: 0
+      damageBasis: 0
+      ignoreDefense: 0
+      scaleBy: 0
+      scaleCoeff: 0
+      scaleCap: 0
+      milestoneScaleCap: 0
+      critMult: 0
+      critHalfAngle: 0
+      branchGroup: 
+      branchId: 
+      markId: 
+      counterId: 
+      counterMode: 0
+      counterCoeff: 0
+      milestoneCounterCoeff: 0
+      counterConsume: 0
+      requireCounterFull: 0
+      counterWindow: 0
     modifiers: []
     formula: 0
     milestoneValue: 0

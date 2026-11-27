@@ -1,5 +1,5 @@
 ﻿# 스킬 효과 목록 (1행 = 효과 1개, order 순서로 적용). 같은 skillId의 행이 있으면 효과 목록 경로로 동작(없으면 character_skills의 effectKind 경로). 패시브 스킬이면 발동 효과.
-# type: Damage / Heal / Shield / StatBuff / StatDebuff / Dot / Slow / Stun / DamageTakenMult / Knockback / Pull / Mark / SelfDamage / RestoreMp / Cleanse / Teleport / Reflect / Launch
+# type: Damage / Heal / Shield / StatBuff / StatDebuff / Dot / Slow / Stun / DamageTakenMult / Knockback / Pull / Mark / SelfDamage / RestoreMp / Cleanse / Teleport / Reflect / Launch / StoreDamage
 # target: EnemyArea / Self / Bench / SelfAndBench / HitTarget / Attacker     stat: Atk / Def / MoveSpeed / DamageTaken / CooldownRate / SkillPower / HitDamage / BasicPower / Accuracy
 # value: 효과별 수치(Damage=공격력 배율, Slow=이동속도 배율, StatBuff=능력치 배율, Knockback/Pull=거리, Reflect=받은 피해 비율, Launch=띄우는 높이(m)).  targetCap: 최대 대상 수(0=제한 없음, 아군은 자신 포함)
 # milestoneValue / milestoneDuration: Lv.3 이상에서 대체되는 값(0=교체 없음).  whenForm: 폼 전환 패시브에서 새 폼이 이 id일 때만.  consumeOnHit: 다음 공격 행동에서 소모
@@ -92,8 +92,6 @@ energia_s1,1,DamageTakenMult,Self,,0.8,2,,,,,3,Potential,,,,,,,,,,,,,,,,,,,
 energia_s1,2,StatBuff,Self,Atk,1.2,2,,,,,3,Kinetic,,,,,,,,,,,,,,,,,,,
 energia_s2k,1,Damage,EnemyArea,,1.1,,,,,,,,,,,,,,,,,,,,,,,,,,
 energia_s2k,2,Knockback,EnemyArea,,1.5,,,,,2,,,,,,,,,,,,,,,,,,,,,
-energia_s2p,1,Shield,Self,,0.2,3,,,,,,,,,,,,,,,,,,,,,,,,,
-energia_s2p,2,Damage,EnemyArea,,1.5,,,,,1.8,,,,,,,,,,,,,,,,,,,,,
 energia_s3k,1,RestoreMp,Self,,0.33,,,,,0.5,,,,,,,,,,,,,,,,,,,,,
 energia_s3k,2,StatBuff,Self,Atk,1.1,5,,,,,,,,,,,,,,,,,,,,,,,,,
 energia_s3p,1,Pull,EnemyArea,,3.5,,,,,,,,,,,,,,,,,,,,,,,,,,
@@ -125,3 +123,5 @@ momenta_c1,1,Damage,EnemyArea,,3,,,,,,,,,,,,,,,,,,,,,,,,,,
 energia_c1,1,Damage,EnemyArea,,2.8,,,,,,,,,,,,,,,,,,,,,,,,,,
 energia_s0k,1,Damage,EnemyArea,,1,,,,,,,,,,,,,,,,,,,MoveSpeedRatio,,0.5,0.7,,,,
 energia_s0p,1,Damage,EnemyArea,,0.8,,,,,,,,,,,,,,,,,,,Height,,1,1.3,,,,
+gluon_s5,1,DamageTakenMult,Self,,0,3,,,,,,,,,,,,,,,,,,,,,,,,,
+energia_s2p,1,StoreDamage,Self,,1.5,3,,,3,1.8,,,,,,,,,,,,,,,,,,,,,

@@ -331,6 +331,36 @@ public class ShippedCsvTests
     }
 
     // ════════════════════════════════════════════════════════════════════════
+    // 생존 데이터(23-H)
+    // ════════════════════════════════════════════════════════════════════════
+
+    [Test]
+    public void Survival_BottomQuark_IsOnLethalRevive_AndElasticPotentialStoresDamage()
+    {
+        var b = Skill("gluon_s5").passive;
+        Assert.AreEqual((PassiveTriggerType.OnLethal, 0.3f), (b.trigger, b.value));
+        var inv = b.effects.Single();
+        Assert.AreEqual((SkillEffectType.DamageTakenMult, 0f, 3f), (inv.type, inv.value, inv.duration), "부활 직후 무적 3초");
+
+        var e = Skill("energia_s2p").effects.Single();
+        Assert.AreEqual((SkillEffectType.StoreDamage, 1.5f, 1.8f, 3f, 3f), (e.type, e.value, e.milestoneValue, e.duration, e.areaRadius));
+    }
+
+    [Test]
+    public void Survival_Gluon_RevivesFromALethalHit_WithShippedData()
+    {
+        var def = Char("gluon_ur");
+        var c = new CombatCharacter(def, new OwnedCharacter { id = def.id, level = 1 });
+        for (int i = 0; i < def.skills.Length; i++) c.Unlock(i);
+        c.TickStatus(0f, true);
+        c.TakeHit(999999);
+        Assert.IsFalse(c.IsDowned, "바텀쿼크 해금 시 치명 피해에서 부활");
+        Assert.AreEqual(Mathf.RoundToInt(c.MaxHp * 0.3f), c.Hp);
+        c.TakeHit(999999);
+        Assert.AreEqual(Mathf.RoundToInt(c.MaxHp * 0.3f), c.Hp, "무적 3초");
+    }
+
+    // ════════════════════════════════════════════════════════════════════════
     // 계산 경로 데이터(23-G)
     // ════════════════════════════════════════════════════════════════════════
 
