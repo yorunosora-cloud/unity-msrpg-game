@@ -31,6 +31,7 @@ MonoBehaviour:
     milestoneDuration: 0
     whenForm: 
     consumeOnHit: 0
+    markId: 
     counterId: 
     counterMode: 0
     counterCoeff: 0
@@ -50,6 +51,7 @@ MonoBehaviour:
     milestoneDuration: 0
     whenForm: 
     consumeOnHit: 0
+    markId: 
     counterId: 
     counterMode: 0
     counterCoeff: 0
@@ -60,10 +62,9 @@ MonoBehaviour:
   factNoteKo: "\uC5F4\uC740 \uC785\uC790\uC758 \uBB34\uC9C8\uC11C\uD55C \uC6B4\uB3D9\uC5D0\uB108\uC9C0\uAC00
     \uC774\uB3D9\uD558\uB294 \uC5D0\uB108\uC9C0\uC774\uB2E4(\uC5F4\uD3C9\uD615)."
   gameNoteKo: "\uC7A5\uD310\uACFC \uC801 temp \uAC10\uC18C\uB294 \uBBF8\uAD6C\uD604
-    \u2014 5\uCD08\uAC04 MP \uD68C\uBCF5(5, \uCD5C\uB300 MP \uB300\uBE44 0.33)\uACFC
-    \uACF5\uACA9\uB825 +10%\uB9CC \uC801\uC6A9. \uC6CC\uB974\uCE74 \uB3C4\uB974\uB798
-    \uC5F0\uACC4(\"\uC77C-\uC5D0\uB108\uC9C0 \uC815\uB9AC\")\xB7\uD14C\uB974\uBBF8\uC544
-    \uC5F0\uACC4\uB294 \uC2DC\uB108\uC9C0 \uC2DC\uC2A4\uD15C \uBBF8\uAD6C\uD604"
+    \u2014 \uC2DC\uC804 \uC2DC \uD615\uD0DC \uC548\uC758 \uC801\uC73C\uB85C \uC5F0\uACC4(\"\uC77C-\uC5D0\uB108\uC9C0
+    \uC815\uB9AC\")\uB97C \uD310\uC815\uD558\uACE0, 5\uCD08\uAC04 MP \uD68C\uBCF5\xB7\uACF5\uACA9\uB825
+    +10%\uB9CC \uC801\uC6A9. \uD14C\uB974\uBBF8\uC544 \uC5F0\uACC4\uB294 \uBBF8\uAD6C\uD604"
   passive:
     trigger: 0
     value: 0

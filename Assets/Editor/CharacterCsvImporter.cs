@@ -17,6 +17,7 @@ public static class CharacterCsvImporter
     const string CHAR_DIR  = "Assets/_Game/Data/Characters";
     const string SKILL_DIR = "Assets/_Game/Data/Skills";
     const string TAG_PATH  = "Assets/_Game/Resources/TagRuleTable.asset";
+    const string COMBO_PATH = "Assets/_Game/Resources/SynergyComboTable.asset";
     const string DB_PATH   = "Assets/_Game/Resources/CharacterDatabase.asset";
     const string PROBLEM_DB_PATH = "Assets/_Game/Resources/ProblemDatabase.asset";
     const string LABEL     = "CsvImported";     // 임포터가 만든 에셋 표시(고아 감지·시드와 구분)
@@ -61,6 +62,8 @@ public static class CharacterCsvImporter
         foreach (var s in res.skills)
             skillAssets[s] = Upsert(s, $"{SKILL_DIR}/{s.id}.asset", out _);
 
+        WriteCombos(res.combos, skillAssets);
+
         var charAssets = new List<CharacterDef>();
         var importedIds = new HashSet<string>();
         foreach (var c in res.characters)
@@ -79,7 +82,7 @@ public static class CharacterCsvImporter
 
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
-        Debug.Log($"[CSV 임포트] 완료 — 캐릭터 {res.characters.Count}, 스킬 {res.skills.Count}, 태그 {res.tagRules.Length}, 경고 {res.report.Warnings.Count}건");
+        Debug.Log($"[CSV 임포트] 완료 — 캐릭터 {res.characters.Count}, 스킬 {res.skills.Count}, 태그 {res.tagRules.Length}, 연계 {res.combos.Count}, 경고 {res.report.Warnings.Count}건");
         if (!batch)
             EditorUtility.DisplayDialog("CSV 임포트 완료", $"캐릭터 {res.characters.Count} · 스킬 {res.skills.Count} · 태그 {res.tagRules.Length}\n경고 {res.report.Warnings.Count}건 (Console 확인)", "확인");
         return true;
@@ -108,6 +111,19 @@ public static class CharacterCsvImporter
         AssetDatabase.SetLabels(existing, new[] { LABEL });
         EditorUtility.SetDirty(existing);
         return existing;
+    }
+
+    static void WriteCombos(List<SynergyComboDef> combos, Dictionary<SkillDef, SkillDef> skillAssets)
+    {
+        if (combos == null || combos.Count == 0) return;
+        var tmp = ScriptableObject.CreateInstance<SynergyComboTable>();
+        tmp.name = "SynergyComboTable";
+        tmp.combos = combos.Select(c => new SynergyComboDef
+        {
+            id = c.id, comboName = c.comboName, formula = c.formula, markId = c.markId,
+            consumerId = c.consumerId, triggerSkillId = c.triggerSkillId, comboSkill = skillAssets[c.comboSkill],   // 메모리 SkillDef → 에셋 참조
+        }).ToArray();
+        Upsert(tmp, COMBO_PATH, out _);
     }
 
     static void WriteTagRules(TagRule[] rules)

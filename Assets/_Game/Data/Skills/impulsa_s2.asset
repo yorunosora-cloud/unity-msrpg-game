@@ -31,6 +31,7 @@ MonoBehaviour:
     milestoneDuration: 0
     whenForm: 
     consumeOnHit: 0
+    markId: 
     counterId: 
     counterMode: 0
     counterCoeff: 0
@@ -42,14 +43,15 @@ MonoBehaviour:
     target: 0
     stat: 0
     value: 0
-    duration: 0
+    duration: 6
     maxStacks: 0
     targetCap: 0
     areaRadius: 0
     milestoneValue: 0
-    milestoneDuration: 0
+    milestoneDuration: 8
     whenForm: 
     consumeOnHit: 0
+    markId: impulsa_j
     counterId: 
     counterMode: 0
     counterCoeff: 0
@@ -59,10 +61,9 @@ MonoBehaviour:
     counterWindow: 0
   factNoteKo: "\uCDA9\uACA9\uB7C9-\uC6B4\uB3D9\uB7C9 \uC815\uB9AC: \uCDA9\uACA9\uB7C9\uC740
     \uC6B4\uB3D9\uB7C9\uC758 \uBCC0\uD654\uB7C9\uACFC \uAC19\uB2E4(J=\u0394p)."
-  gameNoteKo: "\uC804\uC6A9 \uB9C8\uD06C(impulsa_j, 6\uCD08\xB7Lv.3 8\uCD08)\uC640
-    \uBAA8\uBA58\uD0C0 \uC5F0\uACC4(\"\uCDA9\uACA9\uB7C9-\uC6B4\uB3D9\uB7C9 \uC815\uB9AC\")\uB294
-    \uC2DC\uB108\uC9C0 \uC2DC\uC2A4\uD15C(03) \uBBF8\uAD6C\uD604 \u2014 \uD53C\uD574
-    1.4\uC640 \uC18D\uC131 \uD45C\uC2DD\uB9CC \uC801\uC6A9"
+  gameNoteKo: "\uD45C\uC2DD impulsa_j(6\uCD08, Lv.3 8\uCD08)\uB97C \uAC74\uB2E4.
+    \uBAA8\uBA58\uD0C0\uAC00 \uBE44\uD0C4\uC131\uCDA9\uB3CC\uB85C \uB9DE\uD788\uBA74
+    \"\uCDA9\uACA9\uB7C9-\uC6B4\uB3D9\uB7C9 \uC815\uB9AC\"\uAC00 \uD130\uC9C4\uB2E4"
   passive:
     trigger: 0
     value: 0

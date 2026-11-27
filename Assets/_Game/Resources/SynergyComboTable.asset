@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: SynergyComboTable
+  m_EditorClassIdentifier: MSRPG::SynergyComboTable
+  combos:
+  - id: combo_vx_v
+    comboName: "\uC18D\uB3C4 \uB3C4\uCD9C (v=\u0394x/\u0394t)"
+    formula: "v = \u0394x/\u0394t"
+    markId: vektor_disp
+    consumerId: velocia_sr
+    triggerSkillId: velocia_s1
+    comboSkill: {fileID: 11400000, guid: 330b2c87c65aaa24e99860ac3e4c9359, type: 2}
+  - id: combo_v_a
+    comboName: "\uAC00\uC18D\uB3C4 \uB3C4\uCD9C (a=\u0394v/\u0394t)"
+    formula: "a = \u0394v/\u0394t"
+    markId: velocia_v
+    consumerId: axel_sr
+    triggerSkillId: axel_s2
+    comboSkill: {fileID: 11400000, guid: b88ac1e86b5aabf47b19be69d5e87f2c, type: 2}
+  - id: combo_J_dp
+    comboName: "\uCDA9\uACA9\uB7C9-\uC6B4\uB3D9\uB7C9 \uC815\uB9AC (J=\u0394p)"
+    formula: "J = \u0394p"
+    markId: impulsa_j
+    consumerId: momenta_sr
+    triggerSkillId: momenta_s2
+    comboSkill: {fileID: 11400000, guid: e01803f7bc71dda4d98d44d76005e201, type: 2}
+  - id: combo_W_dke
+    comboName: "\uC77C-\uC5D0\uB108\uC9C0 \uC815\uB9AC (W=\u0394KE)"
+    formula: "W = \u0394KE"
+    markId: worka_w
+    consumerId: energia_sr
+    triggerSkillId: energia_s3k
+    comboSkill: {fileID: 11400000, guid: 676ca2cdf22f55b4ea39254563e07fba, type: 2}

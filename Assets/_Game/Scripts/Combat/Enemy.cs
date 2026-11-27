@@ -74,6 +74,9 @@ public class Enemy : MonoBehaviour, ISkillTarget
 
     public bool HasMark(string id) => _marks.ContainsKey(id);
     public void AddMark(string id, float duration) { if (!string.IsNullOrEmpty(id)) _marks[id] = duration; }
+    public void RemoveMark(string id) { if (id != null) _marks.Remove(id); }
+    /// <summary>id 표식의 남은 시간(없으면 0).</summary>
+    public float MarkRemaining(string id) => id != null && _marks.TryGetValue(id, out var t) ? t : 0f;
 
     void TickMarks(float dt)
     {

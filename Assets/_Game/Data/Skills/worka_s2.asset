@@ -31,6 +31,7 @@ MonoBehaviour:
     milestoneDuration: 0
     whenForm: 
     consumeOnHit: 0
+    markId: 
     counterId: 
     counterMode: 0
     counterCoeff: 0
@@ -50,6 +51,7 @@ MonoBehaviour:
     milestoneDuration: 0
     whenForm: 
     consumeOnHit: 0
+    markId: 
     counterId: 
     counterMode: 0
     counterCoeff: 0
@@ -61,7 +63,7 @@ MonoBehaviour:
     target: 0
     stat: 0
     value: 0
-    duration: 0
+    duration: 8
     maxStacks: 0
     targetCap: 0
     areaRadius: 0
@@ -69,6 +71,7 @@ MonoBehaviour:
     milestoneDuration: 0
     whenForm: 
     consumeOnHit: 0
+    markId: worka_w
     counterId: 
     counterMode: 0
     counterCoeff: 0
@@ -78,10 +81,11 @@ MonoBehaviour:
     counterWindow: 0
   factNoteKo: "\uB3C4\uB974\uB798\uB294 \uC904\uB85C \uC5F0\uACB0\uB41C \uC591\uCABD\uC774
     \uC11C\uB85C\uB97C \uD5A5\uD574 \uB2F9\uACA8\uC9C0\uB294 \uB3C4\uAD6C\uC774\uB2E4."
-  gameNoteKo: "\uC790\uC2E0\uB3C4 \uD568\uAED8 \uC774\uB3D9\uD558\uB294 \uD6A8\uACFC\uC640
-    \uC804\uC6A9 \uB9C8\uD06C(worka_w)\xB7\uC5D0\uB108\uC9C0 \uC5F0\uACC4(\"\uC77C-\uC5D0\uB108\uC9C0
-    \uC815\uB9AC\")\uB294 \uBBF8\uAD6C\uD604 \u2014 \uC801\uC744 3m \uB04C\uC5B4\uB2F9\uAE30\uB294
-    \uAC83\uC73C\uB85C \uADFC\uC0AC"
+  gameNoteKo: "\uC790\uC2E0\uB3C4 \uD568\uAED8 \uC774\uB3D9\uD558\uB294 \uD6A8\uACFC\uB294
+    \uBBF8\uAD6C\uD604 \u2014 \uC801\uC744 3m \uB04C\uC5B4\uB2F9\uAE30\uB294 \uAC83\uC73C\uB85C
+    \uADFC\uC0AC. \uD45C\uC2DD worka_w(8\uCD08)\uB97C \uAC78\uACE0 \uC5D0\uB124\uB974\uAE30\uC544
+    \uC5F4\uC5D0\uB108\uC9C0\uAC00 \uB9DE\uD788\uBA74 \"\uC77C-\uC5D0\uB108\uC9C0
+    \uC815\uB9AC\"\uAC00 \uD130\uC9C4\uB2E4"
   passive:
     trigger: 0
     value: 0

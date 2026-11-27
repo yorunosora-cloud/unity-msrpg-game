@@ -1,0 +1,9 @@
+﻿# 표식 연계 정의 (1행 = 연계 1개). 구현계획 23-B, 설계도 03.
+# markId: 적이 가져야 할 표식(skill_effects.csv의 Mark 효과 markId로 거는 스킬이 있어야 한다).  consumerId: 소모자 캐릭터.  triggerSkillId: 이 스킬이 표식 걸린 적을 맞히면 발동.
+# comboSkillId: 연계기 스킬(character_skills.csv에서 skillType=Combo, 소모자의 스킬). 표식은 행동 시작 시점 기준이며 성공하면 소멸한다.
+
+comboId,comboName,formula,markId,consumerId,triggerSkillId,comboSkillId
+combo_vx_v,속도 도출 (v=Δx/Δt),v = Δx/Δt,vektor_disp,velocia_sr,velocia_s1,velocia_c1
+combo_v_a,가속도 도출 (a=Δv/Δt),a = Δv/Δt,velocia_v,axel_sr,axel_s2,axel_c1
+combo_J_dp,충격량-운동량 정리 (J=Δp),J = Δp,impulsa_j,momenta_sr,momenta_s2,momenta_c1
+combo_W_dke,일-에너지 정리 (W=ΔKE),W = ΔKE,worka_w,energia_sr,energia_s3k,energia_c1

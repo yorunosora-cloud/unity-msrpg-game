@@ -108,6 +108,7 @@ MonoBehaviour:
   skills:
   - {fileID: 11400000, guid: 70505decc23dd71478dbe7de89a9ab2c, type: 2}
   - {fileID: 11400000, guid: deb2b9d83a6cb1b479c2632e68f6f725, type: 2}
+  - {fileID: 11400000, guid: 676ca2cdf22f55b4ea39254563e07fba, type: 2}
   - {fileID: 11400000, guid: a78e432ec2af56c45a7c5f57a506cd56, type: 2}
   - {fileID: 11400000, guid: cc98b867a63b48c4e9f4bbb3da12d5e6, type: 2}
   - {fileID: 11400000, guid: 39c1c9b0b510ba046827f272c6e86cdd, type: 2}

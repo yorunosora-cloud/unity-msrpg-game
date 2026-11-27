@@ -68,6 +68,14 @@ public class CombatCharacter
     public static Func<float> Clock;
     static float Now => Clock != null ? Clock() : Time.time;
 
+    /// <summary>보유 스킬 목록에서 s의 인덱스(없으면 -1).</summary>
+    public int IndexOfSkill(SkillDef s)
+    {
+        if (_def.skills == null || s == null) return -1;
+        for (int i = 0; i < _def.skills.Length; i++) if (_def.skills[i] == s) return i;
+        return -1;
+    }
+
     public SkillCounter Counter(string id) => id != null && _counters.TryGetValue(id, out var c) ? c : null;
     public int CounterValue(string id) => Counter(id)?.Value ?? 0;
 

@@ -31,6 +31,7 @@ MonoBehaviour:
     milestoneDuration: 0
     whenForm: 
     consumeOnHit: 0
+    markId: 
     counterId: 
     counterMode: 0
     counterCoeff: 0
@@ -42,7 +43,7 @@ MonoBehaviour:
     target: 0
     stat: 0
     value: 0
-    duration: 0
+    duration: 8
     maxStacks: 0
     targetCap: 0
     areaRadius: 0
@@ -50,6 +51,7 @@ MonoBehaviour:
     milestoneDuration: 0
     whenForm: 
     consumeOnHit: 0
+    markId: velocia_v
     counterId: 
     counterMode: 0
     counterCoeff: 0
@@ -59,10 +61,10 @@ MonoBehaviour:
     counterWindow: 0
   factNoteKo: "\uC21C\uAC04\uC18D\uB3C4\uB294 \uC544\uC8FC \uC9E7\uC740 \uC2DC\uAC04
     \uAC04\uACA9\uC5D0\uC11C\uC758 \uC18D\uB3C4\uC774\uB2E4."
-  gameNoteKo: "\uC804\uC6A9 \uB9C8\uD06C(velocia_v)\uC640 \uC5F0\uACC4\uAE30(\"\uC18D\uB3C4
-    \uB3C4\uCD9C\"\xB7\"\uAC00\uC18D\uB3C4 \uB3C4\uCD9C\")\uB294 \uC2DC\uB108\uC9C0
-    \uC2DC\uC2A4\uD15C(03) \uBBF8\uAD6C\uD604 \u2014 \uD53C\uD574 1.4\uC640 \uC18D\uC131
-    \uD45C\uC2DD\uB9CC \uC801\uC6A9"
+  gameNoteKo: "\uD45C\uC2DD velocia_v\uB97C \uAC74\uB2E4(\uC561\uC140 \uC5F0\uACC4
+    \"\uAC00\uC18D\uB3C4 \uB3C4\uCD9C\"\uC6A9). \uBCA1\uD1A0\uB974\uC758 \uBCC0\uC704
+    \uD45C\uC2DD\uC744 \uB9DE\uD788\uBA74 \"\uC18D\uB3C4 \uB3C4\uCD9C\"\uC774 \uD130\uC9C4\uB2E4(\uC5F0\uACC4
+    \uD6A8\uACFC\uB294 \uAC8C\uC784\uC6A9 \uD574\uC11D)"
   passive:
     trigger: 0
     value: 0

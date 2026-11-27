@@ -53,6 +53,7 @@ MonoBehaviour:
       milestoneDuration: 3
       whenForm: Potential
       consumeOnHit: 0
+      markId: 
       counterId: 
       counterMode: 0
       counterCoeff: 0
@@ -72,6 +73,7 @@ MonoBehaviour:
       milestoneDuration: 3
       whenForm: Kinetic
       consumeOnHit: 0
+      markId: 
       counterId: 
       counterMode: 0
       counterCoeff: 0

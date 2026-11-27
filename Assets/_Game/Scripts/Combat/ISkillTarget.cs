@@ -38,5 +38,6 @@ public interface ISkillTarget : IDamageable
 
     /// <summary>id별 지속 마크(회전축 등). 지속시간이 지나면 사라진다.</summary>
     bool HasMark(string id);
+    void RemoveMark(string id);
     void AddMark(string id, float duration);
 }

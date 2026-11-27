@@ -53,6 +53,7 @@ MonoBehaviour:
       milestoneDuration: 0
       whenForm: 
       consumeOnHit: 0
+      markId: 
       counterId: 
       counterMode: 0
       counterCoeff: 0

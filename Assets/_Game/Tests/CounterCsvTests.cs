@@ -130,6 +130,19 @@ public class CounterCsvTests
     public void Effects_BareTargetPrefix_IsAnError()
         => HasError(Build(OneChar, Skills, PassiveRow, (Eff, EffHeader + "hero_q,1,Damage,EnemyArea,1,target:,Linear,0.1,,false,false,\n")), "target:");
 
+    // ── markId 열(23-B) ───────────────────────────────────────────────────
+
+    [Test]
+    public void Effects_MarkId_MapsOnMarkEffects_AndIsRejectedElsewhere()
+    {
+        const string h = "skillId,order,type,target,value,duration,markId\n";
+        var ok = Build(OneChar, Skills, PassiveRow, (Eff, h + "hero_q,1,Mark,EnemyArea,,8,vektor_disp\n"));
+        NoErrors(ok);
+        var e = ok.skills.Single(s => s.id == "hero_q").effects.Single();
+        Assert.AreEqual(("vektor_disp", 8f), (e.markId, e.duration));
+        HasError(Build(OneChar, Skills, PassiveRow, (Eff, h + "hero_q,1,Damage,EnemyArea,1,,vektor_disp\n")), "markId");
+    }
+
     // ── skill_modifiers.csv: source=Counter ───────────────────────────────
 
     const string ModHeader = "skillId,order,source,stat,value,counterId\n";

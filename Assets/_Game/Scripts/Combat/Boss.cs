@@ -73,6 +73,7 @@ public class Boss : MonoBehaviour, ISkillTarget
     public float ApproachSign(Vector3 from) => 0f;
     public bool  HasMark(string id) => false;
     public void  AddMark(string id, float duration) { }
+    public void  RemoveMark(string id) { }
 
     void OnEnable()
     {

@@ -1,7 +1,7 @@
 using System;
 
 /// <summary>스킬 종류 (설계도 22 §4-2). Passive/FormChange는 P3~P4에서 사용.</summary>
-public enum SkillKind { Active, Passive, FormChange }
+public enum SkillKind { Active, Passive, FormChange, Combo }   // Combo: 표식 연계기 — 슬롯 키로 발동하지 않고 SynergyResolver가 실행
 
 /// <summary>조합 가능한 스킬 효과 종류 (설계도 22 §4-3).</summary>
 public enum SkillEffectType
@@ -42,6 +42,8 @@ public struct SkillEffectEntry
     public float           milestoneDuration;
     public string          whenForm;     // OnFormChange 패시브: 새 폼이 이 id일 때만 적용(비면 항상)
     public bool            consumeOnHit; // 버프가 다음 공격 행동에서 소모됨(가속도·양자화)
+
+    public string          markId;       // Mark 효과: 이 이름의 표식을 duration초(milestoneDuration, 난이도 배율) 동안 건다. 비면 속성 표식
 
     // 카운터 연동(23-A). counterId "@recent" = 최근 counterWindow초 안에 쓴 서로 다른 스킬 수
     public string          counterId;

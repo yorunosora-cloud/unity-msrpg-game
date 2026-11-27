@@ -31,6 +31,7 @@ MonoBehaviour:
     milestoneDuration: 0
     whenForm: 
     consumeOnHit: 0
+    markId: 
     counterId: 
     counterMode: 0
     counterCoeff: 0
@@ -42,7 +43,7 @@ MonoBehaviour:
     target: 0
     stat: 0
     value: 0
-    duration: 0
+    duration: 8
     maxStacks: 0
     targetCap: 0
     areaRadius: 0
@@ -50,6 +51,7 @@ MonoBehaviour:
     milestoneDuration: 0
     whenForm: 
     consumeOnHit: 0
+    markId: vektor_disp
     counterId: 
     counterMode: 0
     counterCoeff: 0
@@ -59,10 +61,10 @@ MonoBehaviour:
     counterWindow: 0
   factNoteKo: "\uC5EC\uB7EC \uBCC0\uC704 \uBCA1\uD130\uB97C \uD569\uC131\uD558\uBA74
     \uD558\uB098\uC758 \uD569\uBCC0\uC704 \uBCA1\uD130\uAC00 \uB41C\uB2E4."
-  gameNoteKo: "\uC804\uC6A9 \uB9C8\uD06C(vektor_disp) 2\uC2A4\uD0DD \uD569\uC0B0
-    \uD3ED\uBC1C\uACFC \uBCA8\uB85C\uC2DC\uC544 \uC5F0\uACC4(\"\uC18D\uB3C4 \uB3C4\uCD9C\")\uB294
-    \uC2DC\uB108\uC9C0 \uC2DC\uC2A4\uD15C(03)\uC774 \uC5C6\uC5B4 \uBBF8\uAD6C\uD604
-    \u2014 \uD53C\uD574 0.9\uC640 \uC18D\uC131 \uD45C\uC2DD\uB9CC \uC801\uC6A9"
+  gameNoteKo: "\uBCC0\uC704 \uB9C8\uD06C(vektor_disp) \uC790\uCCB4\uC758 2\uC2A4\uD0DD
+    \uD569\uC0B0 \uD3ED\uBC1C\uC740 \uBBF8\uAD6C\uD604 \u2014 \uD53C\uD574 0.9\uC640
+    \uBCA8\uB85C\uC2DC\uC544 \uC5F0\uACC4(\"\uC18D\uB3C4 \uB3C4\uCD9C\")\uC6A9 \uD45C\uC2DD\uB9CC
+    \uAD6C\uD604"
   passive:
     trigger: 0
     value: 0

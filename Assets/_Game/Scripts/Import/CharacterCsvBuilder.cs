@@ -9,6 +9,7 @@ public class ImportResult
     public readonly List<CharacterDef> characters = new();
     public readonly List<SkillDef>     skills     = new();
     public TagRule[]                   tagRules   = new TagRule[0];
+    public readonly List<SynergyComboDef> combos  = new();
     public readonly ImportReport       report     = new();
 }
 
@@ -30,9 +31,10 @@ public static class CharacterCsvBuilder
     public const string Modifiers        = "skill_modifiers.csv";
     public const string Codex            = "character_codex.csv";
     public const string Counters         = "skill_counters.csv";
+    public const string Combos           = "skill_combos.csv";
 
     public static readonly string[] AllSheets =
-        { TagRules, Catalog, Forms, AutoRules, Skills, Effects, FormChange, FormChangeStates, Passives, Modifiers, Codex, Counters };
+        { TagRules, Catalog, Forms, AutoRules, Skills, Effects, FormChange, FormChangeStates, Passives, Modifiers, Codex, Counters, Combos };
 
     sealed class SkillEntry { public SkillDef def; public int line; public int order; public string[] forms; public string owner; }
 
@@ -65,6 +67,7 @@ public static class CharacterCsvBuilder
         BuildFormChange(Sheet(FormChange), Sheet(FormChangeStates), skills, forms, ctx, res);
         BuildPassives(Sheet(Passives), Sheet(Modifiers), skills, skillOwner, counterIds, res);
         BuildCodex(Sheet(Codex), chars, res);
+        BuildCombos(Sheet(Combos), chars, skills, res);
 
         CheckSlotConflicts(ctx, res);
         return res;
@@ -429,7 +432,7 @@ public static class CharacterCsvBuilder
         if (!t.RequireColumns(res.report, "skillId", "type")) return;
         t.WarnUnknownColumns(res.report, "skillId", "order", "type", "target", "stat", "value", "duration", "maxStacks", "targetCap",
             "areaRadius", "milestoneValue", "milestoneDuration", "whenForm", "consumeOnHit",
-            "counterId", "counterMode", "counterCoeff", "milestoneCounterCoeff", "counterConsume", "requireCounterFull", "counterWindow");
+            "counterId", "counterMode", "counterCoeff", "milestoneCounterCoeff", "counterConsume", "requireCounterFull", "counterWindow", "markId");
 
         var by = new Dictionary<string, List<(int order, int idx, SkillEffectEntry e)>>();
         int idx = 0;
@@ -450,10 +453,11 @@ public static class CharacterCsvBuilder
                 counterId = row.Str("counterId"), counterMode = row.Enum("counterMode", CounterMode.None),
                 counterCoeff = row.Float("counterCoeff"), milestoneCounterCoeff = row.Float("milestoneCounterCoeff"),
                 counterConsume = row.Bool("counterConsume"), requireCounterFull = row.Bool("requireCounterFull"),
-                counterWindow = row.Float("counterWindow"),
+                counterWindow = row.Float("counterWindow"), markId = row.Str("markId"),
             };
             if (sid.Length == 0) continue;
             if (!skills.ContainsKey(sid)) { row.Error($"skillId '{sid}'가 character_skills.csv에 없습니다"); continue; }
+            if (!string.IsNullOrEmpty(e.markId) && e.type != SkillEffectType.Mark) { row.Error("markId는 type=Mark 효과에서만 쓸 수 있습니다"); continue; }
             if (string.IsNullOrEmpty(e.counterId))
             {
                 if (e.counterMode != CounterMode.None || e.counterConsume || e.requireCounterFull)
@@ -650,6 +654,48 @@ public static class CharacterCsvBuilder
     // ════════════════════════════════════════════════════════════════════════
     // character_codex (교육 레이어, 설계도 18-C)
     // ════════════════════════════════════════════════════════════════════════
+
+    // ════════════════════════════════════════════════════════════════════════
+    // skill_combos (표식 연계, 구현계획 23-B)
+    // ════════════════════════════════════════════════════════════════════════
+
+    static void BuildCombos(CsvTable t, Dictionary<string, CharacterDef> chars, Dictionary<string, SkillEntry> skills, ImportResult res)
+    {
+        if (t.Rows.Count == 0) return;
+        if (!t.RequireColumns(res.report, "comboId", "markId", "consumerId", "triggerSkillId", "comboSkillId")) return;
+        t.WarnUnknownColumns(res.report, "comboId", "comboName", "formula", "markId", "consumerId", "triggerSkillId", "comboSkillId");
+
+        var appliedMarks = new HashSet<string>();
+        foreach (var sk in res.skills)
+        {
+            if (sk.effects != null) foreach (var e in sk.effects) if (!string.IsNullOrEmpty(e.markId)) appliedMarks.Add(e.markId);
+            if (sk.passive.effects != null) foreach (var e in sk.passive.effects) if (!string.IsNullOrEmpty(e.markId)) appliedMarks.Add(e.markId);
+        }
+
+        var ids = new HashSet<string>(); var pairs = new HashSet<string>();
+        foreach (var row in t.Rows)
+        {
+            string id = row.Str("comboId", "", required: true);
+            row.Context = $"comboId={id}";
+            string mark = row.Str("markId", "", required: true), consumer = row.Str("consumerId", "", required: true);
+            string trig = row.Str("triggerSkillId", "", required: true), comboId = row.Str("comboSkillId", "", required: true);
+            if (id.Length == 0 || mark.Length == 0 || consumer.Length == 0 || trig.Length == 0 || comboId.Length == 0) continue;
+            if (!chars.ContainsKey(consumer)) { row.Error($"consumerId '{consumer}'가 character_catalog.csv에 없습니다"); continue; }
+            if (!skills.TryGetValue(trig, out var te)) { row.Error($"triggerSkillId '{trig}'가 character_skills.csv에 없습니다"); continue; }
+            if (te.owner != consumer) { row.Error($"triggerSkillId '{trig}'는 {consumer}의 스킬이 아닙니다"); continue; }
+            if (!skills.TryGetValue(comboId, out var ce)) { row.Error($"comboSkillId '{comboId}'가 character_skills.csv에 없습니다"); continue; }
+            if (ce.owner != consumer) { row.Error($"comboSkillId '{comboId}'는 {consumer}의 스킬이 아닙니다"); continue; }
+            if (ce.def.skillType != SkillKind.Combo) { row.Error($"comboSkillId '{comboId}'의 skillType이 Combo여야 합니다"); continue; }
+            if (!ids.Add(id)) { row.Error($"comboId '{id}'가 중복되었습니다"); continue; }
+            if (!pairs.Add(consumer + "|" + trig)) { row.Error($"소모자 {consumer}의 트리거 스킬 '{trig}'에 연계가 중복되었습니다"); continue; }
+            if (!appliedMarks.Contains(mark)) row.Warn($"표식 '{mark}'를 거는 스킬(skill_effects.csv markId)이 없습니다 — 표식 id 오타인지 확인하세요");
+            res.combos.Add(new SynergyComboDef
+            {
+                id = id, comboName = row.Str("comboName"), formula = row.Str("formula"), markId = mark,
+                consumerId = consumer, triggerSkillId = trig, comboSkill = ce.def,
+            });
+        }
+    }
 
     static void BuildCodex(CsvTable t, Dictionary<string, CharacterDef> chars, ImportResult res)
     {

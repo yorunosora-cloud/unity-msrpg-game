@@ -14,7 +14,7 @@ public class ShippedCsvTests
 {
     static ImportResult _res;
 
-    static ImportResult Load()
+    public static ImportResult Load()
     {
         if (_res != null) return _res;
         string dir = Path.Combine(Application.dataPath, "_Game/Resources/Data");
@@ -57,7 +57,7 @@ public class ShippedCsvTests
         var r = Load();
         Assert.AreEqual(21, r.characters.Count, "대표 4 + 물리 1묶음 5 + 2묶음 5 + 3묶음 2 + 4묶음 2 + 5묶음 3(세미라·에네르기아·글루온)");
         Assert.AreEqual(5, r.characters.Sum(c => c.conceptQuestions?.Length ?? 0), "개념 문제: 포르테 2 + 대표 나머지 각 1 (이관 캐릭터는 아직 교육 데이터 없음)");
-        Assert.AreEqual(119, r.skills.Count, "대표 29 + 1묶음 21 + 2묶음 20 + 3묶음 14 + 4묶음 8 + 세미라 14 + 에네르기아 7 + 글루온 7");
+        Assert.AreEqual(123, r.skills.Count, "대표 29 + 1묶음 21 + 2묶음 20 + 3묶음 14 + 4묶음 8 + 세미라 14 + 에네르기아 7 + 글루온 7 + 연계기 4");
         Assert.AreEqual(8, r.tagRules.Length);
     }
 

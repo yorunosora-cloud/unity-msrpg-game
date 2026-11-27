@@ -31,6 +31,7 @@ MonoBehaviour:
     milestoneDuration: 0
     whenForm: 
     consumeOnHit: 0
+    markId: 
     counterId: accel_run
     counterMode: 1
     counterCoeff: 0.06
@@ -40,10 +41,10 @@ MonoBehaviour:
     counterWindow: 0
   factNoteKo: "\uB4F1\uAC00\uC18D\uC6B4\uB3D9\uC740 \uC18D\uB3C4\uAC00 \uC77C\uC815\uD55C
     \uBE44\uC728\uB85C \uACC4\uC18D \uC99D\uAC00\uD558\uB294 \uC6B4\uB3D9\uC774\uB2E4."
-  gameNoteKo: "\uBCA8\uB85C\uC2DC\uC544 \uC5F0\uACC4(\"\uAC00\uC18D\uB3C4 \uB3C4\uCD9C\")\uB294
-    \uC2DC\uB108\uC9C0 \uC2DC\uC2A4\uD15C \uBBF8\uAD6C\uD604. \uC5F0\uD0C0 \uB204\uC801\uC740
-    \uC774 \uC2A4\uD0AC \uC801\uC911 \uC2DC\uC5D0\uB9CC +1(\uCD5C\uB300 5, Lv.3 6),
-    \uD53C\uACA9 \uC2DC \uCD08\uAE30\uD654"
+  gameNoteKo: "\uC5F0\uD0C0 \uB204\uC801\uC740 \uC774 \uC2A4\uD0AC \uC801\uC911 \uC2DC\uC5D0\uB9CC
+    +1(\uCD5C\uB300 5, Lv.3 6), \uD53C\uACA9 \uC2DC \uCD08\uAE30\uD654. \uBCA8\uB85C\uC2DC\uC544\uC758
+    \uC18D\uB3C4 \uD45C\uC2DD\uC744 \uB9DE\uD788\uBA74 \"\uAC00\uC18D\uB3C4 \uB3C4\uCD9C\"\uC774
+    \uD130\uC9C4\uB2E4"
   passive:
     trigger: 0
     value: 0

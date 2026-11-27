@@ -15,6 +15,7 @@ public static class SkillExecutor
     /// <param name="origin">발동자 Transform (위치·전방 방향 기준)</param>
     public static void Execute(SkillDef skill, int skillIndex, CombatCharacter caster, Transform origin)
     {
+        var probe = SynergyResolver.Begin(skill, caster);   // 표식 연계: 행동 시작 시점의 표식 상태
         var ctx = new ActionCtx { origin = origin, skillId = skill.id, actionId = CombatCharacter.NewActionId(),
                                   tags = skill.strengthTags };
 
@@ -56,6 +57,7 @@ public static class SkillExecutor
         // 공격 행동의 적중을 한 번에 알림 → OnHit 패시브(스택·효과)
         if (ctx.hits.Count > 0) caster.NotifyHits(ctx.hits, false);
         ctx.RunAfterNotify();
+        SynergyResolver.Finish(probe, skill, skillIndex, caster, origin, ctx.hits);
     }
 
     /// <summary>
@@ -66,9 +68,11 @@ public static class SkillExecutor
     {
         var ctx = new ActionCtx { origin = origin, skillId = skill.id, actionId = CombatCharacter.NewActionId(),
                                   tags = skill.strengthTags, isBasic = true };
+        var probe = SynergyResolver.Begin(skill, caster);
         ExecuteEffects(skill, skillIndex, caster, origin, ctx);
         if (ctx.hits.Count > 0) caster.NotifyHits(ctx.hits, true);
         ctx.RunAfterNotify();
+        SynergyResolver.Finish(probe, skill, skillIndex, caster, origin, ctx.hits);
     }
 
     /// <summary>거리 기반 자동 전환 판정: 설정이 있고 가장 가까운 적이 경계 이내(포함)면 대체 발동.</summary>
@@ -178,7 +182,7 @@ public static class SkillExecutor
         }
     }
 
-    static List<(ISkillTarget t, float d)> CollectInShape(SkillDef skill, EffectiveSkill eff, Transform origin)
+    internal static List<(ISkillTarget t, float d)> CollectInShape(SkillDef skill, EffectiveSkill eff, Transform origin)
     {
         var list   = new List<(ISkillTarget, float)>();
         float radius = skill.radius + (eff.range - skill.range);   // 마일스톤 범위 보너스를 원형에도 반영
@@ -259,6 +263,11 @@ public static class SkillExecutor
                     break;
                 case SkillEffectType.Mark:
                     t.SetMark(caster.Element);
+                    if (!string.IsNullOrEmpty(e.markId))
+                    {
+                        float md = milestone && e.milestoneDuration > 0f ? e.milestoneDuration : (e.duration > 0f ? e.duration : 8f);
+                        t.AddMark(e.markId, md * SynergyTuning.MarkDurationMult);
+                    }
                     break;
                 case SkillEffectType.Knockback:
                     t.Displace(origin.position, v, pull: false);

@@ -47,6 +47,7 @@ MonoBehaviour:
   portraitColor: {r: 1, g: 1, b: 1, a: 1}
   skills:
   - {fileID: 11400000, guid: 5e1f1ff2acc430a4d8ec1557801fc479, type: 2}
+  - {fileID: 11400000, guid: 330b2c87c65aaa24e99860ac3e4c9359, type: 2}
   - {fileID: 11400000, guid: 5c50bbb944410814584473d6a4dcb81f, type: 2}
   - {fileID: 11400000, guid: 5f1c59ef987ddea4e997c0297f5d47a2, type: 2}
   - {fileID: 11400000, guid: 3b2d2b679d7b6f740882b7e0a44a0937, type: 2}
